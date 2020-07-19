@@ -1,0 +1,2 @@
+include README.md LICENSE
+include permetrics/support_data/*.txt
