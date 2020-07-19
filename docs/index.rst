@@ -18,6 +18,8 @@ Permetrics's documentation!
    :caption: Models
 
    pages/regression/cec_index.rst
+   pages/examples.rst
+
 
 
 .. toctree::

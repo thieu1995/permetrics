@@ -1,27 +1,10 @@
-CEC 2013
-========
+MAE
+===
 
 .. toctree::
    :maxdepth: 2
-   :caption: CEC 2013 Functions
+   :caption: MAE - Mean Square Error
 
+The explanation of MAE
 
-* The following functions is avaiable in CEC 2013:
-
-
-opfunu.cec.cec2013.unconstraint module
---------------------------------------
-
-.. automodule:: opfunu.cec.cec2013.unconstraint
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-opfunu.cec.cec2013.unconstraint2 module
----------------------------------------
-
-.. automodule:: opfunu.cec.cec2013.unconstraint2
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
