@@ -1,8 +1,6 @@
 Introduction
 ############
 
-# A framework of PERformance METRICS (PerMetrics) for artificial intelligence models
-
 .. image:: https://img.shields.io/badge/release-1.0.1-yellow.svg?style=svg
     :target: https://github.com/thieunguyen5991/permetrics
 
@@ -18,8 +16,7 @@ Introduction
 .. image:: https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=svg
     :target: https://github.com/thieunguyen5991/permetrics/blob/master/LICENSE
 
-
-This is PerMetrics library written in Python, for performance metrics of artificial intelligence models.
+PerMetrics is library written in Python, for PERformance METRICS (PerMetrics) of artificial intelligence models.
 
 * The goals of this framework are:
     * Combine all metrics for regression, classification and clustering models
@@ -75,28 +72,29 @@ Examples
 + All you need to do is: (Make sure your y_true and y_pred is a numpy array).
 
 .. code-block:: python
-	:linenos:
+	:emphasize-lines: 9,18
 
-    from numpy import array
-    from permetrics.regression import Metrics
+	from numpy import array
+	from permetrics.regression import Metrics
 
-    ## For 1-D array
-    y_true = array([3, -0.5, 2, 7])
-    y_pred = array([2.5, 0.0, 2, 8])
+	## For 1-D array
+	y_true = array([3, -0.5, 2, 7])
+	y_pred = array([2.5, 0.0, 2, 8])
 
-    obj1 = Metrics(y_true, y_pred)
-    print(obj1.rmse_func(clean=True, decimal=5))
+	obj1 = Metrics(y_true, y_pred)
+	print(obj1.rmse_func(clean=True, decimal=5))
 
-    ## For > 1-D array
-    y_true = array([[0.5, 1], [-1, 1], [7, -6]])
-    y_pred = array([[0, 2], [-1, 2], [8, -5]])
+	## For > 1-D array
+	y_true = array([[0.5, 1], [-1, 1], [7, -6]])
+	y_pred = array([[0, 2], [-1, 2], [8, -5]])
 
-    multi_outputs = [None, "raw_values", [0.3, 1.2], array([0.5, 0.2]), (0.1, 0.9)]
-    obj2 = Metrics(y_true, y_pred)
-    for multi_output in multi_outputs:
-        print(obj2.rmse_func(clean=False, multi_output=multi_output, decimal=5))
-
+	multi_outputs = [None, "raw_values", [0.3, 1.2], array([0.5, 0.2]), (0.1, 0.9)]
+	obj2 = Metrics(y_true, y_pred)
+	for multi_output in multi_outputs:
+		print(obj2.rmse_func(clean=False, multi_output=multi_output, decimal=5))
 	...
+
+
 
 Important links
 ###############

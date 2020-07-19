@@ -17,7 +17,7 @@ Permetrics's documentation!
    :maxdepth: 2
    :caption: Models
 
-   pages/regression/cec_index.rst
+   pages/regression/regression_index.rst
    pages/examples.rst
 
 

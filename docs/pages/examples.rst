@@ -1,8 +1,5 @@
-examples package
-================
-
-Submodules
-----------
+Examples
+========
 
 examples.CI module
 ------------------
@@ -136,15 +133,6 @@ examples.WI module
 ------------------
 
 .. automodule:: examples.WI
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: examples
    :members:
    :undoc-members:
    :show-inheritance:
