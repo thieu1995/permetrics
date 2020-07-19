@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Permetrics's documentation!
-=======================
+===========================
 
 .. toctree::
    :maxdepth: 2

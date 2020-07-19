@@ -19,6 +19,32 @@
     * Perform Qualitative Analysis of models.
     * Perform Quantitative Analysis of models.
 
+* Metrics
+
+| Problem        | STT | Metric Short Name | Metric Fullname                           |
+|----------------|-----|-------------------|-------------------------------------------|
+| Regression     | 1   | EVS               | Explained Variance Score                  |
+|                | 2   | ME                | Max Error                                 |
+|                | 3   | MAE               | Mean Absolute Error                       |
+|                | 4   | MSE               | Mean Squared Error                        |
+|                | 5   | RMSE              | Root Mean Squared Error                   |
+|                | 6   | MSLE              | Mean Squared Log Error                    |
+|                | 7   | MedAE             | Median Absolute Error                     |
+|                | 8   | MRE               | Mean Relative Error                       |
+|                | 9   | MAPE              | Mean Absolute Percentage Error            |
+|                | 10  | SMAPE             | Symmetric Mean Absolute Percentage Error  |
+|                | 11  | MAAPE             | Mean Arctangent Absolute Percentage Error |
+|                | 12  | MASE              | Mean Absolute Scaled Error                |
+|                | 13  | NSE               | Nash\-Sutcliffe Efficiency Coefficient    |
+|                | 14  | WI                | Willmott Index                            |
+|                | 15  | R                 | Pearson’s Correlation Index               |
+|                | 16  | CI                | Confidence Index                          |
+|                | 17  | R2                | Coefficient of Determination              |
+| Classification | 1   |                   |                                           |
+| Clustering     | 1   |                   |                                           |
+
+
+
 ### Dependencies
 * Python (>= 3.7)
 * Numpy (>= 1.15.1)
@@ -70,15 +96,16 @@ pip install git+https://github.com/thieunguyen5991/permetrics
 
 * The more complicated tests in the folder: examples
 ```
-The documentation includes more detailed installation instructions.
+The [documentation](https://permetrics.readthedocs.io/) includes more detailed installation instructions and explanations.
 
 ### Changelog
-* See the "ChangeLog.md" for a history of notable changes to mealpy.
+* See the [ChangeLog.md](https://github.com/thieunguyen5991/permetrics/blob/master/ChangeLog.md) for a history of notable changes to permetrics.
 
 
 ### Important links
 
 * Official source code repo: https://github.com/thieunguyen5991/permetrics
+* Official documentation: https://permetrics.readthedocs.io/
 * Download releases: https://pypi.org/project/permetrics/
 * Issue tracker: https://github.com/thieunguyen5991/permetrics/issues
 
