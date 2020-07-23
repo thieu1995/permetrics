@@ -24,27 +24,27 @@
 
 * Metrics
 
-| Problem        | STT | Metric Short Name | Metric Fullname                           |
-|----------------|-----|-------------------|-------------------------------------------|
-| Regression     | 1   | EVS               | Explained Variance Score                  |
-|                | 2   | ME                | Max Error                                 |
-|                | 3   | MAE               | Mean Absolute Error                       |
-|                | 4   | MSE               | Mean Squared Error                        |
-|                | 5   | RMSE              | Root Mean Squared Error                   |
-|                | 6   | MSLE              | Mean Squared Log Error                    |
-|                | 7   | MedAE             | Median Absolute Error                     |
-|                | 8   | MRE               | Mean Relative Error                       |
-|                | 9   | MAPE              | Mean Absolute Percentage Error            |
-|                | 10  | SMAPE             | Symmetric Mean Absolute Percentage Error  |
-|                | 11  | MAAPE             | Mean Arctangent Absolute Percentage Error |
-|                | 12  | MASE              | Mean Absolute Scaled Error                |
-|                | 13  | NSE               | Nash\-Sutcliffe Efficiency Coefficient    |
-|                | 14  | WI                | Willmott Index                            |
-|                | 15  | R                 | Pearson’s Correlation Index               |
-|                | 16  | CI                | Confidence Index                          |
-|                | 17  | R2                | Coefficient of Determination              |
-| Classification | 1   |                   |                                           |
-| Clustering     | 1   |                   |                                           |
+| Problem        | STT | Metric  | Metric Fullname                           | Characteristics                |
+|----------------|-----|---------|-------------------------------------------|--------------------------------|
+| Regression     | 1   | EVS     | Explained Variance Score                  | Larger is better \(Best = 1\)  |
+|                | 2   | ME      | Max Error                                 | Smaller is better \(Best = 0\) |
+|                | 3   | MAE     | Mean Absolute Error                       | Smaller is better \(Best = 0\) |
+|                | 4   | MSE     | Mean Squared Error                        | Smaller is better \(Best = 0\) |
+|                | 5   | RMSE    | Root Mean Squared Error                   | Smaller is better \(Best = 0\) |
+|                | 6   | MSLE    | Mean Squared Log Error                    | Smaller is better \(Best = 0\) |
+|                | 7   | MedAE   | Median Absolute Error                     | Smaller is better \(Best = 0\) |
+|                | 8   | MRE     | Mean Relative Error                       | Smaller is better \(Best = 0\) |
+|                | 9   | MAPE    | Mean Absolute Percentage Error            | Smaller is better \(Best = 0\) |
+|                | 10  | SMAPE   | Symmetric Mean Absolute Percentage Error  | Smaller is better \(Best = 0\) |
+|                | 11  | MAAPE   | Mean Arctangent Absolute Percentage Error | Smaller is better \(Best = 0\) |
+|                | 12  | MASE    | Mean Absolute Scaled Error                | Smaller is better \(Best = 0\) |
+|                | 13  | NSE     | Nash\-Sutcliffe Efficiency Coefficient    | Larger is better \(Best = 1\)  |
+|                | 14  | WI      | Willmott Index                            | Larger is better \(Best = 1\)  |
+|                | 15  | R       | Pearson’s Correlation Index               | Larger is better \(Best = 1\)  |
+|                | 16  | CI      | Confidence Index                          | Larger is better \(Best = 1\)  |
+|                | 17  | R2      | Coefficient of Determination              | Larger is better \(Best = 1\)  |
+| Classification | 1   |         |                                           |                                |
+| Clustering     | 1   |         |                                           |                                |
 
 
 
