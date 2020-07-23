@@ -7,6 +7,13 @@ Introduction
 .. image:: https://img.shields.io/pypi/wheel/gensim.svg?style=svg
     :target: https://pypi.python.org/pypi/permetrics
 
+.. image:: https://readthedocs.org/projects/permetrics/badge/?version=latest
+	:target: https://permetrics.readthedocs.io/en/latest/?badge=latest
+	:alt: Documentation Status
+
+.. image:: https://img.shields.io/badge/python-3.7+-orange.svg
+    :target: https://www.python.org/downloads/release/python-370
+
 .. image:: https://badge.fury.io/py/permetrics.svg?style=svg
     :target: https://badge.fury.io/py/permetrics
 
@@ -15,6 +22,8 @@ Introduction
 
 .. image:: https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=svg
     :target: https://github.com/thieunguyen5991/permetrics/blob/master/LICENSE
+
+
 
 PerMetrics is library written in Python, for PERformance METRICS (PerMetrics) of artificial intelligence models.
 

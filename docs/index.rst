@@ -7,14 +7,14 @@ Permetrics's documentation!
 ===========================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: permetrics's documentation!
 
    pages/introduction.rst
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Models
 
    pages/regression/regression_index.rst
@@ -23,7 +23,7 @@ Permetrics's documentation!
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Need Helps
 
    pages/license.rst
