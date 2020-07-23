@@ -342,3 +342,42 @@ class Metrics:
             t2 = sum((y_true - mean(y_true, axis=0)) ** 2, axis=0)
             temp = 1 - t1 / t2
             return self.__multi_output_result__(temp, multi_output, decimal)
+
+    def get_metrics_by_name(self, *func_names):
+        temp = []
+        for idx, func_name in enumerate(func_names):
+            obj = getattr(self, func_name)
+            temp.append(obj())
+        return temp
+
+    def get_metrics_by_list(self, func_name_list=None, func_para_list=None):
+        temp = []
+        for idx, func_name in enumerate(func_name_list):
+            obj = getattr(self, func_name)
+            if func_para_list is None:
+                temp.append(obj())
+            else:
+                if len(func_name_list) != len(func_para_list):
+                    print("Failed! Different length between functions and parameters")
+                    exit(0)
+                temp.append(obj(**func_para_list[idx]))
+        return temp
+
+    EVS = evs_func
+    ME = me_func
+    MAE = mae_func
+    MSE = mse_func
+    RMSE = rmse_func
+    MSLE = msle_func
+    MedAE = medae_func
+    MRE = mre_func
+    MAPE = mape_func
+    SMAPE = smape_func
+    MAAPE = maape_func
+    MASE = mase_func
+    NSE = nse_func
+    WI = wi_func
+    R = r_func
+    CI = ci_func
+    R2 = r2_func
+
