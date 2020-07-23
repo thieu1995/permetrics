@@ -2,9 +2,13 @@
 # Version 1.0.1 
 
 ### Change models
-+ None
++ Add method for multiple metrics called at the same time
+    + Call by list of function names (default function parameters)
+    + Call by list of function names and parameters (can change function parameters)
 ### Change others
-+ Examples: Add all examples for all metrics
++ Examples: 
+    + Add all examples for all metrics
+    + Add example for multiple metrics called at the same time
 + Documents: Add all documents for all metrics
     
 ---------------------------------------------------------------------

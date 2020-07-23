@@ -7,4 +7,7 @@ MAE
 
 The explanation of MAE
 
+.. image:: ../../_static/images/bio_inspired.png
+
+
 
