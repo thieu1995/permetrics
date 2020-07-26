@@ -1,3 +1,16 @@
+# Version 1.0.2
+
+### Change models
++ Add methods
+    + (Pearson’s Correlation Index)**2 or R2s (or R2)
+    + Kling-Gupta Efficiency (KGE)
+    + Deviation of Runoff Volume (DRV)
+### Change others
++ Examples: 
+    + Add examples
+    + Add documents
+
+---------------------------------------------------------------------
 
 # Version 1.0.1 
 
