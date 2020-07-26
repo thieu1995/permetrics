@@ -7,7 +7,8 @@
 #       Github:     https://github.com/thieunguyen5991                                                  %
 #-------------------------------------------------------------------------------------------------------%
 
-from numpy import ndarray, array, max, round, sqrt, abs, mean, dot, divide, arctan, sum, any, median, isfinite, isnan, log, var
+from numpy import max, round, sqrt, abs, mean, dot, divide, arctan, sum, any, median, log, var, std
+from numpy import ndarray, array, isfinite, isnan
 
 
 class Metrics:
@@ -343,6 +344,48 @@ class Metrics:
             temp = 1 - t1 / t2
             return self.__multi_output_result__(temp, multi_output, decimal)
 
+    def r2s_func(self, clean=False, multi_output="raw_values", decimal=3):
+        """
+            (Pearson’s Correlation Index)^2 = R2
+        """
+        temp = self.r2_func(clean, multi_output, decimal)
+        return round(temp ** 2, decimal)
+
+    def drv_func(self, clean=False, multi_output="raw_values", decimal=3):
+        """
+            Deviation of Runoff Volume (DRV)
+            https://rstudio-pubs-static.s3.amazonaws.com/433152_56d00c1e29724829bad5fc4fd8c8ebff.html
+        """
+        y_true, y_pred = self.y_true, self.y_pred
+        if clean:
+            y_true, y_pred = self.y_true_clean, self.y_pred_clean
+        if self.onedim:
+            return round(sum(y_pred)/sum(y_true), decimal)
+        else:
+            temp = sum(y_pred, axis=0) / sum(y_true, axis=0)
+            return self.__multi_output_result__(temp, multi_output, decimal)
+
+    def kge_func(self, clean=False, multi_output="raw_values", decimal=3):
+        """
+            Kling-Gupta Efficiency (KGE)
+            https://rstudio-pubs-static.s3.amazonaws.com/433152_56d00c1e29724829bad5fc4fd8c8ebff.html
+        """
+        y_true, y_pred = self.y_true, self.y_pred
+        if clean:
+            y_true, y_pred = self.y_true_clean, self.y_pred_clean
+        r = self.r_func(clean, multi_output, decimal)
+        if self.onedim:
+            beta = mean(y_pred)/mean(y_true)
+            gamma = (std(y_pred)/mean(y_pred))/(std(y_true)/mean(y_true))
+            out = 1 - sqrt((r-1)**2 + (beta-1)**2 + (gamma-1)**2)
+            return round(out, decimal)
+        else:
+            beta = mean(y_pred, axis=0) / mean(y_true, axis=0)
+            gamma = (std(y_pred, axis=0) / mean(y_pred, axis=0)) / (std(y_true, axis=0) / mean(y_true, axis=0))
+            out = 1 - sqrt((r - 1) ** 2 + (beta - 1) ** 2 + (gamma - 1) ** 2)
+            return self.__multi_output_result__(out, multi_output, decimal)
+
+
     def get_metrics_by_name(self, *func_names):
         temp = []
         for idx, func_name in enumerate(func_names):
@@ -380,4 +423,7 @@ class Metrics:
     R = r_func
     CI = ci_func
     R2 = r2_func
+    R2s = r2s_func
+    DRV = drv_func
+    KGE = kge_func
 
