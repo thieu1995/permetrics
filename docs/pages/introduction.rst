@@ -1,8 +1,8 @@
 Introduction
 ############
 
-.. image:: https://img.shields.io/badge/release-1.0.1-yellow.svg?style=svg
-    :target: https://github.com/thieunguyen5991/permetrics
+.. image:: https://img.shields.io/badge/release-1.0.3-yellow.svg?style=svg
+    :target: https://github.com/thieu1995/permetrics
 
 .. image:: https://img.shields.io/pypi/wheel/gensim.svg?style=svg
     :target: https://pypi.python.org/pypi/permetrics
@@ -21,7 +21,7 @@ Introduction
 	:target: https://zenodo.org/badge/latestdoi/280617738
 
 .. image:: https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=svg
-    :target: https://github.com/thieunguyen5991/permetrics/blob/master/LICENSE
+    :target: https://github.com/thieu1995/permetrics/blob/master/LICENSE
 
 
 
@@ -72,7 +72,7 @@ This is a simple example::
 
 Or install the development version from GitHub::
 
-	pip install git+https://github.com/thieunguyen5991/permetrics
+	pip install git+https://github.com/thieu1995/permetrics
 
 
 Examples
@@ -108,11 +108,11 @@ Examples
 Important links
 ###############
 
-* Official source code repo: https://github.com/thieunguyen5991/permetrics
+* Official source code repo: https://github.com/thieu1995/permetrics
 * Download releases: https://pypi.org/project/permetrics/
-* Issue tracker: https://github.com/thieunguyen5991/permetrics/issues
+* Issue tracker: https://github.com/thieu1995/permetrics/issues
 
 * This project also related to my another projects which are "meta-heuristics" and "neural-network", check it here
-    * https://github.com/thieunguyen5991/opfunu
-    * https://github.com/thieunguyen5991/metaheuristics
+    * https://github.com/thieu1995/opfunu
+    * https://github.com/thieu1995/metaheuristics
     * https://github.com/chasebk

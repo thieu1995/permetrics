@@ -1,5 +1,5 @@
 # A framework of PERformance METRICS (PerMetrics) for artificial intelligence models
-[![GitHub release](https://img.shields.io/badge/release-1.0.2-yellow.svg)]()
+[![GitHub release](https://img.shields.io/badge/release-1.0.3-yellow.svg)]()
 [![Documentation Status](https://readthedocs.org/projects/permetrics/badge/?version=latest)](https://permetrics.readthedocs.io/en/latest/?badge=latest)
 [![](https://img.shields.io/badge/python-3.7+-orange.svg)](https://www.python.org/downloads/release/python-370/)
 [![Wheel](https://img.shields.io/pypi/wheel/gensim.svg)](https://pypi.python.org/pypi/permetrics) 
@@ -51,7 +51,7 @@
 
 
 ### Dependencies
-* Python (>= 3.7)
+* Python (>= 3.6)
 * Numpy (>= 1.15.1)
 
 
@@ -65,7 +65,7 @@ pip install permetrics
 Or install the development version from GitHub:
 
 ```bash
-pip install git+https://github.com/thieunguyen5991/permetrics
+pip install git+https://github.com/thieu1995/permetrics
 ```
 
 
@@ -104,19 +104,19 @@ pip install git+https://github.com/thieunguyen5991/permetrics
 The [documentation](https://permetrics.readthedocs.io/) includes more detailed installation instructions and explanations.
 
 ### Changelog
-* See the [ChangeLog.md](https://github.com/thieunguyen5991/permetrics/blob/master/ChangeLog.md) for a history of notable changes to permetrics.
+* See the [ChangeLog.md](https://github.com/thieu1995/permetrics/blob/master/ChangeLog.md) for a history of notable changes to permetrics.
 
 
 ### Important links
 
-* Official source code repo: https://github.com/thieunguyen5991/permetrics
+* Official source code repo: https://github.com/thieu1995/permetrics
 * Official documentation: https://permetrics.readthedocs.io/
 * Download releases: https://pypi.org/project/permetrics/
-* Issue tracker: https://github.com/thieunguyen5991/permetrics/issues
+* Issue tracker: https://github.com/thieu1995/permetrics/issues
 
 * This project also related to my another projects which are "meta-heuristics" and "neural-network", check it here
-    * https://github.com/thieunguyen5991/opfunu
-    * https://github.com/thieunguyen5991/metaheuristics
+    * https://github.com/thieu1995/opfunu
+    * https://github.com/thieu1995/metaheuristics
     * https://github.com/chasebk
     
    
