@@ -25,7 +25,7 @@ Introduction
 
 
 
-PerMetrics is library written in Python, for PERformance METRICS (PerMetrics) of artificial intelligence models.
+PerMetrics is library written in Python, for PERformance METRICS (PerMetrics) of machine learning models.
 
 * The goals of this framework are:
     * Combine all metrics for regression, classification and clustering models
@@ -33,8 +33,10 @@ PerMetrics is library written in Python, for PERformance METRICS (PerMetrics) of
     * Perform Qualitative Analysis of models.
     * Perform Quantitative Analysis of models.
 
-* Currently, It contains 1 sub-packages include:
-	* regression: contains 17 metrics
+* Currently, It contains 3 sub-packages including:
+	* regression: contains 21 metrics
+	* single loss: contains 5 metrics
+	* classification: contains 1 metrics
 
 
 If you see my code and data useful and use it, please cites my works here::

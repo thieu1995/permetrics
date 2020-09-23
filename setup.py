@@ -10,7 +10,7 @@ setup(
     version="1.0.3",
     author="Thieu Nguyen",
     author_email="nguyenthieu2102@gmail.com",
-    description="A framework of PERformance METRICS (PerMetrics) for artificial intelligence models",
+    description="A framework of PERformance METRICS (PerMetrics) for machine learning models",
     long_description=readme(),
     long_description_content_type="text/markdown",
     url="https://github.com/thieu1995/permetrics",

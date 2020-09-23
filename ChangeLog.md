@@ -1,10 +1,38 @@
+# Version 1.0.3
+
+### Change models
++ Add methods
+    + 21. Gini coefficient
+        + Based on other code (Mathlab code)
+        + Based on wiki version
+    + 22. Mean Log Likelihood
+    
++ Add new class SingleLoss for numbers-verse-numbers, the output is numbers (not single number as regression.py)
+    + 1. Relative error
+    + 2. Absolute error
+    + 3. Squared error
+    + 4. Squared log error
+    + 5. Log likelihood
+    
++ Add new class for classification metrics
+    + 1. Mean Log Likelihood
+    
+    
+### Change others
++ Examples: 
+    + Add examples
+    + Add documents
+
+---------------------------------------------------------------------
+
 # Version 1.0.2
 
 ### Change models
 + Add methods
-    + (Pearson’s Correlation Index)**2 or R2s (or R2)
-    + Kling-Gupta Efficiency (KGE)
-    + Deviation of Runoff Volume (DRV)
+    + 18. Kling-Gupta Efficiency (KGE)
+    + 19. Deviation of Runoff Volume (DRV)
+    + 20. (Pearson’s Correlation Index)**2 or R2s (or R2)
+    
 ### Change others
 + Examples: 
     + Add examples
