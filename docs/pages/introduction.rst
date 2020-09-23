@@ -1,7 +1,7 @@
 Introduction
 ############
 
-.. image:: https://img.shields.io/badge/release-1.0.3-yellow.svg?style=svg
+.. image:: https://img.shields.io/badge/release-1.0.4-yellow.svg?style=svg
     :target: https://github.com/thieu1995/permetrics
 
 .. image:: https://img.shields.io/pypi/wheel/gensim.svg?style=svg

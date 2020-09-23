@@ -1,5 +1,5 @@
 # A framework of PERformance METRICS (PerMetrics) for artificial intelligence models
-[![GitHub release](https://img.shields.io/badge/release-1.0.3-yellow.svg)]()
+[![GitHub release](https://img.shields.io/badge/release-1.0.4-yellow.svg)]()
 [![Documentation Status](https://readthedocs.org/projects/permetrics/badge/?version=latest)](https://permetrics.readthedocs.io/en/latest/?badge=latest)
 [![](https://img.shields.io/badge/python-3.7+-orange.svg)](https://www.python.org/downloads/release/python-370/)
 [![Wheel](https://img.shields.io/pypi/wheel/gensim.svg)](https://pypi.python.org/pypi/permetrics) 
