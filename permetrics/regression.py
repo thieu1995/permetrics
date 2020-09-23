@@ -8,7 +8,7 @@
 #-------------------------------------------------------------------------------------------------------%
 
 from numpy import max, round, sqrt, abs, mean, dot, divide, arctan, sum, any, median, log, var, std
-from numpy import ndarray, array, isfinite, isnan
+from numpy import ndarray, array, isfinite, isnan, argsort, zeros, concatenate
 
 
 class Metrics:
@@ -385,6 +385,68 @@ class Metrics:
             out = 1 - sqrt((r - 1) ** 2 + (beta - 1) ** 2 + (gamma - 1) ** 2)
             return self.__multi_output_result__(out, multi_output, decimal)
 
+    def gini_func(self, clean=False, multi_output="raw_values", decimal=3):
+        """
+            Gini coefficient (Gini)
+            https://github.com/benhamner/Metrics/blob/master/MATLAB/metrics/gini.m
+        """
+        y_true, y_pred = self.y_true, self.y_pred
+        if clean:
+            y_true, y_pred = self.y_true_clean, self.y_pred_clean
+        if self.onedim:
+            idx_sort = argsort(-y_pred)
+            population_delta = 1.0 / len(y_true)
+            accumulated_population_percentage_sum, accumulated_loss_percentage_sum, score = 0, 0, 0
+            total_losses = sum(y_true)
+            for i in range(0, len(y_true)):
+                accumulated_loss_percentage_sum += y_true[idx_sort[i]] / total_losses
+                accumulated_population_percentage_sum += population_delta
+                score += accumulated_loss_percentage_sum - accumulated_population_percentage_sum
+            score = score / len(y_true)
+            return round(score, decimal)
+        else:
+            col = y_true.shape[1]
+            idx_sort = argsort(-y_pred, axis=0)
+            population_delta = 1.0 / len(y_true)
+            accumulated_population_percentage_sum, accumulated_loss_percentage_sum, score = zeros(col), zeros(col), zeros(col)
+            total_losses = sum(y_true, axis=0)
+            for i in range(0, col):
+                for j in range(0, len(y_true)):
+                    accumulated_loss_percentage_sum[i] += y_true[idx_sort[j, i], i] / total_losses[i]
+                    accumulated_population_percentage_sum[i] += population_delta
+                    score[i] += accumulated_loss_percentage_sum[i] - accumulated_population_percentage_sum[i]
+            score = score / len(y_true)
+            return self.__multi_output_result__(score, multi_output, decimal)
+
+    def gini_wiki_func(self, clean=False, multi_output="raw_values", decimal=3):
+        """
+            Gini coefficient (Gini)
+            https://en.wikipedia.org/wiki/Gini_coefficient
+        """
+        y_true, y_pred = self.y_true, self.y_pred
+        if clean:
+            y_true, y_pred = self.y_true_clean, self.y_pred_clean
+        if self.onedim:
+            y = concatenate((y_true, y_pred), axis=0)
+            score = 0
+            for i in range(0, len(y)):
+                for j in range(0, len(y)):
+                    score += abs(y[i] - y[j])
+            y_mean = mean(y)
+            score = score / (2*len(y)**2 * y_mean)
+            return round(score, decimal)
+        else:
+            y = concatenate((y_true, y_pred), axis=0)
+            col = y.shape[1]
+            d = len(y)
+            score = zeros(col)
+            for k in range(0, col):
+                for i in range(0, d):
+                    for j in range(0, d):
+                        score[k] += abs(y[i, k] - y[j, k])
+            y_mean = mean(y, axis=0)
+            score = score / (2 * len(y) ** 2 * y_mean)
+            return self.__multi_output_result__(score, multi_output, decimal)
 
     def get_metrics_by_name(self, *func_names):
         temp = []
@@ -426,4 +488,6 @@ class Metrics:
     R2s = r2s_func
     DRV = drv_func
     KGE = kge_func
+    GINI = gini_func
+    GINI_WIKI = gini_wiki_func
 
