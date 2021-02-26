@@ -38,7 +38,7 @@ Example to use: CI function::
 	y_pred = array([2.5, 0.0, 2, 8])
 
 	obj1 = Metrics(y_true, y_pred)
-	print(obj1.ci_func(clean=True, decimal=5))
+	print(obj1.confidence_index(clean=True, decimal=5))
 
 	## > 1-D array
 	y_true = array([[0.5, 1], [-1, 1], [7, -6]])
@@ -47,7 +47,7 @@ Example to use: CI function::
 	multi_outputs = [None, "raw_values", [0.3, 1.2], array([0.5, 0.2]), (0.1, 0.9)]
 	obj2 = Metrics(y_true, y_pred)
 	for multi_output in multi_outputs:
-	    print(obj2.ci_func(clean=True, multi_output=multi_output, decimal=5))
+	    print(obj2.confidence_index(clean=True, multi_output=multi_output, decimal=5))
 
 
 .. _Confidence Index: https://www.researchgate.net/publication/319699360_Reference_evapotranspiration_for_Londrina_Parana_Brazil_performance_of_different_estimation_methods
