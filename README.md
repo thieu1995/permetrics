@@ -1,5 +1,5 @@
 # A framework of PERformance METRICS (PerMetrics) for artificial intelligence models
-[![GitHub release](https://img.shields.io/badge/release-1.0.4-yellow.svg)]()
+[![GitHub release](https://img.shields.io/badge/release-1.1.0-yellow.svg)]()
 [![Documentation Status](https://readthedocs.org/projects/permetrics/badge/?version=latest)](https://permetrics.readthedocs.io/en/latest/?badge=latest)
 [![](https://img.shields.io/badge/python-3.7+-orange.svg)](https://www.python.org/downloads/release/python-370/)
 [![Wheel](https://img.shields.io/pypi/wheel/gensim.svg)](https://pypi.python.org/pypi/permetrics) 
@@ -24,40 +24,51 @@
 
 * Metrics
 
-| Problem        | STT | Metric  | Metric Fullname                           | Characteristics                |
-|----------------|-----|---------|-------------------------------------------|--------------------------------|
-| Regression     | 1   | EVS     | Explained Variance Score                  | Larger is better \(Best = 1\)  |
-|                | 2   | ME      | Max Error                                 | Smaller is better \(Best = 0\) |
-|                | 3   | MAE     | Mean Absolute Error                       | Smaller is better \(Best = 0\) |
-|                | 4   | MSE     | Mean Squared Error                        | Smaller is better \(Best = 0\) |
-|                | 5   | RMSE    | Root Mean Squared Error                   | Smaller is better \(Best = 0\) |
-|                | 6   | MSLE    | Mean Squared Log Error                    | Smaller is better \(Best = 0\) |
-|                | 7   | MedAE   | Median Absolute Error                     | Smaller is better \(Best = 0\) |
-|                | 8   | MRE     | Mean Relative Error                       | Smaller is better \(Best = 0\) |
-|                | 9   | MAPE    | Mean Absolute Percentage Error            | Smaller is better \(Best = 0\) |
-|                | 10  | SMAPE   | Symmetric Mean Absolute Percentage Error  | Smaller is better \(Best = 0\) |
-|                | 11  | MAAPE   | Mean Arctangent Absolute Percentage Error | Smaller is better \(Best = 0\) |
-|                | 12  | MASE    | Mean Absolute Scaled Error                | Smaller is better \(Best = 0\) |
-|                | 13  | NSE     | Nash\-Sutcliffe Efficiency Coefficient    | Larger is better \(Best = 1\)  |
-|                | 14  | WI      | Willmott Index                            | Larger is better \(Best = 1\)  |
-|                | 15  | R       | Pearson’s Correlation Index               | Larger is better \(Best = 1\)  |
-|                | 16  | CI      | Confidence Index                          | Larger is better \(Best = 1\)  |
-|                | 17  | R2      | Coefficient of Determination              | Larger is better \(Best = 1\)  |
-|                | 18  | R2s     | \(Pearson’s Correlation Index\) ^ 2       | Larger is better \(Best = 1\)  |
-|                | 19  | DRV     |  Deviation of Runoff Volume               | Smaller is better \(Best = 0\) |
-|                | 20  | KGE     | Kling\-Gupta Efficiency                   | Larger is better \(Best = 1\)  |
-|                | 21  |         |                                           |                                |
-| Single Loss    | 1   | RE      | Relative error                            | Smaller is better \(Best = 0\) |
-|                | 2   | AE      | Absolute error                            | Smaller is better \(Best = 0\) |
-|                | 3   | SE      |  Squared error                            | Smaller is better \(Best = 0\) |
-|                | 4   | SLE     | Squared log error                         | Smaller is better \(Best = 0\) |
-|                | 5   | LL      | Log likelihood                            | Smaller is better \(Best = 0\) |
-|                | 6   |         |                                           |                                |
-| Classification | 1   | MLL     | Mean Log Likelihood                       | Smaller is better \(Best = 0\) |
-|                | 2   |         |                                           |                                |
-| Clustering     | 1   |         |                                           |                                |
-|                | 2   |         |                                           |                                |
-
+| Problem            | STT    |  Metric    | Metric Fullname                            | Characteristics                |
+|----------------	|:---:	|:---------:	|-------------------------------------------	|------------------------------	|
+| Regression        |  1    |    EVS        | Explained Variance Score                    | Larger is better (Best = 1)    |
+|                	|  2    |     ME        | Max Error                                    | Smaller is better (Best = 0)    |
+|                	|  3    |    MAE        | Mean Absolute Error                        | Smaller is better (Best = 0)    |
+|                	|  4    |    MSE        | Mean Squared Error                            | Smaller is better (Best = 0)    |
+|                	|  5    |    RMSE    | Root Mean Squared Error                    | Smaller is better (Best = 0)    |
+|                	|  6    |    MSLE    | Mean Squared Log Error                        | Smaller is better (Best = 0)    |
+|                	|  7    |   MedAE    | Median Absolute Error                        | Smaller is better (Best = 0)    |
+|                	|  8    |    MRE        | Mean Relative Error                        | Smaller is better (Best = 0)    |
+|                	|  9    |    MAPE    | Mean Absolute Percentage Error                | Smaller is better (Best = 0)    |
+|                	|  10    |   SMAPE    | Symmetric Mean Absolute Percentage Error    | Smaller is better (Best = 0)    |
+|                	|  11    |   MAAPE    | Mean Arctangent Absolute Percentage Error    | Smaller is better (Best = 0)    |
+|                	|  12    |    MASE    | Mean Absolute Scaled Error                    | Smaller is better (Best = 0)    |
+|                	|  13    |    NSE        | Nash-Sutcliffe Efficiency Coefficient        | Larger is better (Best = 1)    |
+|                	|  14    |     WI        | Willmott Index                                | Larger is better (Best = 1)    |
+|                	|  15    |     R        | Pearson’s Correlation Index                | Larger is better (Best = 1)    |
+|                	|  16    |     CI        | Confidence Index                            | Larger is better (Best = 1)    |
+|                	|  17    |     R2        | Coefficient of Determination                | Larger is better (Best = 1)    |
+|                	|  18    |    R2s        | (Pearson’s Correlation Index) ^ 2            | Larger is better (Best = 1)    |
+|                	|  19    |    DRV        |  Deviation of Runoff   Volume                | Smaller is better (Best = 0)    |
+|                	|  20    |    KGE        | Kling-Gupta Efficiency                        | Larger is better (Best = 1)    |
+|                	|  21    |    GINI    | Gini Coefficient                            |                              	|
+|                	|  22    | GINI_WIKI    | Gini Coefficient in Wiki                    |                              	|
+|                	|  23    |    PCD        | Prediction of Change in Direction            |                              	|
+|                	|  24    |     E        | Entropy                                    |                              	|
+|                	|  25    |     CE        | Cross Entropy                                |                              	|
+|                	|  26    |    KLD        | Kullback Leibler Divergence                |                              	|
+|                	|  27    |    JSD        | Jensen Shannon Divergence                    |                              	|
+|                	|  28    |    VAF        | Variance Accounted For                        |                              	|
+|                	|  29    |    RAE        | Relative Absolute Error                    |                              	|
+|                	|  30    |    A10        | A10 Index                                    |                              	|
+|                	|  31    |    A20        | A20 Index                                    |                              	|
+|                	|  32    |   NRMSE    | Normalized Root Mean Square Error            |                              	|
+|                	|  33    |           	|                                           	|                              	|
+| Single Loss        |  1    |     RE        | Relative error                                | Smaller is better (Best = 0)    |
+|                	|  2    |     AE        | Absolute error                                | Smaller is better (Best = 0)    |
+|                	|  3    |     SE        |  Squared error                                | Smaller is better (Best = 0)    |
+|                	|  4    |    SLE        | Squared log error                            | Smaller is better (Best = 0)    |
+|                	|  5    |     LL        | Log likelihood                                | Smaller is better (Best = 0)    |
+|                	|  6    |           	|                                           	|                              	|
+| Classification    |  1    |    MLL        | Mean Log Likelihood                        | Smaller is better (Best = 0)    |
+|                	|  2    |           	|                                           	|                              	|
+| Clustering        |  1    |           	|                                           	|                              	|
+|                	|  2    |           	|                                           	|                              	|
 
 ### Dependencies
 * Python (>= 3.6)
@@ -84,26 +95,38 @@ pip install git+https://github.com/thieu1995/permetrics
 ```code 
 * Simple example:
 
-## For example with RMSE:
-
-    from numpy import array
-    from permetrics.regression import Metrics
-    
-    ## For 1-D array
-    y_true = array([3, -0.5, 2, 7])
-    y_pred = array([2.5, 0.0, 2, 8])
-    
-    obj1 = Metrics(y_true, y_pred)
-    print(obj1.rmse_func(clean=True, decimal=5))
-    
-    ## For > 1-D array
-    y_true = array([[0.5, 1], [-1, 1], [7, -6]])
-    y_pred = array([[0, 2], [-1, 2], [8, -5]])
-    
-    multi_outputs = [None, "raw_values", [0.3, 1.2], array([0.5, 0.2]), (0.1, 0.9)]
-    obj2 = Metrics(y_true, y_pred)
-    for multi_output in multi_outputs:
-        print(obj2.rmse_func(clean=False, multi_output=multi_output, decimal=5))
+  ## For example with RMSE:
+  
+  from numpy import array
+  from permetrics.regression import Metrics
+  
+  ## 1-D array
+  y_true = array([3, -0.5, 2, 7])
+  y_pred = array([2.5, 0.0, 2, 8])
+  
+  y_true2 = array([3, -0.5, 2, 7])
+  y_pred2 = array([2.5, 0.0, 2, 9])
+  
+  ### C1. Using OOP style - very powerful when calculating multiple metrics
+  obj1 = Metrics(y_true, y_pred)  # Pass the data here
+  result = obj1.root_mean_squared_error(clean=True, decimal=5)
+  print(f"1-D array, OOP style: {result}")
+  
+  ### C2. Using functional style
+  obj2 = Metrics()
+  result = obj2.root_mean_squared_error(clean=True, decimal=5, y_true=y_true2, y_pred=y_pred2)  
+  # Pass the data here, remember the keywords (y_true, y_pred)
+  print(f"1-D array, Functional style: {result}")
+  
+  ## > 1-D array - Multi-dimensional Array
+  y_true = array([[0.5, 1], [-1, 1], [7, -6]])
+  y_pred = array([[0, 2], [-1, 2], [8, -5]])
+  
+  multi_outputs = [None, "raw_values", [0.3, 1.2], array([0.5, 0.2]), (0.1, 0.9)]
+  obj3 = Metrics(y_true, y_pred)
+  for multi_output in multi_outputs:
+      result = obj3.root_mean_squared_error(clean=False, multi_output=multi_output, decimal=5)
+      print(f"n-D array, OOP style: {result}")
 
 * Or run the simple:
     python examples/RMSE.py

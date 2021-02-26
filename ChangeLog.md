@@ -1,3 +1,28 @@
+# Version 1.1.0
+
+### Change models
+
++ Change class Metrics in regression.py to take both OOP style and Functional style. 
++ Add some new metrics including
+  + 23. PCD: Prediction of Change in Direction
+  + 24. E: Entropy
+  + 25. CE: Cross Entropy
+  + 26. KLD: Kullback Leibler Divergence
+  + 27. JSD: Jensen Shannon Divergence
+  + 28. VAF: Variance Accounted For
+  + 29. RAE: Relative Absolute Error
+  + 30. A10: A10 Index
+  + 31. A20: A20 Index
+  + 32. NRMSE: Normalized root Mean Square Error
+
+### Change others
+
++ Examples:
+  + Update examples of old metrics
+  + Add examples for new metrics
+
+---------------------------------------------------------------------
+
 # Version 1.0.4
 
 ### Change models
