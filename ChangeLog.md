@@ -4,16 +4,16 @@
 
 + Change class Metrics in regression.py to take both OOP style and Functional style. 
 + Add some new metrics including
-  + 23. PCD: Prediction of Change in Direction
-  + 24. E: Entropy
-  + 25. CE: Cross Entropy
-  + 26. KLD: Kullback Leibler Divergence
-  + 27. JSD: Jensen Shannon Divergence
-  + 28. VAF: Variance Accounted For
-  + 29. RAE: Relative Absolute Error
-  + 30. A10: A10 Index
-  + 31. A20: A20 Index
-  + 32. NRMSE: Normalized root Mean Square Error
+23. PCD: Prediction of Change in Direction
+24. E: Entropy
+25. CE: Cross Entropy
+26. KLD: Kullback Leibler Divergence
+27. JSD: Jensen Shannon Divergence
+28. VAF: Variance Accounted For
+29. RAE: Relative Absolute Error
+30. A10: A10 Index
+31. A20: A20 Index
+32. NRMSE: Normalized root Mean Square Error
 
 ### Change others
 
@@ -26,21 +26,21 @@
 # Version 1.0.4
 
 ### Change models
-+ Add methods
-    + 21. Gini coefficient
-        + Based on other code (Mathlab code)
-        + Based on wiki version
-    + 22. Mean Log Likelihood
++ Add some new methods to regression.py
+21. Gini coefficient
+    + Based on other code (Mathlab code)
+    + Based on wiki version
+22. Mean Log Likelihood
     
 + Add new class SingleLoss for numbers-verse-numbers, the output is numbers (not single number as regression.py)
-    + 1. Relative error
-    + 2. Absolute error
-    + 3. Squared error
-    + 4. Squared log error
-    + 5. Log likelihood
+1. Relative error
+2. Absolute error
+3. Squared error
+4. Squared log error
+5. Log likelihood
     
 + Add new class for classification metrics
-    + 1. Mean Log Likelihood
+1. Mean Log Likelihood
     
     
 ### Change others
@@ -53,10 +53,10 @@
 # Version 1.0.2
 
 ### Change models
-+ Add methods
-    + 18. Kling-Gupta Efficiency (KGE)
-    + 19. Deviation of Runoff Volume (DRV)
-    + 20. (Pearson’s Correlation Index)**2 or R2s (or R2)
++ Add some new methods:
+18. Kling-Gupta Efficiency (KGE)
+19. Deviation of Runoff Volume (DRV)
+20. (Pearson’s Correlation Index)**2 or R2s (or R2)
     
 ### Change others
 + Examples: 
