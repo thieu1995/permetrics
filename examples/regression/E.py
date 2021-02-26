@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # ------------------------------------------------------------------------------------------------------%
-# Created by "Thieu Nguyen" at 11:03, 19/07/2020                                                        %
+# Created by "Thieu" at 21:06, 26/02/2021                                                               %
 #                                                                                                       %
 #       Email:      nguyenthieu2102@gmail.com                                                           %
-#       Homepage:   https://www.researchgate.net/profile/Thieu_Nguyen6                                  %
-#       Github:     https://github.com/thieu1995                                                  %
-#-------------------------------------------------------------------------------------------------------%
+#       Homepage:   https://www.researchgate.net/profile/Nguyen_Thieu2                                  %
+#       Github:     https://github.com/thieu1995                                                        %
+# ------------------------------------------------------------------------------------------------------%
 
 from numpy import array
 from permetrics.regression import Metrics
@@ -19,12 +19,12 @@ y_pred2 = array([2.5, 0.0, 2, 9])
 
 ### C1. Using OOP style - very powerful when calculating multiple metrics
 obj1 = Metrics(y_true, y_pred)  # Pass the data here
-result = obj1.willmott_index(clean=True, decimal=5)
+result = obj1.entropy(clean=True, decimal=5)
 print(f"1-D array, OOP style: {result}")
 
 ### C2. Using functional style
 obj2 = Metrics()
-result = obj2.willmott_index(clean=True, decimal=5, y_true=y_true2, y_pred=y_pred2)
+result = obj2.entropy(clean=True, decimal=5, y_true=y_true2, y_pred=y_pred2)
 # Pass the data here, remember the keywords (y_true, y_pred)
 print(f"1-D array, Functional style: {result}")
 
@@ -35,5 +35,5 @@ y_pred = array([[0, 2], [-1, 2], [8, -5]])
 multi_outputs = [None, "raw_values", [0.3, 1.2], array([0.5, 0.2]), (0.1, 0.9)]
 obj3 = Metrics(y_true, y_pred)
 for multi_output in multi_outputs:
-    result = obj3.willmott_index(clean=True, multi_output=multi_output, decimal=5)
+    result = obj3.entropy(clean=True, multi_output=multi_output, decimal=5)
     print(f"n-D array, OOP style: {result}")
