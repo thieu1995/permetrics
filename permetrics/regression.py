@@ -4,7 +4,7 @@
 #                                                                                                       %
 #       Email:      nguyenthieu2102@gmail.com                                                           %
 #       Homepage:   https://www.researchgate.net/profile/Thieu_Nguyen6                                  %
-#       Github:     https://github.com/thieu1995                                                  %
+#       Github:     https://github.com/thieu1995                                                        %
 #-------------------------------------------------------------------------------------------------------%
 
 from numpy import max, round, sqrt, abs, mean, dot, divide, arctan, sum, any, median, log, var, std
@@ -637,24 +637,74 @@ class Metrics:
                 value = sqrt(sum(log((y_pred + 1) / (y_true + 1)) ** 2, axis=0) / len(y_true))
             return self.__multi_output_result__(value, multi_output, decimal)
 
-    def get_metrics_by_name(self, *func_names):
-        temp = []
-        for idx, func_name in enumerate(func_names):
-            obj = getattr(self, func_name)
-            temp.append(obj())
+    def get_metric_by_name(self, func_name:str, paras=None) -> dict:
+        """
+        Parameters
+        ----------
+        func_name : str. For example: "RMSE"
+        paras : dict. For example:
+            Default: Don't specify it. leave it there
+            Else: It has to be a dictionary such as {"decimal": 3, "multi_output": "raw_values", }
+
+        Returns
+        -------
+        dict: { "RMSE": 0.2 }
+        """
+        temp = {}
+        obj = getattr(self, func_name)
+        if paras is None:
+            temp[func_name] = obj()
+        else:
+            temp[func_name] = obj(**paras)
         return temp
 
-    def get_metrics_by_list(self, func_name_list=None, func_para_list=None):
-        temp = []
-        for idx, func_name in enumerate(func_name_list):
+    def get_metrics_by_list_names(self, list_func_names:list, list_paras=None) -> dict:
+        """
+        Parameters
+        ----------
+        func_names : list. For example: ["RMSE", "MAE", "MAPE"]
+        paras : list. For example: [ {"decimal": 5, }, None, { "decimal": 4, "multi_output": "raw_values" } }       # List of dict
+
+        Returns
+        -------
+        dict. For example: { "RMSE": 0.25, "MAE": 0.7, "MAPE": 0.15 }
+        """
+        temp = {}
+        for idx, func_name in enumerate(list_func_names):
             obj = getattr(self, func_name)
-            if func_para_list is None:
-                temp.append(obj())
+            if list_paras is None:
+                temp[func_name] = obj()
             else:
-                if len(func_name_list) != len(func_para_list):
-                    print("Failed! Different length between functions and parameters")
+                if len(list_func_names) != len(list_paras):
+                    print("Failed! Different length between list of functions and list of parameters")
                     exit(0)
-                temp.append(obj(**func_para_list[idx]))
+                if list_paras[idx] is None:
+                    temp[func_name] = obj()
+                else:
+                    temp[func_name] = obj(**list_paras[idx])
+        return temp
+
+    def get_metrics_by_dict(self, metrics_dict:dict) -> dict:
+        """
+        Parameters
+        ----------
+        metrics_dict : dict inside dict, for examples:
+            {
+                "RMSE": { "multi_output": multi_output, "decimal": 4 }
+                "MAE": { "clean": True, "multi_output": multi_output, "decimal": 6 }
+            }
+        Returns
+        -------
+            A dict: For example
+                { "RMSE": 0.3524, "MAE": 0.445263 }
+        """
+        temp = {}
+        for func_name, paras_dict in metrics_dict.items():
+            obj = getattr(self, func_name)
+            if paras_dict is None:
+                temp[func_name] = obj()
+            else:
+                temp[func_name] = obj(**paras_dict)     # Unpacking a dictionary and passing it to function
         return temp
 
     EVS = explained_variance_score

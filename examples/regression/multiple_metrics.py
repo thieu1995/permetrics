@@ -10,21 +10,36 @@
 from numpy import array
 from permetrics.regression import Metrics
 
-## 1-D array
+# 1-D array
 y_true = array([3, -0.5, 2, 7])
 y_pred = array([2.5, 0.0, 2, 8])
 obj1 = Metrics(y_true, y_pred)
 
-## by name will use default parameters of function
-print(obj1.get_metrics_by_name("RMSE", "MAE"))
+## If you care about changing paras, then you need to make a list of paras.
 
-## by list you can change parameters of function
-print(obj1.get_metrics_by_list(["RMSE", "MAE", "MAPE", "SMAPE"]))
+### by name will use default parameters of function
+print(obj1.get_metric_by_name("RMSE"))
+print(obj1.get_metric_by_name("RMSE", {"decimal": 5}))
+
+### by list name you can call multiple metrics at the same time with its parameters dict
+print(obj1.get_metrics_by_list_names(["RMSE", "MAE"]))         # Using default parameters of function
+
+list_metrics = ["RMSE", "MAE", "MAPE"]
+list_parameters = [ {"decimal": 5}, None, {"clean": True, "decimal": 3} ]     # Parameters for single function is a dict
+print(obj1.get_metrics_by_list_names(list_metrics, list_parameters))
+
+### by dict you can change parameters of function in a better way
+metrics_dict = {
+    "RMSE": {"multi_output": "raw_values", "decimal": 4},
+    "MAPE": {"clean": True, "multi_output": "raw_values", "decimal": 6},
+    "R2": {"clean": True, "multi_output": "raw_values", "decimal": 5},
+}
+print(obj1.get_metrics_by_dict(metrics_dict))
 
 
 print("=================================")
 
-## > 1-D array
+# > 1-D array
 y_true = array([[0.5, 1], [-1, 1], [7, -6]])
 y_pred = array([[0, 2], [-1, 2], [8, -5]])
 obj2 = Metrics(y_true, y_pred)
@@ -38,4 +53,9 @@ for multi_output in multi_outputs:
         {"clean": True, "multi_output": multi_output, "decimal": 6},
         {"clean": True, "multi_output": multi_output, "decimal": 5},
     ]
-    print(obj2.get_metrics_by_list(list_funcs, list_paras))
+    print(obj2.get_metrics_by_list_names(list_funcs, list_paras))
+
+
+
+
+
