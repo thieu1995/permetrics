@@ -761,4 +761,3 @@ class Metrics:
     A20 = a20_index
     NRMSE = normalized_root_mean_square_error
     RSE = residual_standard_error
-    R2E
