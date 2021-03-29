@@ -292,18 +292,19 @@ class Metrics:
         """
             Pearson’s Correlation Index (Willmott, 1984): -1 < R < 1. Larger is better
             Reference evapotranspiration for Londrina, Paraná, Brazil: performance of different estimation methods
+            Remember no absolute in the equations
             https://en.wikipedia.org/wiki/Pearson_correlation_coefficient
         """
         y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
         if onedim:
             m1, m2 = mean(y_true), mean(y_pred)
-            temp = sum((abs(y_true - m1) * abs(y_pred - m2))) / (sqrt(sum((y_true - m1) ** 2)) * sqrt(sum((y_pred - m2) ** 2)))
+            temp = sum((y_true - m1) * (y_pred - m2)) / (sqrt(sum((y_true - m1) ** 2)) * sqrt(sum((y_pred - m2) ** 2)))
             return round(temp, decimal)
         else:
             m1, m2 = mean(y_true, axis=0), mean(y_pred, axis=0)
             t1 = sqrt(sum((y_true - m1) ** 2, axis=0))
             t2 = sqrt(sum((y_pred - m2) ** 2, axis=0))
-            t3 = sum((abs(y_true - m1) * abs(y_pred - m2)), axis=0)
+            t3 = sum((y_true - m1) * (y_pred - m2), axis=0)
             temp = t3 / (t1 * t2)
             return self.__multi_output_result__(temp, multi_output, decimal)
 
@@ -760,3 +761,4 @@ class Metrics:
     A20 = a20_index
     NRMSE = normalized_root_mean_square_error
     RSE = residual_standard_error
+    R2E
