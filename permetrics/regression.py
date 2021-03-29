@@ -215,9 +215,10 @@ class Metrics:
         """
         y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
         if onedim:
-            return round(mean(divide(abs(y_true - y_pred), abs(y_true))) * 100, decimal)
+            temp = abs(y_true - y_pred) / abs(y_true)
+            return round(mean(temp), decimal)
         else:
-            temp = mean(divide(abs(y_true - y_pred), abs(y_true)), axis=0) * 100
+            temp = mean( abs(y_true - y_pred) / abs(y_true), axis=0)
             return self.__multi_output_result__(temp, multi_output, decimal)
 
 
@@ -227,9 +228,9 @@ class Metrics:
         """
         y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
         if onedim:
-            return round(mean(2 * abs(y_pred - y_true) / (abs(y_true) + abs(y_pred))) * 100, decimal)
+            return round(mean(2 * abs(y_pred - y_true) / (abs(y_true) + abs(y_pred))), decimal)
         else:
-            temp = mean(2 * abs(y_pred - y_true) / (abs(y_true) + abs(y_pred)), axis=0) * 100
+            temp = mean(2 * abs(y_pred - y_true) / (abs(y_true) + abs(y_pred)), axis=0)
             return self.__multi_output_result__(temp, multi_output, decimal)
 
 
@@ -346,7 +347,7 @@ class Metrics:
             (Pearson’s Correlation Index)^2 = R2
         """
         y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
-        temp = self.coefficient_of_determination(clean, "raw_values", decimal, y_true=y_true, y_pred=y_pred)
+        temp = self.pearson_correlation_index(clean, "raw_values", decimal, y_true=y_true, y_pred=y_pred)
         return self.__multi_output_result__(temp**2, multi_output, decimal)
 
     def deviation_of_runoff_volume(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
@@ -722,9 +723,9 @@ class Metrics:
     NSE = nash_sutcliffe_efficiency_coefficient
     WI = willmott_index
     R = pearson_correlation_index
+    R2s = pearson_correlation_index_square
     CI = confidence_index
     R2 = coefficient_of_determination
-    R2s = pearson_correlation_index_square
     DRV = deviation_of_runoff_volume
     KGE = kling_gupta_efficiency
     GINI = gini_coefficient
