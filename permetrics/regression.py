@@ -638,6 +638,25 @@ class Metrics:
                 value = sqrt(sum(log((y_pred + 1) / (y_true + 1)) ** 2, axis=0) / len(y_true))
             return self.__multi_output_result__(value, multi_output, decimal)
 
+    def residual_standard_error(self, clean=True, multi_output="raw_values", decimal=3, **kwargs):
+        """
+        Residual Standard Error
+        https://www.statology.org/residual-standard-error-r/
+        """
+        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
+        if onedim:
+            x = y_pred
+            y = y_true / y_pred
+            up = (sum((x - mean(x)) * (y - mean(y)))) ** 2
+            down = sum((x - mean(x)) ** 2) * sum((y - mean(y)) ** 2)
+            return round(up/down, decimal)
+        else:
+            x = y_pred
+            y = y_true / y_pred
+            up = (sum((x - mean(x, axis=0)) * (y - mean(y, axis=0)), axis=0)) ** 2
+            down = sum((x - mean(x, axis=0)) ** 2, axis=0) * sum((y - mean(y, axis=0)) ** 2, axis=0)
+            return round(up / down, decimal)
+
     def get_metric_by_name(self, func_name:str, paras=None) -> dict:
         """
         Parameters
@@ -740,3 +759,4 @@ class Metrics:
     A10 = a10_index
     A20 = a20_index
     NRMSE = normalized_root_mean_square_error
+    RSE = residual_standard_error
