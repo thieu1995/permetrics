@@ -58,7 +58,7 @@
 |                	|  30    |    A10        | A10 Index                                    |                              	|
 |                	|  31    |    A20        | A20 Index                                    |                              	|
 |                	|  32    |   NRMSE    | Normalized Root Mean Square Error            |                              	|
-|                	|  33    |           	|                                           	|                              	|
+|                	|  33    |         RSE |        Residual Standard Error            	|                              	|
 | Single Loss        |  1    |     RE        | Relative error                                | Smaller is better (Best = 0)    |
 |                	|  2    |     AE        | Absolute error                                | Smaller is better (Best = 0)    |
 |                	|  3    |     SE        |  Squared error                                | Smaller is better (Best = 0)    |
