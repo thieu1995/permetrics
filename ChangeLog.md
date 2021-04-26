@@ -1,9 +1,13 @@
-# Version 1.1.1
 
-### Change models
+---------------------------------------------------------------------
 
-### Change others
+# Version 1.1.1 / 1.1.2 / 1.1.3 
 
+### Fix bugs
+
++ Fix bugs of R2S, MAPE and some other functions
+
+---------------------------------------------------------------------
 
 # Version 1.1.0
 
@@ -21,6 +25,7 @@
 30. A10: A10 Index
 31. A20: A20 Index
 32. NRMSE: Normalized root Mean Square Error
+33. RSE: Residual Standard Error
 
 ### Change others
 

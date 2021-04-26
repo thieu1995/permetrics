@@ -287,6 +287,20 @@ class Metrics:
             temp = 1 - sum((y_pred - y_true) ** 2, axis=0) / sum((abs(y_pred - m1) + abs(y_true - m1)) ** 2, axis=0)
             return self.__multi_output_result__(temp, multi_output, decimal)
 
+    def coefficient_of_determination(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
+        """
+            R2: Coefficient of Determination - regression score function. Best possible score is 1.0 and it can be negative
+        """
+        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
+        if onedim:
+            t1 = sum((y_true - y_pred) ** 2)
+            t2 = sum((y_true - mean(y_true)) ** 2)
+            return round(1 - t1 / t2, decimal)
+        else:
+            t1 = sum((y_true - y_pred) ** 2, axis=0)
+            t2 = sum((y_true - mean(y_true, axis=0)) ** 2, axis=0)
+            temp = 1 - t1 / t2
+            return self.__multi_output_result__(temp, multi_output, decimal)
 
     def pearson_correlation_index(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
         """
@@ -308,6 +322,15 @@ class Metrics:
             temp = t3 / (t1 * t2)
             return self.__multi_output_result__(temp, multi_output, decimal)
 
+    def pearson_correlation_index_square(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
+        """
+            (Pearson’s Correlation Index)^2 = R2
+        """
+        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
+        temp = self.pearson_correlation_index(clean, "raw_values", decimal, y_true=y_true, y_pred=y_pred)
+        return self.__multi_output_result__(temp ** 2, multi_output, decimal)
+
+
 
     def confidence_index(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
         """
@@ -326,30 +349,6 @@ class Metrics:
         r = self.pearson_correlation_index(clean=clean, multi_output="raw_values", decimal=decimal, y_true=y_true, y_pred=y_pred)
         d = self.willmott_index(clean=clean, multi_output="raw_values", decimal=decimal, y_true=y_true, y_pred=y_pred)
         return self.__multi_output_result__(r * d, multi_output, decimal)
-
-
-    def coefficient_of_determination(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
-        """
-            R2: Coefficient of Determination - regression score function. Best possible score is 1.0 and it can be negative
-        """
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
-        if onedim:
-            t1 = sum((y_true - y_pred)**2)
-            t2 = sum((y_true - mean(y_true))**2)
-            return round(1 - t1/t2, decimal)
-        else:
-            t1 = sum((y_true - y_pred) ** 2, axis=0)
-            t2 = sum((y_true - mean(y_true, axis=0)) ** 2, axis=0)
-            temp = 1 - t1 / t2
-            return self.__multi_output_result__(temp, multi_output, decimal)
-
-    def pearson_correlation_index_square(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
-        """
-            (Pearson’s Correlation Index)^2 = R2
-        """
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
-        temp = self.pearson_correlation_index(clean, "raw_values", decimal, y_true=y_true, y_pred=y_pred)
-        return self.__multi_output_result__(temp**2, multi_output, decimal)
 
     def deviation_of_runoff_volume(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
         """
@@ -728,36 +727,36 @@ class Metrics:
                 temp[func_name] = obj(**paras_dict)     # Unpacking a dictionary and passing it to function
         return temp
 
-    EVS = explained_variance_score
-    ME = max_error
-    MAE = mean_absolute_error
-    MSE = mean_squared_error
-    RMSE = root_mean_squared_error
-    MSLE = mean_squared_log_error
-    MedAE = median_absolute_error
-    MRE = mean_relative_error
-    MAPE = mean_absolute_percentage_error
-    SMAPE = symmetric_mean_absolute_percentage_error
-    MAAPE = mean_arctangent_absolute_percentage_error
-    MASE = mean_absolute_scaled_error
-    NSE = nash_sutcliffe_efficiency_coefficient
-    WI = willmott_index
-    R = pearson_correlation_index
-    R2s = pearson_correlation_index_square
-    CI = confidence_index
-    R2 = coefficient_of_determination
-    DRV = deviation_of_runoff_volume
-    KGE = kling_gupta_efficiency
-    GINI = gini_coefficient
-    GINI_WIKI = gini_coefficient_wiki
-    PCD = prediction_of_change_in_direction
-    E = entropy
-    CE = cross_entropy
-    KLD = kullback_leibler_divergence
-    JSD = jensen_shannon_divergence
-    VAF = variance_accounted_for
-    RAE = relative_absolute_error
-    A10 = a10_index
-    A20 = a20_index
-    NRMSE = normalized_root_mean_square_error
-    RSE = residual_standard_error
+    EVS = evs = explained_variance_score
+    ME = me = max_error
+    MAE = mae = mean_absolute_error
+    MSE = mse = mean_squared_error
+    RMSE = rmse = root_mean_squared_error
+    MSLE = msle = mean_squared_log_error
+    MedAE = medae = median_absolute_error
+    MRE = mre = mean_relative_error
+    MAPE = mape = mean_absolute_percentage_error
+    SMAPE = smape = symmetric_mean_absolute_percentage_error
+    MAAPE = maape = mean_arctangent_absolute_percentage_error
+    MASE = mase = mean_absolute_scaled_error
+    NSE = nse = nash_sutcliffe_efficiency_coefficient
+    WI = wi = willmott_index
+    R = r = pearson_correlation_index
+    R2s = r2s = pearson_correlation_index_square
+    CI = ci = confidence_index
+    R2 = r2 = coefficient_of_determination
+    DRV = drv = deviation_of_runoff_volume
+    KGE = kge = kling_gupta_efficiency
+    GINI = gini = gini_coefficient
+    GINI_WIKI = gini_wiki = gini_coefficient_wiki
+    PCD = pcd = prediction_of_change_in_direction
+    E = e = entropy
+    CE = ce = cross_entropy
+    KLD = kld = kullback_leibler_divergence
+    JSD = jsd = jensen_shannon_divergence
+    VAF = vaf = variance_accounted_for
+    RAE = rae = relative_absolute_error
+    A10 = a10 = a10_index
+    A20 = a20 = a20_index
+    NRMSE = nrmse = normalized_root_mean_square_error
+    RSE = rse = residual_standard_error

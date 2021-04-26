@@ -87,3 +87,5 @@ class Metrics:
         else:
             score = -(y_true * log(y_pred) + (1 - y_true) * log(1 - y_pred))
             return self.__multi_output_result__(mean(score, axis=0), multi_output, decimal)
+
+    MLL = mll = mll_func

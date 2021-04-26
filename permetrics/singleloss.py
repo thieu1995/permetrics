@@ -113,9 +113,9 @@ class Metrics:
         score = -(y_true * log(y_pred) + (1 - y_true) * log(1 - y_pred))
         return round(score, decimal)
 
-    RE = re_func
-    AE = ae_func
-    SE = se_func
-    SLE = sle_func
-    LL = ll_func
+    RE = re = re_func
+    AE = ae = ae_func
+    SE = se = se_func
+    SLE = sle = sle_func
+    LL = ll = ll_func
 

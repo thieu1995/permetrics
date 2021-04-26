@@ -37,3 +37,14 @@ obj3 = Metrics(y_true, y_pred)
 for multi_output in multi_outputs:
     result = obj3.pearson_correlation_index_square(clean=True, multi_output=multi_output, decimal=5)
     print(f"n-D array, OOP style: {result}")
+
+#####
+
+
+y_true2 = array([2, 3, 9, 1, 8, 7, 5])
+y_pred2 = array([6, 5, 11, 7, 5, 4, 4])
+
+### C1. Using OOP style - very powerful when calculating multiple metrics
+obj1 = Metrics(y_true2, y_pred2)  # Pass the data here
+result = obj1.pearson_correlation_index_square(clean=True, decimal=5)
+print(f"1-D array, OOP style: {result}")
