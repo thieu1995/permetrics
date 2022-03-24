@@ -449,18 +449,29 @@ class RegressionMetric:
             result = np.mean(np.abs(y_true - y_pred), axis=0) / np.mean(np.abs(y_true[m:] - y_true[:-m]), axis=0)
             return self.__multi_output_result(result, multi_output, decimal)
 
+    def nash_sutcliffe_efficiency(self, y_true=None, y_pred=None, m=1, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
+        """
+        Nash-Sutcliffe Efficiency (NSE): Best possible score is 1.0, bigger value is better. Range = (-inf, 1]
+        Link:
+            + https://agrimetsoft.com/calculators/Nash%20Sutcliffe%20model%20Efficiency%20coefficient
 
-    def nash_sutcliffe_efficiency_coefficient(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
+            positive_only (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): NSE metric for single column or multiple columns (radian values)
         """
-            Nash-Sutcliffe Efficiency Coefficient (-unlimited < NSE < 1.   Larger is better)
-            https://agrimetsoft.com/calculators/Nash%20Sutcliffe%20model%20Efficiency%20coefficient
-        """
-        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
-        if onedim:
-            return round(1 - sum((y_true - y_pred) ** 2) / sum((y_true - mean(y_true)) ** 2), decimal)
+        y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
+        if one_dim:
+            return np.round(1 - np.sum((y_true - y_pred) ** 2) / np.sum((y_true - np.mean(y_true)) ** 2), decimal)
         else:
-            temp = 1 - sum((y_true - y_pred) ** 2, axis=0) / sum((y_true - mean(y_true, axis=0)) ** 2, axis=0)
-            return self.__multi_output_result(temp, multi_output, decimal)
+            result = 1 - np.sum((y_true - y_pred) ** 2, axis=0) / np.sum((y_true - np.mean(y_true, axis=0)) ** 2, axis=0)
+            return self.__multi_output_result(result, multi_output, decimal)
 
     def willmott_index(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
         """
@@ -929,7 +940,7 @@ class RegressionMetric:
     SMAPE = smape = symmetric_mean_absolute_percentage_error
     MAAPE = maape = mean_arctangent_absolute_percentage_error
     MASE = mase = mean_absolute_scaled_error
-    NSE = nse = nash_sutcliffe_efficiency_coefficient
+    NSE = nse = nash_sutcliffe_efficiency
     WI = wi = willmott_index
     R = r = pearson_correlation_index
     R2s = r2s = pearson_correlation_index_square
