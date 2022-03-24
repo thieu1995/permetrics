@@ -962,20 +962,36 @@ class RegressionMetric:
             result = (1 - (y_true - y_pred).var(axis=0) / y_true.var(axis=0)) * 100
             return self.__multi_output_result(result, multi_output, decimal)
 
-    def relative_absolute_error(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
+    def relative_absolute_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
-        Relative Absolute Error
-        https://stackoverflow.com/questions/59499222/how-to-make-a-function-of-mae-and-rae-without-using-librarymetrics
+        Relative Absolute Error (RAE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
+
+        Notes
+        ~~~~~
+            + https://stackoverflow.com/questions/59499222/how-to-make-a-function-of-mae-and-rae-without-using-librarymetrics
+            + https://www.statisticshowto.com/relative-absolute-error
+
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
+            positive_only (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): RAE metric for single column or multiple columns
         """
-        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
-        if onedim:
-            mean_true = mean(y_true)
-            rae = sum(abs(y_true - y_pred)) / sum(abs(y_true - mean_true))
-            return round(rae, decimal)
+        y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
+
+        if one_dim:
+            numerator = np.power(np.sum((y_pred - y_true)**2), 1/2)
+            denominator = np.power(np.sum(y_true**2), 1/2)
+            return np.round(numerator/denominator, decimal)
         else:
-            mean_true = mean(y_true, axis=0)
-            rae = sum(abs(y_true - y_pred), axis=0) / sum(abs(y_true - mean_true), axis=0)
-            return self.__multi_output_result(rae, multi_output, decimal)
+            numerator = np.power(np.sum((y_pred - y_true) ** 2, axis=0), 1 / 2)
+            denominator = np.power(np.sum(y_true ** 2, axis=0), 1 / 2)
+            return self.__multi_output_result(numerator/denominator, multi_output, decimal)
 
     def a10_index(self, clean=True, multi_output="raw_values", decimal=3, **kwargs):
         y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
