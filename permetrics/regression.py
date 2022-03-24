@@ -611,17 +611,30 @@ class RegressionMetric:
         d = self.willmott_index(y_true, y_pred, multi_output, decimal, clean, positive_only)
         return np.round(r * d, decimal)
 
-    def deviation_of_runoff_volume(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
+    def deviation_of_runoff_volume(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
-            Deviation of Runoff Volume (DRV)
-            https://rstudio-pubs-static.s3.amazonaws.com/433152_56d00c1e29724829bad5fc4fd8c8ebff.html
+        Deviation of Runoff Volume (DRV): Best possible score is 0, smaller value is better. Range = (-inf, +inf)
+        Notes
+        ~~~~~
+            + https://rstudio-pubs-static.s3.amazonaws.com/433152_56d00c1e29724829bad5fc4fd8c8ebff.html
+
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
+            positive_only (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): DRV metric for single column or multiple columns
         """
-        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
-        if onedim:
-            return round(sum(y_pred)/sum(y_true), decimal)
+        y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
+        if one_dim:
+            return np.round(np.sum(y_pred) / np.sum(y_true), decimal)
         else:
-            temp = sum(y_pred, axis=0) / sum(y_true, axis=0)
-            return self.__multi_output_result(temp, multi_output, decimal)
+            result = np.sum(y_pred, axis=0) / np.sum(y_true, axis=0)
+            return self.__multi_output_result(result, multi_output, decimal)
 
     def kling_gupta_efficiency(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
         """
