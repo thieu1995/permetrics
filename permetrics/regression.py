@@ -476,7 +476,8 @@ class RegressionMetric:
     def willmott_index(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
         Willmott Index (WI): Best possible score is 1.0, bigger value is better. Range = [0, 1]
-        Link:
+        Notes
+        ~~~~~
             + Reference evapotranspiration for Londrina, Paraná, Brazil: performance of different estimation methods
             + https://www.researchgate.net/publication/319699360_Reference_evapotranspiration_for_Londrina_Parana_Brazil_performance_of_different_estimation_methods
 
@@ -500,20 +501,31 @@ class RegressionMetric:
             result = 1 - np.sum((y_pred - y_true) ** 2, axis=0) / np.sum((np.abs(y_pred - m1) + np.abs(y_true - m1)) ** 2, axis=0)
             return self.__multi_output_result(result, multi_output, decimal)
 
-    def coefficient_of_determination(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
+    def coefficient_of_determination(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
-            R2: Coefficient of Determination - regression score function. Best possible score is 1.0 and it can be negative
+        Coefficient of Determination (R2): Best possible score is 1.0, bigger value is better. Range = (-inf, 1]
+        Notes
+        ~~~~~
+            + https://scikit-learn.org/stable/modules/model_evaluation.html#r2-score
+            + This is not R^2 (or R*R), and should be denoted as R2, not like above scikit-learn website.
+
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
+            positive_only (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): R2 metric for single column or multiple columns
         """
-        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
-        if onedim:
-            t1 = sum((y_true - y_pred) ** 2)
-            t2 = sum((y_true - mean(y_true)) ** 2)
-            return round(1 - t1 / t2, decimal)
+        y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
+        if one_dim:
+            return np.round(1 - np.sum((y_true - y_pred) ** 2) / np.sum((y_true - np.mean(y_true)) ** 2), decimal)
         else:
-            t1 = sum((y_true - y_pred) ** 2, axis=0)
-            t2 = sum((y_true - mean(y_true, axis=0)) ** 2, axis=0)
-            temp = 1 - t1 / t2
-            return self.__multi_output_result(temp, multi_output, decimal)
+            result = 1 - np.sum((y_true - y_pred) ** 2, axis=0) / np.sum((y_true - np.mean(y_true, axis=0)) ** 2, axis=0)
+            return self.__multi_output_result(result, multi_output, decimal)
 
     def pearson_correlation_index(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
         """
