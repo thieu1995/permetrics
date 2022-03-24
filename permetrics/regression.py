@@ -378,7 +378,9 @@ class RegressionMetric:
 
     def symmetric_mean_absolute_percentage_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=True, positive_only=False):
         """
-        Mean Absolute Percentage Error (MAPE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
+        Symmetric Mean Absolute Percentage Error (SMAPE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
+        Link:
+            + https://en.wikipedia.org/wiki/Symmetric_mean_absolute_percentage_error
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
@@ -389,32 +391,38 @@ class RegressionMetric:
             positive_only (bool): Calculate metric based on positive values only or not (Optional, default = False)
 
         Returns:
-            result (float, int, np.ndarray): MAPE metric for single column or multiple columns
+            result (float, int, np.ndarray): SMAPE metric for single column or multiple columns
         """
-
-        """
-            Symmetric Mean Absolute Percentage Error: Good if mape < 20%. Smaller is better
-        """
-        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
-        if onedim:
-            return round(mean(2 * abs(y_pred - y_true) / (abs(y_true) + abs(y_pred))), decimal)
+        y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
+        if one_dim:
+            return np.round(np.mean(2 * np.abs(y_pred - y_true) / (np.abs(y_true) + np.abs(y_pred))), decimal)
         else:
-            temp = mean(2 * abs(y_pred - y_true) / (abs(y_true) + abs(y_pred)), axis=0)
-            return self.__multi_output_result(temp, multi_output, decimal)
+            result = np.mean(2 * np.abs(y_pred - y_true) / (np.abs(y_true) + np.abs(y_pred)), axis=0)
+            return self.__multi_output_result(result, multi_output, decimal)
 
+    def mean_arctangent_absolute_percentage_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
+        """
+        Mean Arctangent Absolute Percentage Error (MAAPE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
+        Link:
+            + https://support.numxl.com/hc/en-us/articles/115001223463-MAAPE-Mean-Arctangent-Absolute-Percentage-Error
 
-    def mean_arctangent_absolute_percentage_error(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
+            positive_only (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): MAAPE metric for single column or multiple columns (radian values)
         """
-            Mean Arctangent Absolute Percentage Error (output: radian values)
-            https://support.numxl.com/hc/en-us/articles/115001223463-MAAPE-Mean-Arctangent-Absolute-Percentage-Error
-        """
-        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
-        if onedim:
-            return round(mean(arctan(divide(abs(y_true - y_pred), y_true))), decimal)
+        y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
+        if one_dim:
+            return np.round(np.mean(np.arctan(np.abs((y_true - y_pred)/y_true))), decimal)
         else:
-            temp = mean(arctan(divide(abs(y_true - y_pred), y_true)), axis=0)
-            return self.__multi_output_result(temp, multi_output, decimal)
-
+            result = np.mean(np.arctan(np.abs((y_true - y_pred)/y_true)), axis=0)
+            return self.__multi_output_result(result, multi_output, decimal)
 
     def mean_absolute_scaled_error(self, m=1, clean=True, multi_output="raw_values", decimal=3, **kwargs):
         """
