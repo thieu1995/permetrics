@@ -636,23 +636,35 @@ class RegressionMetric:
             result = np.sum(y_pred, axis=0) / np.sum(y_true, axis=0)
             return self.__multi_output_result(result, multi_output, decimal)
 
-    def kling_gupta_efficiency(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
+    def kling_gupta_efficiency(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
-            Kling-Gupta Efficiency (KGE)
-            https://rstudio-pubs-static.s3.amazonaws.com/433152_56d00c1e29724829bad5fc4fd8c8ebff.html
+        Kling-Gupta Efficiency (KGE): Best possible score is 1, bigger value is better. Range = [0, 1]
+        Notes
+        ~~~~~
+            + https://rstudio-pubs-static.s3.amazonaws.com/433152_56d00c1e29724829bad5fc4fd8c8ebff.html
+
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
+            positive_only (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): KGE metric for single column or multiple columns
         """
-        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
-        r = self.pearson_correlation_coefficient(clean, multi_output, decimal, y_true=y_true, y_pred=y_pred)
-        if onedim:
-            beta = mean(y_pred)/mean(y_true)
-            gamma = (std(y_pred)/mean(y_pred))/(std(y_true)/mean(y_true))
-            out = 1 - sqrt((r-1)**2 + (beta-1)**2 + (gamma-1)**2)
-            return round(out, decimal)
+        y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
+        r = self.pearson_correlation_coefficient(y_true, y_pred, multi_output, decimal, clean, positive_only)
+        if one_dim:
+            beta = np.mean(y_pred) / np.mean(y_true)
+            gamma = (np.std(y_pred) / np.mean(y_pred)) / (np.std(y_true) / np.mean(y_true))
+            return np.round(1 - np.sqrt((r - 1) ** 2 + (beta - 1) ** 2 + (gamma - 1) ** 2), decimal)
         else:
-            beta = mean(y_pred, axis=0) / mean(y_true, axis=0)
-            gamma = (std(y_pred, axis=0) / mean(y_pred, axis=0)) / (std(y_true, axis=0) / mean(y_true, axis=0))
-            out = 1 - sqrt((r - 1) ** 2 + (beta - 1) ** 2 + (gamma - 1) ** 2)
-            return self.__multi_output_result(out, multi_output, decimal)
+            beta = np.mean(y_pred, axis=0) / np.mean(y_true, axis=0)
+            gamma = (np.std(y_pred, axis=0) / np.mean(y_pred, axis=0)) / (np.std(y_true, axis=0) / np.mean(y_true, axis=0))
+            result = 1 - np.sqrt((r - 1) ** 2 + (beta - 1) ** 2 + (gamma - 1) ** 2)
+            return self.__multi_output_result(result, multi_output, decimal)
 
     def gini_coefficient(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
         """
