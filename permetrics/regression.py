@@ -1058,7 +1058,7 @@ class RegressionMetric:
 
     def normalized_root_mean_square_error(self, y_true=None, y_pred=None, model=0, multi_output="raw_values", decimal=None, clean=True, positive_only=False):
         """
-        Normalized Root Mean Square Error (NRMSE): Best possible score is 1.0, bigger value is better. Range = [0, 1]
+        Normalized Root Mean Square Error (NRMSE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
         Notes
         ~~~~~
@@ -1099,24 +1099,37 @@ class RegressionMetric:
                 result = rmse / y_pred.std(axis=0)
             return self.__multi_output_result(result, multi_output, decimal)
 
-    def residual_standard_error(self, clean=True, multi_output="raw_values", decimal=3, **kwargs):
+    def residual_standard_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=True, positive_only=False):
         """
-        Residual Standard Error
-        https://www.statology.org/residual-standard-error-r/
+        Residual Standard Error (RSE): Best possible score is 1.0, bigger value is better. Range = [0, 1]
+
+        Notes
+        ~~~~~
+            + https://www.statology.org/residual-standard-error-r/
+
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = True)
+            positive_only (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): RSE metric for single column or multiple columns
         """
-        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
-        if onedim:
-            x = y_pred
-            y = y_true / y_pred
-            up = (sum((x - mean(x)) * (y - mean(y)))) ** 2
-            down = sum((x - mean(x)) ** 2) * sum((y - mean(y)) ** 2)
-            return round(up/down, decimal)
+        y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
+
+        if one_dim:
+            y_temp = y_true / y_pred
+            up = (np.sum((y_pred - np.mean(y_pred)) * (y_temp - np.mean(y_temp)))) ** 2
+            down = np.sum((y_pred - np.mean(y_pred)) ** 2) * sum((y_temp - np.mean(y_temp)) ** 2)
+            return np.round(up / down, decimal)
         else:
-            x = y_pred
-            y = y_true / y_pred
-            up = (sum((x - mean(x, axis=0)) * (y - mean(y, axis=0)), axis=0)) ** 2
-            down = sum((x - mean(x, axis=0)) ** 2, axis=0) * sum((y - mean(y, axis=0)) ** 2, axis=0)
-            return round(up / down, decimal)
+            y_temp = y_true / y_pred
+            up = (np.sum((y_pred - np.mean(y_pred, axis=0)) * (y_temp - np.mean(y_temp, axis=0)), axis=0)) ** 2
+            down = np.sum((y_pred - np.mean(y_pred, axis=0)) ** 2, axis=0) * np.sum((y_temp - np.mean(y_temp, axis=0)) ** 2, axis=0)
+            return self.__multi_output_result(up/down, multi_output, decimal)
 
     def get_metric_by_name(self, func_name:str, paras=None) -> dict:
         """
