@@ -440,7 +440,7 @@ class RegressionMetric:
             positive_only (bool): Calculate metric based on positive values only or not (Optional, default = False)
 
         Returns:
-            result (float, int, np.ndarray): MASE metric for single column or multiple columns (radian values)
+            result (float, int, np.ndarray): MASE metric for single column or multiple columns
         """
         y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
         if one_dim:
@@ -449,7 +449,7 @@ class RegressionMetric:
             result = np.mean(np.abs(y_true - y_pred), axis=0) / np.mean(np.abs(y_true[m:] - y_true[:-m]), axis=0)
             return self.__multi_output_result(result, multi_output, decimal)
 
-    def nash_sutcliffe_efficiency(self, y_true=None, y_pred=None, m=1, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
+    def nash_sutcliffe_efficiency(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
         Nash-Sutcliffe Efficiency (NSE): Best possible score is 1.0, bigger value is better. Range = (-inf, 1]
         Link:
@@ -464,7 +464,7 @@ class RegressionMetric:
             positive_only (bool): Calculate metric based on positive values only or not (Optional, default = False)
 
         Returns:
-            result (float, int, np.ndarray): NSE metric for single column or multiple columns (radian values)
+            result (float, int, np.ndarray): NSE metric for single column or multiple columns
         """
         y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
         if one_dim:
@@ -473,20 +473,32 @@ class RegressionMetric:
             result = 1 - np.sum((y_true - y_pred) ** 2, axis=0) / np.sum((y_true - np.mean(y_true, axis=0)) ** 2, axis=0)
             return self.__multi_output_result(result, multi_output, decimal)
 
-    def willmott_index(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
+    def willmott_index(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
-            Willmott Index (Willmott, 1984, 0 < WI < 1. Larger is better)
-            Reference evapotranspiration for Londrina, Paraná, Brazil: performance of different estimation methods
-        https://www.researchgate.net/publication/319699360_Reference_evapotranspiration_for_Londrina_Parana_Brazil_performance_of_different_estimation_methods
+        Willmott Index (WI): Best possible score is 1.0, bigger value is better. Range = [0, 1]
+        Link:
+            + Reference evapotranspiration for Londrina, Paraná, Brazil: performance of different estimation methods
+            + https://www.researchgate.net/publication/319699360_Reference_evapotranspiration_for_Londrina_Parana_Brazil_performance_of_different_estimation_methods
+
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
+            positive_only (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): WI metric for single column or multiple columns
         """
-        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
-        if onedim:
-            m1 = mean(y_true)
-            return round(1 - sum((y_pred - y_true) ** 2) / sum((abs(y_pred - m1) + abs(y_true - m1)) ** 2), decimal)
+        y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
+        if one_dim:
+            m1 = np.mean(y_true)
+            return np.round(1 - np.sum((y_pred - y_true) ** 2) / np.sum((np.abs(y_pred - m1) + np.abs(y_true - m1)) ** 2), decimal)
         else:
-            m1 = mean(y_true, axis=0)
-            temp = 1 - sum((y_pred - y_true) ** 2, axis=0) / sum((abs(y_pred - m1) + abs(y_true - m1)) ** 2, axis=0)
-            return self.__multi_output_result(temp, multi_output, decimal)
+            m1 = np.mean(y_true, axis=0)
+            result = 1 - np.sum((y_pred - y_true) ** 2, axis=0) / np.sum((np.abs(y_pred - m1) + np.abs(y_true - m1)) ** 2, axis=0)
+            return self.__multi_output_result(result, multi_output, decimal)
 
     def coefficient_of_determination(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
         """
