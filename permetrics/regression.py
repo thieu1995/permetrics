@@ -756,20 +756,31 @@ class RegressionMetric:
             result = score / (2 * len(y) ** 2 * np.mean(y, axis=0))
             return self.__multi_output_result(result, multi_output, decimal)
 
-    def prediction_of_change_in_direction(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
+    def prediction_of_change_in_direction(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
-            Prediction of change in direction
+        Prediction of Change in Direction (PCD): Best possible score is , bigger value is . Range =
+
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
+            positive_only (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): PCD metric for single column or multiple columns
         """
-        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
-        if onedim:
-            d = diff(y_true)
-            dp = diff(y_pred)
-            return round(mean(sign(d) == sign(dp)), decimal)
+        y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
+        if one_dim:
+            d = np.diff(y_true)
+            dp = np.diff(y_pred)
+            return np.round(np.mean(np.sign(d) == np.sign(dp)), decimal)
         else:
-            d = diff(y_true, axis=0)
-            dp = diff(y_pred, axis=0)
-            score = mean(sign(d) == sign(dp), axis=0)
-            return self.__multi_output_result(score, multi_output, decimal)
+            d = np.diff(y_true, axis=0)
+            dp = np.diff(y_pred, axis=0)
+            result = np.mean(np.sign(d) == np.sign(dp), axis=0)
+            return self.__multi_output_result(result, multi_output, decimal)
 
     def entropy(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
         """
