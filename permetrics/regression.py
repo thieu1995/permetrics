@@ -527,35 +527,60 @@ class RegressionMetric:
             result = 1 - np.sum((y_true - y_pred) ** 2, axis=0) / np.sum((y_true - np.mean(y_true, axis=0)) ** 2, axis=0)
             return self.__multi_output_result(result, multi_output, decimal)
 
-    def pearson_correlation_index(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
+    def pearson_correlation_coefficient(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
-            Pearson’s Correlation Index (Willmott, 1984): -1 < R < 1. Larger is better
-            Reference evapotranspiration for Londrina, Paraná, Brazil: performance of different estimation methods
-            Remember no absolute in the equations
-            https://en.wikipedia.org/wiki/Pearson_correlation_coefficient
+        Pearson’s Correlation Coefficient (PCC or R): Best possible score is 1.0, bigger value is better. Range = [-1, 1]
+        Notes
+        ~~~~~
+            + Reference evapotranspiration for Londrina, Paraná, Brazil: performance of different estimation methods
+            + Remember no absolute in the equations
+            + https://en.wikipedia.org/wiki/Pearson_correlation_coefficient
+
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
+            positive_only (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): R metric for single column or multiple columns
         """
-        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
-        if onedim:
-            m1, m2 = mean(y_true), mean(y_pred)
-            temp = sum((y_true - m1) * (y_pred - m2)) / (sqrt(sum((y_true - m1) ** 2)) * sqrt(sum((y_pred - m2) ** 2)))
-            return round(temp, decimal)
+        y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
+        if one_dim:
+            m1, m2 = np.mean(y_true), np.mean(y_pred)
+            return np.round(np.sum((y_true - m1) * (y_pred - m2)) / (np.sqrt(np.sum((y_true - np.m1) ** 2)) * np.sqrt(np.sum((y_pred - m2) ** 2))), decimal)
         else:
-            m1, m2 = mean(y_true, axis=0), mean(y_pred, axis=0)
-            t1 = sqrt(sum((y_true - m1) ** 2, axis=0))
-            t2 = sqrt(sum((y_pred - m2) ** 2, axis=0))
-            t3 = sum((y_true - m1) * (y_pred - m2), axis=0)
-            temp = t3 / (t1 * t2)
-            return self.__multi_output_result(temp, multi_output, decimal)
+            m1, m2 = np.mean(y_true, axis=0), np.mean(y_pred, axis=0)
+            numerator = np.sum((y_true - m1) * (y_pred - m2), axis=0)
+            denominator = np.sqrt(np.sum((y_true - m1) ** 2, axis=0)) * np.sqrt(np.sum((y_pred - m2) ** 2, axis=0))
+            return self.__multi_output_result(numerator / denominator, multi_output, decimal)
 
-    def pearson_correlation_index_square(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
+    def pearson_correlation_coefficient_square(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
-            (Pearson’s Correlation Index)^2 = R2
+        (Pearson’s Correlation Index)^2 = R^2 = R2s (R square): Best possible score is 1.0, bigger value is better. Range = [0, 1]
+        Notes
+        ~~~~~
+            + Do not misunderstand between R2s and R2 (Coefficient of Determination), they are different
+            + Most of online tutorials (article, wikipedia,...) or even scikit-learn library are denoted the wrong R2s and R2.
+            + R^2 = R2s = R squared should be (Pearson’s Correlation Index)^2
+            + Meanwhile, R2 = Coefficient of Determination
+            + https://en.wikipedia.org/wiki/Pearson_correlation_coefficient
+
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
+            positive_only (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): R2s metric for single column or multiple columns
         """
-        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
-        temp = self.pearson_correlation_index(clean, "raw_values", decimal, y_true=y_true, y_pred=y_pred)
-        return self.__multi_output_result(temp ** 2, multi_output, decimal)
-
-
+        result = self.pearson_correlation_coefficient(y_true, y_pred, multi_output, decimal, clean, positive_only)
+        return result ** 2
 
     def confidence_index(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
         """
@@ -571,7 +596,7 @@ class RegressionMetric:
             ≤ 0.40          Very bad
         """
         y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
-        r = self.pearson_correlation_index(clean=clean, multi_output="raw_values", decimal=decimal, y_true=y_true, y_pred=y_pred)
+        r = self.pearson_correlation_coefficient(clean=clean, multi_output="raw_values", decimal=decimal, y_true=y_true, y_pred=y_pred)
         d = self.willmott_index(clean=clean, multi_output="raw_values", decimal=decimal, y_true=y_true, y_pred=y_pred)
         return self.__multi_output_result(r * d, multi_output, decimal)
 
@@ -593,7 +618,7 @@ class RegressionMetric:
             https://rstudio-pubs-static.s3.amazonaws.com/433152_56d00c1e29724829bad5fc4fd8c8ebff.html
         """
         y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
-        r = self.pearson_correlation_index(clean, multi_output, decimal, y_true=y_true, y_pred=y_pred)
+        r = self.pearson_correlation_coefficient(clean, multi_output, decimal, y_true=y_true, y_pred=y_pred)
         if onedim:
             beta = mean(y_pred)/mean(y_true)
             gamma = (std(y_pred)/mean(y_pred))/(std(y_true)/mean(y_true))
@@ -966,8 +991,8 @@ class RegressionMetric:
     MASE = mase = mean_absolute_scaled_error
     NSE = nse = nash_sutcliffe_efficiency
     WI = wi = willmott_index
-    R = r = pearson_correlation_index
-    R2s = r2s = pearson_correlation_index_square
+    R = r = pearson_correlation_coefficient
+    R2s = r2s = pearson_correlation_coefficient_square
     CI = ci = confidence_index
     R2 = r2 = coefficient_of_determination
     DRV = drv = deviation_of_runoff_volume
