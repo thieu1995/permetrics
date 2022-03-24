@@ -1,11 +1,8 @@
-#!/usr/bin/env python
-# ------------------------------------------------------------------------------------------------------%
-# Created by "Thieu Nguyen" at 18:07, 18/07/2020                                                        %
-#                                                                                                       %
-#       Email:      nguyenthieu2102@gmail.com                                                           %
-#       Homepage:   https://www.researchgate.net/profile/Thieu_Nguyen6                                  %
-#       Github:     https://github.com/thieu1995                                                        %
-#-------------------------------------------------------------------------------------------------------%
+# !/usr/bin/env python
+# Created by "Thieu" at 18:07, 18/07/2020 ----------%
+#       Email: nguyenthieu2102@gmail.com            %
+#       Github: https://github.com/thieu1995        %
+# --------------------------------------------------%
 
 # from numpy import max, round, sqrt, abs, mean, dot, divide, arctan, sum, any, median, log, var, std
 # from numpy import ndarray, array, isfinite, isnan, argsort, zeros, concatenate, diff, sign
@@ -850,9 +847,9 @@ class RegressionMetric:
                 score.append(self.entropy(f_true, f_pred, multi_output, decimal, clean=True, positive_only=True))
             return self.__multi_output_result(score, multi_output, decimal)
 
-    def kullback_leibler_divergence(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
+    def kullback_leibler_divergence(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=True, positive_only=True):
         """
-        Kullback-Leibler Divergence (KLD): Best possible score is 0.0, smaller value is better . Range = [0, 1]
+        Kullback-Leibler Divergence (KLD): Best possible score is 0.0, smaller value is better . Range = [0, +inf)
 
         Notes
         ~~~~~
@@ -863,8 +860,8 @@ class RegressionMetric:
             y_pred (tuple, list, np.ndarray): The prediction values
             multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
             decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
-            positive_only (bool): Calculate metric based on positive values only or not (Optional, default = False)
+            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = True)
+            positive_only (bool): Calculate metric based on positive values only or not (Optional, default = True)
 
         Returns:
             result (float, int, np.ndarray): KLD metric for single column or multiple columns
@@ -893,37 +890,48 @@ class RegressionMetric:
                 score.append(temp1 - temp2)
             return self.__multi_output_result(score, multi_output, decimal)
 
-    def jensen_shannon_divergence(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
+    def jensen_shannon_divergence(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=True, positive_only=True):
         """
-        Jensen-Shannon Divergence
-        https://machinelearningmastery.com/divergence-between-probability-distributions/
+        Jensen-Shannon Divergence (JSD): Best possible score is 0.0 (identical), smaller value is better . Range = [0, 1]
+
+        Notes
+        ~~~~~
+            + https://machinelearningmastery.com/divergence-between-probability-distributions/
+
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = True)
+            positive_only (bool): Calculate metric based on positive values only or not (Optional, default = True)
+
+        Returns:
+            result (float, int, np.ndarray): JSD metric for single column or multiple columns
         """
-        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
-        if onedim:
-            f_true, intervals = histogram(y_true, bins=len(unique(y_true)) - 1)
-            intervals[0] = min([min(y_true), min(y_pred)])
-            intervals[-1] = max([max(y_true), max(y_pred)])
+        y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
+
+        if one_dim:
+            f_true, intervals = np.histogram(y_true, bins=len(np.unique(y_true)) - 1)
+            intervals[0] = np.min([np.min(y_true), np.min(y_pred)])
+            intervals[-1] = np.max([np.max(y_true), np.max(y_pred)])
             f_true = f_true / len(f_true)
-            f_pred = histogram(y_pred, bins=intervals)[0] / len(y_pred)
+            f_pred = np.histogram(y_pred, bins=intervals)[0] / len(y_pred)
             m = 0.5 * (f_true + f_pred)
-            temp1 = self.entropy(clean, None, decimal, y_true=f_true, y_pred=m) - \
-                    self.entropy(clean, None, decimal, y_true=f_true, y_pred=f_true)
-            temp2 = self.entropy(clean, None, decimal, y_true=f_pred, y_pred=m) - \
-                    self.entropy(clean, None, decimal, y_true=f_pred, y_pred=f_pred)
-            return round(0.5 * temp1 + 0.5 * temp2, decimal)
+            temp1 = self.entropy(f_true, m, multi_output, decimal, True, True) - self.entropy(f_true, f_true, multi_output, decimal, True, True)
+            temp2 = self.entropy(f_pred, m, multi_output, decimal, True, True) - self.entropy(f_pred, f_pred, multi_output, decimal, True, True)
+            return np.round(0.5 * temp1 + 0.5 * temp2, decimal)
         else:
             score = []
             for i in range(y_true.shape[1]):
-                f_true, intervals = histogram(y_true[:, i], bins=len(unique(y_true[:, i])) - 1)
-                intervals[0] = min([min(y_true[:, i]), min(y_pred[:, i])])
-                intervals[-1] = max([max(y_true[:, i]), max(y_pred[:, i])])
+                f_true, intervals = np.histogram(y_true[:, i], bins=len(np.unique(y_true[:, i])) - 1)
+                intervals[0] = np.min([np.min(y_true[:, i]), np.min(y_pred[:, i])])
+                intervals[-1] = np.max([np.max(y_true[:, i]), np.max(y_pred[:, i])])
                 f_true = f_true / len(f_true)
-                f_pred = histogram(y_pred[:, i], bins=intervals)[0] / len(y_pred[:, i])
+                f_pred = np.histogram(y_pred[:, i], bins=intervals)[0] / len(y_pred[:, i])
                 m = 0.5 * (f_true + f_pred)
-                temp1 = self.entropy(clean, None, decimal, y_true=f_true, y_pred=m) - \
-                        self.entropy(clean, None, decimal, y_true=f_true, y_pred=f_true)
-                temp2 = self.entropy(clean, None, decimal, y_true=f_pred, y_pred=m) - \
-                        self.entropy(clean, None, decimal, y_true=f_pred, y_pred=f_pred)
+                temp1 = self.entropy(f_true, m, multi_output, decimal, True, True) - self.entropy(f_true, f_true, multi_output, decimal, True, True)
+                temp2 = self.entropy(f_pred, m, multi_output, decimal, True, True) - self.entropy(f_pred, f_pred, multi_output, decimal, True, True)
                 score.append(0.5 * temp1 + 0.5 * temp2)
             return self.__multi_output_result(score, multi_output, decimal)
 
