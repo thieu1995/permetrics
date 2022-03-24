@@ -424,17 +424,30 @@ class RegressionMetric:
             result = np.mean(np.arctan(np.abs((y_true - y_pred)/y_true)), axis=0)
             return self.__multi_output_result(result, multi_output, decimal)
 
-    def mean_absolute_scaled_error(self, m=1, clean=True, multi_output="raw_values", decimal=3, **kwargs):
+    def mean_absolute_scaled_error(self, y_true=None, y_pred=None, m=1, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
-            Mean Absolute Scaled Error (m = 1 for non-seasonal data, m > 1 for seasonal data)
-            https://en.wikipedia.org/wiki/Mean_absolute_scaled_error
+        Mean Absolute Scaled Error (MASE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
+        Link:
+            + https://en.wikipedia.org/wiki/Mean_absolute_scaled_error
+
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            m (int): m = 1 for non-seasonal data, m > 1 for seasonal data
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
+            positive_only (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): MASE metric for single column or multiple columns (radian values)
         """
-        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
-        if onedim:
-            return round(mean(abs(y_true - y_pred)) / mean(abs(y_true[m:] - y_true[:-m])), decimal)
+        y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
+        if one_dim:
+            return np.round(np.mean(np.abs(y_true - y_pred)) / np.mean(np.abs(y_true[m:] - y_true[:-m])), decimal)
         else:
-            temp = mean(abs(y_true - y_pred), axis=0) / mean(abs(y_true[m:] - y_true[:-m]), axis=0)
-            return self.__multi_output_result(temp, multi_output, decimal)
+            result = np.mean(np.abs(y_true - y_pred), axis=0) / np.mean(np.abs(y_true[m:] - y_true[:-m]), axis=0)
+            return self.__multi_output_result(result, multi_output, decimal)
 
 
     def nash_sutcliffe_efficiency_coefficient(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
