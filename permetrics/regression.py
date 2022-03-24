@@ -993,16 +993,37 @@ class RegressionMetric:
             denominator = np.power(np.sum(y_true ** 2, axis=0), 1 / 2)
             return self.__multi_output_result(numerator/denominator, multi_output, decimal)
 
-    def a10_index(self, clean=True, multi_output="raw_values", decimal=3, **kwargs):
-        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
-        if onedim:
+    def a10_index(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=True, positive_only=False):
+        """
+        A10 index (A10): Best possible score is 0.0, smaller value is better. Range = [0, 1]
+
+        Notes
+        ~~~~~
+            + a10-index is engineering index for evaluating artificial intelligence models by showing the number of samples
+            + that fit the prediction values with a deviation of ±10% compared to experimental values
+            + https://www.mdpi.com/2076-3417/9/18/3715/htm
+
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = True)
+            positive_only (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): A10 metric for single column or multiple columns
+        """
+        y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
+
+        if one_dim:
             div = y_true / y_pred
-            div = where(logical_and(div >= 0.9, div <=1.1), 1, 0)
-            return round(mean(div), decimal)
+            div = np.where(np.logical_and(div >= 0.9, div <= 1.1), 1, 0)
+            return np.round(np.mean(div), decimal)
         else:
             div = y_true / y_pred
-            div = where(logical_and(div >= 0.9, div <= 1.1), 1, 0)
-            return self.__multi_output_result(mean(div, axis=0), multi_output, decimal)
+            div = np.where(np.logical_and(div >= 0.9, div <= 1.1), 1, 0)
+            return self.__multi_output_result(np.mean(div, axis=0), multi_output, decimal)
 
     def a20_index(self, clean=True, multi_output="raw_values", decimal=3, **kwargs):
         y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
