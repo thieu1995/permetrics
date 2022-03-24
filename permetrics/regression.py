@@ -7,231 +7,400 @@
 #       Github:     https://github.com/thieu1995                                                        %
 #-------------------------------------------------------------------------------------------------------%
 
-from numpy import max, round, sqrt, abs, mean, dot, divide, arctan, sum, any, median, log, var, std
-from numpy import ndarray, array, isfinite, isnan, argsort, zeros, concatenate, diff, sign
-from numpy import min, histogram, unique, where, logical_and
+# from numpy import max, round, sqrt, abs, mean, dot, divide, arctan, sum, any, median, log, var, std
+# from numpy import ndarray, array, isfinite, isnan, argsort, zeros, concatenate, diff, sign
+# from numpy import min, histogram, unique, where, logical_and
+
+import numpy as np
+from copy import deepcopy
 
 
-class Metrics:
+class RegressionMetric:
     """
+    This is class contains all regression metrics (for both regression and time-series problem)
+    Extension of scikit-learn library:
         https://scikit-learn.org/stable/modules/model_evaluation.html#regression-metrics
+
+    Notes
+    ~~~~~
+    + Some methods in scikit-learn can't calculate the multi-output metrics
+    + Therefore, this class can calculate the multi-output metrics for all methods
     """
 
     EPSILON = 1e-10
+    ACCEPTED_TYPE = (list, tuple, np.ndarray)
 
-    def __init__(self, y_true=None, y_pred=None):
+    def __init__(self, y_true=None, y_pred=None, decimal=5, **kwargs):
         """
-        :param y_true:
-        :param y_pred:
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            decimal (int): The number of fractional parts after the decimal point
+            **kwargs ():
         """
-        if (y_true is not None) and (y_pred is not None):
-            self.y_true, self.y_pred, self.y_true_clean, self.y_pred_clean, self.onedim = self.__clean_data__(y_true, y_pred)
+        if kwargs is None: kwargs = {}
+        self.__set_keyword_arguments(kwargs)
+        self.y_true_original = y_true
+        self.y_pred_original = y_pred
+        self.y_true = deepcopy(y_true)
+        self.y_pred = deepcopy(y_pred)
+        self.decimal = decimal
+        self.y_true_clean, self.y_pred_clean = None, None
+        self.one_dim, self.already_clean = False, False
 
-    def __clean_data__(self, y_true=None, y_pred=None):
-        """
-        Parameters
-        ----------
-        y_true :
-        y_pred :
+    def __set_keyword_arguments(self, kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
-        Returns
+    def __clean_data(self, y_true=None, y_pred=None):
+        """
+        Get clean data and additional information for latter use
+
+        Args:
+            y_true (tuple, list, np.ndarray):
+            y_pred (tuple, list, np.ndarray):
+
+        Returns:
             y_true: after remove all Nan and Inf values
             y_pred: after remove all Nan and Inf values
             y_true_clean: after remove all Nan, Inf and 0 values
             y_pred_clean: after remove all Nan, Inf and 0 values
             dim: number of dimension in y_true
-        -------
-
         """
-        if type(y_true) is ndarray and type(y_pred) is ndarray:
+        if isinstance(y_true, self.ACCEPTED_TYPE) and isinstance(y_pred, self.ACCEPTED_TYPE):
+            y_true, y_pred = np.array(y_true), np.array(y_pred)
+            ## Remove all dimensions of size 1
+            y_true, y_pred = np.squeeze(y_true), np.squeeze(y_pred)
+            # x = x[~np.isnan(x)] can't remove if array is dtype object, only work with dtype float
             y_true = y_true.astype('float64')
-            y_pred = y_pred.astype('float64')  # x = x[~np.isnan(x)] can't remove if array is dtype object, only work with dtype float
-            if y_true.ndim == 1 and y_pred.ndim == 1:
-                ## Remove all Nan in y_pred
-                y_true = y_true[~isnan(y_pred)]
-                y_pred = y_pred[~isnan(y_pred)]
-                ## Remove all Inf in y_pred
-                y_true = y_true[isfinite(y_pred)]
-                y_pred = y_pred[isfinite(y_pred)]
+            y_pred = y_pred.astype('float64')
 
+            if y_true.ndim == y_pred.ndim == 1:
+                ## Remove all Nan in y_pred
+                y_true = y_true[~np.isnan(y_pred)]
+                y_pred = y_pred[~np.isnan(y_pred)]
+                ## Remove all Inf in y_pred
+                y_true = y_true[np.isfinite(y_pred)]
+                y_pred = y_pred[np.isfinite(y_pred)]
                 y_true_clean = y_true[y_pred != 0]
                 y_pred_clean = y_pred[y_pred != 0]
                 return y_true, y_pred, y_true_clean, y_pred_clean, True
+            elif y_true.ndim == y_pred.ndim > 1:
+                ## Remove all row with Nan in y_pred
+                y_true = y_true[~np.isnan(y_pred).any(axis=1)]
+                y_pred = y_pred[~np.isnan(y_pred).any(axis=1)]
+                ## Remove all row with Inf in y_pred
+                y_true = y_true[np.isfinite(y_pred).all(axis=1)]
+                y_pred = y_pred[np.isfinite(y_pred).all(axis=1)]
+                y_true_clean = y_true[~np.any(y_pred == 0, axis=1)]
+                y_pred_clean = y_pred[~np.any(y_pred == 0, axis=1)]
+                return y_true, y_pred, y_true_clean, y_pred_clean, False
             else:
-                if y_true.ndim == y_pred.ndim:
-                    ## Remove all row with Nan in y_pred
-                    y_true = y_true[~isnan(y_pred).any(axis=1)]
-                    y_pred = y_pred[~isnan(y_pred).any(axis=1)]
-                    ## Remove all row with Inf in y_pred
-                    y_true = y_true[isfinite(y_pred).any(axis=1)]
-                    y_pred = y_pred[isfinite(y_pred).any(axis=1)]
-
-                    y_true_clean = y_true[~any(y_pred == 0, axis=1)]
-                    y_pred_clean = y_pred[~any(y_pred == 0, axis=1)]
-                    return y_true, y_pred, y_true_clean, y_pred_clean, False
-                else:
-                    print("=====Failed! y_true and y_pred need to have same number of dimensions=======")
-                    exit(0)
+                print("Permetrics Error! y_true and y_pred need to have same number of dimensions.")
+                exit(0)
         else:
-            print("=====Failed! y_true and y_pred need to be a ndarray=======")
+            print("Permetrics Error! y_true and y_pred need to be a list, tuple or np.array.")
             exit(0)
 
-    def __get_data__(self, clean:bool, kwargs:dict):
-        if ('y_true' in kwargs) and ('y_pred' in kwargs):
-            y_true, y_pred, y_true_clean, y_pred_clean, onedim = self.__clean_data__(kwargs['y_true'], kwargs['y_pred'])
+    def __positive_data(self, y_true=None, y_pred=None, one_dim=False, positive_only=False):
+        """
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            one_dim (bool): The number of dimensions in data
+            positive_only (bool): Calculate metric based on positive values only or not.
+
+        Returns:
+            y_true_used: y_true with all positive values in computation process.
+            y_pred_used: y_pred with all positive values in computation process
+        """
+        if not positive_only:
+            return y_true, y_pred
         else:
-            if hasattr(self, 'y_true') and hasattr(self, 'y_pred'):
-                y_true, y_pred, y_true_clean, y_pred_clean, onedim = self.y_true, self.y_pred, self.y_true_clean, self.y_pred_clean, self.onedim
+            if one_dim:
+                y_true_positive = y_true[y_pred > 0]
+                y_pred_positive = y_pred[y_pred > 0]
+                return y_true_positive, y_pred_positive
             else:
-                print("Dataset Error: Need y_true and y_pred!!!")
-                exit(0)
+                y_true_positive = y_true[np.all(y_pred > 0, axis=1)]
+                y_pred_positive = y_pred[np.all(y_pred > 0, axis=1)]
+                return y_true_positive, y_pred_positive
+
+    def __get_used_data(self, clean, y_true, y_pred, y_true_clean, y_pred_clean, one_dim):
         if clean:
-            y_true, y_pred = y_true_clean, y_pred_clean
-        return y_true, y_pred, onedim
+            return y_true_clean, y_pred_clean, one_dim
+        else:
+            return y_true, y_pred, one_dim
 
-    def __multi_output_result__(self, result=None, multi_output=None, decimal=None):
-        if multi_output is None:
-            return round(mean(result), decimal)
-        elif isinstance(multi_output, (tuple, list, set)):
-            weights = array(multi_output)
+    def __multi_output_result(self, result=None, multi_output=None, decimal=None):
+        if isinstance(multi_output, (tuple, list, set, np.ndarray)):
+            weights = np.array(multi_output)
             if self.y_true.ndim != len(weights):
-                print("==========Failed! Multi-output weights has different length with y_true==============")
+                print("Permetrics Error! Multi-output weights has different length with y_true")
                 exit(0)
-            return round(dot(result, multi_output), decimal)
-        elif isinstance(multi_output, ndarray) and len(multi_output) == self.y_true.ndim:
-            return round(dot(result, multi_output), decimal)
-        elif multi_output == "raw_values":
-            return round(result, decimal)
+            return np.round(np.dot(result, multi_output), decimal)
+        else:  # Default: raw_values
+            return np.round(result, decimal)
+
+    def get_clean_data(self, y_true=None, y_pred=None, clean=False):
+        """
+        Get the cleaned data, the data pass to function will have higher priority than data pass to class object
+
+        Args:
+            y_true (tuple, list, np.ndarray):
+            y_pred (tuple, list, np.ndarray):
+            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred)
+
+        Returns:
+            y_true_used: y_true used in computation process.
+            y_pred_used: y_pred used in computation process
+            dim: number of dimension in y_true
+        """
+        if y_true is not None and y_pred is not None:
+            self.y_true_original, self.y_pred_original = deepcopy(y_true), deepcopy(y_pred)
+            self.y_true, self.y_pred, self.y_true_clean, self.y_pred_clean, self.one_dim = self.__clean_data(y_true, y_pred)
+            return self.__get_used_data(clean, self.y_true, self.y_pred, self.y_true_clean, self.y_pred_clean, self.one_dim)
         else:
-            print("==========Failed! Multi-output not supported==============")
-            exit(0)
+            if self.y_true is not None and self.y_pred is not None:
+                if self.already_clean:
+                    return self.__get_used_data(clean, self.y_true, self.y_pred, self.y_true_clean, self.y_pred_clean, self.one_dim)
+                else:
+                    self.y_true, self.y_pred, self.y_true_clean, self.y_pred_clean, self.one_dim = self.__clean_data(y_true, y_pred)
+                    self.already_clean = True
+                    return self.__get_used_data(clean, self.y_true, self.y_pred, self.y_true_clean, self.y_pred_clean, self.one_dim)
+            else:
+                print("Permetrics Error! You need to pass y_true and y_pred to object creation or function called.")
+                exit(0)
 
-    def explained_variance_score(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
+    def get_preprocessed_data(self, y_true=None, y_pred=None, clean=False, decimal=None, positive_only=False):
+        y_true, y_pred, one_dim = self.get_clean_data(y_true, y_pred, clean)
+        y_true, y_pred = self.__positive_data(y_true, y_pred, one_dim, positive_only)
+        decimal = self.decimal if decimal is None else decimal
+        return y_true, y_pred, one_dim, decimal
+
+    def explained_variance_score(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
-            Explained Variance Score. Best possible score is 1.0, lower values are worse.
+        Explained Variance Score (EVS). Best possible score is 1.0, lower values are worse. Range = (-inf, 1.0]
+
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
+            positive_only (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): EVS metric for single column or multiple columns
         """
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
-        if onedim:
-            return round(1 - var(y_true - y_pred) / var(y_true), decimal)
+        y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
+        if one_dim:
+            return np.round(1 - np.var(y_true - y_pred) / np.var(y_true), decimal)
         else:
-            temp = 1 - var(y_true - y_pred, axis=0) / var(y_true, axis=0)
-            return self.__multi_output_result__(temp, multi_output, decimal)
+            result = 1 - np.var(y_true - y_pred, axis=0) / np.var(y_true, axis=0)
+            return self.__multi_output_result(result, multi_output, decimal)
 
+    def max_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
+        """
+        Max Error (ME): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
-    def max_error(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
+            positive_only (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): ME metric for single column or multiple columns
         """
-            Max Error: Smaller is better
-        :param clean: Pre-processing y_true and y_pred, no 0 values
-        :param multi_output: string in [‘raw_values’, ‘uniform_average’, ‘variance_weighted’] or array-like of shape (n_outputs)
-        :param decimal: the number after ","
-        """
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
-        if onedim:
-            return round(max(abs(y_true - y_pred)), decimal)
+        y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
+        if one_dim:
+            return np.round(np.max(np.abs(y_true - y_pred)), decimal)
         else:
-            temp = max(abs(y_true - y_pred), axis=0)
-            return self.__multi_output_result__(temp, multi_output, decimal)
+            result = np.max(np.abs(y_true - y_pred), axis=0)
+            return self.__multi_output_result(result, multi_output, decimal)
 
+    def mean_absolute_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
+        """
+        Mean Absolute Error (MAE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
-    def mean_absolute_error(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
+            positive_only (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): MAE metric for single column or multiple columns
         """
-            Mean Absolute Error: Smaller is better
-        """
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
-        if onedim:
-            return round(sum(abs(y_pred - y_true)) / len(y_true), decimal)
+        y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
+        if one_dim:
+            return np.round(np.sum(np.abs(y_pred - y_true)) / len(y_true), decimal)
         else:
-            temp = sum(abs(y_pred - y_true), axis=0) / len(y_true)
-            return self.__multi_output_result__(temp, multi_output, decimal)
+            result = np.sum(np.abs(y_pred - y_true), axis=0) / len(y_true)
+            return self.__multi_output_result(result, multi_output, decimal)
 
+    def mean_squared_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
+        """
+        Mean Squared Error (MSE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
-    def mean_squared_error(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
+            positive_only (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): MSE metric for single column or multiple columns
         """
-            Mean Squared Error: Smaller is better
-        """
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
-        if onedim:
-            return round(sum((y_pred - y_true)**2) / len(y_true), decimal)
+        y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
+        if one_dim:
+            return np.round(np.sum((y_pred - y_true) ** 2) / len(y_true), decimal)
         else:
-            temp = sum((y_pred - y_true)**2, axis=0) / len(y_true)
-            return self.__multi_output_result__(temp, multi_output, decimal)
+            result = np.sum((y_pred - y_true) ** 2, axis=0) / len(y_true)
+            return self.__multi_output_result(result, multi_output, decimal)
 
+    def root_mean_squared_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
+        """
+        Root Mean Squared Error (RMSE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
-    def root_mean_squared_error(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
+            positive_only (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): RMSE metric for single column or multiple columns
         """
-            Root Mean Squared Error: Smaller is better
-        """
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
-        if onedim:
-            return round(sqrt(sum((y_pred - y_true) ** 2) / len(y_true)), decimal)
+        y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
+        if one_dim:
+            return np.round(np.sqrt(np.sum((y_pred - y_true) ** 2) / len(y_true)), decimal)
         else:
-            temp = sqrt(sum((y_pred - y_true) ** 2, axis=0) / len(y_true))
-            return self.__multi_output_result__(temp, multi_output, decimal)
+            result = np.sqrt(np.sum((y_pred - y_true) ** 2, axis=0) / len(y_true))
+            return self.__multi_output_result(result, multi_output, decimal)
 
+    def mean_squared_log_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=True, positive_only=True):
+        """
+        Mean Squared Log Error (MSLE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
-    def mean_squared_log_error(self, clean=True, multi_output="raw_values", decimal=3, **kwargs):
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = True)
+            positive_only (bool): Calculate metric based on positive values only or not (Optional, default = True)
+
+        Returns:
+            result (float, int, np.ndarray): MSLE metric for single column or multiple columns
         """
-            Mean Squared Log Error: Smaller is better
-        """
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
-        if onedim:
-            y_true = y_true[y_pred > 0]
-            y_pred = y_pred[y_pred > 0]
-            return round(sum(log(y_true / y_pred) ** 2) / len(y_true), decimal)
+        y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
+        if one_dim:
+            return np.round(np.sum(np.log(y_true / y_pred) ** 2) / len(y_true), decimal)
         else:
-            y_true = y_true[any(y_pred > 0, axis=1)]
-            y_pred = y_pred[any(y_pred > 0, axis=1)]
-            temp = sum(log(y_true / y_pred) ** 2, axis=0) / len(y_true)
-            return self.__multi_output_result__(temp, multi_output, decimal)
+            result = np.sum(np.log(y_true / y_pred) ** 2, axis=0) / len(y_true)
+            return self.__multi_output_result(result, multi_output, decimal)
 
+    def median_absolute_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
+        """
+        Median Absolute Error (MedAE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
-    def median_absolute_error(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
+            positive_only (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): MedAE metric for single column or multiple columns
         """
-            Median Absolute Error: Smaller is better
-        """
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
-        if onedim:
-            return round(median(abs(y_true - y_pred)), decimal)
+        y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
+        if one_dim:
+            return np.round(np.median(np.abs(y_true - y_pred)), decimal)
         else:
-            temp = median(abs(y_true - y_pred), axis=0)
-            return self.__multi_output_result__(temp, multi_output, decimal)
+            result = np.median(np.abs(y_true - y_pred), axis=0)
+            return self.__multi_output_result(result, multi_output, decimal)
 
+    def mean_relative_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=True, positive_only=False):
+        """
+        Mean Relative Error (MRE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
-    def mean_relative_error(self, clean=True, multi_output="raw_values", decimal=3, **kwargs):
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = True)
+            positive_only (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): MRE metric for single column or multiple columns
         """
-            Mean Relative Error: Smaller is better
-        """
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
-        if onedim:
-            return round(mean(divide(abs(y_true - y_pred), y_true)), decimal)
+        y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
+        if one_dim:
+            return np.round(np.mean(np.divide(np.abs(y_true - y_pred), y_true)), decimal)
         else:
-            temp = mean(divide(abs(y_true - y_pred), y_true), axis=0)
-            return self.__multi_output_result__(temp, multi_output, decimal)
+            result = np.mean(np.divide(np.abs(y_true - y_pred), y_true), axis=0)
+            return self.__multi_output_result(result, multi_output, decimal)
 
+    def mean_absolute_percentage_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=True, positive_only=False):
+        """
+        Mean Absolute Percentage Error (MAPE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
-    def mean_absolute_percentage_error(self, clean=True, multi_output="raw_values", decimal=3, **kwargs):
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = True)
+            positive_only (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): MAPE metric for single column or multiple columns
         """
-            Mean Absolute Percentage Error: Good if mape < 30%. Smaller is better
-        """
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
-        if onedim:
-            temp = abs(y_true - y_pred) / abs(y_true)
-            return round(mean(temp), decimal)
+        y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
+        if one_dim:
+            return np.round(np.mean(np.abs(y_true - y_pred) / np.abs(y_true)), decimal)
         else:
-            temp = mean( abs(y_true - y_pred) / abs(y_true), axis=0)
-            return self.__multi_output_result__(temp, multi_output, decimal)
+            result = np.mean(np.abs(y_true - y_pred) / np.abs(y_true), axis=0)
+            return self.__multi_output_result(result, multi_output, decimal)
 
+    def symmetric_mean_absolute_percentage_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=True, positive_only=False):
+        """
+        Mean Absolute Percentage Error (MAPE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
-    def symmetric_mean_absolute_percentage_error(self, clean=True, multi_output="raw_values", decimal=3, **kwargs):
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = True)
+            positive_only (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): MAPE metric for single column or multiple columns
+        """
+
         """
             Symmetric Mean Absolute Percentage Error: Good if mape < 20%. Smaller is better
         """
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
+        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
         if onedim:
             return round(mean(2 * abs(y_pred - y_true) / (abs(y_true) + abs(y_pred))), decimal)
         else:
             temp = mean(2 * abs(y_pred - y_true) / (abs(y_true) + abs(y_pred)), axis=0)
-            return self.__multi_output_result__(temp, multi_output, decimal)
+            return self.__multi_output_result(temp, multi_output, decimal)
 
 
     def mean_arctangent_absolute_percentage_error(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
@@ -239,12 +408,12 @@ class Metrics:
             Mean Arctangent Absolute Percentage Error (output: radian values)
             https://support.numxl.com/hc/en-us/articles/115001223463-MAAPE-Mean-Arctangent-Absolute-Percentage-Error
         """
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
+        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
         if onedim:
             return round(mean(arctan(divide(abs(y_true - y_pred), y_true))), decimal)
         else:
             temp = mean(arctan(divide(abs(y_true - y_pred), y_true)), axis=0)
-            return self.__multi_output_result__(temp, multi_output, decimal)
+            return self.__multi_output_result(temp, multi_output, decimal)
 
 
     def mean_absolute_scaled_error(self, m=1, clean=True, multi_output="raw_values", decimal=3, **kwargs):
@@ -252,12 +421,12 @@ class Metrics:
             Mean Absolute Scaled Error (m = 1 for non-seasonal data, m > 1 for seasonal data)
             https://en.wikipedia.org/wiki/Mean_absolute_scaled_error
         """
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
+        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
         if onedim:
             return round(mean(abs(y_true - y_pred)) / mean(abs(y_true[m:] - y_true[:-m])), decimal)
         else:
             temp = mean(abs(y_true - y_pred), axis=0) / mean(abs(y_true[m:] - y_true[:-m]), axis=0)
-            return self.__multi_output_result__(temp, multi_output, decimal)
+            return self.__multi_output_result(temp, multi_output, decimal)
 
 
     def nash_sutcliffe_efficiency_coefficient(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
@@ -265,12 +434,12 @@ class Metrics:
             Nash-Sutcliffe Efficiency Coefficient (-unlimited < NSE < 1.   Larger is better)
             https://agrimetsoft.com/calculators/Nash%20Sutcliffe%20model%20Efficiency%20coefficient
         """
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
+        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
         if onedim:
             return round(1 - sum((y_true - y_pred) ** 2) / sum((y_true - mean(y_true)) ** 2), decimal)
         else:
             temp = 1 - sum((y_true - y_pred) ** 2, axis=0) / sum((y_true - mean(y_true, axis=0)) ** 2, axis=0)
-            return self.__multi_output_result__(temp, multi_output, decimal)
+            return self.__multi_output_result(temp, multi_output, decimal)
 
     def willmott_index(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
         """
@@ -278,20 +447,20 @@ class Metrics:
             Reference evapotranspiration for Londrina, Paraná, Brazil: performance of different estimation methods
         https://www.researchgate.net/publication/319699360_Reference_evapotranspiration_for_Londrina_Parana_Brazil_performance_of_different_estimation_methods
         """
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
+        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
         if onedim:
             m1 = mean(y_true)
             return round(1 - sum((y_pred - y_true) ** 2) / sum((abs(y_pred - m1) + abs(y_true - m1)) ** 2), decimal)
         else:
             m1 = mean(y_true, axis=0)
             temp = 1 - sum((y_pred - y_true) ** 2, axis=0) / sum((abs(y_pred - m1) + abs(y_true - m1)) ** 2, axis=0)
-            return self.__multi_output_result__(temp, multi_output, decimal)
+            return self.__multi_output_result(temp, multi_output, decimal)
 
     def coefficient_of_determination(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
         """
             R2: Coefficient of Determination - regression score function. Best possible score is 1.0 and it can be negative
         """
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
+        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
         if onedim:
             t1 = sum((y_true - y_pred) ** 2)
             t2 = sum((y_true - mean(y_true)) ** 2)
@@ -300,7 +469,7 @@ class Metrics:
             t1 = sum((y_true - y_pred) ** 2, axis=0)
             t2 = sum((y_true - mean(y_true, axis=0)) ** 2, axis=0)
             temp = 1 - t1 / t2
-            return self.__multi_output_result__(temp, multi_output, decimal)
+            return self.__multi_output_result(temp, multi_output, decimal)
 
     def pearson_correlation_index(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
         """
@@ -309,7 +478,7 @@ class Metrics:
             Remember no absolute in the equations
             https://en.wikipedia.org/wiki/Pearson_correlation_coefficient
         """
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
+        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
         if onedim:
             m1, m2 = mean(y_true), mean(y_pred)
             temp = sum((y_true - m1) * (y_pred - m2)) / (sqrt(sum((y_true - m1) ** 2)) * sqrt(sum((y_pred - m2) ** 2)))
@@ -320,15 +489,15 @@ class Metrics:
             t2 = sqrt(sum((y_pred - m2) ** 2, axis=0))
             t3 = sum((y_true - m1) * (y_pred - m2), axis=0)
             temp = t3 / (t1 * t2)
-            return self.__multi_output_result__(temp, multi_output, decimal)
+            return self.__multi_output_result(temp, multi_output, decimal)
 
     def pearson_correlation_index_square(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
         """
             (Pearson’s Correlation Index)^2 = R2
         """
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
+        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
         temp = self.pearson_correlation_index(clean, "raw_values", decimal, y_true=y_true, y_pred=y_pred)
-        return self.__multi_output_result__(temp ** 2, multi_output, decimal)
+        return self.__multi_output_result(temp ** 2, multi_output, decimal)
 
 
 
@@ -345,29 +514,29 @@ class Metrics:
             0.41-0.50       Bad
             ≤ 0.40          Very bad
         """
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
+        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
         r = self.pearson_correlation_index(clean=clean, multi_output="raw_values", decimal=decimal, y_true=y_true, y_pred=y_pred)
         d = self.willmott_index(clean=clean, multi_output="raw_values", decimal=decimal, y_true=y_true, y_pred=y_pred)
-        return self.__multi_output_result__(r * d, multi_output, decimal)
+        return self.__multi_output_result(r * d, multi_output, decimal)
 
     def deviation_of_runoff_volume(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
         """
             Deviation of Runoff Volume (DRV)
             https://rstudio-pubs-static.s3.amazonaws.com/433152_56d00c1e29724829bad5fc4fd8c8ebff.html
         """
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
+        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
         if onedim:
             return round(sum(y_pred)/sum(y_true), decimal)
         else:
             temp = sum(y_pred, axis=0) / sum(y_true, axis=0)
-            return self.__multi_output_result__(temp, multi_output, decimal)
+            return self.__multi_output_result(temp, multi_output, decimal)
 
     def kling_gupta_efficiency(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
         """
             Kling-Gupta Efficiency (KGE)
             https://rstudio-pubs-static.s3.amazonaws.com/433152_56d00c1e29724829bad5fc4fd8c8ebff.html
         """
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
+        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
         r = self.pearson_correlation_index(clean, multi_output, decimal, y_true=y_true, y_pred=y_pred)
         if onedim:
             beta = mean(y_pred)/mean(y_true)
@@ -378,14 +547,14 @@ class Metrics:
             beta = mean(y_pred, axis=0) / mean(y_true, axis=0)
             gamma = (std(y_pred, axis=0) / mean(y_pred, axis=0)) / (std(y_true, axis=0) / mean(y_true, axis=0))
             out = 1 - sqrt((r - 1) ** 2 + (beta - 1) ** 2 + (gamma - 1) ** 2)
-            return self.__multi_output_result__(out, multi_output, decimal)
+            return self.__multi_output_result(out, multi_output, decimal)
 
     def gini_coefficient(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
         """
             Gini coefficient (Gini)
             https://github.com/benhamner/Metrics/blob/master/MATLAB/metrics/gini.m
         """
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
+        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
         if onedim:
             idx_sort = argsort(-y_pred)
             population_delta = 1.0 / len(y_true)
@@ -409,14 +578,14 @@ class Metrics:
                     accumulated_population_percentage_sum[i] += population_delta
                     score[i] += accumulated_loss_percentage_sum[i] - accumulated_population_percentage_sum[i]
             score = score / len(y_true)
-            return self.__multi_output_result__(score, multi_output, decimal)
+            return self.__multi_output_result(score, multi_output, decimal)
 
     def gini_coefficient_wiki(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
         """
             Gini coefficient (Gini)
             https://en.wikipedia.org/wiki/Gini_coefficient
         """
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
+        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
         if onedim:
             y = concatenate((y_true, y_pred), axis=0)
             score = 0
@@ -437,13 +606,13 @@ class Metrics:
                         score[k] += abs(y[i, k] - y[j, k])
             y_mean = mean(y, axis=0)
             score = score / (2 * len(y) ** 2 * y_mean)
-            return self.__multi_output_result__(score, multi_output, decimal)
+            return self.__multi_output_result(score, multi_output, decimal)
 
     def prediction_of_change_in_direction(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
         """
             Prediction of change in direction
         """
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
+        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
         if onedim:
             d = diff(y_true)
             dp = diff(y_pred)
@@ -452,23 +621,23 @@ class Metrics:
             d = diff(y_true, axis=0)
             dp = diff(y_pred, axis=0)
             score = mean(sign(d) == sign(dp), axis=0)
-            return self.__multi_output_result__(score, multi_output, decimal)
+            return self.__multi_output_result(score, multi_output, decimal)
 
     def entropy(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
         """
             Entropy Loss function
             https://datascience.stackexchange.com/questions/20296/cross-entropy-loss-explanation
         """
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
+        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
         if onedim:
             score = -sum(y_true * log(y_pred.clip(self.EPSILON, None)))
             return round(score, decimal)
         else:
             score = -sum(y_true * log(y_pred.clip(self.EPSILON, None)), axis=0)
-            return self.__multi_output_result__(score, multi_output, decimal)
+            return self.__multi_output_result(score, multi_output, decimal)
 
     def cross_entropy(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
+        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
         if onedim:
             f_true, intervals = histogram(y_true, bins=len(unique(y_true)) - 1)
             intervals[0] = min([min(y_true), min(y_pred)])
@@ -486,14 +655,14 @@ class Metrics:
                 f_true = f_true / len(f_true)
                 f_pred = histogram(y_pred[:,i], bins=intervals)[0] / len(y_pred[:,i])
                 score.append(self.entropy(clean, "raw_values", decimal, y_true=f_true, y_pred=f_pred))
-            return self.__multi_output_result__(score, multi_output, decimal)
+            return self.__multi_output_result(score, multi_output, decimal)
 
     def kullback_leibler_divergence(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
         """
         Kullback-Leibler Divergence
         https://machinelearningmastery.com/divergence-between-probability-distributions/
         """
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
+        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
         if onedim:
             f_true, intervals = histogram(y_true, bins=len(unique(y_true)) - 1)
             intervals[0] = min([min(y_true), min(y_pred)])
@@ -514,14 +683,14 @@ class Metrics:
                 temp1 = self.entropy(clean, None, decimal, y_true=f_true, y_pred=f_pred)
                 temp2 = self.entropy(clean, None, decimal, y_true=f_true, y_pred=f_true)
                 score.append(temp1 - temp2)
-            return self.__multi_output_result__(score, multi_output, decimal)
+            return self.__multi_output_result(score, multi_output, decimal)
 
     def jensen_shannon_divergence(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
         """
         Jensen-Shannon Divergence
         https://machinelearningmastery.com/divergence-between-probability-distributions/
         """
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
+        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
         if onedim:
             f_true, intervals = histogram(y_true, bins=len(unique(y_true)) - 1)
             intervals[0] = min([min(y_true), min(y_pred)])
@@ -548,27 +717,27 @@ class Metrics:
                 temp2 = self.entropy(clean, None, decimal, y_true=f_pred, y_pred=m) - \
                         self.entropy(clean, None, decimal, y_true=f_pred, y_pred=f_pred)
                 score.append(0.5 * temp1 + 0.5 * temp2)
-            return self.__multi_output_result__(score, multi_output, decimal)
+            return self.__multi_output_result(score, multi_output, decimal)
 
     def variance_accounted_for(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
         """
         Variance Accounted For between 2 signals
         https://www.dcsc.tudelft.nl/~jwvanwingerden/lti/doc/html/vaf.html
         """
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
+        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
         if onedim:
             vaf = (1 - (y_true - y_pred).var()/y_true.var()) * 100
             return round(vaf, decimal)
         else:
             vaf = (1 - (y_true - y_pred).var(axis=0) / y_true.var(axis=0)) * 100
-            return self.__multi_output_result__(vaf, multi_output, decimal)
+            return self.__multi_output_result(vaf, multi_output, decimal)
 
     def relative_absolute_error(self, clean=False, multi_output="raw_values", decimal=3, **kwargs):
         """
         Relative Absolute Error
         https://stackoverflow.com/questions/59499222/how-to-make-a-function-of-mae-and-rae-without-using-librarymetrics
         """
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
+        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
         if onedim:
             mean_true = mean(y_true)
             rae = sum(abs(y_true - y_pred)) / sum(abs(y_true - mean_true))
@@ -576,10 +745,10 @@ class Metrics:
         else:
             mean_true = mean(y_true, axis=0)
             rae = sum(abs(y_true - y_pred), axis=0) / sum(abs(y_true - mean_true), axis=0)
-            return self.__multi_output_result__(rae, multi_output, decimal)
+            return self.__multi_output_result(rae, multi_output, decimal)
 
     def a10_index(self, clean=True, multi_output="raw_values", decimal=3, **kwargs):
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
+        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
         if onedim:
             div = y_true / y_pred
             div = where(logical_and(div >= 0.9, div <=1.1), 1, 0)
@@ -587,10 +756,10 @@ class Metrics:
         else:
             div = y_true / y_pred
             div = where(logical_and(div >= 0.9, div <= 1.1), 1, 0)
-            return self.__multi_output_result__(mean(div, axis=0), multi_output, decimal)
+            return self.__multi_output_result(mean(div, axis=0), multi_output, decimal)
 
     def a20_index(self, clean=True, multi_output="raw_values", decimal=3, **kwargs):
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
+        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
         if onedim:
             div = y_true / y_pred
             div = where(logical_and(div >= 0.8, div <= 1.2), 1, 0)
@@ -598,14 +767,14 @@ class Metrics:
         else:
             div = y_true / y_pred
             div = where(logical_and(div >= 0.8, div <= 1.2), 1, 0)
-            return self.__multi_output_result__(mean(div, axis=0), multi_output, decimal)
+            return self.__multi_output_result(mean(div, axis=0), multi_output, decimal)
 
     def normalized_root_mean_square_error(self, clean=True, multi_output="raw_values", decimal=3, **kwargs):
         """
         Normalized Root Mean Square Error
         https://medium.com/microsoftazure/how-to-better-evaluate-the-goodness-of-fit-of-regressions-990dbf1c0091
         """
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
+        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
         rmse = self.root_mean_squared_error(clean, multi_output, decimal, y_true=y_true, y_pred=y_pred)
         if "model" in kwargs:
             model = kwargs["model"]
@@ -636,14 +805,14 @@ class Metrics:
                 value = rmse / std_pred
             else:
                 value = sqrt(sum(log((y_pred + 1) / (y_true + 1)) ** 2, axis=0) / len(y_true))
-            return self.__multi_output_result__(value, multi_output, decimal)
+            return self.__multi_output_result(value, multi_output, decimal)
 
     def residual_standard_error(self, clean=True, multi_output="raw_values", decimal=3, **kwargs):
         """
         Residual Standard Error
         https://www.statology.org/residual-standard-error-r/
         """
-        y_true, y_pred, onedim = self.__get_data__(clean, kwargs)
+        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
         if onedim:
             x = y_pred
             y = y_true / y_pred
