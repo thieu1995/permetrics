@@ -1056,43 +1056,48 @@ class RegressionMetric:
             div = np.where(np.logical_and(div >= 0.8, div <= 1.2), 1, 0)
             return self.__multi_output_result(np.mean(div, axis=0), multi_output, decimal)
 
-    def normalized_root_mean_square_error(self, clean=True, multi_output="raw_values", decimal=3, **kwargs):
+    def normalized_root_mean_square_error(self, y_true=None, y_pred=None, model=0, multi_output="raw_values", decimal=None, clean=True, positive_only=False):
         """
-        Normalized Root Mean Square Error
-        https://medium.com/microsoftazure/how-to-better-evaluate-the-goodness-of-fit-of-regressions-990dbf1c0091
+        Normalized Root Mean Square Error (NRMSE): Best possible score is 1.0, bigger value is better. Range = [0, 1]
+
+        Notes
+        ~~~~~
+            + https://medium.com/microsoftazure/how-to-better-evaluate-the-goodness-of-fit-of-regressions-990dbf1c0091
+
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            model (int): Normalize RMSE by different ways, (Optional, default = 0, valid values = [0, 1, 2, 3]
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = True)
+            positive_only (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): NRMSE metric for single column or multiple columns
         """
-        y_true, y_pred, onedim = self.get_clean_data(clean, kwargs)
-        rmse = self.root_mean_squared_error(clean, multi_output, decimal, y_true=y_true, y_pred=y_pred)
-        if "model" in kwargs:
-            model = kwargs["model"]
-        else:
-            model = 0
-        if onedim:
-            if model == 0:
-                dif = max(y_true) - min(y_true)
-                return round(rmse/dif, decimal)
-            elif model == 1:
-                mean_pred = mean(y_pred)
-                return round(rmse/mean_pred, decimal)
+        y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
+        rmse = self.root_mean_squared_error(y_true, y_pred, multi_output, decimal, clean, positive_only)
+        if one_dim:
+            if model == 1:
+                result = rmse / np.mean(y_pred)
             elif model == 2:
-                std_pred = y_pred.std()
-                return round(rmse/std_pred, decimal)
+                result = rmse / (np.max(y_true) - np.min(y_true))
+            elif model == 3:
+                result = np.sqrt(np.sum(np.log((y_pred + 1) / (y_true + 1)) ** 2) / len(y_true))
             else:
-                value = sqrt(sum(log((y_pred+1) / (y_true+1))**2)/len(y_true))
-                return round(value, decimal)
+                result = rmse / y_pred.std()
+            return np.round(result, decimal)
         else:
-            if model == 0:
-                dif = max(y_true, axis=0) - min(y_true, axis=0)
-                value = rmse / dif
-            elif model == 1:
-                mean_pred = mean(y_pred, axis=0)
-                value = rmse / mean_pred
+            if model == 1:
+                result = rmse / np.mean(y_pred, axis=0)
             elif model == 2:
-                std_pred = y_pred.std(axis=0)
-                value = rmse / std_pred
+                result = rmse / (np.max(y_true, axis=0) - np.min(y_true, axis=0))
+            elif model == 3:
+                result = np.sqrt(np.sum(np.log((y_pred + 1) / (y_true + 1)) ** 2, axis=0) / len(y_true))
             else:
-                value = sqrt(sum(log((y_pred + 1) / (y_true + 1)) ** 2, axis=0) / len(y_true))
-            return self.__multi_output_result(value, multi_output, decimal)
+                result = rmse / y_pred.std(axis=0)
+            return self.__multi_output_result(result, multi_output, decimal)
 
     def residual_standard_error(self, clean=True, multi_output="raw_values", decimal=3, **kwargs):
         """
