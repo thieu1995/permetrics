@@ -2,8 +2,18 @@ Apache License
 ==============
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Apache License
+
+.. toctree::
+   :maxdepth: 3
+
+.. toctree::
+   :maxdepth: 3
+
+.. toctree::
+   :maxdepth: 3
+
 
 +------------+---------------------------------+
 | Version    | 2.0                             |

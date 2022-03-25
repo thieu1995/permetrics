@@ -11,8 +11,8 @@ Introduction
 	:target: https://permetrics.readthedocs.io/en/latest/?badge=latest
 	:alt: Documentation Status
 
-.. image:: https://img.shields.io/badge/python-3.7+-orange.svg
-    :target: https://www.python.org/downloads/release/python-370
+.. image:: https://img.shields.io/badge/python-3.6+-orange.svg
+    :target: https://www.python.org/downloads/release/python-360
 
 .. image:: https://badge.fury.io/py/permetrics.svg?style=svg
     :target: https://badge.fury.io/py/permetrics
@@ -20,9 +20,11 @@ Introduction
 .. image:: https://zenodo.org/badge/280617738.svg?style=svg
 	:target: https://zenodo.org/badge/latestdoi/280617738
 
+.. image:: https://pepy.tech/badge/permetrics
+   :target: https://pepy.tech/project/permetrics
+
 .. image:: https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=svg
     :target: https://github.com/thieu1995/permetrics/blob/master/LICENSE
-
 
 
 PerMetrics is library written in Python, for PERformance METRICS (PerMetrics) of machine learning models.
@@ -79,7 +81,32 @@ Or install the development version from GitHub::
 Examples
 ########
 
-+ All you need to do is: (Make sure your y_true and y_pred is a numpy array).
++ Permetrics version >= 1.2.0
+
+.. code-block:: python
+	:emphasize-lines: 8-10, 16-18
+
+	from numpy import array
+	from permetrics.regression import RegressionMetric
+
+	## For 1-D array
+	y_true = array([3, -0.5, 2, 7])
+	y_pred = array([2.5, 0.0, 2, 8])
+
+	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+	print(evaluator.RMSE())
+	print(evaluator.MSE())
+
+	## For > 1-D array
+	y_true = array([[0.5, 1], [-1, 1], [7, -6]])
+	y_pred = array([[0, 2], [-1, 2], [8, -5]])
+
+	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+	print(evaluator.RMSE(multi_output="raw_values", decimal=5))
+	print(evaluator.MAE(multi_output="raw_values", decimal=5))
+
+
++ Permetrics version <= 1.1.3
 
 .. code-block:: python
 	:emphasize-lines: 9,18
@@ -87,6 +114,7 @@ Examples
 	from numpy import array
 	from permetrics.regression import Metrics
 
+	# All you need to do is: (Make sure your y_true and y_pred is a numpy array).
 	## For 1-D array
 	y_true = array([3, -0.5, 2, 7])
 	y_pred = array([2.5, 0.0, 2, 8])
@@ -110,12 +138,14 @@ Important links
 ###############
 
 * Official source code repo: https://github.com/thieu1995/permetrics
+* Official document: https://permetrics.readthedocs.io/
 * Download releases: https://pypi.org/project/permetrics/
 * Issue tracker: https://github.com/thieu1995/permetrics/issues
 
 * This project also related to my another projects which are "meta-heuristics" and "neural-network", check it here
+	* https://github.com/thieu1995/mealpy
+	* https://github.com/thieu1995/metaheuristics
     * https://github.com/thieu1995/opfunu
-    * https://github.com/thieu1995/metaheuristics
     * https://github.com/chasebk
 
 

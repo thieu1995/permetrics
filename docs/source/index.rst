@@ -19,7 +19,6 @@ Welcome to Permetrics's!
    :caption: Models Document
 
    pages/regression.rst
-   pages/examples.rst
 
 
 .. toctree::
