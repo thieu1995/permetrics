@@ -51,7 +51,7 @@ class RegressionMetric(Evaluator):
             return np.round(1 - np.var(y_true - y_pred) / np.var(y_true), decimal)
         else:
             result = 1 - np.var(y_true - y_pred, axis=0) / np.var(y_true, axis=0)
-            return self.__multi_output_result(result, multi_output, decimal)
+            return self.get_multi_output_result(result, multi_output, decimal)
 
     def max_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
@@ -73,7 +73,7 @@ class RegressionMetric(Evaluator):
             return np.round(np.max(np.abs(y_true - y_pred)), decimal)
         else:
             result = np.max(np.abs(y_true - y_pred), axis=0)
-            return self.__multi_output_result(result, multi_output, decimal)
+            return self.get_multi_output_result(result, multi_output, decimal)
 
     def mean_absolute_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
@@ -95,7 +95,7 @@ class RegressionMetric(Evaluator):
             return np.round(np.sum(np.abs(y_pred - y_true)) / len(y_true), decimal)
         else:
             result = np.sum(np.abs(y_pred - y_true), axis=0) / len(y_true)
-            return self.__multi_output_result(result, multi_output, decimal)
+            return self.get_multi_output_result(result, multi_output, decimal)
 
     def mean_squared_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
@@ -117,7 +117,7 @@ class RegressionMetric(Evaluator):
             return np.round(np.sum((y_pred - y_true) ** 2) / len(y_true), decimal)
         else:
             result = np.sum((y_pred - y_true) ** 2, axis=0) / len(y_true)
-            return self.__multi_output_result(result, multi_output, decimal)
+            return self.get_multi_output_result(result, multi_output, decimal)
 
     def root_mean_squared_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
@@ -139,7 +139,7 @@ class RegressionMetric(Evaluator):
             return np.round(np.sqrt(np.sum((y_pred - y_true) ** 2) / len(y_true)), decimal)
         else:
             result = np.sqrt(np.sum((y_pred - y_true) ** 2, axis=0) / len(y_true))
-            return self.__multi_output_result(result, multi_output, decimal)
+            return self.get_multi_output_result(result, multi_output, decimal)
 
     def mean_squared_log_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=True, positive_only=True):
         """
@@ -161,7 +161,7 @@ class RegressionMetric(Evaluator):
             return np.round(np.sum(np.log(y_true / y_pred) ** 2) / len(y_true), decimal)
         else:
             result = np.sum(np.log(y_true / y_pred) ** 2, axis=0) / len(y_true)
-            return self.__multi_output_result(result, multi_output, decimal)
+            return self.get_multi_output_result(result, multi_output, decimal)
 
     def median_absolute_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
@@ -183,7 +183,7 @@ class RegressionMetric(Evaluator):
             return np.round(np.median(np.abs(y_true - y_pred)), decimal)
         else:
             result = np.median(np.abs(y_true - y_pred), axis=0)
-            return self.__multi_output_result(result, multi_output, decimal)
+            return self.get_multi_output_result(result, multi_output, decimal)
 
     def mean_relative_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=True, positive_only=False):
         """
@@ -205,7 +205,7 @@ class RegressionMetric(Evaluator):
             return np.round(np.mean(np.divide(np.abs(y_true - y_pred), y_true)), decimal)
         else:
             result = np.mean(np.divide(np.abs(y_true - y_pred), y_true), axis=0)
-            return self.__multi_output_result(result, multi_output, decimal)
+            return self.get_multi_output_result(result, multi_output, decimal)
 
     def mean_absolute_percentage_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=True, positive_only=False):
         """
@@ -227,7 +227,7 @@ class RegressionMetric(Evaluator):
             return np.round(np.mean(np.abs(y_true - y_pred) / np.abs(y_true)), decimal)
         else:
             result = np.mean(np.abs(y_true - y_pred) / np.abs(y_true), axis=0)
-            return self.__multi_output_result(result, multi_output, decimal)
+            return self.get_multi_output_result(result, multi_output, decimal)
 
     def symmetric_mean_absolute_percentage_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=True, positive_only=False):
         """
@@ -251,7 +251,7 @@ class RegressionMetric(Evaluator):
             return np.round(np.mean(2 * np.abs(y_pred - y_true) / (np.abs(y_true) + np.abs(y_pred))), decimal)
         else:
             result = np.mean(2 * np.abs(y_pred - y_true) / (np.abs(y_true) + np.abs(y_pred)), axis=0)
-            return self.__multi_output_result(result, multi_output, decimal)
+            return self.get_multi_output_result(result, multi_output, decimal)
 
     def mean_arctangent_absolute_percentage_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
@@ -275,7 +275,7 @@ class RegressionMetric(Evaluator):
             return np.round(np.mean(np.arctan(np.abs((y_true - y_pred)/y_true))), decimal)
         else:
             result = np.mean(np.arctan(np.abs((y_true - y_pred)/y_true)), axis=0)
-            return self.__multi_output_result(result, multi_output, decimal)
+            return self.get_multi_output_result(result, multi_output, decimal)
 
     def mean_absolute_scaled_error(self, y_true=None, y_pred=None, m=1, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
@@ -300,7 +300,7 @@ class RegressionMetric(Evaluator):
             return np.round(np.mean(np.abs(y_true - y_pred)) / np.mean(np.abs(y_true[m:] - y_true[:-m])), decimal)
         else:
             result = np.mean(np.abs(y_true - y_pred), axis=0) / np.mean(np.abs(y_true[m:] - y_true[:-m]), axis=0)
-            return self.__multi_output_result(result, multi_output, decimal)
+            return self.get_multi_output_result(result, multi_output, decimal)
 
     def nash_sutcliffe_efficiency(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
@@ -324,7 +324,7 @@ class RegressionMetric(Evaluator):
             return np.round(1 - np.sum((y_true - y_pred) ** 2) / np.sum((y_true - np.mean(y_true)) ** 2), decimal)
         else:
             result = 1 - np.sum((y_true - y_pred) ** 2, axis=0) / np.sum((y_true - np.mean(y_true, axis=0)) ** 2, axis=0)
-            return self.__multi_output_result(result, multi_output, decimal)
+            return self.get_multi_output_result(result, multi_output, decimal)
 
     def willmott_index(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
@@ -352,7 +352,7 @@ class RegressionMetric(Evaluator):
         else:
             m1 = np.mean(y_true, axis=0)
             result = 1 - np.sum((y_pred - y_true) ** 2, axis=0) / np.sum((np.abs(y_pred - m1) + np.abs(y_true - m1)) ** 2, axis=0)
-            return self.__multi_output_result(result, multi_output, decimal)
+            return self.get_multi_output_result(result, multi_output, decimal)
 
     def coefficient_of_determination(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
@@ -378,7 +378,7 @@ class RegressionMetric(Evaluator):
             return np.round(1 - np.sum((y_true - y_pred) ** 2) / np.sum((y_true - np.mean(y_true)) ** 2), decimal)
         else:
             result = 1 - np.sum((y_true - y_pred) ** 2, axis=0) / np.sum((y_true - np.mean(y_true, axis=0)) ** 2, axis=0)
-            return self.__multi_output_result(result, multi_output, decimal)
+            return self.get_multi_output_result(result, multi_output, decimal)
 
     def pearson_correlation_coefficient(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
@@ -408,7 +408,7 @@ class RegressionMetric(Evaluator):
             m1, m2 = np.mean(y_true, axis=0), np.mean(y_pred, axis=0)
             numerator = np.sum((y_true - m1) * (y_pred - m2), axis=0)
             denominator = np.sqrt(np.sum((y_true - m1) ** 2, axis=0)) * np.sqrt(np.sum((y_pred - m2) ** 2, axis=0))
-            return self.__multi_output_result(numerator / denominator, multi_output, decimal)
+            return self.get_multi_output_result(numerator / denominator, multi_output, decimal)
 
     def pearson_correlation_coefficient_square(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
@@ -487,7 +487,7 @@ class RegressionMetric(Evaluator):
             return np.round(np.sum(y_pred) / np.sum(y_true), decimal)
         else:
             result = np.sum(y_pred, axis=0) / np.sum(y_true, axis=0)
-            return self.__multi_output_result(result, multi_output, decimal)
+            return self.get_multi_output_result(result, multi_output, decimal)
 
     def kling_gupta_efficiency(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
@@ -517,7 +517,7 @@ class RegressionMetric(Evaluator):
             beta = np.mean(y_pred, axis=0) / np.mean(y_true, axis=0)
             gamma = (np.std(y_pred, axis=0) / np.mean(y_pred, axis=0)) / (np.std(y_true, axis=0) / np.mean(y_true, axis=0))
             result = 1 - np.sqrt((r - 1) ** 2 + (beta - 1) ** 2 + (gamma - 1) ** 2)
-            return self.__multi_output_result(result, multi_output, decimal)
+            return self.get_multi_output_result(result, multi_output, decimal)
 
     def gini_coefficient(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
@@ -563,7 +563,7 @@ class RegressionMetric(Evaluator):
                     accumulated_population_percentage_sum[i] += population_delta
                     score[i] += accumulated_loss_percentage_sum[i] - accumulated_population_percentage_sum[i]
             result = score / len(y_true)
-            return self.__multi_output_result(result, multi_output, decimal)
+            return self.get_multi_output_result(result, multi_output, decimal)
 
     def gini_coefficient_wiki(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
@@ -607,7 +607,7 @@ class RegressionMetric(Evaluator):
                     for j in range(0, d):
                         score[k] += np.abs(y[i, k] - y[j, k])
             result = score / (2 * len(y) ** 2 * np.mean(y, axis=0))
-            return self.__multi_output_result(result, multi_output, decimal)
+            return self.get_multi_output_result(result, multi_output, decimal)
 
     def prediction_of_change_in_direction(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
@@ -633,7 +633,7 @@ class RegressionMetric(Evaluator):
             d = np.diff(y_true, axis=0)
             dp = np.diff(y_pred, axis=0)
             result = np.mean(np.sign(d) == np.sign(dp), axis=0)
-            return self.__multi_output_result(result, multi_output, decimal)
+            return self.get_multi_output_result(result, multi_output, decimal)
 
     def entropy(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=True, positive_only=True):
         """
@@ -661,7 +661,7 @@ class RegressionMetric(Evaluator):
             return np.round(-np.sum(y_true * np.log(y_pred.clip(self.EPSILON, None))), decimal)
         else:
             result = -np.sum(y_true * np.log(y_pred.clip(self.EPSILON, None)), axis=0)
-            return self.__multi_output_result(result, multi_output, decimal)
+            return self.get_multi_output_result(result, multi_output, decimal)
 
     def cross_entropy(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=True, positive_only=True):
         """
@@ -701,7 +701,7 @@ class RegressionMetric(Evaluator):
                 f_true = f_true / len(f_true)
                 f_pred = np.histogram(y_pred[:, i], bins=intervals)[0] / len(y_pred[:, i])
                 score.append(self.entropy(f_true, f_pred, multi_output, decimal, clean=True, positive_only=True))
-            return self.__multi_output_result(score, multi_output, decimal)
+            return self.get_multi_output_result(score, multi_output, decimal)
 
     def kullback_leibler_divergence(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=True, positive_only=True):
         """
@@ -744,7 +744,7 @@ class RegressionMetric(Evaluator):
                 temp1 = self.entropy(f_true, f_pred, multi_output, decimal, True, True)
                 temp2 = self.entropy(f_true, f_true, multi_output, decimal, True, True)
                 score.append(temp1 - temp2)
-            return self.__multi_output_result(score, multi_output, decimal)
+            return self.get_multi_output_result(score, multi_output, decimal)
 
     def jensen_shannon_divergence(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=True, positive_only=True):
         """
@@ -789,7 +789,7 @@ class RegressionMetric(Evaluator):
                 temp1 = self.entropy(f_true, m, multi_output, decimal, True, True) - self.entropy(f_true, f_true, multi_output, decimal, True, True)
                 temp2 = self.entropy(f_pred, m, multi_output, decimal, True, True) - self.entropy(f_pred, f_pred, multi_output, decimal, True, True)
                 score.append(0.5 * temp1 + 0.5 * temp2)
-            return self.__multi_output_result(score, multi_output, decimal)
+            return self.get_multi_output_result(score, multi_output, decimal)
 
     def variance_accounted_for(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
@@ -816,7 +816,7 @@ class RegressionMetric(Evaluator):
             return np.round((1 - (y_true - y_pred).var() / y_true.var()) * 100, decimal)
         else:
             result = (1 - (y_true - y_pred).var(axis=0) / y_true.var(axis=0)) * 100
-            return self.__multi_output_result(result, multi_output, decimal)
+            return self.get_multi_output_result(result, multi_output, decimal)
 
     def relative_absolute_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
@@ -847,7 +847,7 @@ class RegressionMetric(Evaluator):
         else:
             numerator = np.power(np.sum((y_pred - y_true) ** 2, axis=0), 1 / 2)
             denominator = np.power(np.sum(y_true ** 2, axis=0), 1 / 2)
-            return self.__multi_output_result(numerator/denominator, multi_output, decimal)
+            return self.get_multi_output_result(numerator/denominator, multi_output, decimal)
 
     def a10_index(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=True, positive_only=False):
         """
@@ -879,7 +879,7 @@ class RegressionMetric(Evaluator):
         else:
             div = y_true / y_pred
             div = np.where(np.logical_and(div >= 0.9, div <= 1.1), 1, 0)
-            return self.__multi_output_result(np.mean(div, axis=0), multi_output, decimal)
+            return self.get_multi_output_result(np.mean(div, axis=0), multi_output, decimal)
 
     def a20_index(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=True, positive_only=False):
         """
@@ -910,7 +910,7 @@ class RegressionMetric(Evaluator):
         else:
             div = y_true / y_pred
             div = np.where(np.logical_and(div >= 0.8, div <= 1.2), 1, 0)
-            return self.__multi_output_result(np.mean(div, axis=0), multi_output, decimal)
+            return self.get_multi_output_result(np.mean(div, axis=0), multi_output, decimal)
 
     def normalized_root_mean_square_error(self, y_true=None, y_pred=None, model=0, multi_output="raw_values", decimal=None, clean=True, positive_only=False):
         """
@@ -953,7 +953,7 @@ class RegressionMetric(Evaluator):
                 result = np.sqrt(np.sum(np.log((y_pred + 1) / (y_true + 1)) ** 2, axis=0) / len(y_true))
             else:
                 result = rmse / y_pred.std(axis=0)
-            return self.__multi_output_result(result, multi_output, decimal)
+            return self.get_multi_output_result(result, multi_output, decimal)
 
     def residual_standard_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=True, positive_only=False):
         """
@@ -985,7 +985,7 @@ class RegressionMetric(Evaluator):
             y_temp = y_true / y_pred
             up = (np.sum((y_pred - np.mean(y_pred, axis=0)) * (y_temp - np.mean(y_temp, axis=0)), axis=0)) ** 2
             down = np.sum((y_pred - np.mean(y_pred, axis=0)) ** 2, axis=0) * np.sum((y_temp - np.mean(y_temp, axis=0)) ** 2, axis=0)
-            return self.__multi_output_result(up/down, multi_output, decimal)
+            return self.get_multi_output_result(up/down, multi_output, decimal)
 
     def single_relative_error(self, y_true=None, y_pred=None, decimal=None, clean=False, positive_only=False):
         """

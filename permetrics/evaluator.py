@@ -117,16 +117,6 @@ class Evaluator:
         else:
             return y_true, y_pred, one_dim
 
-    def __multi_output_result(self, result=None, multi_output=None, decimal=None):
-        if isinstance(multi_output, (tuple, list, set, np.ndarray)):
-            weights = np.array(multi_output)
-            if self.y_true.ndim != len(weights):
-                print("Permetrics Error! Multi-output weights has different length with y_true")
-                exit(0)
-            return np.round(np.dot(result, multi_output), decimal)
-        else:  # Default: raw_values
-            return np.round(result, decimal)
-
     def get_clean_data(self, y_true=None, y_pred=None, clean=False):
         """
         Get the cleaned data, the data pass to function will have higher priority than data pass to class object
@@ -150,7 +140,7 @@ class Evaluator:
                 if self.already_clean:
                     return self.__get_used_data(clean, self.y_true, self.y_pred, self.y_true_clean, self.y_pred_clean, self.one_dim)
                 else:
-                    self.y_true, self.y_pred, self.y_true_clean, self.y_pred_clean, self.one_dim = self.__clean_data(y_true, y_pred)
+                    self.y_true, self.y_pred, self.y_true_clean, self.y_pred_clean, self.one_dim = self.__clean_data(self.y_true, self.y_pred)
                     self.already_clean = True
                     return self.__get_used_data(clean, self.y_true, self.y_pred, self.y_true_clean, self.y_pred_clean, self.one_dim)
             else:
@@ -176,3 +166,26 @@ class Evaluator:
         y_true, y_pred = self.__positive_data(y_true, y_pred, one_dim, positive_only)
         decimal = self.decimal if decimal is None else decimal
         return y_true, y_pred, one_dim, decimal
+
+    def get_multi_output_result(self, result=None, multi_output=None, decimal=None):
+        """
+        Get multiple output results based on selected parameter
+
+        Args:
+            result: The raw result from metric
+            multi_output: "raw_values" - return multi-output, [weights] - return single output based on weights, else - return mean result
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            final_result: Multiple outputs results based on selected parameter
+        """
+        if isinstance(multi_output, (tuple, list, set, np.ndarray)):
+            weights = np.array(multi_output)
+            if self.y_true.shape[1] != len(weights):
+                print("Permetrics Error! Multi-output weights has different length with y_true")
+                exit(0)
+            return np.round(np.dot(result, multi_output), decimal)
+        elif multi_output == "raw_values":  # Default: raw_values
+            return np.round(result, decimal)
+        else:
+            return np.round(np.mean(result), decimal)
