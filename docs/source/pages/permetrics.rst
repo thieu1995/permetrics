@@ -28,4 +28,13 @@ permetrics.regression
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
+
+.. toctree::
+   :maxdepth: 3
+
+.. toctree::
+   :maxdepth: 3
+
+.. toctree::
+   :maxdepth: 3

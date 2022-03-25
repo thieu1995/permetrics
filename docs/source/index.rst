@@ -16,9 +16,9 @@ Welcome to Permetrics's!
 
 .. toctree::
    :maxdepth: 3
-   :caption: Models
+   :caption: Models Document
 
-   pages/regression/regression_index.rst
+   pages/regression.rst
    pages/examples.rst
 
 
