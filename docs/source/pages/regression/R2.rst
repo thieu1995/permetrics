@@ -17,47 +17,45 @@ R2 - Coefficient of Determination
 
 .. math::
 
-	R^2(y, \hat{y}) = 1 - \frac{\sum_{i=1}^{N} (y_i - \hat{y}_i)^2}{\sum_{i=1}^{N} (y_i - \bar{y})^2}
+	R2(y, \hat{y}) = 1 - \frac{\sum_{i=1}^{N} (y_i - \hat{y}_i)^2}{\sum_{i=1}^{N} (y_i - \bar{y})^2}
 
 where :math:`\bar{y} = \frac{1}{N} \sum_{i=1}^{N} y_i` and :math:`\sum_{i=1}^{N} (y_i - \hat{y}_i)^2 = \sum_{i=1}^{N} \epsilon_i^2`
 
-The r2_score function computes the coefficient of determination, usually denoted as R².
+The r2_score function computes the coefficient of determination, should denoted as R2.
 
 It represents the proportion of variance (of y) that has been explained by the independent variables in the model.  It provides an indication of goodness of
 fit and therefore a measure of how well unseen samples are likely to be predicted by the model, through the proportion of explained variance.
 
-As such variance is dataset dependent, R² may not be meaningfully comparable across different datasets.  Best possible score is 1.0 and it can be negative
+As such variance is dataset dependent, R2 may not be meaningfully comparable across different datasets.  Best possible score is 1.0 and it can be negative
 (because the model can be arbitrarily worse). A constant model that always predicts the expected value of y, disregarding the input features,  would get a R²
 score of 0.0.
 
-Note that r2_score calculates unadjusted R² without correcting for bias in sample variance of y.
-
++ Best possible score is 1.0, bigger value is better. Range = (-inf, 1]
 
 Latex equation code::
 
 	\text{RMSE}(y, \hat{y}) = \sqrt{\frac{\sum_{i=0}^{N - 1} (y_i - \hat{y}_i)^2}{N}}
 
 
-Example to use: R2 function::
+Example to use R2 metric:
+
+.. code-block:: python
+	:emphasize-lines: 8-9,15-16
 
 	from numpy import array
-	from permetrics.regression import Metrics
+	from permetrics.regression import RegressionMetric
 
-	## 1-D array
+	## For 1-D array
 	y_true = array([3, -0.5, 2, 7])
 	y_pred = array([2.5, 0.0, 2, 8])
 
-	obj1 = Metrics(y_true, y_pred)
-	print(obj1.coefficient_of_determination(clean=True, decimal=5))
+	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+	print(evaluator.pearson_correlation_coefficient())
 
-	## > 1-D array
+	## For > 1-D array
 	y_true = array([[0.5, 1], [-1, 1], [7, -6]])
 	y_pred = array([[0, 2], [-1, 2], [8, -5]])
 
-	multi_outputs = [None, "raw_values", [0.3, 1.2], array([0.5, 0.2]), (0.1, 0.9)]
-	obj2 = Metrics(y_true, y_pred)
-	for multi_output in multi_outputs:
-	    print(obj2.coefficient_of_determination(clean=True, multi_output=multi_output, decimal=5))
-
-
+	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+	print(evaluator.R(multi_output="raw_values"))
 

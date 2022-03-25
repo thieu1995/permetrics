@@ -19,7 +19,7 @@ R - Pearson’s Correlation Index
 
 	\text{R}(y, \hat{y}) = \frac{ \sum_{i=0}^{N - 1} ((y_i - mean(y))*(\hat{y_i} - mean(\hat{y}))) }{ \sqrt{ \sum_{i=0}^{N - 1} (y_i - mean(y))^2} *\sqrt{ \sum_{i=0}^{N - 1} (\hat{y_i} - mean(\hat{y}))^2} }
 
-+ -1 < R < 1. Larger is better
++ Best possible score is 1.0, bigger value is better. Range = [-1, 1]
 
 
 Latex equation code::
@@ -27,27 +27,25 @@ Latex equation code::
 	\text{R}(y, \hat{y}) = \frac{ \sum_{i=0}^{N - 1} ((y_i - mean(y))*(\hat{y_i} - mean(\hat{y}))) }{ \sqrt{ \sum_{i=0}^{N - 1} (y_i - mean(y))^2} *\sqrt{ \sum_{i=0}^{N - 1} (\hat{y_i} - mean(\hat{y}))^2} }
 
 
-Example to use: R function::
+Example to use R metric:
+
+.. code-block:: python
+	:emphasize-lines: 8-9,15-16
 
 	from numpy import array
-	from permetrics.regression import Metrics
+	from permetrics.regression import RegressionMetric
 
-	## 1-D array
+	## For 1-D array
 	y_true = array([3, -0.5, 2, 7])
 	y_pred = array([2.5, 0.0, 2, 8])
 
-	obj1 = Metrics(y_true, y_pred)
-	print(obj1.pearson_correlation_index(clean=True, decimal=5))
+	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+	print(evaluator.pearson_correlation_coefficient())
 
-	## > 1-D array
+	## For > 1-D array
 	y_true = array([[0.5, 1], [-1, 1], [7, -6]])
 	y_pred = array([[0, 2], [-1, 2], [8, -5]])
 
-	multi_outputs = [None, "raw_values", [0.3, 1.2], array([0.5, 0.2]), (0.1, 0.9)]
-	obj2 = Metrics(y_true, y_pred)
-	for multi_output in multi_outputs:
-	    print(obj2.pearson_correlation_index(clean=True, multi_output=multi_output, decimal=5))
-
-
-
+	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+	print(evaluator.R(multi_output="raw_values"))
 

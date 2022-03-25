@@ -21,7 +21,8 @@ CI - Confidence Index
 
 	\text{CI}(y, \hat{y}) = \text{R}(y, \hat{y}) * \text{WI}(y, \hat{y})
 
-Meaning of Values::
+
+Best possible score is 1.0, bigger value is better. Range = [0, 1], meaning of values::
 
 	> 0.85          Excellent Model
 	0.76-0.85       Very good
@@ -37,26 +38,27 @@ Latex equation code::
 	\text{CI}(y, \hat{y}) = \text{R}(y, \hat{y}) * \text{WI}(y, \hat{y})
 
 
-Example to use: CI function::
+Example to use CI metric:
+
+.. code-block:: python
+	:emphasize-lines: 8-9,15-16
 
 	from numpy import array
-	from permetrics.regression import Metrics
+	from permetrics.regression import RegressionMetric
 
-	## 1-D array
+	## For 1-D array
 	y_true = array([3, -0.5, 2, 7])
 	y_pred = array([2.5, 0.0, 2, 8])
 
-	obj1 = Metrics(y_true, y_pred)
-	print(obj1.confidence_index(clean=True, decimal=5))
+	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+	print(evaluator.confidence_index())
 
-	## > 1-D array
+	## For > 1-D array
 	y_true = array([[0.5, 1], [-1, 1], [7, -6]])
 	y_pred = array([[0, 2], [-1, 2], [8, -5]])
 
-	multi_outputs = [None, "raw_values", [0.3, 1.2], array([0.5, 0.2]), (0.1, 0.9)]
-	obj2 = Metrics(y_true, y_pred)
-	for multi_output in multi_outputs:
-	    print(obj2.confidence_index(clean=True, multi_output=multi_output, decimal=5))
+	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+	print(evaluator.CI(multi_output="raw_values"))
 
 
 .. _Confidence Index: https://www.researchgate.net/publication/319699360_Reference_evapotranspiration_for_Londrina_Parana_Brazil_performance_of_different_estimation_methods

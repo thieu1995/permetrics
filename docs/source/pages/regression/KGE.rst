@@ -30,7 +30,7 @@ where: r = correlation coefficient, CV = coefficient of variation, :math:`\mu` =
 
 
 
-+ -unlimited < KGE < 1.   Larger is better
++ Best possible score is 1, bigger value is better. Range = (-inf, 1]
 
 
 Latex equation code::
@@ -46,27 +46,26 @@ Latex equation code::
 		\sigma = standard deviation
 
 
-Example to use: KGE function::
+Example to use KGE metric:
+
+.. code-block:: python
+	:emphasize-lines: 8-9,15-16
 
 	from numpy import array
-	from permetrics.regression import Metrics
+	from permetrics.regression import RegressionMetric
 
-	## 1-D array
+	## For 1-D array
 	y_true = array([3, -0.5, 2, 7])
 	y_pred = array([2.5, 0.0, 2, 8])
 
-	obj1 = Metrics(y_true, y_pred)
-	print(obj1.kling_gupta_efficiency(clean=True, decimal=5))
+	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+	print(evaluator.kling_gupta_efficiency())
 
-	## > 1-D array
+	## For > 1-D array
 	y_true = array([[0.5, 1], [-1, 1], [7, -6]])
 	y_pred = array([[0, 2], [-1, 2], [8, -5]])
 
-	multi_outputs = [None, "raw_values", [0.3, 1.2], array([0.5, 0.2]), (0.1, 0.9)]
-	obj2 = Metrics(y_true, y_pred)
-	for multi_output in multi_outputs:
-	    print(obj2.kling_gupta_efficiency(clean=True, multi_output=multi_output, decimal=5))
-
-
+	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+	print(evaluator.KGE(multi_output="raw_values"))
 
 
