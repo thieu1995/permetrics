@@ -17,6 +17,7 @@ CE - Cross Entropy
 
 .. math::
 
+	\text{CE}(y, \hat{y}) =
 
 
 + Best possible score is 0.0, smaller value is better . Range = [0, 1]
@@ -24,6 +25,7 @@ CE - Cross Entropy
 
 Latex equation code::
 
+	\text{CE}(y, \hat{y}) =
 
 
 Example to use CE metric:

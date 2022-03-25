@@ -17,6 +17,8 @@ VAF - Variance Accounted For
 
 .. math::
 
+	\text{VAF}(y, \hat{y}) =
+
 
 
 + Best possible score is 100% (identical signal), bigger value is better. Range = [0, 100%]
@@ -24,6 +26,7 @@ VAF - Variance Accounted For
 
 Latex equation code::
 
+	\text{VAF}(y, \hat{y}) =
 
 
 Example to use VAF metric:

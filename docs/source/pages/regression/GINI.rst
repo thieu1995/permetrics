@@ -17,6 +17,7 @@ GINI - GINI Coefficient
 
 .. math::
 
+	\text{GINI}(y, \hat{y}) =
 
 
 + Best possible score is 1, bigger value is better. Range = [0, 1]
@@ -25,6 +26,7 @@ GINI - GINI Coefficient
 
 Latex equation code::
 
+	\text{GINI}(y, \hat{y}) =
 
 
 Example to use Gini metric, there are two GINI versions:

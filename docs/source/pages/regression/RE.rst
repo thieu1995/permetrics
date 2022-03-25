@@ -17,6 +17,7 @@ RE - Relative Error
 
 .. math::
 
+	\text{RE}(y, \hat{y}) =
 
 
 + Best possible score is 0.0, smaller value is better. Range = (-inf, +inf)
@@ -24,6 +25,7 @@ RE - Relative Error
 
 Latex equation code::
 
+	\text{RE}(y, \hat{y}) =
 
 
 Example to use RE metric:

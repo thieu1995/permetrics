@@ -17,6 +17,7 @@ SLE - Squared Log Error
 
 .. math::
 
+	\text{SLE}(y, \hat{y}) =
 
 
 + Best possible score is 0.0, smaller value is better. Range = [0, +inf)
@@ -24,6 +25,7 @@ SLE - Squared Log Error
 
 Latex equation code::
 
+	\text{SLE}(y, \hat{y}) =
 
 
 Example to use SLE metric:

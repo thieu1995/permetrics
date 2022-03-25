@@ -17,12 +17,15 @@ SE - Squared Error
 
 .. math::
 
+	\text{SE}(y, \hat{y}) =
 
 
 + Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
 
 Latex equation code::
+
+	\text{SE}(y, \hat{y}) =
 
 
 

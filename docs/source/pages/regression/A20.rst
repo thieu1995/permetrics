@@ -17,6 +17,7 @@ A20 - A20 index
 
 .. math::
 
+	\text{A20}(y, \hat{y}) =
 
 
 + Best possible score is 1.0, bigger value is better. Range = [0, 1]
@@ -24,6 +25,7 @@ A20 - A20 index
 
 Latex equation code::
 
+	\text{A20}(y, \hat{y}) =
 
 
 Example to use A20 metric:

@@ -17,6 +17,7 @@ JSD - Jensen-Shannon Divergence
 
 .. math::
 
+	\text{JSD}(y, \hat{y}) =
 
 
 + Best possible score is 0.0 (identical), smaller value is better . Range = [0, 1]
@@ -24,6 +25,7 @@ JSD - Jensen-Shannon Divergence
 
 Latex equation code::
 
+	\text{JSD}(y, \hat{y}) =
 
 
 Example to use JSD metric:

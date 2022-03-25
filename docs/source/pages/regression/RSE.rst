@@ -17,6 +17,7 @@ RSE - Residual Standard Error
 
 .. math::
 
+	\text{RSE}(y, \hat{y}) =
 
 
 + Best possible score is 1.0, bigger value is better. Range = [0, 1]
@@ -24,6 +25,7 @@ RSE - Residual Standard Error
 
 Latex equation code::
 
+	\text{RSE}(y, \hat{y}) =
 
 
 Example to use RSE metric:

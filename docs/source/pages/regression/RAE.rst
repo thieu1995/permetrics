@@ -17,6 +17,7 @@ RAE - Relative Absolute Error
 
 .. math::
 
+	\text{RAE}(y, \hat{y}) =
 
 
 + Best possible score is 0.0, smaller value is better. Range = [0, +inf)
@@ -24,6 +25,7 @@ RAE - Relative Absolute Error
 
 Latex equation code::
 
+	\text{RAE}(y, \hat{y}) =
 
 
 Example to use RAE metric:

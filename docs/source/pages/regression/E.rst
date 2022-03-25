@@ -17,6 +17,7 @@ E - Entropy Loss
 
 .. math::
 
+	\text{E}(y, \hat{y}) =
 
 
 + Best possible score is 0.0, smaller value is better. Range = (-inf, +inf)
@@ -24,6 +25,7 @@ E - Entropy Loss
 
 Latex equation code::
 
+	\text{E}(y, \hat{y}) =
 
 
 Example to use E metric:

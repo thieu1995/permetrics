@@ -17,6 +17,7 @@ AE - Absolute Error
 
 .. math::
 
+	\text{AE}(y, \hat{y}) =
 
 
 + Best possible score is 0.0, smaller value is better. Range = (-inf, +inf)
@@ -24,6 +25,7 @@ AE - Absolute Error
 
 Latex equation code::
 
+	\text{AE}(y, \hat{y}) =
 
 
 Example to use AE metric:

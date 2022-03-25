@@ -17,6 +17,7 @@ PCD - Prediction of Change in Direction
 
 .. math::
 
+	\text{PCD}(y, \hat{y}) =
 
 
 + Best possible score is , bigger value is . Range =
@@ -24,6 +25,7 @@ PCD - Prediction of Change in Direction
 
 Latex equation code::
 
+	\text{PCD}(y, \hat{y}) =
 
 
 Example to use PCD metric:
