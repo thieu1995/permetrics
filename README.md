@@ -23,53 +23,6 @@
     * Perform Qualitative Analysis of models.
     * Perform Quantitative Analysis of models.
 
-* Metrics
-
-| Problem            | STT    |  Metric    | Metric Fullname                            | Characteristics                |
-|----------------	|:---:	|:---------:	|-------------------------------------------	|------------------------------	|
-| Regression        |  1    |    EVS        | Explained Variance Score                    | Larger is better (Best = 1)    |
-|                	|  2    |     ME        | Max Error                                    | Smaller is better (Best = 0)    |
-|                	|  3    |    MAE        | Mean Absolute Error                        | Smaller is better (Best = 0)    |
-|                	|  4    |    MSE        | Mean Squared Error                            | Smaller is better (Best = 0)    |
-|                	|  5    |    RMSE    | Root Mean Squared Error                    | Smaller is better (Best = 0)    |
-|                	|  6    |    MSLE    | Mean Squared Log Error                        | Smaller is better (Best = 0)    |
-|                	|  7    |   MedAE    | Median Absolute Error                        | Smaller is better (Best = 0)    |
-|                	|  8    |    MRE        | Mean Relative Error                        | Smaller is better (Best = 0)    |
-|                	|  9    |    MAPE    | Mean Absolute Percentage Error                | Smaller is better (Best = 0)    |
-|                	|  10    |   SMAPE    | Symmetric Mean Absolute Percentage Error    | Smaller is better (Best = 0)    |
-|                	|  11    |   MAAPE    | Mean Arctangent Absolute Percentage Error    | Smaller is better (Best = 0)    |
-|                	|  12    |    MASE    | Mean Absolute Scaled Error                    | Smaller is better (Best = 0)    |
-|                	|  13    |    NSE        | Nash-Sutcliffe Efficiency Coefficient        | Larger is better (Best = 1)    |
-|                	|  14    |     WI        | Willmott Index                                | Larger is better (Best = 1)    |
-|                	|  15    |     R        | Pearson’s Correlation Index                | Larger is better (Best = 1)    |
-|                	|  16    |     CI        | Confidence Index                            | Larger is better (Best = 1)    |
-|                	|  17    |     R2        | Coefficient of Determination                | Larger is better (Best = 1)    |
-|                	|  18    |    R2s        | (Pearson’s Correlation Index) ^ 2            | Larger is better (Best = 1)    |
-|                	|  19    |    DRV        |  Deviation of Runoff   Volume                | Smaller is better (Best = 0)    |
-|                	|  20    |    KGE        | Kling-Gupta Efficiency                        | Larger is better (Best = 1)    |
-|                	|  21    |    GINI    | Gini Coefficient                            |                              	|
-|                	|  22    | GINI_WIKI    | Gini Coefficient in Wiki                    |                              	|
-|                	|  23    |    PCD        | Prediction of Change in Direction            |                              	|
-|                	|  24    |     E        | Entropy                                    |                              	|
-|                	|  25    |     CE        | Cross Entropy                                |                              	|
-|                	|  26    |    KLD        | Kullback Leibler Divergence                |                              	|
-|                	|  27    |    JSD        | Jensen Shannon Divergence                    |                              	|
-|                	|  28    |    VAF        | Variance Accounted For                        |                              	|
-|                	|  29    |    RAE        | Relative Absolute Error                    |                              	|
-|                	|  30    |    A10        | A10 Index                                    |                              	|
-|                	|  31    |    A20        | A20 Index                                    |                              	|
-|                	|  32    |   NRMSE    | Normalized Root Mean Square Error            |                              	|
-|                	|  33    |         RSE |        Residual Standard Error            	|                              	|
-| Single Loss        |  1    |     RE        | Relative error                                | Smaller is better (Best = 0)    |
-|                	|  2    |     AE        | Absolute error                                | Smaller is better (Best = 0)    |
-|                	|  3    |     SE        |  Squared error                                | Smaller is better (Best = 0)    |
-|                	|  4    |    SLE        | Squared log error                            | Smaller is better (Best = 0)    |
-|                	|  5    |     LL        | Log likelihood                                | Smaller is better (Best = 0)    |
-|                	|  6    |           	|                                           	|                              	|
-| Classification    |  1    |    MLL        | Mean Log Likelihood                        | Smaller is better (Best = 0)    |
-|                	|  2    |           	|                                           	|                              	|
-| Clustering        |  1    |           	|                                           	|                              	|
-|                	|  2    |           	|                                           	|                              	|
 
 ### Dependencies
 * Python (>= 3.6)
@@ -164,6 +117,7 @@ python examples/RMSE.py
 
 The [documentation](https://permetrics.readthedocs.io/) includes more detailed installation instructions and explanations.
 
+
 ### Changelog
 * See the [ChangeLog.md](https://github.com/thieu1995/permetrics/blob/master/ChangeLog.md) for a history of notable changes to permetrics.
 
@@ -181,7 +135,56 @@ The [documentation](https://permetrics.readthedocs.io/) includes more detailed i
     * https://github.com/thieu1995/metaheuristics
     * https://github.com/chasebk
     
-   
+### Metrics
+
+
+| Problem            | STT    |  Metric    | Metric Fullname                            | Characteristics                |
+|----------------	|:---:	|:---------:	|-------------------------------------------	|------------------------------	|
+| Regression        |  1    |    EVS        | Explained Variance Score                    | Larger is better (Best = 1)    |
+|                	|  2    |     ME        | Max Error                                    | Smaller is better (Best = 0)    |
+|                	|  3    |    MAE        | Mean Absolute Error                        | Smaller is better (Best = 0)    |
+|                	|  4    |    MSE        | Mean Squared Error                            | Smaller is better (Best = 0)    |
+|                	|  5    |    RMSE    | Root Mean Squared Error                    | Smaller is better (Best = 0)    |
+|                	|  6    |    MSLE    | Mean Squared Log Error                        | Smaller is better (Best = 0)    |
+|                	|  7    |   MedAE    | Median Absolute Error                        | Smaller is better (Best = 0)    |
+|                	|  8    |    MRE        | Mean Relative Error                        | Smaller is better (Best = 0)    |
+|                	|  9    |    MAPE    | Mean Absolute Percentage Error                | Smaller is better (Best = 0)    |
+|                	|  10    |   SMAPE    | Symmetric Mean Absolute Percentage Error    | Smaller is better (Best = 0)    |
+|                	|  11    |   MAAPE    | Mean Arctangent Absolute Percentage Error    | Smaller is better (Best = 0)    |
+|                	|  12    |    MASE    | Mean Absolute Scaled Error                    | Smaller is better (Best = 0)    |
+|                	|  13    |    NSE        | Nash-Sutcliffe Efficiency Coefficient        | Larger is better (Best = 1)    |
+|                	|  14    |     WI        | Willmott Index                                | Larger is better (Best = 1)    |
+|                	|  15    |     R        | Pearson’s Correlation Index                | Larger is better (Best = 1)    |
+|                	|  16    |     CI        | Confidence Index                            | Larger is better (Best = 1)    |
+|                	|  17    |     R2        | Coefficient of Determination                | Larger is better (Best = 1)    |
+|                	|  18    |    R2s        | (Pearson’s Correlation Index) ^ 2            | Larger is better (Best = 1)    |
+|                	|  19    |    DRV        |  Deviation of Runoff   Volume                | Smaller is better (Best = 0)    |
+|                	|  20    |    KGE        | Kling-Gupta Efficiency                        | Larger is better (Best = 1)    |
+|                	|  21    |    GINI    | Gini Coefficient                            |                              	|
+|                	|  22    | GINI_WIKI    | Gini Coefficient in Wiki                    |                              	|
+|                	|  23    |    PCD        | Prediction of Change in Direction            |                              	|
+|                	|  24    |     E        | Entropy                                    |                              	|
+|                	|  25    |     CE        | Cross Entropy                                |                              	|
+|                	|  26    |    KLD        | Kullback Leibler Divergence                |                              	|
+|                	|  27    |    JSD        | Jensen Shannon Divergence                    |                              	|
+|                	|  28    |    VAF        | Variance Accounted For                        |                              	|
+|                	|  29    |    RAE        | Relative Absolute Error                    |                              	|
+|                	|  30    |    A10        | A10 Index                                    |                              	|
+|                	|  31    |    A20        | A20 Index                                    |                              	|
+|                	|  32    |   NRMSE    | Normalized Root Mean Square Error            |                              	|
+|                	|  33    |         RSE |        Residual Standard Error                |                              	|
+| Single Loss        |  1    |     RE        | Relative error                                | Smaller is better (Best = 0)    |
+|                	|  2    |     AE        | Absolute error                                | Smaller is better (Best = 0)    |
+|                	|  3    |     SE        |  Squared error                                | Smaller is better (Best = 0)    |
+|                	|  4    |    SLE        | Squared log error                            | Smaller is better (Best = 0)    |
+|                	|  5    |     LL        | Log likelihood                                | Smaller is better (Best = 0)    |
+|                	|  6    |           	|                                           	|                              	|
+| Classification    |  1    |    MLL        | Mean Log Likelihood                        | Smaller is better (Best = 0)    |
+|                	|  2    |           	|                                           	|                              	|
+| Clustering        |  1    |           	|                                           	|                              	|
+|                	|  2    |           	|                                           	|                              	|
+
+
 ## Contributions 
 
 ### Citation
