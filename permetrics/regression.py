@@ -640,7 +640,7 @@ class RegressionMetric(Evaluator):
 
     def entropy(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=True, positive_only=True):
         """
-        Entropy Loss (E): Best possible score is 0.0, smaller value is better . Range = [0, +inf)
+        Entropy Loss (E): Best possible score is 0.0, smaller value is better. Range = (-inf, +inf)
 
         Notes
         ~~~~~
