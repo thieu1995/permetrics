@@ -1126,6 +1126,90 @@ class RegressionMetric:
             down = np.sum((y_pred - np.mean(y_pred, axis=0)) ** 2, axis=0) * np.sum((y_temp - np.mean(y_temp, axis=0)) ** 2, axis=0)
             return self.__multi_output_result(up/down, multi_output, decimal)
 
+    def single_relative_error(self, y_true=None, y_pred=None, decimal=None, clean=False, positive_only=False):
+        """
+        Relative Error (RE): Best possible score is 0.0, smaller value is better. Range = (-inf, +inf)
+
+        Notes
+        ~~~~~
+            + Computes the relative error between two numbers, or for element between a pair of list, tuple or numpy arrays.
+
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
+            positive_only (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (np.ndarray): RE metric
+        """
+        y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
+        return np.round(y_pred / y_true - 1, decimal)
+
+    def single_absolute_error(self, y_true=None, y_pred=None, decimal=None, clean=False, positive_only=False):
+        """
+        Absolute Error (AE): Best possible score is 0.0, smaller value is better. Range = (-inf, +inf)
+
+        Notes
+        ~~~~~
+            + Computes the absolute error between two numbers, or for element between a pair of list, tuple or numpy arrays.
+
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
+            positive_only (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (np.ndarray): AE metric
+        """
+        y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
+        return np.round(np.abs(y_true) - np.abs(y_pred), decimal)
+
+    def single_squared_error(self, y_true=None, y_pred=None, decimal=None, clean=False, positive_only=False):
+        """
+        Squared Error (SE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
+
+        Notes
+        ~~~~~
+            + Computes the squared error between two numbers, or for element between a pair of list, tuple or numpy arrays.
+
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
+            positive_only (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (np.ndarray): SE metric
+        """
+        y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
+        return np.round((y_true - y_pred) ** 2, decimal)
+
+    def single_squared_log_error(self, y_true=None, y_pred=None, decimal=None, clean=False, positive_only=True):
+        """
+        Squared Log Error (SLE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
+
+        Notes
+        ~~~~~
+            + Computes the squared log error between two numbers, or for element between a pair of list, tuple or numpy arrays.
+
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
+            positive_only (bool): Calculate metric based on positive values only or not (Optional, default = True)
+
+        Returns:
+            result (np.ndarray): SLE metric
+        """
+        y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
+        return np.round((np.log(y_true) - np.log(y_pred)) ** 2, decimal)
+
     def get_metric_by_name(self, metric_name=str, paras=None) -> dict:
         """
         Get single metric by name, specific parameter of metric by dictionary
@@ -1223,3 +1307,8 @@ class RegressionMetric:
     A20 = a20 = a20_index
     NRMSE = nrmse = normalized_root_mean_square_error
     RSE = rse = residual_standard_error
+
+    RE = re = single_relative_error
+    AE = ae = single_absolute_error
+    SE = se = single_squared_error
+    SLE = sle = single_squared_log_error
