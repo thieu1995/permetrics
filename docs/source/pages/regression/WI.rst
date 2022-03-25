@@ -2,8 +2,18 @@ WI - Willmott Index
 ===================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: WI - Willmott Index
+
+
+.. toctree::
+   :maxdepth: 3
+
+.. toctree::
+   :maxdepth: 3
+
+.. toctree::
+   :maxdepth: 3
 
 
 .. math::

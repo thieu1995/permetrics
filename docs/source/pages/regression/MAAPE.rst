@@ -2,8 +2,18 @@ MAAPE - Mean Arctangent Absolute Percentage Error
 =================================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: MAAPE - Mean Arctangent Absolute Percentage Error
+
+
+.. toctree::
+   :maxdepth: 3
+
+.. toctree::
+   :maxdepth: 3
+
+.. toctree::
+   :maxdepth: 3
 
 
 .. math::

@@ -2,8 +2,17 @@ MAPE - Mean Absolute Percentage Error
 =====================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: MAPE - Mean Absolute Percentage Error
+
+.. toctree::
+   :maxdepth: 3
+
+.. toctree::
+   :maxdepth: 3
+
+.. toctree::
+   :maxdepth: 3
 
 
 .. math::

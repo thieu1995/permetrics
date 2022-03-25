@@ -2,8 +2,18 @@ MedAE - Median Absolute Error
 =============================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: MedAE - Median Absolute Error
+
+
+.. toctree::
+   :maxdepth: 3
+
+.. toctree::
+   :maxdepth: 3
+
+.. toctree::
+   :maxdepth: 3
 
 .. math::
 

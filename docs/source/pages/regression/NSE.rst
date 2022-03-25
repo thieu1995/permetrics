@@ -2,8 +2,18 @@ NSE - Nash-Sutcliffe Efficiency
 ===============================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: NSE - Nash-Sutcliffe Efficiency
+
+
+.. toctree::
+   :maxdepth: 3
+
+.. toctree::
+   :maxdepth: 3
+
+.. toctree::
+   :maxdepth: 3
 
 
 .. math::

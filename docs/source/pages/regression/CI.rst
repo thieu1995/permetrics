@@ -2,8 +2,17 @@ CI - Confidence Index
 =====================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: CI - Confidence Index
+
+.. toctree::
+   :maxdepth: 3
+
+.. toctree::
+   :maxdepth: 3
+
+.. toctree::
+   :maxdepth: 3
 
 
 `Confidence Index`_ (or Performance Index): Reference evapotranspiration for Londrina, Paraná, Brazil: performance of different estimation methods

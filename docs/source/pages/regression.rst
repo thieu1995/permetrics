@@ -11,8 +11,31 @@ From now on:
 + :math:`mean(Y)` is the mean of whole (correct) target output.
 
 
+
+
 .. toctree::
    :maxdepth: 3
+
+   regression/EVS.rst
+   regression/ME.rst
+   regression/MAE.rst
+   regression/MSE.rst
+   regression/RMSE.rst
+   regression/MSLE.rst
+   regression/MedAE.rst
+   regression/MRE.rst
+   regression/MAPE.rst
+   regression/SMAPE.rst
+   regression/MAAPE.rst
+   regression/MASE.rst
+   regression/NSE.rst
+   regression/WI.rst
+   regression/R.rst
+   regression/R2.rst
+   regression/CI.rst
+   regression/R2s.rst
+   regression/DRV.rst
+   regression/KGE.rst
 
 .. toctree::
    :maxdepth: 3

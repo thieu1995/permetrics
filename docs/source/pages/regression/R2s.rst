@@ -2,8 +2,18 @@ R2s - (Pearson’s Correlation Index)**2
 ======================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: R2s - (Pearson’s Correlation Index)**2
+
+.. toctree::
+   :maxdepth: 3
+
+.. toctree::
+   :maxdepth: 3
+
+.. toctree::
+   :maxdepth: 3
+
 
 .. math::
 

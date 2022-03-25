@@ -2,8 +2,17 @@ MASE - Mean Absolute Scaled Error
 =================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: MASE - Mean Absolute Scaled Error
+
+.. toctree::
+   :maxdepth: 3
+
+.. toctree::
+   :maxdepth: 3
+
+.. toctree::
+   :maxdepth: 3
 
 
 .. math::

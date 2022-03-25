@@ -2,8 +2,18 @@ R - Pearson’s Correlation Index
 ===============================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: R - Pearson’s Correlation Index
+
+.. toctree::
+   :maxdepth: 3
+
+.. toctree::
+   :maxdepth: 3
+
+.. toctree::
+   :maxdepth: 3
+
 
 .. math::
 

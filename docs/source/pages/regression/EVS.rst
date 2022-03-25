@@ -2,8 +2,17 @@ EVS - Explained Variance Score
 ==============================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: EVS - Explained Variance Score
+
+.. toctree::
+   :maxdepth: 3
+
+.. toctree::
+   :maxdepth: 3
+
+.. toctree::
+   :maxdepth: 3
 
 
 The explained variance score computes the `explained variance regression score`_. If Var is Variance, the square of the standard deviation, then the

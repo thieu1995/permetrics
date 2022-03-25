@@ -2,8 +2,17 @@ MSLE - Mean Squared Logarithmic Error
 =====================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: MSLE - Mean Squared Logarithmic Error
+
+.. toctree::
+   :maxdepth: 3
+
+.. toctree::
+   :maxdepth: 3
+
+.. toctree::
+   :maxdepth: 3
 
 
 .. math::

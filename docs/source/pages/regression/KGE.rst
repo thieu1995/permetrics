@@ -2,8 +2,17 @@ KGE - Kling-Gupta Efficiency
 ============================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: KGE - Kling-Gupta Efficiency
+
+.. toctree::
+   :maxdepth: 3
+
+.. toctree::
+   :maxdepth: 3
+
+.. toctree::
+   :maxdepth: 3
 
 
 .. math::

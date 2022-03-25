@@ -2,8 +2,17 @@ SMAPE - Symmetric Mean Absolute Percentage Error
 ================================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: SMAPE - Symmetric Mean Absolute Percentage Error
+
+.. toctree::
+   :maxdepth: 3
+
+.. toctree::
+   :maxdepth: 3
+
+.. toctree::
+   :maxdepth: 3
 
 
 .. math::
