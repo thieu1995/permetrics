@@ -17,7 +17,7 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/thieu1995/permetrics",
     download_url="https://github.com/thieu1995/permetrics/archive/v1.2.0.zip",
-    packages=find_packages(),
+    packages=find_packages(exclude=['tests*', 'examples*']),
     include_package_data=True,
     license="MIT",
     classifiers=[
