@@ -4,10 +4,6 @@
 #       Github: https://github.com/thieu1995        %
 # --------------------------------------------------%
 
-# from numpy import max, round, sqrt, abs, mean, dot, divide, arctan, sum, any, median, log, var, std
-# from numpy import ndarray, array, isfinite, isnan, argsort, zeros, concatenate, diff, sign
-# from numpy import min, histogram, unique, where, logical_and
-
 import numpy as np
 from copy import deepcopy
 
@@ -15,13 +11,12 @@ from copy import deepcopy
 class RegressionMetric:
     """
     This is class contains all regression metrics (for both regression and time-series problem)
-    Extension of scikit-learn library:
-        https://scikit-learn.org/stable/modules/model_evaluation.html#regression-metrics
 
     Notes
     ~~~~~
-    + Some methods in scikit-learn can't calculate the multi-output metrics
+    + Some methods in scikit-learn can't generate the multi-output metrics, we re-implement all of them and allow multi-output metrics
     + Therefore, this class can calculate the multi-output metrics for all methods
+    + https://scikit-learn.org/stable/modules/model_evaluation.html#regression-metrics
     """
 
     EPSILON = 1e-10
@@ -1131,75 +1126,69 @@ class RegressionMetric:
             down = np.sum((y_pred - np.mean(y_pred, axis=0)) ** 2, axis=0) * np.sum((y_temp - np.mean(y_temp, axis=0)) ** 2, axis=0)
             return self.__multi_output_result(up/down, multi_output, decimal)
 
-    def get_metric_by_name(self, func_name:str, paras=None) -> dict:
+    def get_metric_by_name(self, metric_name=str, paras=None) -> dict:
         """
-        Parameters
-        ----------
-        func_name : str. For example: "RMSE"
-        paras : dict. For example:
-            Default: Don't specify it. leave it there
-            Else: It has to be a dictionary such as {"decimal": 3, "multi_output": "raw_values", }
+        Get single metric by name, specific parameter of metric by dictionary
 
-        Returns
-        -------
-        dict: { "RMSE": 0.2 }
-        """
-        temp = {}
-        obj = getattr(self, func_name)
-        if paras is None:
-            temp[func_name] = obj()
-        else:
-            temp[func_name] = obj(**paras)
-        return temp
+        Args:
+            metric_name (str): Select name of metric
+            paras (dict): Dictionary of hyper-parameter for that metric
 
-    def get_metrics_by_list_names(self, list_func_names:list, list_paras=None) -> dict:
+        Returns:
+            result (dict): { metric_name: value }
         """
-        Parameters
-        ----------
-        func_names : list. For example: ["RMSE", "MAE", "MAPE"]
-        paras : list. For example: [ {"decimal": 5, }, None, { "decimal": 4, "multi_output": "raw_values" } }       # List of dict
+        result = {}
+        obj = getattr(self, metric_name)
+        result[metric_name] = obj() if paras is None else obj(**paras)
+        return result
 
-        Returns
-        -------
-        dict. For example: { "RMSE": 0.25, "MAE": 0.7, "MAPE": 0.15 }
+    def get_metrics_by_list_names(self, list_metric_names=list, list_paras=None) -> dict:
         """
-        temp = {}
-        for idx, func_name in enumerate(list_func_names):
-            obj = getattr(self, func_name)
+        Get results of list metrics by its name and parameters
+
+        Args:
+            list_metric_names (list): e.g, ["RMSE", "MAE", "MAPE"]
+            list_paras (list): e.g, [ {"decimal": 5, None}, {"decimal": 4, "multi_output": "raw_values"}, {"decimal":6, "multi_output": [2, 3]} ]
+
+        Returns:
+            results (dict): e.g, { "RMSE": 0.25, "MAE": [0.3, 0.6], "MAPE": 0.15 }
+        """
+        results = {}
+        for idx, metric_name in enumerate(list_metric_names):
+            obj = getattr(self, metric_name)
             if list_paras is None:
-                temp[func_name] = obj()
+                results[metric_name] = obj()
             else:
-                if len(list_func_names) != len(list_paras):
-                    print("Failed! Different length between list of functions and list of parameters")
+                if len(list_metric_names) != len(list_paras):
+                    print("Permetrics Error! Different length between list of functions and list of parameters.")
                     exit(0)
                 if list_paras[idx] is None:
-                    temp[func_name] = obj()
+                    results[metric_name] = obj()
                 else:
-                    temp[func_name] = obj(**list_paras[idx])
-        return temp
+                    results[metric_name] = obj(**list_paras[idx])
+        return results
 
     def get_metrics_by_dict(self, metrics_dict:dict) -> dict:
         """
-        Parameters
-        ----------
-        metrics_dict : dict inside dict, for examples:
-            {
-                "RMSE": { "multi_output": multi_output, "decimal": 4 }
-                "MAE": { "clean": True, "multi_output": multi_output, "decimal": 6 }
-            }
-        Returns
-        -------
-            A dict: For example
-                { "RMSE": 0.3524, "MAE": 0.445263 }
+        Get results of list metrics by its name and parameters wrapped by dictionary
+        For example:
+            {   "RMSE": { "multi_output": multi_output, "decimal": 4 }
+                "MAE": { "clean": True, "multi_output": multi_output, "decimal": 6}     }
+
+        Args:
+            metrics_dict (dict): key is metric name and value is dict of parameters
+
+        Returns:
+            results (dict): e.g, { "RMSE": 0.3524, "MAE": 0.445263 }
         """
-        temp = {}
-        for func_name, paras_dict in metrics_dict.items():
-            obj = getattr(self, func_name)
+        results = {}
+        for metric_name, paras_dict in metrics_dict.items():
+            obj = getattr(self, metric_name)
             if paras_dict is None:
-                temp[func_name] = obj()
+                results[metric_name] = obj()
             else:
-                temp[func_name] = obj(**paras_dict)     # Unpacking a dictionary and passing it to function
-        return temp
+                results[metric_name] = obj(**paras_dict)     # Unpacking a dictionary and passing it to function
+        return results
 
     EVS = evs = explained_variance_score
     ME = me = max_error
