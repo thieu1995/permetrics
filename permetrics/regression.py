@@ -232,8 +232,8 @@ class RegressionMetric(Evaluator):
     def symmetric_mean_absolute_percentage_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=True, positive_only=False):
         """
         Symmetric Mean Absolute Percentage Error (SMAPE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
-        Link:
-            + https://en.wikipedia.org/wiki/Symmetric_mean_absolute_percentage_error
+
+        Link: https://en.wikipedia.org/wiki/Symmetric_mean_absolute_percentage_error
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
@@ -256,8 +256,8 @@ class RegressionMetric(Evaluator):
     def mean_arctangent_absolute_percentage_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
         Mean Arctangent Absolute Percentage Error (MAAPE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
-        Link:
-            + https://support.numxl.com/hc/en-us/articles/115001223463-MAAPE-Mean-Arctangent-Absolute-Percentage-Error
+
+        Link: https://support.numxl.com/hc/en-us/articles/115001223463-MAAPE-Mean-Arctangent-Absolute-Percentage-Error
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
@@ -280,8 +280,8 @@ class RegressionMetric(Evaluator):
     def mean_absolute_scaled_error(self, y_true=None, y_pred=None, m=1, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
         Mean Absolute Scaled Error (MASE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
-        Link:
-            + https://en.wikipedia.org/wiki/Mean_absolute_scaled_error
+
+        Link: https://en.wikipedia.org/wiki/Mean_absolute_scaled_error
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
@@ -305,8 +305,8 @@ class RegressionMetric(Evaluator):
     def nash_sutcliffe_efficiency(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
         Nash-Sutcliffe Efficiency (NSE): Best possible score is 1.0, bigger value is better. Range = (-inf, 1]
-        Link:
-            + https://agrimetsoft.com/calculators/Nash%20Sutcliffe%20model%20Efficiency%20coefficient
+
+        Link: https://agrimetsoft.com/calculators/Nash%20Sutcliffe%20model%20Efficiency%20coefficient
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
@@ -439,15 +439,16 @@ class RegressionMetric(Evaluator):
         """
         Confidence Index (or Performance Index): CI (PI): Best possible score is 1.0, bigger value is better. Range = [0, 1]
 
-        https://www.researchgate.net/publication/319699360_Reference_evapotranspiration_for_Londrina_Parana_Brazil_performance_of_different_estimation_methods
-        Reference evapotranspiration for Londrina, Paraná, Brazil: performance of different estimation methods
-            + > 0.85,          Excellent
-            + 0.76-0.85,       Very good
-            + 0.66-0.75,       Good
-            + 0.61-0.65,       Satisfactory
-            + 0.51-0.60,       Poor
-            + 0.41-0.50,       Bad
-            + ≤ 0.40,          Very bad
+        Notes
+        ~~~~~
+        - Reference evapotranspiration for Londrina, Paraná, Brazil: performance of different estimation methods
+        - > 0.85,          Excellent
+        - 0.76-0.85,       Very good
+        - 0.66-0.75,       Good
+        - 0.61-0.65,       Satisfactory
+        - 0.51-0.60,       Poor
+        - 0.41-0.50,       Bad
+        - ≤ 0.40,          Very bad
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
@@ -1116,9 +1117,9 @@ class RegressionMetric(Evaluator):
     def get_metrics_by_dict(self, metrics_dict:dict) -> dict:
         """
         Get results of list metrics by its name and parameters wrapped by dictionary
+
         For example:
-            {   "RMSE": { "multi_output": multi_output, "decimal": 4 }
-                "MAE": { "clean": True, "multi_output": multi_output, "decimal": 6}     }
+            {"RMSE": { "multi_output": multi_output, "decimal": 4 }, "MAE": { "clean": True, "multi_output": multi_output, "decimal": 6}}
 
         Args:
             metrics_dict (dict): key is metric name and value is dict of parameters

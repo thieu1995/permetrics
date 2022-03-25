@@ -32,8 +32,8 @@ class ClassificationMetric(Evaluator):
     def mean_log_likelihood(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=True, positive_only=True):
         """
         Mean Log Likelihood (MLL): Best possible score is ..., the higher value is better. Range = (-inf, +inf)
-        Link:
-            + https://github.com/benhamner/Metrics/blob/master/Python/ml_metrics/elementwise.py#L235
+
+        Link: https://github.com/benhamner/Metrics/blob/master/Python/ml_metrics/elementwise.py#L235
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
@@ -51,7 +51,7 @@ class ClassificationMetric(Evaluator):
             return np.round(np.mean(-(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))), decimal)
         else:
             result = np.mean(-(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred)), axis=0)
-            return self.__multi_output_result(result, multi_output, decimal)
+            return self.get_multi_output_result(result, multi_output, decimal)
 
     def single_log_likelihood(self, y_true=None, y_pred=None, decimal=None, clean=True, positive_only=True):
         """
@@ -75,7 +75,5 @@ class ClassificationMetric(Evaluator):
         y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
         return np.round(-(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred)), decimal)
 
-
     MLL = mll = mean_log_likelihood
-
     LL = ll = single_log_likelihood
