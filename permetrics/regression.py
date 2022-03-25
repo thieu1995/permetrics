@@ -403,7 +403,7 @@ class RegressionMetric(Evaluator):
         y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
         if one_dim:
             m1, m2 = np.mean(y_true), np.mean(y_pred)
-            return np.round(np.sum((y_true - m1) * (y_pred - m2)) / (np.sqrt(np.sum((y_true - np.m1) ** 2)) * np.sqrt(np.sum((y_pred - m2) ** 2))), decimal)
+            return np.round(np.sum((y_true - m1) * (y_pred - m2)) / (np.sqrt(np.sum((y_true - m1) ** 2)) * np.sqrt(np.sum((y_pred - m2) ** 2))), decimal)
         else:
             m1, m2 = np.mean(y_true, axis=0), np.mean(y_pred, axis=0)
             numerator = np.sum((y_true - m1) * (y_pred - m2), axis=0)
@@ -432,6 +432,7 @@ class RegressionMetric(Evaluator):
         Returns:
             result (float, int, np.ndarray): R2s metric for single column or multiple columns
         """
+        y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
         result = self.pearson_correlation_coefficient(y_true, y_pred, multi_output, decimal, clean, positive_only)
         return np.round(result ** 2, decimal)
 
@@ -461,6 +462,7 @@ class RegressionMetric(Evaluator):
         Returns:
             result (float, int, np.ndarray): CI (PI) metric for single column or multiple columns
         """
+        y_true, y_pred, one_dim, decimal = self.get_preprocessed_data(y_true, y_pred, clean, decimal, positive_only)
         r = self.pearson_correlation_coefficient(y_true, y_pred, multi_output, decimal, clean, positive_only)
         d = self.willmott_index(y_true, y_pred, multi_output, decimal, clean, positive_only)
         return np.round(r * d, decimal)
@@ -492,7 +494,7 @@ class RegressionMetric(Evaluator):
 
     def kling_gupta_efficiency(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, clean=False, positive_only=False):
         """
-        Kling-Gupta Efficiency (KGE): Best possible score is 1, bigger value is better. Range = [0, 1]
+        Kling-Gupta Efficiency (KGE): Best possible score is 1, bigger value is better. Range = (-inf, 1]
         Notes
         ~~~~~
             + https://rstudio-pubs-static.s3.amazonaws.com/433152_56d00c1e29724829bad5fc4fd8c8ebff.html
