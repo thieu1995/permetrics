@@ -37,6 +37,24 @@ From now on:
    regression/DRV.rst
    regression/KGE.rst
 
+   regression/GINI.rst
+   regression/PCD.rst
+   regression/E.rst
+   regression/CE.rst
+   regression/KLD.rst
+   regression/JSD.rst
+   regression/VAF.rst
+   regression/RAE.rst
+   regression/A10.rst
+   regression/A20.rst
+   regression/NRMSE.rst
+   regression/RSE.rst
+
+   regression/RE.rst
+   regression/AE.rst
+   regression/SE.rst
+   regression/SLE.rst
+
 .. toctree::
    :maxdepth: 3
 
