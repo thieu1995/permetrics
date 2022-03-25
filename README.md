@@ -1,10 +1,11 @@
 # A framework of PERformance METRICS (PerMetrics) for artificial intelligence models
-[![GitHub release](https://img.shields.io/badge/release-1.1.3-yellow.svg)]()
+[![GitHub release](https://img.shields.io/badge/release-1.2.0-yellow.svg)]()
 [![Documentation Status](https://readthedocs.org/projects/permetrics/badge/?version=latest)](https://permetrics.readthedocs.io/en/latest/?badge=latest)
-[![](https://img.shields.io/badge/python-3.7+-orange.svg)](https://www.python.org/downloads/release/python-370/)
+[![](https://img.shields.io/badge/python-3.6+-orange.svg)](https://www.python.org/downloads/release/python-360/)
 [![Wheel](https://img.shields.io/pypi/wheel/gensim.svg)](https://pypi.python.org/pypi/permetrics) 
 [![PyPI version](https://badge.fury.io/py/permetrics.svg)](https://badge.fury.io/py/permetrics)
 [![DOI](https://zenodo.org/badge/280617738.svg)](https://zenodo.org/badge/latestdoi/280617738)
+[![Downloads](https://pepy.tech/badge/permetrics)](https://pepy.tech/project/permetrics)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 
@@ -90,11 +91,38 @@ pip install git+https://github.com/thieu1995/permetrics
 
 
 ### Example
-+ All you need to do is: (Make sure your y_true and y_pred is a numpy array)
+
++ Permetrics version >= 1.2.0
 
 ```python 
-#Simple example:
 
+from numpy import array
+from permetrics.regression import RegressionMetric
+
+## For 1-D array
+y_true = array([3, -0.5, 2, 7])
+y_pred = array([2.5, 0.0, 2, 8])
+
+evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+print(evaluator.RMSE())
+print(evaluator.MSE())
+
+## For > 1-D array
+y_true = array([[0.5, 1], [-1, 1], [7, -6]])
+y_pred = array([[0, 2], [-1, 2], [8, -5]])
+
+evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+print(evaluator.RMSE(multi_output="raw_values", decimal=5))
+print(evaluator.MAE(multi_output="raw_values", decimal=5))
+
+```
+
+
+
++ Permetrics version <= 1.1.3
+
+```python 
+##  All you need to do is: (Make sure your y_true and y_pred is a numpy array)
 ## For example with RMSE:
 
 from numpy import array
@@ -133,6 +161,7 @@ python examples/RMSE.py
 
 # The more complicated tests in the folder: examples
 ```
+
 The [documentation](https://permetrics.readthedocs.io/) includes more detailed installation instructions and explanations.
 
 ### Changelog
@@ -147,6 +176,7 @@ The [documentation](https://permetrics.readthedocs.io/) includes more detailed i
 * Issue tracker: https://github.com/thieu1995/permetrics/issues
 
 * This project also related to my another projects which are "meta-heuristics" and "neural-network", check it here
+    * https://github.com/thieu1995/mealpy
     * https://github.com/thieu1995/opfunu
     * https://github.com/thieu1995/metaheuristics
     * https://github.com/chasebk
@@ -205,6 +235,5 @@ The [documentation](https://permetrics.readthedocs.io/) includes more detailed i
 + Multiclass Classification
     + Scores predicted class labels
     + Scores predicted probabilities
-+ Regression (More)
 + Discrete Rater Comparison (confusion matrix)
  

@@ -1,3 +1,16 @@
+# Version 1.2.0
+
+### Change models
+
++ Add Evaluator class, the base class for all metrics
++ Rename class Metrics in regression to RegressionMetric
++ Rename class Metrics in classification to ClassificationMetric
++ Update input parameters in both RegressionMetric and ClassificationMetric
++ Update input parameters in all metric functions
++ Add docstring for all methods
++ Merge all singleloss metrics to RegressionMetric
++ Update examples
++ Add new documents and website
 
 ---------------------------------------------------------------------
 

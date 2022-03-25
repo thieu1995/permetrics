@@ -1,20 +1,22 @@
 from setuptools import setup, find_packages
 
+
 def readme():
-    with open('README.md') as f:
+    with open('README.md', encoding='utf-8') as f:
         README = f.read()
     return README
 
+
 setup(
     name="permetrics",
-    version="1.1.3",
+    version="1.2.0",
     author="Thieu Nguyen",
     author_email="nguyenthieu2102@gmail.com",
     description="PerMetrics: A framework of PERformance METRICS for machine learning models",
     long_description=readme(),
     long_description_content_type="text/markdown",
     url="https://github.com/thieu1995/permetrics",
-    download_url="https://github.com/thieu1995/permetrics/archive/v1.1.3.zip",
+    download_url="https://github.com/thieu1995/permetrics/archive/v1.2.0.zip",
     packages=find_packages(),
     include_package_data=True,
     license="MIT",
@@ -37,6 +39,6 @@ setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: Utilities",
     ],
-    install_requires=["numpy"],
+    install_requires=["numpy>=1.15.1"],
     python_requires='>=3.6',
 )

@@ -1,2 +1,2 @@
-include README.md LICENSE
+include README.md LICENSE ChangeLog.md
 include permetrics/support_data/*.txt
