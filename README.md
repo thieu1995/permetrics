@@ -137,7 +137,7 @@ The [documentation](https://permetrics.readthedocs.io/) includes more detailed i
     
 ### Metrics
 
-| **Problem** | **STT** | **Metric ** | **Metric Fullname** | **Characteristics** |
+| **Problem** | **STT** | **Metric** | **Metric Fullname** | **Characteristics** |
 |---|---|---|---|---|
 | Regression | 1 | EVS | Explained Variance Score | Greater is better (Best = 1), Range=(-inf, 1.0] |
 |  | 2 | ME | Max Error | Smaller is better (Best = 0), Range=[0, +inf) |
