@@ -1,7 +1,7 @@
 Introduction
 ############
 
-.. image:: https://img.shields.io/badge/release-1.2.0-yellow.svg?style=svg
+.. image:: https://img.shields.io/badge/release-1.2.1-yellow.svg?style=svg
     :target: https://github.com/thieu1995/permetrics
 
 .. image:: https://img.shields.io/pypi/wheel/gensim.svg?style=svg
@@ -71,7 +71,7 @@ Install the [current PyPI release](https://pypi.python.org/pypi/permetrics):
 
 This is a simple example::
 
-	pip install permetrics
+	pip install permetrics==1.2.1
 
 Or install the development version from GitHub::
 

@@ -1,9 +1,9 @@
-NNSE - Normalize NSE
-====================
+NNSE - Normalized NSE
+=====================
 
 .. toctree::
    :maxdepth: 3
-   :caption: NNSE - Normalize NSE
+   :caption: NNSE - Normalized NSE
 
 .. toctree::
    :maxdepth: 3
@@ -41,7 +41,7 @@ Example to use NNSE metric:
 	y_pred = array([2.5, 0.0, 2, 8])
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
-	print(evaluator.normalize_nash_sutcliffe_efficiency())
+	print(evaluator.normalized_nash_sutcliffe_efficiency())
 
 	## For > 1-D array
 	y_true = array([[0.5, 1], [-1, 1], [7, -6], [1, 2], [2.1, 2.2], [3.4, 5.5]])
