@@ -382,7 +382,7 @@ class RegressionMetric(Evaluator):
         nse = calculate_nse(y_true, y_pred, one_dim)
         return np.round(nse, decimal) if one_dim else self.get_multi_output_result(nse, multi_output, decimal)
 
-    def normalize_nash_sutcliffe_efficiency(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def normalized_nash_sutcliffe_efficiency(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
         """
         Normalize Nash-Sutcliffe Efficiency (NNSE): Best possible score is 1.0, bigger value is better. Range = [0, 1]
 
@@ -563,9 +563,7 @@ class RegressionMetric(Evaluator):
     def deviation_of_runoff_volume(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
         """
         Deviation of Runoff Volume (DRV): Best possible score is 1.0, smaller value is better. Range = [1, +inf)
-        Notes
-        ~~~~~
-            + https://rstudio-pubs-static.s3.amazonaws.com/433152_56d00c1e29724829bad5fc4fd8c8ebff.html
+        Link: https://rstudio-pubs-static.s3.amazonaws.com/433152_56d00c1e29724829bad5fc4fd8c8ebff.html
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
@@ -1234,7 +1232,7 @@ class RegressionMetric(Evaluator):
     MAAPE = maape = mean_arctangent_absolute_percentage_error
     MASE = mase = mean_absolute_scaled_error
     NSE = nse = nash_sutcliffe_efficiency
-    NNSE = nnse = normalize_nash_sutcliffe_efficiency
+    NNSE = nnse = normalized_nash_sutcliffe_efficiency
     WI = wi = willmott_index
     R = r = PCC = pcc = pearson_correlation_coefficient
     R2s = r2s = pearson_correlation_coefficient_square
