@@ -20,7 +20,7 @@ PCD - Prediction of Change in Direction
 	\text{PCD}(y, \hat{y}) =
 
 
-+ Best possible score is , bigger value is . Range =
++ Best possible score is 1.0, bigger value is better . Range = [0, 1]
 
 
 Latex equation code::

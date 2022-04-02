@@ -20,7 +20,7 @@ CE - Cross Entropy
 	\text{CE}(y, \hat{y}) =
 
 
-+ Best possible score is 0.0, smaller value is better . Range = [0, 1]
++ Range = (-inf, 0]. Can't give comment about this one
 
 
 Latex equation code::

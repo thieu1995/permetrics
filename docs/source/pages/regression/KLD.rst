@@ -20,7 +20,7 @@ KLD - Kullback-Leibler Divergence
 	\text{KLD}(y, \hat{y}) =
 
 
-+ Best possible score is 0.0, smaller value is better . Range = [0, +inf)
++ Best possible score is 0.0 . Range = (-inf, +inf)
 
 
 Latex equation code::

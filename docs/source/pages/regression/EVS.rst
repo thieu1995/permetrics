@@ -22,7 +22,7 @@ explained variance is estimated as follow:
 
     EVS = 1 - \frac{Var\{ y_{true} - y_{pred} \}}{Var \{ y_{true} \} }
 
-+ Best possible score is 1.0, lower values are worse. Range = (-inf, 1.0]
++ Best possible score is 1.0, greater values are better. Range = (-inf, 1.0]
 
 
 Latex equation code::

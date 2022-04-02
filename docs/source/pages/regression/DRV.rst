@@ -19,7 +19,7 @@ DRV - Deviation of Runoff Volume
 
 	\text{DRV}(y, \hat{y}) = \frac{ \sum_{i=0}^{N - 1} y_i }{ \sum_{i=0}^{N - 1} \hat{y_i} }
 
-+ Best possible score is 0, smaller value is better. Range = (-inf, +inf)
++ Best possible score is 1.0, smaller value is better. Range = [1, +inf)
 
 
 Latex equation code::

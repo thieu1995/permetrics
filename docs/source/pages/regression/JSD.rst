@@ -20,7 +20,7 @@ JSD - Jensen-Shannon Divergence
 	\text{JSD}(y, \hat{y}) =
 
 
-+ Best possible score is 0.0 (identical), smaller value is better . Range = [0, 1]
++ Best possible score is 0.0 (identical), smaller value is better . Range = [0, +inf)
 
 
 Latex equation code::

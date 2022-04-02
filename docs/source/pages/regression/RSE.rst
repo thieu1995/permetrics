@@ -20,7 +20,7 @@ RSE - Residual Standard Error
 	\text{RSE}(y, \hat{y}) =
 
 
-+ Best possible score is 1.0, bigger value is better. Range = [0, 1]
++ Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
 
 Latex equation code::

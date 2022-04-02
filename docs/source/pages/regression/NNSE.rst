@@ -1,9 +1,9 @@
-E - Entropy Loss
-================
+NNSE - Normalize NSE
+====================
 
 .. toctree::
    :maxdepth: 3
-   :caption: E - Entropy Loss
+   :caption: NNSE - Normalize NSE
 
 .. toctree::
    :maxdepth: 3
@@ -17,18 +17,18 @@ E - Entropy Loss
 
 .. math::
 
-	\text{E}(y, \hat{y}) =
+	\text{NNSE}(y, \hat{y}) = \frac{1}{2 - NSE}
 
 
-+ Best possible score is 0.0, smaller value is better. Range = (-inf, +inf)
++ Best possible score is 1.0, greater value is better. Range = [0, 1]
 
 
 Latex equation code::
 
-	\text{E}(y, \hat{y}) =
+	\text{E}(y, \hat{y}) = \frac{1}{2 - NSE}
 
 
-Example to use E metric:
+Example to use NNSE metric:
 
 .. code-block:: python
 	:emphasize-lines: 8-9,15-16
@@ -41,13 +41,13 @@ Example to use E metric:
 	y_pred = array([2.5, 0.0, 2, 8])
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
-	print(evaluator.entropy())
+	print(evaluator.normalize_nash_sutcliffe_efficiency())
 
 	## For > 1-D array
 	y_true = array([[0.5, 1], [-1, 1], [7, -6], [1, 2], [2.1, 2.2], [3.4, 5.5]])
 	y_pred = array([[0, 2], [-1, 2], [8, -5], [1.1, 1.9], [2.0, 2.3], [3.0, 4.2]])
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
-	print(evaluator.E(multi_output="raw_values"))
+	print(evaluator.NNSE(multi_output="raw_values"))
 
 

@@ -22,7 +22,7 @@ CI - Confidence Index
 	\text{CI}(y, \hat{y}) = \text{R}(y, \hat{y}) * \text{WI}(y, \hat{y})
 
 
-Best possible score is 1.0, bigger value is better. Range = [0, 1], meaning of values::
+Best possible score is 1.0, bigger value is better. Range = (-inf, 1], meaning of values::
 
 	> 0.85          Excellent Model
 	0.76-0.85       Very good
