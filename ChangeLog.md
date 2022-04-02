@@ -1,3 +1,15 @@
+# Version 1.2.1
+
+### Update
+
++ Fix bugs copy original data from Evaluator class 
++ Fix bugs of some methods in Regression class 
++ Add utils module
++ Update reference documents
++ Update examples
+
+---------------------------------------------------------------------
+
 # Version 1.2.0
 
 ### Change models
