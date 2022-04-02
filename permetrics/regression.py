@@ -6,6 +6,7 @@
 
 from permetrics.evaluator import Evaluator
 from permetrics.utils import *
+import numpy as np
 
 
 class RegressionMetric(Evaluator):
