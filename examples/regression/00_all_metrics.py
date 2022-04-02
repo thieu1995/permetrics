@@ -37,8 +37,9 @@ print(f"RMSE: {rmse_1}, {rmse_2}, {rmse_3}")
 # MAAPE = maape = mean_arctangent_absolute_percentage_error
 # MASE = mase = mean_absolute_scaled_error
 # NSE = nse = nash_sutcliffe_efficiency
+# NNSE = nnse = normalized_nash_sutcliffe_efficiency
 # WI = wi = willmott_index
-# R = r = pearson_correlation_coefficient
+# R = r = PCC = pcc = pearson_correlation_coefficient
 # R2s = r2s = pearson_correlation_coefficient_square
 # CI = ci = confidence_index
 # R2 = r2 = coefficient_of_determination
@@ -47,7 +48,6 @@ print(f"RMSE: {rmse_1}, {rmse_2}, {rmse_3}")
 # GINI = gini = gini_coefficient
 # GINI_WIKI = gini_wiki = gini_coefficient_wiki
 # PCD = pcd = prediction_of_change_in_direction
-# E = e = entropy
 # CE = ce = cross_entropy
 # KLD = kld = kullback_leibler_divergence
 # JSD = jsd = jensen_shannon_divergence
