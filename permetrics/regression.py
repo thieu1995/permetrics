@@ -35,7 +35,7 @@ class RegressionMetric(Evaluator):
 
     def explained_variance_score(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
         """
-        Explained Variance Score (EVS). Best possible score is 1.0, lower values are worse. Range = (-inf, 1.0]
+        Explained Variance Score (EVS). Best possible score is 1.0, greater value is better. Range = (-inf, 1.0]
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
@@ -274,7 +274,7 @@ class RegressionMetric(Evaluator):
     def symmetric_mean_absolute_percentage_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
         """
         Symmetric Mean Absolute Percentage Error (SMAPE): Best possible score is 0.0, smaller value is better. Range = [0, 1]
-        If you want percentage then multiple with 100%
+        If you want percentage then multiply with 100%
 
         Link: https://en.wikipedia.org/wiki/Symmetric_mean_absolute_percentage_error
 
@@ -527,7 +527,7 @@ class RegressionMetric(Evaluator):
 
     def confidence_index(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
         """
-        Confidence Index (or Performance Index): CI (PI): Best possible score is 1.0, bigger value is better. Range = [0, 1]
+        Confidence Index (or Performance Index): CI (PI): Best possible score is 1.0, bigger value is better. Range = (-inf, 1]
 
         Notes
         ~~~~~
@@ -785,7 +785,7 @@ class RegressionMetric(Evaluator):
 
     def kullback_leibler_divergence(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=True):
         """
-        Kullback-Leibler Divergence (KLD): Best possible score is 0.0, bigger value is better . Range = (-inf, 0]
+        Kullback-Leibler Divergence (KLD): Best possible score is 0.0 . Range = (-inf, +inf)
         Link: https://machinelearningmastery.com/divergence-between-probability-distributions/
 
         Args:
