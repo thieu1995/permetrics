@@ -14,6 +14,12 @@
 >  --- [Thieu Nguyen](https://www.researchgate.net/profile/Thieu_Nguyen6)
 ---
 
+# Quick notification
+
+* The version 1.2.0 has serious problem with calculate multiple metrics (OOP style), please update to version 1.2.1 as 
+  soon as possible for your sake.
+
+
 ## Introduction
 * PerMetrics is a python library for performance metrics of machine learning models.
 
