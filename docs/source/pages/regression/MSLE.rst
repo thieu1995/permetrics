@@ -33,7 +33,7 @@ Latex equation code::
 Example to use MSLE metric:
 
 .. code-block:: python
-	    :emphasize-lines: 8-9,15-16
+	:emphasize-lines: 8-9,15-16
 
 	from numpy import array
 	from permetrics.regression import RegressionMetric

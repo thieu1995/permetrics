@@ -22,11 +22,11 @@ NRMSE - Normalized Root Mean Square Error
 + Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
 
-Latex equation code::
++ Latex equation code:
 
 
 
-Example to use NMRSE metric:
++ Example to use NMRSE metric:
 
 .. code-block:: python
 	:emphasize-lines: 8-9,15-16
