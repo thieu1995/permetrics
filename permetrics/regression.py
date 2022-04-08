@@ -508,7 +508,7 @@ class RegressionMetric(Evaluator):
             positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
 
         Returns:
-            result (float, int, np.ndarray): R metric for single column or multiple columns
+            result (float, int, np.ndarray): AR metric for single column or multiple columns
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
@@ -999,6 +999,39 @@ class RegressionMetric(Evaluator):
             div = np.where(np.logical_and(div >= 0.8, div <= 1.2), 1, 0)
             return self.get_multi_output_result(np.mean(div, axis=0), multi_output, decimal)
 
+    def a30_index(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=False):
+        """
+        A30 index (A30): Best possible score is 1.0, bigger value is better. Range = [0, 1]
+
+        Note: a30-index evaluated metric by showing the number of samples that fit the prediction values with a deviation of ±30% compared to experimental values
+
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = True)
+            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): A30 metric for single column or multiple columns
+        """
+        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
+        if non_zero:
+            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 1)
+        else:
+            y_pred[y_pred == 0] = self.EPSILON
+        if positive:
+            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+        if one_dim:
+            div = y_true / y_pred
+            div = np.where(np.logical_and(div >= 0.7, div <= 1.3), 1, 0)
+            return np.round(np.mean(div), decimal)
+        else:
+            div = y_true / y_pred
+            div = np.where(np.logical_and(div >= 0.7, div <= 1.3), 1, 0)
+            return self.get_multi_output_result(np.mean(div, axis=0), multi_output, decimal)
+
     def normalized_root_mean_square_error(self, y_true=None, y_pred=None, model=0, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
         """
         Normalized Root Mean Square Error (NRMSE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
@@ -1274,6 +1307,7 @@ class RegressionMetric(Evaluator):
     RAE = rae = relative_absolute_error
     A10 = a10 = a10_index
     A20 = a20 = a20_index
+    A30 = a30 = a30_index
     NRMSE = nrmse = normalized_root_mean_square_error
     RSE = rse = residual_standard_error
 
