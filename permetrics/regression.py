@@ -108,7 +108,7 @@ class RegressionMetric(Evaluator):
         if one_dim:
             return np.round(np.mean(y_pred - y_true), decimal)
         else:
-            result = np.mean(y_true - y_pred, axis=0)
+            result = np.mean(y_pred - y_true, axis=0)
             return self.get_multi_output_result(result, multi_output, decimal)
 
     def mean_absolute_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
@@ -243,7 +243,7 @@ class RegressionMetric(Evaluator):
 
     def mean_relative_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=False):
         """
-        Mean Relative Error (MRE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
+        Mean Relative Error (MRE) - Mean Relative Bias (MRB): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
@@ -254,7 +254,7 @@ class RegressionMetric(Evaluator):
             positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
 
         Returns:
-            result (float, int, np.ndarray): MRE metric for single column or multiple columns
+            result (float, int, np.ndarray): MRE (MRB) metric for single column or multiple columns
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
@@ -264,9 +264,9 @@ class RegressionMetric(Evaluator):
         if positive:
             y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
         if one_dim:
-            return np.round(np.mean(np.abs((y_true - y_pred) / y_true)), decimal)
+            return np.round(np.mean(np.abs((y_pred - y_true) / y_true)), decimal)
         else:
-            result = np.mean(np.abs((y_true - y_pred) / y_true), axis=0)
+            result = np.mean(np.abs((y_pred - y_true) / y_true), axis=0)
             return self.get_multi_output_result(result, multi_output, decimal)
 
     def mean_percentage_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=False):
@@ -1381,7 +1381,7 @@ class RegressionMetric(Evaluator):
     RMSE = rmse = root_mean_squared_error
     MSLE = msle = mean_squared_log_error
     MedAE = medae = median_absolute_error
-    MRE = mre = mean_relative_error
+    MRE = mre = MRB = mrb = mean_relative_bias = mean_relative_error
     MPE = mpe = mean_percentage_error
     MAPE = mape = mean_absolute_percentage_error
     SMAPE = smape = symmetric_mean_absolute_percentage_error
@@ -1412,7 +1412,7 @@ class RegressionMetric(Evaluator):
     NRMSE = nrmse = normalized_root_mean_square_error
     RSE = rse = residual_standard_error
 
-    RE = re = single_relative_error
+    RE = re = RB = rb = single_relative_bias = single_relative_error
     AE = ae = single_absolute_error
     SE = se = single_squared_error
     SLE = sle = single_squared_log_error
