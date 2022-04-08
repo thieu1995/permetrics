@@ -493,12 +493,13 @@ class RegressionMetric(Evaluator):
 
     def coefficient_of_determination(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
         """
-        Coefficient of Determination (R2): Best possible score is 1.0, bigger value is better. Range = (-inf, 1]
+        Coefficient of Determination (COD/R2): Best possible score is 1.0, bigger value is better. Range = (-inf, 1]
 
         Notes
         ~~~~~
             + https://scikit-learn.org/stable/modules/model_evaluation.html#r2-score
-            + This is not R^2 (or R*R), and should be denoted as R2, not like above scikit-learn website.
+            + Scikit-learn and other websites denoted COD as R^2 (or R squared), it leads to the misunderstanding of R^2 in which R is PCC.
+            + We should denote it as COD or R2 only.
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
@@ -520,6 +521,48 @@ class RegressionMetric(Evaluator):
             return np.round(1 - np.sum((y_true - y_pred) ** 2) / np.sum((y_true - np.mean(y_true)) ** 2), decimal)
         else:
             result = 1 - np.sum((y_true - y_pred) ** 2, axis=0) / np.sum((y_true - np.mean(y_true, axis=0)) ** 2, axis=0)
+            return self.get_multi_output_result(result, multi_output, decimal)
+
+    def adjusted_coefficient_of_determination(self, y_true=None, y_pred=None, X_shape=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+        """
+        Adjusted Coefficient of Determination (ACOD/AR2): Best possible score is 1.0, bigger value is better. Range = (-inf, 1]
+
+        Notes
+        ~~~~~
+            + https://dziganto.github.io/data%20science/linear%20regression/machine%20learning/python/Linear-Regression-101-Metrics/
+            + Scikit-learn and other websites denoted COD as R^2 (or R squared), it leads to the misunderstanding of R^2 in which R is PCC.
+            + We should denote it as COD or R2 only.
+
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            X_shape (tuple, list, np.ndarray): The shape of X_train dataset
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
+            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): AR2 metric for single column or multiple columns
+        """
+        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
+        if non_zero:
+            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 2)
+        if positive:
+            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+        if X_shape is None:
+            print("Permetrics Error! You need to pass the shape of X_train dataset to calculate Adjusted R2.")
+            exit(0)
+        if len(X_shape) != 2 or X_shape[0] < 4 or X_shape[1] < 1:
+            print("Permetrics Error! You need to pass the real shape of X_train dataset to calculate Adjusted R2.")
+            exit(0)
+        dft = X_shape[0] - 1.0
+        dfe = X_shape[0] - X_shape[1] - 1.0
+        df_final = dft/dfe
+        if one_dim:
+            return np.round(1 - df_final * np.sum((y_true - y_pred) ** 2) / np.sum((y_true - np.mean(y_true)) ** 2), decimal)
+        else:
+            result = 1 - df_final * np.sum((y_true - y_pred) ** 2, axis=0) / np.sum((y_true - np.mean(y_true, axis=0)) ** 2, axis=0)
             return self.get_multi_output_result(result, multi_output, decimal)
 
     def pearson_correlation_coefficient(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
@@ -1351,7 +1394,8 @@ class RegressionMetric(Evaluator):
     AR = ar = APCC = apcc = absolute_pearson_correlation_coefficient
     R2s = r2s = pearson_correlation_coefficient_square
     CI = ci = confidence_index
-    R2 = r2 = coefficient_of_determination
+    COD = cod = R2 = r2 = coefficient_of_determination
+    ACOD = acod = AR2 = ar2 = adjusted_coefficient_of_determination
     DRV = drv = deviation_of_runoff_volume
     KGE = kge = kling_gupta_efficiency
     GINI = gini = gini_coefficient
