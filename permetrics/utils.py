@@ -17,12 +17,23 @@ def calculate_nse(y_true, y_pred, one_dim):
 def calculate_pcc(y_true, y_pred, one_dim):
     if one_dim:
         m1, m2 = np.mean(y_true), np.mean(y_pred)
-        # numerator = np.sum((y_true - m1) * (y_pred - m2))
-        numerator = np.sum(np.abs(y_true - m1) * np.abs(y_pred - m2))
+        numerator = np.sum((y_true - m1) * (y_pred - m2))
         denominator = np.sqrt(np.sum((y_true - m1) ** 2)) * np.sqrt(np.sum((y_pred - m2) ** 2))
     else:
         m1, m2 = np.mean(y_true, axis=0), np.mean(y_pred, axis=0)
         numerator = np.sum((y_true - m1) * (y_pred - m2), axis=0)
+        denominator = np.sqrt(np.sum((y_true - m1) ** 2, axis=0)) * np.sqrt(np.sum((y_pred - m2) ** 2, axis=0))
+    return numerator / denominator
+
+
+def calculate_absolute_pcc(y_true, y_pred, one_dim):
+    if one_dim:
+        m1, m2 = np.mean(y_true), np.mean(y_pred)
+        numerator = np.sum(np.abs(y_true - m1) * np.abs(y_pred - m2))
+        denominator = np.sqrt(np.sum((y_true - m1) ** 2)) * np.sqrt(np.sum((y_pred - m2) ** 2))
+    else:
+        m1, m2 = np.mean(y_true, axis=0), np.mean(y_pred, axis=0)
+        numerator = np.sum(np.abs(y_true - m1) * np.abs(y_pred - m2), axis=0)
         denominator = np.sqrt(np.sum((y_true - m1) ** 2, axis=0)) * np.sqrt(np.sum((y_pred - m2) ** 2, axis=0))
     return numerator / denominator
 
