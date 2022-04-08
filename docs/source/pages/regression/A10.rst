@@ -21,7 +21,8 @@ A10 - A10 index
 
 
 + Best possible score is 1.0, bigger value is better. Range = [0, 1]
-
++ a10-index is engineering index for evaluating artificial intelligence models by showing the number of samples that fit the prediction values with a deviation of ±10% compared to experimental values
++ https://www.mdpi.com/2076-3417/9/18/3715/htm
 
 Latex equation code::
 

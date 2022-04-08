@@ -1,7 +1,7 @@
 Introduction
 ############
 
-.. image:: https://img.shields.io/badge/release-1.2.1-yellow.svg?style=svg
+.. image:: https://img.shields.io/badge/release-1.2.2-yellow.svg?style=svg
     :target: https://github.com/thieu1995/permetrics
 
 .. image:: https://img.shields.io/pypi/wheel/gensim.svg?style=svg
@@ -36,7 +36,7 @@ PerMetrics is library written in Python, for PERformance METRICS (PerMetrics) of
     * Perform Quantitative Analysis of models.
 
 * Currently, It contains 2 sub-packages including:
-	* regression: contains 37 metrics
+	* regression: contains 42 metrics
 	* classification: contains 2 metrics
 
 
@@ -71,7 +71,7 @@ Install the [current PyPI release](https://pypi.python.org/pypi/permetrics):
 
 This is a simple example::
 
-	pip install permetrics==1.2.1
+	pip install permetrics==1.2.2
 
 Or install the development version from GitHub::
 
@@ -81,56 +81,10 @@ Or install the development version from GitHub::
 Examples
 ########
 
-+ Permetrics version >= 1.2.0
-
-.. code-block:: python
-	:emphasize-lines: 8-10, 16-18
-
-	from numpy import array
-	from permetrics.regression import RegressionMetric
-
-	## For 1-D array
-	y_true = array([3, -0.5, 2, 7])
-	y_pred = array([2.5, 0.0, 2, 8])
-
-	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
-	print(evaluator.RMSE())
-	print(evaluator.MSE())
-
-	## For > 1-D array
-	y_true = array([[0.5, 1], [-1, 1], [7, -6]])
-	y_pred = array([[0, 2], [-1, 2], [8, -5]])
-
-	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
-	print(evaluator.RMSE(multi_output="raw_values", decimal=5))
-	print(evaluator.MAE(multi_output="raw_values", decimal=5))
-
-
-+ Permetrics version <= 1.1.3
-
-.. code-block:: python
-	:emphasize-lines: 9,18
-
-	from numpy import array
-	from permetrics.regression import Metrics
-
-	# All you need to do is: (Make sure your y_true and y_pred is a numpy array).
-	## For 1-D array
-	y_true = array([3, -0.5, 2, 7])
-	y_pred = array([2.5, 0.0, 2, 8])
-
-	obj1 = Metrics(y_true, y_pred)
-	print(obj1.root_mean_squared_error(clean=True, decimal=5))
-
-	## For > 1-D array
-	y_true = array([[0.5, 1], [-1, 1], [7, -6]])
-	y_pred = array([[0, 2], [-1, 2], [8, -5]])
-
-	multi_outputs = [None, "raw_values", [0.3, 1.2], array([0.5, 0.2]), (0.1, 0.9)]
-	obj2 = Metrics(y_true, y_pred)
-	for multi_output in multi_outputs:
-		print(obj2.root_mean_squared_error(clean=False, multi_output=multi_output, decimal=5))
-	...
+.. include:: examples/functional_style.rst
+.. include:: examples/oop_style.rst
+.. include:: examples/multiple_metrics.rst
+.. include:: examples/multiple_outputs_multiple_metrics.rst
 
 
 

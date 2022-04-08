@@ -15,8 +15,7 @@ EVS - Explained Variance Score
    :maxdepth: 3
 
 
-The explained variance score computes the `explained variance regression score`_. If Var is Variance, the square of the standard deviation, then the
-explained variance is estimated as follow:
++ The explained variance score computes the `explained variance regression score`_. If Var is Variance, the square of the standard deviation, then the explained variance is estimated as follow:
 
 .. math::
 

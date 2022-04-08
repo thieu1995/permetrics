@@ -20,7 +20,9 @@ RE - Relative Error
 	\text{RE}(y, \hat{y}) =
 
 
-+ Best possible score is 0.0, smaller value is better. Range = (-inf, +inf)
++ Relative Error (RE): Best possible score is 0.0, smaller value is better. Range = (-inf, +inf)
++ Note: Computes the relative error between two numbers, or for element between a pair of list, tuple or numpy arrays.
+
 
 
 Latex equation code::

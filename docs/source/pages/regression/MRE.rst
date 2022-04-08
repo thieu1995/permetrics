@@ -20,6 +20,8 @@ MRE - Mean Relative Error
 
 	\text{MRE}(y, \hat{y}) = \frac{1}{N} \sum_{i=0}^{N - 1} \frac{|y_i - \hat{y}_i|}{|y_i|}
 
+
++ Mean Relative Error (MRE) or Mean Relative Bias (MRB)
 + Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
 

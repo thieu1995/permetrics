@@ -21,6 +21,7 @@ KLD - Kullback-Leibler Divergence
 
 
 + Best possible score is 0.0 . Range = (-inf, +inf)
++ Link: https://machinelearningmastery.com/divergence-between-probability-distributions/
 
 
 Latex equation code::

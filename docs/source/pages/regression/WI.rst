@@ -20,7 +20,11 @@ WI - Willmott Index
 
 	\text{WI}(y, \hat{y}) = 1 - \frac{ \sum_{i=0}^{N - 1} (\hat{y_i} - y_i)^2 }{ \sum_{i=0}^{N - 1} (|\hat{y_i} - mean(y)| + |y_i - mean(y)|)^2}
 
-+ Best possible score is 1.0, bigger value is better. Range = [0, 1]
+
++ Willmott Index (WI): Best possible score is 1.0, bigger value is better. Range = [0, 1]
++ Reference evapotranspiration for Londrina, Paraná, Brazil: performance of different estimation methods
++ https://www.researchgate.net/publication/319699360_Reference_evapotranspiration_for_Londrina_Parana_Brazil_performance_of_different_estimation_methods
+
 
 
 Latex equation code::

@@ -21,6 +21,7 @@ KGE - Kling-Gupta Efficiency
 
 where: r = correlation coefficient, CV = coefficient of variation, :math:`\mu` = mean, :math:`\sigma` = standard deviation.
 
+
 .. math::
 
     \beta = \text{bias ratio} = \frac{\mu_{\hat{y}} }{\mu_{y}}
@@ -28,9 +29,8 @@ where: r = correlation coefficient, CV = coefficient of variation, :math:`\mu` =
 	\gamma = \text{variability ratio} = \frac{ CV_{\hat{y}} } {CV_y} = \frac{ \sigma _{\hat{y}} / \mu _{\hat{y}} }{ \sigma _y / \mu _y}
 
 
-
-
 + Best possible score is 1, bigger value is better. Range = (-inf, 1]
++ Link: https://rstudio-pubs-static.s3.amazonaws.com/433152_56d00c1e29724829bad5fc4fd8c8ebff.html
 
 
 Latex equation code::

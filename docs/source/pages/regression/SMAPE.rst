@@ -19,7 +19,10 @@ SMAPE - Symmetric Mean Absolute Percentage Error
 
 	\text{SMAPE}(y, \hat{y}) = \frac{100\%}{N} \sum_{i=0}^{N - 1} \frac{ 2*|y_i - \hat{y}_i|}{|y| + |\hat{y}|}
 
-+ Best possible score is 0.0, smaller value is better. Range = [0, 1]. If you want percentage, multiply the result with 100%
+
++ Symmetric Mean Absolute Percentage Error (SMAPE): Best possible score is 0.0, smaller value is better. Range = [0, 1].
++ If you want percentage, multiply the result with 100%
++ Link: https://en.wikipedia.org/wiki/Symmetric_mean_absolute_percentage_error
 
 
 Latex equation code::

@@ -22,7 +22,9 @@ MSLE - Mean Squared Logarithmic Error
 Where :math:`\log_e (x)` means the natural logarithm of x. This metric is best to use when targets having exponential growth, such as population counts,
 average sales of a commodity over a span of years etc. Note that this metric penalizes an under-predicted estimate greater than an over-predicted estimate.
 
+
 + Best possible score is 0.0, smaller value is better. Range = [0, +inf)
++ Link: https://peltarion.com/knowledge-center/documentation/modeling-view/build-an-ai-model/loss-functions/mean-squared-logarithmic-error-(msle)
 
 
 Latex equation code::

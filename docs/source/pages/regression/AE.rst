@@ -21,7 +21,7 @@ AE - Absolute Error
 
 
 + Best possible score is 0.0, smaller value is better. Range = (-inf, +inf)
-
++ Computes the absolute error between two numbers, or for element between a pair of list, tuple or numpy arrays.
 
 Latex equation code::
 

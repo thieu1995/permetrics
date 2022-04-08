@@ -20,7 +20,8 @@ NNSE - Normalized NSE
 	\text{NNSE}(y, \hat{y}) = \frac{1}{2 - NSE}
 
 
-+ Best possible score is 1.0, greater value is better. Range = [0, 1]
++ Normalize Nash-Sutcliffe Efficiency (NNSE): Best possible score is 1.0, greater value is better. Range = [0, 1]
++ Link: https://agrimetsoft.com/calculators/Nash%20Sutcliffe%20model%20Efficiency%20coefficient
 
 
 Latex equation code::

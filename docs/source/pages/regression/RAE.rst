@@ -20,7 +20,9 @@ RAE - Relative Absolute Error
 	\text{RAE}(y, \hat{y}) =
 
 
-+ Best possible score is 0.0, smaller value is better. Range = [0, +inf)
++ Relative Absolute Error (RAE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
++ https://stackoverflow.com/questions/59499222/how-to-make-a-function-of-mae-and-rae-without-using-librarymetrics
++ https://www.statisticshowto.com/relative-absolute-error
 
 
 Latex equation code::

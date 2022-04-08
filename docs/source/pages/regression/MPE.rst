@@ -1,9 +1,9 @@
-SE - Squared Error
-==================
+MAPE - Mean Percentage Error
+============================
 
 .. toctree::
    :maxdepth: 3
-   :caption: SE - Squared Error
+   :caption: MAPE - Mean Percentage Error
 
 .. toctree::
    :maxdepth: 3
@@ -17,20 +17,19 @@ SE - Squared Error
 
 .. math::
 
-	\text{SE}(y, \hat{y}) =
+	\text{MPE}(y, \hat{y}) = \frac{100\%}{N} \sum_{i=0}^{N - 1} \frac{y_i - \hat{y}_i}{y_i}.
 
 
-+ Best possible score is 0.0, smaller value is better. Range = [0, +inf)
-+ Note: Computes the squared error between two numbers, or for element between a pair of list, tuple or numpy arrays.
++ Mean Percentage Error (MPE): Best possible score is 0.0. Range = (-inf, +inf)
++ Link: https://www.dataquest.io/blog/understanding-regression-error-metrics/
 
 
 Latex equation code::
 
-	\text{SE}(y, \hat{y}) =
+	\text{MPE}(y, \hat{y}) = \frac{100\%}{N} \sum_{i=0}^{N - 1} \frac{y_i - \hat{y}_i}{y_i}.
 
 
-
-Example to use SE metric:
+Example to use MPE metric:
 
 .. code-block:: python
 	:emphasize-lines: 8-9,15-16
@@ -43,12 +42,13 @@ Example to use SE metric:
 	y_pred = array([2.5, 0.0, 2, 8])
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
-	print(evaluator.single_squared_error())
+	print(evaluator.mean_percentage_error())
 
 	## For > 1-D array
 	y_true = array([[0.5, 1], [-1, 1], [7, -6]])
 	y_pred = array([[0, 2], [-1, 2], [8, -5]])
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
-	print(evaluator.SE())
+	print(evaluator.MPE(multi_output="raw_values"))
+
 

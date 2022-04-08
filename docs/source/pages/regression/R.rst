@@ -19,7 +19,12 @@ R - Pearson’s Correlation Index
 
 	\text{R}(y, \hat{y}) = \frac{ \sum_{i=0}^{N - 1} ((y_i - mean(y))*(\hat{y_i} - mean(\hat{y}))) }{ \sqrt{ \sum_{i=0}^{N - 1} (y_i - mean(y))^2} *\sqrt{ \sum_{i=0}^{N - 1} (\hat{y_i} - mean(\hat{y}))^2} }
 
-+ Best possible score is 1.0, bigger value is better. Range = [-1, 1]
+
+
++ Pearson’s Correlation Coefficient (PCC or R): Best possible score is 1.0, bigger value is better. Range = [-1, 1]
++ Reference evapotranspiration for Londrina, Paraná, Brazil: performance of different estimation methods
++ Link: https://en.wikipedia.org/wiki/Pearson_correlation_coefficient
+
 
 
 Latex equation code::

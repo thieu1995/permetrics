@@ -20,7 +20,9 @@ NSE - Nash-Sutcliffe Efficiency
 
 	\text{NSE}(y, \hat{y}) = 1 - \frac{\sum_{i=0}^{N - 1} (y_i - \hat{y_i})^2}{ \sum_{i=0}^{N - 1} (y_i - mean(y))^2}
 
-+ Best possible score is 1.0, bigger value is better. Range = (-inf, 1]
+
++ Nash-Sutcliffe Efficiency (NSE): Best possible score is 1.0, bigger value is better. Range = (-inf, 1]
++ Link: https://agrimetsoft.com/calculators/Nash%20Sutcliffe%20model%20Efficiency%20coefficient
 
 
 Latex equation code::

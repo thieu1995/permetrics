@@ -21,6 +21,7 @@ MAAPE - Mean Arctangent Absolute Percentage Error
 	\text{MAAPE}(y, \hat{y}) = \frac{1}{N} \sum_{i=0}^{N-1} AAPE_i =  \frac{1}{N} \sum_{i=0}^{N - 1} arctan(\frac{|y_i - \hat{y}_i|}{|y_i|})
 
 + Best possible score is 0.0, smaller value is better. Range = [0, +inf)
++  Link: https://support.numxl.com/hc/en-us/articles/115001223463-MAAPE-Mean-Arctangent-Absolute-Percentage-Error
 
 
 Latex equation code::

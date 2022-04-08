@@ -24,7 +24,6 @@ MASE - Mean Absolute Scaled Error
 + `document`_.
 
 
-
 Latex equation code::
 
 	\text{MASE}(y, \hat{y}) = \frac{ \frac{1}{N} \sum_{i=0}{N-1} |y_i - \hat{y_i}| }{ \frac{1}{N-1} \sum_{i=1}^{N-1} |y_i - y_{i-1}| }

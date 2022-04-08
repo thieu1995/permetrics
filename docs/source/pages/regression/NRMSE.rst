@@ -19,7 +19,8 @@ NRMSE - Normalized Root Mean Square Error
 
 
 
-+ Best possible score is 0.0, smaller value is better. Range = [0, +inf)
++ Normalized Root Mean Square Error (NRMSE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
++ Link: https://medium.com/microsoftazure/how-to-better-evaluate-the-goodness-of-fit-of-regressions-990dbf1c0091
 
 
 + Latex equation code:

@@ -21,6 +21,8 @@ CE - Cross Entropy
 
 
 + Range = (-inf, 0]. Can't give comment about this one
++ Greater value of Entropy, the greater the uncertainty for probability distribution and smaller the value the less the uncertainty
++ https://datascience.stackexchange.com/questions/20296/cross-entropy-loss-explanation
 
 
 Latex equation code::

@@ -21,16 +21,17 @@ R2 - Coefficient of Determination
 
 where :math:`\bar{y} = \frac{1}{N} \sum_{i=1}^{N} y_i` and :math:`\sum_{i=1}^{N} (y_i - \hat{y}_i)^2 = \sum_{i=1}^{N} \epsilon_i^2`
 
-The r2_score function computes the coefficient of determination, should denoted as R2.
 
-It represents the proportion of variance (of y) that has been explained by the independent variables in the model.  It provides an indication of goodness of
-fit and therefore a measure of how well unseen samples are likely to be predicted by the model, through the proportion of explained variance.
++ Coefficient of Determination (COD/R2): Best possible score is 1.0, bigger value is better. Range = (-inf, 1]
++ https://scikit-learn.org/stable/modules/model_evaluation.html#r2-score
++ Scikit-learn and other websites denoted COD as R^2 (or R squared), it leads to the misunderstanding of R^2 in which R is Pearson’s Correlation Coefficient.
++ We should denote it as COD or R2 only.
 
-As such variance is dataset dependent, R2 may not be meaningfully comparable across different datasets.  Best possible score is 1.0 and it can be negative
-(because the model can be arbitrarily worse). A constant model that always predicts the expected value of y, disregarding the input features,  would get a R²
-score of 0.0.
++ It represents the proportion of variance (of y) that has been explained by the independent variables in the model. It provides an indication of goodness of fit and therefore a measure of how well unseen samples are likely to be predicted by the model, through the proportion of explained variance.
 
-+ Best possible score is 1.0, bigger value is better. Range = (-inf, 1]
++ As such variance is dataset dependent, R2 may not be meaningfully comparable across different datasets.  Best possible score is 1.0 and it can be negative (because the model can be arbitrarily worse). A constant model that always predicts the expected value of y, disregarding the input features,  would get a  R² score of 0.0.
+
+
 
 Latex equation code::
 

@@ -19,7 +19,13 @@ R2s - (Pearson’s Correlation Index)**2
 
 	\text{R2s}(y, \hat{y}) = \Bigg[ \frac{ \sum_{i=0}^{N - 1} ((y_i - mean(y))*(\hat{y_i} - mean(\hat{y}))) }{ \sqrt{ \sum_{i=0}^{N - 1} (y_i - mean(y))^2}*\sqrt{\sum_{i=0}^{N - 1} (\hat{y_i} - mean(\hat{y}))^2} } \Bigg]^2
 
-+ Best possible score is 1.0, bigger value is better. Range = [0, 1]
+
++ (Pearson’s Correlation Index)^2 = R^2 = R2s (R square): Best possible score is 1.0, bigger value is better. Range = [0, 1]
++ This actually a useless metric that I implemented here just to demonstrate the misunderstanding between R2s and R2 (Coefficient of Determination).
++ Most of online tutorials (article, wikipedia,...) or even scikit-learn library are denoted the wrong R2s and R2.
++ R^2 = R2s = R squared makes people think it as (Pearson’s Correlation Index)^2
++ However, R2 = Coefficient of Determination, https://en.wikipedia.org/wiki/Pearson_correlation_coefficient
+
 
 
 Latex equation code::

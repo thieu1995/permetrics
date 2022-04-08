@@ -21,7 +21,8 @@ VAF - Variance Accounted For
 
 
 
-+ Best possible score is 100% (identical signal), bigger value is better. Range = (-inf, 100%]
++ Variance Accounted For between 2 signals (VAF): Best possible score is 100% (identical signal), bigger value is better. Range = (-inf, 100%]
++ Link: https://www.dcsc.tudelft.nl/~jwvanwingerden/lti/doc/html/vaf.html
 
 
 Latex equation code::

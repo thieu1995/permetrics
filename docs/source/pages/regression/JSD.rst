@@ -21,7 +21,7 @@ JSD - Jensen-Shannon Divergence
 
 
 + Best possible score is 0.0 (identical), smaller value is better . Range = [0, +inf)
-
++ Link: https://machinelearningmastery.com/divergence-between-probability-distributions/
 
 Latex equation code::
 

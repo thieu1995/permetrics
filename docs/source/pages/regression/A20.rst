@@ -21,6 +21,8 @@ A20 - A20 index
 
 
 + Best possible score is 1.0, bigger value is better. Range = [0, 1]
++ a20-index evaluated metric by showing the number of samples that fit the prediction values with a deviation of ±20% compared to experimental values
++ I developed this metric based on a10-index
 
 
 Latex equation code::
