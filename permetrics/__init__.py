@@ -25,7 +25,7 @@
 # print(f"RMSE: {rmse}, MSE: {mse}, MAE: {mae}")
 
 
-__version__ = "1.2.1"
+__version__ = "1.2.2"
 
 from . import regression
 from . import classification
