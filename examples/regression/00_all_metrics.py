@@ -26,12 +26,14 @@ print(f"RMSE: {rmse_1}, {rmse_2}, {rmse_3}")
 
 # EVS = evs = explained_variance_score
 # ME = me = max_error
+# MBE = mbe = mean_bias_error
 # MAE = mae = mean_absolute_error
 # MSE = mse = mean_squared_error
 # RMSE = rmse = root_mean_squared_error
 # MSLE = msle = mean_squared_log_error
 # MedAE = medae = median_absolute_error
-# MRE = mre = mean_relative_error
+# MRE = mre = MRB = mrb = mean_relative_bias = mean_relative_error
+# MPE = mpe = mean_percentage_error
 # MAPE = mape = mean_absolute_percentage_error
 # SMAPE = smape = symmetric_mean_absolute_percentage_error
 # MAAPE = maape = mean_arctangent_absolute_percentage_error
@@ -40,9 +42,11 @@ print(f"RMSE: {rmse_1}, {rmse_2}, {rmse_3}")
 # NNSE = nnse = normalized_nash_sutcliffe_efficiency
 # WI = wi = willmott_index
 # R = r = PCC = pcc = pearson_correlation_coefficient
+# AR = ar = APCC = apcc = absolute_pearson_correlation_coefficient
 # R2s = r2s = pearson_correlation_coefficient_square
 # CI = ci = confidence_index
-# R2 = r2 = coefficient_of_determination
+# COD = cod = R2 = r2 = coefficient_of_determination
+# ACOD = acod = AR2 = ar2 = adjusted_coefficient_of_determination
 # DRV = drv = deviation_of_runoff_volume
 # KGE = kge = kling_gupta_efficiency
 # GINI = gini = gini_coefficient
@@ -55,10 +59,11 @@ print(f"RMSE: {rmse_1}, {rmse_2}, {rmse_3}")
 # RAE = rae = relative_absolute_error
 # A10 = a10 = a10_index
 # A20 = a20 = a20_index
+# A30 = a30 = a30_index
 # NRMSE = nrmse = normalized_root_mean_square_error
 # RSE = rse = residual_standard_error
-
-# RE = re = single_relative_error
+#
+# RE = re = RB = rb = single_relative_bias = single_relative_error
 # AE = ae = single_absolute_error
 # SE = se = single_squared_error
 # SLE = sle = single_squared_log_error

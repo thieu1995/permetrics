@@ -17,6 +17,7 @@ evaluator = RegressionMetric(y_true, y_pred, decimal=5)
 
 ## Define list of metrics you want to use
 
+
 ## 1. Get list metrics by using loop
 list_metrics = ["RMSE", "MAE", "MAPE", "NSE"]
 list_results = []
@@ -24,9 +25,11 @@ for metric in list_metrics:
     list_results.append( evaluator.get_metric_by_name(metric) )
 print(list_results)
 
+
 ## 2. Get list metrics by using function
 dict_result_2 = evaluator.get_metrics_by_list_names(list_metrics)
 print(dict_result_2)
+
 
 ## 3. Get list metrics by using function and parameters
 dict_metrics = {

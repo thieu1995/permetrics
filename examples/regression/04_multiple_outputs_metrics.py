@@ -28,7 +28,7 @@ evaluator = RegressionMetric(y_true, y_pred, decimal=5)
 # rmse_2 = evaluator.RMSE(multi_output="mean")
 # print(rmse_2)
 
-## 3. If you want a specific has more important than other, you can set weight for each output.
+## 3. If you want a specific metric has more important than other, you can set weight for each output.
 # rmse_3 = evaluator.RMSE(multi_output=[0.5, 0.05, 0.1, 0.35])
 # print(rmse_3)
 
