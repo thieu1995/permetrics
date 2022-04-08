@@ -269,6 +269,35 @@ class RegressionMetric(Evaluator):
             result = np.mean(np.abs((y_true - y_pred) / y_true), axis=0)
             return self.get_multi_output_result(result, multi_output, decimal)
 
+    def mean_percentage_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=False):
+        """
+        Mean Percentage Error (MPE): Best possible score is 0.0. Range = (-inf, +inf)
+        Link: https://www.dataquest.io/blog/understanding-regression-error-metrics/
+
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = True)
+            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): MPE metric for single column or multiple columns
+        """
+        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
+        if non_zero:
+            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 0)
+        else:
+            y_true[y_true == 0] = self.EPSILON
+        if positive:
+            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+        if one_dim:
+            return np.round(np.mean((y_true - y_pred) / y_true), decimal)
+        else:
+            result = np.mean((y_true - y_pred) / y_true, axis=0)
+            return self.get_multi_output_result(result, multi_output, decimal)
+
     def mean_absolute_percentage_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=False):
         """
         Mean Absolute Percentage Error (MAPE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
@@ -1310,6 +1339,7 @@ class RegressionMetric(Evaluator):
     MSLE = msle = mean_squared_log_error
     MedAE = medae = median_absolute_error
     MRE = mre = mean_relative_error
+    MPE = mpe = mean_percentage_error
     MAPE = mape = mean_absolute_percentage_error
     SMAPE = smape = symmetric_mean_absolute_percentage_error
     MAAPE = maape = mean_arctangent_absolute_percentage_error
