@@ -1,3 +1,18 @@
+# Version 1.2.2
+
+### Update
+
++ Add Absolute R metric (AR) 
++ Add A30 metric (A30)
++ Add Mean Bias Error (MBE)
++ Add Mean Percentage Error (MPE)
++ Add Adjusted R2 (AR2)
++ Update reference documents
++ Update examples
+
+---------------------------------------------------------------------
+
+
 # Version 1.2.1
 
 ### Update

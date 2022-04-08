@@ -1,5 +1,5 @@
 # A framework of PERformance METRICS (PerMetrics) for artificial intelligence models
-[![GitHub release](https://img.shields.io/badge/release-1.2.1-yellow.svg)]()
+[![GitHub release](https://img.shields.io/badge/release-1.2.2-yellow.svg)]()
 [![Documentation Status](https://readthedocs.org/projects/permetrics/badge/?version=latest)](https://permetrics.readthedocs.io/en/latest/?badge=latest)
 [![](https://img.shields.io/badge/python-3.6+-orange.svg)](https://www.python.org/downloads/release/python-360/)
 [![Wheel](https://img.shields.io/pypi/wheel/gensim.svg)](https://pypi.python.org/pypi/permetrics) 
@@ -18,6 +18,7 @@
 
 * The version 1.2.0 has serious problem with calculate multiple metrics (OOP style), please update to version 1.2.1 as 
   soon as possible for your sake.
+* Add more metrics to version 1.2.2
 
 
 ## Introduction
@@ -39,7 +40,7 @@
 Install the [current PyPI release](https://pypi.python.org/pypi/permetrics):
 
 ```bash
-pip install permetrics==1.2.1
+pip install permetrics==1.2.2
 ```
 
 Or install the development version from GitHub:
@@ -73,6 +74,53 @@ y_pred = array([[0, 2], [-1, 2], [8, -5]])
 evaluator = RegressionMetric(y_true, y_pred, decimal=5)
 print(evaluator.RMSE(multi_output="raw_values", decimal=5))
 print(evaluator.MAE(multi_output="raw_values", decimal=5))
+
+
+## All metrics
+
+EVS = evs = explained_variance_score
+ME = me = max_error
+MBE = mbe = mean_bias_error
+MAE = mae = mean_absolute_error
+MSE = mse = mean_squared_error
+RMSE = rmse = root_mean_squared_error
+MSLE = msle = mean_squared_log_error
+MedAE = medae = median_absolute_error
+MRE = mre = MRB = mrb = mean_relative_bias = mean_relative_error
+MPE = mpe = mean_percentage_error
+MAPE = mape = mean_absolute_percentage_error
+SMAPE = smape = symmetric_mean_absolute_percentage_error
+MAAPE = maape = mean_arctangent_absolute_percentage_error
+MASE = mase = mean_absolute_scaled_error
+NSE = nse = nash_sutcliffe_efficiency
+NNSE = nnse = normalized_nash_sutcliffe_efficiency
+WI = wi = willmott_index
+R = r = PCC = pcc = pearson_correlation_coefficient
+AR = ar = APCC = apcc = absolute_pearson_correlation_coefficient
+R2s = r2s = pearson_correlation_coefficient_square
+CI = ci = confidence_index
+COD = cod = R2 = r2 = coefficient_of_determination
+ACOD = acod = AR2 = ar2 = adjusted_coefficient_of_determination
+DRV = drv = deviation_of_runoff_volume
+KGE = kge = kling_gupta_efficiency
+GINI = gini = gini_coefficient
+GINI_WIKI = gini_wiki = gini_coefficient_wiki
+PCD = pcd = prediction_of_change_in_direction
+CE = ce = cross_entropy
+KLD = kld = kullback_leibler_divergence
+JSD = jsd = jensen_shannon_divergence
+VAF = vaf = variance_accounted_for
+RAE = rae = relative_absolute_error
+A10 = a10 = a10_index
+A20 = a20 = a20_index
+A30 = a30 = a30_index
+NRMSE = nrmse = normalized_root_mean_square_error
+RSE = rse = residual_standard_error
+
+RE = re = RB = rb = single_relative_bias = single_relative_error
+AE = ae = single_absolute_error
+SE = se = single_squared_error
+SLE = sle = single_squared_log_error
 
 ```
 
@@ -147,42 +195,47 @@ The [documentation](https://permetrics.readthedocs.io/) includes more detailed i
 |---|---|---|---|---|
 | Regression | 1 | EVS | Explained Variance Score | Greater is better (Best = 1), Range=(-inf, 1.0] |
 |  | 2 | ME | Max Error | Smaller is better (Best = 0), Range=[0, +inf) |
-|  | 3 | MAE | Mean Absolute Error | Smaller is better (Best = 0), Range=[0, +inf) |
-|  | 4 | MSE | Mean Squared Error | Smaller is better (Best = 0), Range=[0, +inf) |
-|  | 5 | RMSE | Root Mean Squared Error | Smaller is better (Best = 0), Range=[0, +inf) |
-|  | 6 | MSLE | Mean Squared Log Error | Smaller is better (Best = 0), Range=[0, +inf) |
-|  | 7 | MedAE | Median Absolute Error | Smaller is better (Best = 0), Range=[0, +inf) |
-|  | 8 | MRE | Mean Relative Error | Smaller is better (Best = 0), Range=[0, +inf) |
-|  | 9 | MAPE | Mean Absolute Percentage Error | Smaller is better (Best = 0), Range=[0, +inf) |
-|  | 10 | SMAPE | Symmetric Mean Absolute Percentage Error | Smaller is better (Best = 0), Range=[0, 1] |
-|  | 11 | MAAPE | Mean Arctangent Absolute Percentage Error | Smaller is better (Best = 0), Range=[0, +inf) |
-|  | 12 | MASE | Mean Absolute Scaled Error | Smaller is better (Best = 0), Range=[0, +inf) |
-|  | 13 | NSE | Nash-Sutcliffe Efficiency Coefficient | Greater is better (Best = 1), Range=(-inf, 1] |
-|  | 14 | NNSE | Normalized Nash-Sutcliffe Efficiency Coefficient | Greater is better (Best = 1), Range=[0, 1] |
-|  | 15 | WI | Willmott Index | Greater is better (Best = 1), Range=[0, 1] |
-|  | 16 | R/PCC | Pearson’s Correlation Coefficient | Greater is better (Best = 1), Range=[-1, 1] |
-|  | 17 | R2s | (Pearson’s Correlation Index) ^ 2 | Greater is better (Best = 1), Range=[0, 1] |
-|  | 18 | R2 | Coefficient of Determination | Greater is better (Best = 1), Range=(-inf, 1] |
-|  | 19 | CI | Confidence Index | Greater is better (Best = 1), Range=(-inf, 1] |
-|  | 20 | DRV |  Deviation of Runoff Volume | Smaller is better (Best = 1.0), Range=[1, +inf) |
-|  | 21 | KGE | Kling-Gupta Efficiency | Greater is better (Best = 1), Range=(-inf, 1] |
-|  | 22 | GINI | Gini Coefficient | Smaller is better (Best = 0), Range=[0, +inf) |
-|  | 23 | GINI_WIKI | Gini Coefficient in Wiki | Smaller is better (Best = 0), Range=[0, +inf) |
-|  | 24 | PCD | Prediction of Change in Direction | Greater is better (Best = 1.0), Range=[0, 1] |
-|  | 25 | CE | Cross Entropy | Range(-inf, 0], Can't give comment about this |
-|  | 26 | KLD | Kullback Leibler Divergence | Best = 0, Range=(-inf, +inf) |
-|  | 27 | JSD | Jensen Shannon Divergence | Smaller is better (Best = 0), Range=[0, +inf) |
-|  | 28 | VAF | Variance Accounted For | Greater is better (Best = 100%), Range=(-inf, 100%] |
-|  | 29 | RAE | Relative Absolute Error | Smaller is better (Best = 0), Range=[0, +inf) |
-|  | 30 | A10 | A10 Index | Greater is better (Best = 1), Range=[0, 1] |
-|  | 31 | A20 | A20 Index | Greater is better (Best = 1), Range=[0, 1] |
-|  | 32 | NRMSE | Normalized Root Mean Square Error | Smaller is better (Best = 0), Range=[0, +inf) |
-|  | 33 | RSE | Residual Standard Error | Smaller is better (Best = 0), Range=[0, +inf) |
-|  | 34 | RE | Relative error | Best = 0, Range=(-inf, +inf) |
-|  | 35 | AE | Absolute error | Best = 0, Range=(-inf, +inf) |
-|  | 36 | SE |  Squared error | Smaller is better (Best = 0), Range=[0, +inf) |
-|  | 37 | SLE | Squared log error | Smaller is better (Best = 0), Range=[0, +inf) |
-|  | 38 |  |  |  |
+|  | 3 | MBE | Mean Bias Error | Best = 0, Range=(-inf, +inf) |
+|  | 4 | MAE | Mean Absolute Error | Smaller is better (Best = 0), Range=[0, +inf) |
+|  | 5 | MSE | Mean Squared Error | Smaller is better (Best = 0), Range=[0, +inf) |
+|  | 6 | RMSE | Root Mean Squared Error | Smaller is better (Best = 0), Range=[0, +inf) |
+|  | 7 | MSLE | Mean Squared Log Error | Smaller is better (Best = 0), Range=[0, +inf) |
+|  | 8 | MedAE | Median Absolute Error | Smaller is better (Best = 0), Range=[0, +inf) |
+|  | 9 | MRE / MRB | Mean Relative Error / Mean Relative Bias | Smaller is better (Best = 0), Range=[0, +inf) |
+|  | 10 | MPE | Mean Percentage Error | Best = 0, Range=(-inf, +inf) |
+|  | 11 | MAPE | Mean Absolute Percentage Error | Smaller is better (Best = 0), Range=[0, +inf) |
+|  | 12 | SMAPE | Symmetric Mean Absolute Percentage Error | Smaller is better (Best = 0), Range=[0, 1] |
+|  | 13 | MAAPE | Mean Arctangent Absolute Percentage Error | Smaller is better (Best = 0), Range=[0, +inf) |
+|  | 14 | MASE | Mean Absolute Scaled Error | Smaller is better (Best = 0), Range=[0, +inf) |
+|  | 15 | NSE | Nash-Sutcliffe Efficiency Coefficient | Greater is better (Best = 1), Range=(-inf, 1] |
+|  | 16 | NNSE | Normalized Nash-Sutcliffe Efficiency Coefficient | Greater is better (Best = 1), Range=[0, 1] |
+|  | 17 | WI | Willmott Index | Greater is better (Best = 1), Range=[0, 1] |
+|  | 18 | R / PCC | Pearson’s Correlation Coefficient | Greater is better (Best = 1), Range=[-1, 1] |
+|  | 19 | AR / APCC | Absolute Pearson's Correlation Coefficient | Greater is better (Best = 1), Range=[-1, 1] |
+|  | 20 | R2s | (Pearson’s Correlation Index) ^ 2 | Greater is better (Best = 1), Range=[0, 1] |
+|  | 21 | R2 / COD | Coefficient of Determination | Greater is better (Best = 1), Range=(-inf, 1] |
+|  | 22 | AR2 / ACOD | Adjusted Coefficient of Determination | Greater is better (Best = 1), Range=(-inf, 1] |
+|  | 23 | CI | Confidence Index | Greater is better (Best = 1), Range=(-inf, 1] |
+|  | 24 | DRV |  Deviation of Runoff Volume | Smaller is better (Best = 1.0), Range=[1, +inf) |
+|  | 25 | KGE | Kling-Gupta Efficiency | Greater is better (Best = 1), Range=(-inf, 1] |
+|  | 26 | GINI | Gini Coefficient | Smaller is better (Best = 0), Range=[0, +inf) |
+|  | 27 | GINI_WIKI | Gini Coefficient on Wikipage | Smaller is better (Best = 0), Range=[0, +inf) |
+|  | 28 | PCD | Prediction of Change in Direction | Greater is better (Best = 1.0), Range=[0, 1] |
+|  | 29 | CE | Cross Entropy | Range(-inf, 0], Can't give comment about this |
+|  | 30 | KLD | Kullback Leibler Divergence | Best = 0, Range=(-inf, +inf) |
+|  | 31 | JSD | Jensen Shannon Divergence | Smaller is better (Best = 0), Range=[0, +inf) |
+|  | 32 | VAF | Variance Accounted For | Greater is better (Best = 100%), Range=(-inf, 100%] |
+|  | 33 | RAE | Relative Absolute Error | Smaller is better (Best = 0), Range=[0, +inf) |
+|  | 34 | A10 | A10 Index | Greater is better (Best = 1), Range=[0, 1] |
+|  | 35 | A20 | A20 Index | Greater is better (Best = 1), Range=[0, 1] |
+|  | 36 | A30 | A30 Index | Greater is better (Best = 1), Range=[0, 1] |
+|  | 37 | NRMSE | Normalized Root Mean Square Error | Smaller is better (Best = 0), Range=[0, +inf) |
+|  | 38 | RSE | Residual Standard Error | Smaller is better (Best = 0), Range=[0, +inf) |
+|  | 39 | RE / RB | Relative Error / Relative Bias | Best = 0, Range=(-inf, +inf) |
+|  | 40 | AE | Absolute Error | Best = 0, Range=(-inf, +inf) |
+|  | 41 | SE |  Squared Error | Smaller is better (Best = 0), Range=[0, +inf) |
+|  | 42 | SLE | Squared Log Error | Smaller is better (Best = 0), Range=[0, +inf) |
+|  | 43 |  |  |  |
 | Classification | 1 | MLL | Mean Log Likelihood |  |
 |  | 2 | LL | Log Likelihood |
 
