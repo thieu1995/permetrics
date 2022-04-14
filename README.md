@@ -1,4 +1,4 @@
-# A framework of PERformance METRICS (PerMetrics) for artificial intelligence models
+# Permetrics: A framework of performance metrics for artificial intelligence models
 [![GitHub release](https://img.shields.io/badge/release-1.2.2-yellow.svg)]()
 [![Documentation Status](https://readthedocs.org/projects/permetrics/badge/?version=latest)](https://permetrics.readthedocs.io/en/latest/?badge=latest)
 [![](https://img.shields.io/badge/python-3.6+-orange.svg)](https://www.python.org/downloads/release/python-360/)
@@ -9,11 +9,6 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 
----
-> "Knowledge is power, sharing it is the premise of progress in life. It seems like a burden to someone, but it is the only way to achieve immortality."
->  --- [Thieu Nguyen](https://www.researchgate.net/profile/Thieu_Nguyen6)
----
-
 # Quick notification
 
 * The version 1.2.0 has serious problem with calculate multiple metrics (OOP style), please update to version 1.2.1 as 
@@ -23,12 +18,9 @@
 
 ## Introduction
 * PerMetrics is a python library for performance metrics of machine learning models.
-
 * The goals of this framework are:
     * Combine all metrics for regression, classification and clustering models
     * Helping users in all field access to metrics as fast as possible
-    * Perform Qualitative Analysis of models.
-    * Perform Quantitative Analysis of models.
 
 
 ### Dependencies
@@ -245,8 +237,8 @@ The [documentation](https://permetrics.readthedocs.io/) includes more detailed i
 + If you use permetrics in your project, please cite my works: 
 ```code 
 @software{thieu_nguyen_2020_3951205,
-  author       = {Thieu Nguyen},
-  title        = {A framework of PERformance METRICS (PerMetrics) for artificial intelligence models},
+  author       = {Nguyen Van Thieu},
+  title        = {Permetrics: A framework of performance metrics for artificial intelligence models},
   month        = jul,
   year         = 2020,
   publisher    = {Zenodo},
