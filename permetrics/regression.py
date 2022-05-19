@@ -5,7 +5,8 @@
 # --------------------------------------------------%
 
 from permetrics.evaluator import Evaluator
-from permetrics.utils import *
+from permetrics.utils.regressor_util import *
+from permetrics.utils.data_util import *
 import numpy as np
 
 
@@ -32,6 +33,34 @@ class RegressionMetric(Evaluator):
         super().__init__(y_true, y_pred, decimal, **kwargs)
         if kwargs is None: kwargs = {}
         self.set_keyword_arguments(kwargs)
+        self.one_dim = False
+
+    def get_processed_data(self, y_true=None, y_pred=None, decimal=None):
+        """
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred)
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            y_true_final: y_true used in evaluation process.
+            y_pred_final: y_pred used in evaluation process
+            one_dim: is y_true has 1 dimensions or not
+            decimal: The number of fractional parts after the decimal point
+        """
+        decimal = self.decimal if decimal is None else decimal
+        if (y_true is not None) and (y_pred is not None):
+            y_true, y_pred = format_regression_data_type(y_true, y_pred)
+            y_true, y_pred, one_dim = format_regression_data(y_true, y_pred)
+        else:
+            if (self.y_true is not None) and (self.y_pred is not None):
+                y_true, y_pred = format_regression_data_type(self.y_true, self.y_pred)
+                y_true, y_pred, one_dim = format_regression_data(y_true, y_pred)
+            else:
+                print("Permetrics Error! You need to pass y_true and y_pred to object creation or function called.")
+                exit(0)
+        return y_true, y_pred, one_dim, decimal
 
     def explained_variance_score(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
         """
@@ -50,9 +79,9 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         if one_dim:
             return np.round(1 - np.var(y_true - y_pred) / np.var(y_true), decimal)
         else:
@@ -76,9 +105,9 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         if one_dim:
             return np.round(np.max(np.abs(y_true - y_pred)), decimal)
         else:
@@ -102,9 +131,9 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         if one_dim:
             return np.round(np.mean(y_pred - y_true), decimal)
         else:
@@ -128,9 +157,9 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         if one_dim:
             return np.round(np.sum(np.abs(y_pred - y_true)) / len(y_true), decimal)
         else:
@@ -154,9 +183,9 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         if one_dim:
             return np.round(np.sum((y_pred - y_true) ** 2) / len(y_true), decimal)
         else:
@@ -180,9 +209,9 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         if one_dim:
             return np.round(np.sqrt(np.sum((y_pred - y_true) ** 2) / len(y_true)), decimal)
         else:
@@ -207,8 +236,8 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 2)
-        y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
+        y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         if one_dim:
             return np.round(np.sum(np.log((y_true + 1) / (y_pred+1)) ** 2) / len(y_true), decimal)
         else:
@@ -232,9 +261,9 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         if one_dim:
             return np.round(np.median(np.abs(y_true - y_pred)), decimal)
         else:
@@ -258,11 +287,11 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 0)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 0)
         else:
             y_true[y_true == 0] = self.EPSILON
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         if one_dim:
             return np.round(np.mean(np.abs((y_pred - y_true) / y_true)), decimal)
         else:
@@ -287,11 +316,11 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 0)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 0)
         else:
             y_true[y_true == 0] = self.EPSILON
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         if one_dim:
             return np.round(np.mean((y_true - y_pred) / y_true), decimal)
         else:
@@ -315,11 +344,11 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 0)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 0)
         else:
             y_true[y_true == 0] = self.EPSILON
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         if one_dim:
             return np.round(np.mean(np.abs(y_true - y_pred) / np.abs(y_true)), decimal)
         else:
@@ -346,9 +375,9 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         if one_dim:
             return np.round(np.mean(np.abs(y_pred - y_true) / (np.abs(y_true) + np.abs(y_pred))), decimal)
         else:
@@ -374,9 +403,9 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         if one_dim:
             return np.round(np.mean(np.arctan(np.abs((y_true - y_pred)/y_true))), decimal)
         else:
@@ -403,9 +432,9 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         if one_dim:
             return np.round(np.mean(np.abs(y_true - y_pred)) / np.mean(np.abs(y_true[m:] - y_true[:-m])), decimal)
         else:
@@ -431,9 +460,9 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         nse = calculate_nse(y_true, y_pred, one_dim)
         return np.round(nse, decimal) if one_dim else self.get_multi_output_result(nse, multi_output, decimal)
 
@@ -456,9 +485,9 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         nse = calculate_nse(y_true, y_pred, one_dim)
         nnse = 1 / (2 - nse)
         return np.round(nnse, decimal) if one_dim else self.get_multi_output_result(nnse, multi_output, decimal)
@@ -485,9 +514,9 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         wi = calculate_wi(y_true, y_pred, one_dim)
         return np.round(wi, decimal) if one_dim else self.get_multi_output_result(wi, multi_output, decimal)
 
@@ -514,9 +543,9 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         if one_dim:
             return np.round(1 - np.sum((y_true - y_pred) ** 2) / np.sum((y_true - np.mean(y_true)) ** 2), decimal)
         else:
@@ -547,9 +576,9 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         if X_shape is None:
             print("Permetrics Error! You need to pass the shape of X_train dataset to calculate Adjusted R2.")
             exit(0)
@@ -587,9 +616,9 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         pcc = calculate_pcc(y_true, y_pred, one_dim)
         return np.round(pcc, decimal) if one_dim else self.get_multi_output_result(pcc, multi_output, decimal)
 
@@ -610,9 +639,9 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         pcc = calculate_absolute_pcc(y_true, y_pred, one_dim)
         return np.round(pcc, decimal) if one_dim else self.get_multi_output_result(pcc, multi_output, decimal)
 
@@ -640,9 +669,9 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         pcc = calculate_pcc(y_true, y_pred, one_dim)
         return np.round(pcc**2, decimal) if one_dim else self.get_multi_output_result(pcc**2, multi_output, decimal)
 
@@ -674,9 +703,9 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         r = calculate_pcc(y_true, y_pred, one_dim)
         d = calculate_wi(y_true, y_pred, one_dim)
         return np.round(r*d, decimal) if one_dim else self.get_multi_output_result(r*d, multi_output, decimal)
@@ -699,9 +728,9 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         if one_dim:
             return np.round(np.sum(y_pred) / np.sum(y_true), decimal)
         else:
@@ -726,9 +755,9 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         if one_dim:
             m1, m2 = np.mean(y_true), np.mean(y_pred)
             r = np.sum((y_true - m1) * (y_pred - m2)) / (np.sqrt(np.sum((y_true - m1) ** 2)) * np.sqrt(np.sum((y_pred - m2) ** 2)))
@@ -767,9 +796,9 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         if one_dim:
             idx_sort = np.argsort(-y_pred)
             population_delta = 1.0 / len(y_true)
@@ -820,9 +849,9 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         if one_dim:
             y = np.concatenate((y_true, y_pred), axis=0)
             score = 0
@@ -859,9 +888,9 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         if one_dim:
             d = np.diff(y_true)
             dp = np.diff(y_pred)
@@ -894,11 +923,11 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 1)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 1)
         else:
             y_pred[y_pred == 0] = self.EPSILON
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         entropy = calculate_entropy(y_true, y_pred, one_dim)
         return np.round(entropy, decimal) if one_dim else self.get_multi_output_result(entropy, multi_output, decimal)
 
@@ -920,10 +949,10 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 1)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 1)
         else:
             y_pred[y_pred == 0] = self.EPSILON
-        y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+        y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         if one_dim:
             return np.round(np.sum(y_true * np.log2(y_true / y_pred)), decimal)
         else:
@@ -948,9 +977,9 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         if one_dim:
             m = 0.5 * (y_true + y_pred)
             score = 0.5 * np.sum(y_true * np.log2(y_true / m)) + 0.5 * np.sum(y_pred * np.log2(y_pred / m))
@@ -979,9 +1008,9 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 0)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 0)
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
 
         if one_dim:
             return np.round((1 - np.var(y_true - y_pred) / np.var(y_true)) * 100, decimal)
@@ -1011,9 +1040,9 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         if one_dim:
             numerator = np.power(np.sum((y_pred - y_true)**2), 1/2)
             denominator = np.power(np.sum(y_true**2), 1/2)
@@ -1046,11 +1075,11 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 1)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 1)
         else:
             y_pred[y_pred == 0] = self.EPSILON
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
 
         if one_dim:
             div = y_true / y_pred
@@ -1083,11 +1112,11 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 1)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 1)
         else:
             y_pred[y_pred == 0] = self.EPSILON
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         if one_dim:
             div = y_true / y_pred
             div = np.where(np.logical_and(div >= 0.8, div <= 1.2), 1, 0)
@@ -1116,11 +1145,11 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 1)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 1)
         else:
             y_pred[y_pred == 0] = self.EPSILON
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         if one_dim:
             div = y_true / y_pred
             div = np.where(np.logical_and(div >= 0.7, div <= 1.3), 1, 0)
@@ -1150,9 +1179,9 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         if one_dim:
             rmse = np.sqrt(np.mean((y_pred - y_true) ** 2))
             if model == 1:
@@ -1200,9 +1229,9 @@ class RegressionMetric(Evaluator):
         if n_paras is None:
             n_paras = len(y_true) / 2
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 1)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 1)
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         if one_dim:
             ss_residuals = np.sum((y_true - y_pred)**2)
             df_residuals = len(y_true) - n_paras - 1
@@ -1231,11 +1260,11 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 0)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 0)
         else:
             y_true[y_true == 0] = self.EPSILON
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         return np.round(y_pred / y_true - 1, decimal)
 
     def single_absolute_error(self, y_true=None, y_pred=None, decimal=None, non_zero=False, positive=False):
@@ -1256,9 +1285,9 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         return np.round(np.abs(y_true) - np.abs(y_pred), decimal)
 
     def single_squared_error(self, y_true=None, y_pred=None, decimal=None, non_zero=False, positive=False):
@@ -1279,9 +1308,9 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         return np.round((y_true - y_pred) ** 2, decimal)
 
     def single_squared_log_error(self, y_true=None, y_pred=None, decimal=None, non_zero=True, positive=True):
@@ -1302,11 +1331,11 @@ class RegressionMetric(Evaluator):
         """
         y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
         if non_zero:
-            y_true, y_pred = self.get_non_zero_data(y_true, y_pred, one_dim, 1)
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 1)
         else:
             y_pred[y_pred == 0] = self.EPSILON
         if positive:
-            y_true, y_pred = self.get_positive_data(y_true, y_pred, one_dim, 2)
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         return np.round((np.log(y_true) - np.log(y_pred)) ** 2, decimal)
 
     def get_metric_by_name(self, metric_name=str, paras=None) -> dict:

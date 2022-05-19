@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Created by "Thieu" at 16:20, 02/04/2022 ----------%                                                                               
+# Created by "Thieu" at 12:23, 19/05/2022 ----------%                                                                               
 #       Email: nguyenthieu2102@gmail.com            %                                                    
 #       Github: https://github.com/thieu1995        %                         
 # --------------------------------------------------%
@@ -52,6 +52,4 @@ def calculate_entropy(y_true, y_pred, one_dim):
         return -np.sum(y_true * np.log2(y_pred))
     else:
         return -np.sum(y_true * np.log2(y_pred), axis=0)
-
-
 
