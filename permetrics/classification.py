@@ -215,6 +215,45 @@ class ClassificationMetric(Evaluator):
             f2 = dict([(label, item["f2"]) for label, item in metrics.items()])
         return f2 if type(f2) == dict else np.round(f2, decimal)
 
+    def fbeta_score(self, y_true=None, y_pred=None, beta=1.0, labels=None, average=None, decimal=None):
+        """
+        The beta parameter determines the weight of recall in the combined score.
+        beta < 1 lends more weight to precision, while beta > 1 favors recall
+        (beta -> 0 considers only precision, beta -> +inf only recall).
+
+        Args:
+            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
+            y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
+            beta (float): the weight of recall in the combined score, default = 1.0
+            labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
+            average (str, None): {'micro', 'macro', 'weighted'} or None, default=None, others=None
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            fbeta (float, dict): the fbeta score
+        """
+        y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
+
+        matrix, imap, imap_count = confusion_matrix(y_true, y_pred, labels, normalize=None)
+        metrics = calculate_single_label_metric(matrix, imap, imap_count, beta=beta)
+
+        list_fbeta = np.array([item["f1"] for item in metrics.values()])
+        list_weights = np.array([item["n_true"] for item in metrics.values()])
+
+        if average == "micro":
+            tp_global = np.sum(np.diag(matrix))
+            fp_global = fn_global = np.sum(matrix) - tp_global
+            precision = np.round(tp_global / (tp_global + fp_global), decimal)
+            recall = tp_global / (tp_global + fn_global)
+            fbeta = ((1 + beta ** 2) * precision * recall) / (beta ** 2 * precision + recall)
+        elif average == "macro":
+            fbeta = np.mean(list_fbeta)
+        elif average == "weighted":
+            fbeta = np.dot(list_weights, list_fbeta) / np.sum(list_weights)
+        else:
+            fbeta = dict([(label, item["fbeta"]) for label, item in metrics.items()])
+        return fbeta if type(fbeta) == dict else np.round(fbeta, decimal)
+
 
     def mean_log_likelihood(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=True):
         """
