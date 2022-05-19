@@ -84,7 +84,6 @@ class ClassificationMetric(Evaluator):
             precision (float, dict): the precision score
         """
         y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
-
         matrix, imap, imap_count = confusion_matrix(y_true, y_pred, labels, normalize=None)
         metrics = calculate_single_label_metric(matrix, imap, imap_count)
 
@@ -118,7 +117,6 @@ class ClassificationMetric(Evaluator):
             npv (float, dict): the negative predictive value
         """
         y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
-
         matrix, imap, imap_count = confusion_matrix(y_true, y_pred, labels, normalize=None)
         metrics = calculate_single_label_metric(matrix, imap, imap_count)
 
@@ -152,7 +150,6 @@ class ClassificationMetric(Evaluator):
             ss (float, dict): the specificity score
         """
         y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
-
         matrix, imap, imap_count = confusion_matrix(y_true, y_pred, labels, normalize=None)
         metrics = calculate_single_label_metric(matrix, imap, imap_count)
 
@@ -186,7 +183,6 @@ class ClassificationMetric(Evaluator):
             recall (float, dict): the recall score
         """
         y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
-
         matrix, imap, imap_count = confusion_matrix(y_true, y_pred, labels, normalize=None)
         metrics = calculate_single_label_metric(matrix, imap, imap_count)
 
@@ -220,7 +216,6 @@ class ClassificationMetric(Evaluator):
             accuracy (float, dict): the accuracy score
         """
         y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
-
         matrix, imap, imap_count = confusion_matrix(y_true, y_pred, labels, normalize=None)
         metrics = calculate_single_label_metric(matrix, imap, imap_count)
 
@@ -253,7 +248,6 @@ class ClassificationMetric(Evaluator):
             f1 (float, dict): the f1 score
         """
         y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
-
         matrix, imap, imap_count = confusion_matrix(y_true, y_pred, labels, normalize=None)
         metrics = calculate_single_label_metric(matrix, imap, imap_count)
 
@@ -289,7 +283,6 @@ class ClassificationMetric(Evaluator):
             f2 (float, dict): the f2 score
         """
         y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
-
         matrix, imap, imap_count = confusion_matrix(y_true, y_pred, labels, normalize=None)
         metrics = calculate_single_label_metric(matrix, imap, imap_count)
 
@@ -328,7 +321,6 @@ class ClassificationMetric(Evaluator):
             fbeta (float, dict): the fbeta score
         """
         y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
-
         matrix, imap, imap_count = confusion_matrix(y_true, y_pred, labels, normalize=None)
         metrics = calculate_single_label_metric(matrix, imap, imap_count, beta=beta)
 
@@ -349,6 +341,36 @@ class ClassificationMetric(Evaluator):
             fbeta = dict([(label, item["fbeta"]) for label, item in metrics.items()])
         return fbeta if type(fbeta) == dict else np.round(fbeta, decimal)
 
+    def matthews_correlation_coefficient(self, y_true=None, y_pred=None, labels=None, average=None, decimal=None):
+        """
+        Args:
+            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
+            y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
+            beta (float): the weight of recall in the combined score, default = 1.0
+            average (str, None): {'micro', 'macro', 'weighted'} or None, default=None, others=None
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            mcc (float, dict): the Matthews correlation coefficient
+        """
+        y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
+        matrix, imap, imap_count = confusion_matrix(y_true, y_pred, labels, normalize=None)
+        metrics = calculate_single_label_metric(matrix, imap, imap_count)
+
+        list_mcc = np.array([item["mcc"] for item in metrics.values()])
+        list_weights = np.array([item["n_true"] for item in metrics.values()])
+
+        if average == "micro":
+            tp = tn = np.sum(np.diag(matrix))
+            fp = fn = np.sum(matrix) - tp
+            mcc = (tp * tn - fp * fn) / ((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn))
+        elif average == "macro":
+            mcc = np.mean(list_mcc)
+        elif average == "weighted":
+            mcc = np.dot(list_weights, list_mcc) / np.sum(list_weights)
+        else:
+            mcc = dict([(label, item["mcc"]) for label, item in metrics.items()])
+        return mcc if type(mcc) == dict else np.round(mcc, decimal)
 
     def mean_log_likelihood(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=True):
         """
@@ -415,5 +437,6 @@ class ClassificationMetric(Evaluator):
     F2S = f2s = f2_score
     FBS = fbs = fbeta_score
     SS = ss = specificity_score
+    MCC = mcc = matthews_correlation_coefficient
 
 
