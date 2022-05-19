@@ -372,6 +372,39 @@ class ClassificationMetric(Evaluator):
             mcc = dict([(label, item["mcc"]) for label, item in metrics.items()])
         return mcc if type(mcc) == dict else np.round(mcc, decimal)
 
+    def hamming_loss(self, y_true=None, y_pred=None, labels=None, average=None, decimal=None):
+        """
+        Generate hamming loss for multiple classification problem
+
+        Args:
+            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
+            y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
+            labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
+            average (str, None): {'micro', 'macro', 'weighted'} or None, default=None, others=None
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            hl (float, dict): the hamming loss
+        """
+        y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
+        matrix, imap, imap_count = confusion_matrix(y_true, y_pred, labels, normalize=None)
+        metrics = calculate_single_label_metric(matrix, imap, imap_count)
+
+        list_accuracy = np.array([item["accuracy"] for item in metrics.values()])
+        list_weights = np.array([item["n_true"] for item in metrics.values()])
+        list_tp = np.array([item['tp'] for item in metrics.values()])
+
+        if average == "micro":
+            hl = 1.0 - np.sum(list_tp) / np.sum(list_weights)
+        elif average == "macro":
+            hl = np.mean(list_accuracy)
+        elif average == "weighted":
+            hl = np.dot(list_weights, list_accuracy) / np.sum(list_weights)
+        else:
+            hl = dict([(label, np.round(item["hamming_loss"], decimal)) for label, item in metrics.items()])
+        return hl if type(hl) == dict else np.round(hl, decimal)
+
+
     def mean_log_likelihood(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=True):
         """
         Mean Log Likelihood (MLL): Best possible score is ..., the higher value is better. Range = (-inf, +inf)
