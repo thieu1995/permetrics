@@ -89,26 +89,19 @@ class ClassificationMetric(Evaluator):
         metrics = calculate_single_label_metric(matrix, imap, imap_count)
 
         list_precision = np.array([item["precision"] for item in metrics.values()])
-        list_recall = np.array([item["recall"] for item in metrics.values()])
         list_weights = np.array([item["n_true"] for item in metrics.values()])
 
         if average == "micro":
             tp_global = np.sum(np.diag(matrix))
             fp_global = fn_global = np.sum(matrix) - tp_global
             precision = np.round(tp_global / (tp_global + fp_global), decimal)
-            recall = tp_global / (tp_global + fn_global)
         elif average == "macro":
             precision = np.mean(list_precision)
-            recall = np.mean(list_recall)
         elif average == "weighted":
             precision = np.dot(list_weights, list_precision) / np.sum(list_weights)
-            recall = np.dot(list_weights, list_recall) / np.sum(list_weights)
         else:
-            precision, recall = {}, {}
-            for label, item in metrics.items():
-                precision[label] = item["precision"]
-                recall[label] = item["recall"]
-        return precision, recall
+            precision = dict([(label, np.round(item["precision"], decimal)) for label, item in metrics.items()])
+        return precision if type(precision) == dict else np.round(precision, decimal)
 
     def recall_score(self, y_true=None, y_pred=None, labels=None, average=None, decimal=None):
         """
