@@ -109,6 +109,7 @@ def calculate_single_label_metric(matrix, imap, imap_count, beta=1.0):
             precision = tp / (tp+fp)
             recall = tp / (tp + fn)
             mcc = (tp * tn - fp * fn) / ((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn))
+            ls = (tp/(tp + fp)) / ((tp + fn) / (tp + tn + fp + fn))
 
             metric["tp"] = tp
             metric["fp"] = fp
@@ -126,6 +127,7 @@ def calculate_single_label_metric(matrix, imap, imap_count, beta=1.0):
             metric["fbeta"] = np.nan_to_num(((1+beta**2) * precision*recall) / (beta**2 * precision + recall), nan=0.0, posinf=0.0, neginf=0.0)
             metric["mcc"] = np.nan_to_num(mcc, nan=0.0, posinf=0.0, neginf=0.0)
             metric["hamming_loss"] = np.nan_to_num(1.0 - tp / matrix.sum(), nan=0.0, posinf=0.0, neginf=0.0)
+            metric["life_score"] = np.nan_to_num(ls, nan=0.0, posinf=0.0, neginf=0.0)
             metrics[label] = metric
 
         # list_precision = np.nan_to_num([value[0] / (value[0] + value[1]) for value in cm.values()])

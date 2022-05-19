@@ -404,6 +404,39 @@ class ClassificationMetric(Evaluator):
             hl = dict([(label, np.round(item["hamming_loss"], decimal)) for label, item in metrics.items()])
         return hl if type(hl) == dict else np.round(hl, decimal)
 
+    def lift_score(self, y_true=None, y_pred=None, labels=None, average=None, decimal=None):
+        """
+        Generate lift score for multiple classification problem
+
+        Args:
+            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
+            y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
+            labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
+            average (str, None): {'micro', 'macro', 'weighted'} or None, default=None, others=None
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            ls (float, dict): the lift score
+        """
+        y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
+        matrix, imap, imap_count = confusion_matrix(y_true, y_pred, labels, normalize=None)
+        metrics = calculate_single_label_metric(matrix, imap, imap_count)
+
+        list_ls = np.array([item["lift_score"] for item in metrics.values()])
+        list_weights = np.array([item["n_true"] for item in metrics.values()])
+
+        if average == "micro":
+            tp = tn = np.sum(np.diag(matrix))
+            fp = fn = np.sum(matrix) - tp
+            ls = (tp/(tp + fp)) / ((tp + fn) / (tp + tn + fp + fn))
+        elif average == "macro":
+            ls = np.mean(list_ls)
+        elif average == "weighted":
+            ls = np.dot(list_weights, list_ls) / np.sum(list_weights)
+        else:
+            ls = dict([(label, np.round(item["lift_score"], decimal)) for label, item in metrics.items()])
+        return ls if type(ls) == dict else np.round(ls, decimal)
+
 
     def mean_log_likelihood(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=True):
         """
@@ -472,5 +505,6 @@ class ClassificationMetric(Evaluator):
     SS = ss = specificity_score
     MCC = mcc = matthews_correlation_coefficient
     HL = hl = hamming_loss
+    LS = ls = lift_score
 
 
