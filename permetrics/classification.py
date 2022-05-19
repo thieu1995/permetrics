@@ -143,6 +143,42 @@ class ClassificationMetric(Evaluator):
             accuracy = dict([(label, np.round(item["precision"], decimal)) for label, item in metrics.items()])
         return accuracy if type(accuracy) == dict else np.round(accuracy, decimal)
 
+    def f1_score(self, y_true=None, y_pred=None, labels=None, average=None, decimal=None):
+        """
+        Generate f1 score for multiple classification problem
+
+        Args:
+            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
+            y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
+            labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
+            average (str, None): {'micro', 'macro', 'weighted'} or None, default=None, others=None
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            f1 (float, dict): the f1 score
+        """
+        y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
+
+        matrix, imap, imap_count = confusion_matrix(y_true, y_pred, labels, normalize=None)
+        metrics = calculate_single_label_metric(matrix, imap, imap_count)
+
+        list_f1 = np.array([item["f1"] for item in metrics.values()])
+        list_weights = np.array([item["n_true"] for item in metrics.values()])
+
+        if average == "micro":
+            tp_global = np.sum(np.diag(matrix))
+            fp_global = fn_global = np.sum(matrix) - tp_global
+            precision = np.round(tp_global / (tp_global + fp_global), decimal)
+            recall = tp_global / (tp_global + fn_global)
+            f1 = (2 * precision * recall) / (precision + recall)
+        elif average == "macro":
+            f1 = np.mean(list_f1)
+        elif average == "weighted":
+            f1 = np.dot(list_weights, list_f1) / np.sum(list_weights)
+        else:
+            f1 = dict([(label, item["f1"]) for label, item in metrics.items()])
+        return f1 if type(f1) == dict else np.round(f1, decimal)
+
 
 
     def mean_log_likelihood(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=True):
