@@ -471,5 +471,6 @@ class ClassificationMetric(Evaluator):
     FBS = fbs = fbeta_score
     SS = ss = specificity_score
     MCC = mcc = matthews_correlation_coefficient
+    HL = hl = hamming_loss
 
 

@@ -267,15 +267,9 @@ The [documentation](https://permetrics.readthedocs.io/) includes more detailed i
 ```
 
 # Future works
-### Classification 
-+ F1 score
+### Classification
 + Multiclass log loss
-+ Lift
-+ Average Precision for binary classification
-+ precision / recall break-even point
 + cross-entropy
-+ True Pos / False Pos / True Neg / False Neg rates
-+ precision / recall / sensitivity / specificity
 + mutual information
 
 ### HIGHER LEVEL TRANSFORMATIONS TO HANDLE
