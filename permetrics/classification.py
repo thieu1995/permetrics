@@ -81,7 +81,7 @@ class ClassificationMetric(Evaluator):
             decimal (int): The number of fractional parts after the decimal point
 
         Returns:
-            precision(float, dict): the precision score
+            precision (float, dict): the precision score
         """
         y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
 
@@ -110,6 +110,40 @@ class ClassificationMetric(Evaluator):
                 recall[label] = item["recall"]
         return precision, recall
 
+    def recall_score(self, y_true=None, y_pred=None, labels=None, average=None, decimal=None):
+        """
+        Generate recall score for multiple classification problem
+
+        Args:
+            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
+            y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
+            labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
+            average (str, None): {'micro', 'macro', 'weighted'} or None, default=None, others=None
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            recall (float, dict): the recall score
+        """
+        y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
+
+        matrix, imap, imap_count = confusion_matrix(y_true, y_pred, labels, normalize=None)
+        metrics = calculate_single_label_metric(matrix, imap, imap_count)
+
+        list_recall = np.array([item["recall"] for item in metrics.values()])
+        list_weights = np.array([item["n_true"] for item in metrics.values()])
+
+        if average == "micro":
+            tp_global = np.sum(np.diag(matrix))
+            fp_global = fn_global = np.sum(matrix) - tp_global
+            recall = tp_global / (tp_global + fn_global)
+        elif average == "macro":
+            recall = np.mean(list_recall)
+        elif average == "weighted":
+            recall = np.dot(list_weights, list_recall) / np.sum(list_weights)
+        else:
+            recall = dict([(label, np.round(item["recall"], decimal)) for label, item in metrics.items()])
+        return recall if type(recall) == dict else np.round(recall, decimal)
+
     def accuracy_score(self, y_true=None, y_pred=None, labels=None, average=None, decimal=None):
         """
         Generate accuracy score for multiple classification problem
@@ -122,7 +156,7 @@ class ClassificationMetric(Evaluator):
             decimal (int): The number of fractional parts after the decimal point
 
         Returns:
-            accuracy(float, dict): the accuracy score
+            accuracy (float, dict): the accuracy score
         """
         y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
 
