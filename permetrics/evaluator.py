@@ -59,3 +59,67 @@ class Evaluator:
             return np.round(result, decimal)
         else:
             return np.round(np.mean(result), decimal)
+
+    def get_metric_by_name(self, metric_name=str, paras=None) -> dict:
+        """
+        Get single metric by name, specific parameter of metric by dictionary
+
+        Args:
+            metric_name (str): Select name of metric
+            paras (dict): Dictionary of hyper-parameter for that metric
+
+        Returns:
+            result (dict): { metric_name: value }
+        """
+        result = {}
+        obj = getattr(self, metric_name)
+        result[metric_name] = obj() if paras is None else obj(**paras)
+        return result
+
+    def get_metrics_by_list_names(self, list_metric_names=list, list_paras=None) -> dict:
+        """
+        Get results of list metrics by its name and parameters
+
+        Args:
+            list_metric_names (list): e.g, ["RMSE", "MAE", "MAPE"]
+            list_paras (list): e.g, [ {"decimal": 5, None}, {"decimal": 4, "multi_output": "raw_values"}, {"decimal":6, "multi_output": [2, 3]} ]
+
+        Returns:
+            results (dict): e.g, { "RMSE": 0.25, "MAE": [0.3, 0.6], "MAPE": 0.15 }
+        """
+        results = {}
+        for idx, metric_name in enumerate(list_metric_names):
+            obj = getattr(self, metric_name)
+            if list_paras is None:
+                results[metric_name] = obj()
+            else:
+                if len(list_metric_names) != len(list_paras):
+                    print("Permetrics Error! Different length between list of functions and list of parameters.")
+                    exit(0)
+                if list_paras[idx] is None:
+                    results[metric_name] = obj()
+                else:
+                    results[metric_name] = obj(**list_paras[idx])
+        return results
+
+    def get_metrics_by_dict(self, metrics_dict:dict) -> dict:
+        """
+        Get results of list metrics by its name and parameters wrapped by dictionary
+
+        For example:
+            {"RMSE": { "multi_output": multi_output, "decimal": 4 }, "MAE": { "non_zero": True, "multi_output": multi_output, "decimal": 6}}
+
+        Args:
+            metrics_dict (dict): key is metric name and value is dict of parameters
+
+        Returns:
+            results (dict): e.g, { "RMSE": 0.3524, "MAE": 0.445263 }
+        """
+        results = {}
+        for metric_name, paras_dict in metrics_dict.items():
+            obj = getattr(self, metric_name)
+            if paras_dict is None:
+                results[metric_name] = obj()
+            else:
+                results[metric_name] = obj(**paras_dict)     # Unpacking a dictionary and passing it to function
+        return results
