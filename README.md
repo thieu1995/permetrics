@@ -1,5 +1,5 @@
 # A framework of PERformance METRICS (PerMetrics) for artificial intelligence models
-[![GitHub release](https://img.shields.io/badge/release-1.2.2-yellow.svg)]()
+[![GitHub release](https://img.shields.io/badge/release-1.3.0-yellow.svg)]()
 [![Documentation Status](https://readthedocs.org/projects/permetrics/badge/?version=latest)](https://permetrics.readthedocs.io/en/latest/?badge=latest)
 [![](https://img.shields.io/badge/python-3.6+-orange.svg)](https://www.python.org/downloads/release/python-360/)
 [![Wheel](https://img.shields.io/pypi/wheel/gensim.svg)](https://pypi.python.org/pypi/permetrics) 
@@ -16,9 +16,11 @@
 
 # Quick notification
 
+* Add classification metrics to version 1.3.0
+* Add more metrics to version 1.2.2
 * The version 1.2.0 has serious problem with calculate multiple metrics (OOP style), please update to version 1.2.1 as 
   soon as possible for your sake.
-* Add more metrics to version 1.2.2
+
 
 
 ## Introduction
@@ -40,7 +42,7 @@
 Install the [current PyPI release](https://pypi.python.org/pypi/permetrics):
 
 ```bash
-pip install permetrics==1.2.2
+pip install permetrics==1.3.0
 ```
 
 Or install the development version from GitHub:
@@ -191,6 +193,70 @@ The [documentation](https://permetrics.readthedocs.io/) includes more detailed i
     
 ### Metrics
 
+
+| **Problem** | **STT** | **Metric ** | **Metric Fullname** | **Characteristics** |
+|:---:|:---:|:---:|:---:|:---:|
+| **Regression** | 1 | EVS | Explained Variance Score | Greater is better (Best = 1), Range=(-inf, 1.0] |
+| **** | 2 | ME | Max Error | Smaller is better (Best = 0), Range=[0, +inf) |
+| **** | 3 | MBE | Mean Bias Error | Best = 0, Range=(-inf, +inf) |
+| **** | 4 | MAE | Mean Absolute Error | Smaller is better (Best = 0), Range=[0, +inf) |
+| **** | 5 | MSE | Mean Squared Error | Smaller is better (Best = 0), Range=[0, +inf) |
+| **** | 6 | RMSE | Root Mean Squared Error | Smaller is better (Best = 0), Range=[0, +inf) |
+| **** | 7 | MSLE | Mean Squared Log Error | Smaller is better (Best = 0), Range=[0, +inf) |
+| **** | 8 | MedAE | Median Absolute Error | Smaller is better (Best = 0), Range=[0, +inf) |
+| **** | 9 | MRE / MRB | Mean Relative Error / Mean Relative Bias | Smaller is better (Best = 0), Range=[0, +inf) |
+| **** | 10 | MPE | Mean Percentage Error | Best = 0, Range=(-inf, +inf) |
+| **** | 11 | MAPE | Mean Absolute Percentage Error | Smaller is better (Best = 0), Range=[0, +inf) |
+| **** | 12 | SMAPE | Symmetric Mean Absolute Percentage Error | Smaller is better (Best = 0), Range=[0, 1] |
+| **** | 13 | MAAPE | Mean Arctangent Absolute Percentage Error | Smaller is better (Best = 0), Range=[0, +inf) |
+| **** | 14 | MASE | Mean Absolute Scaled Error | Smaller is better (Best = 0), Range=[0, +inf) |
+| **** | 15 | NSE | Nash-Sutcliffe Efficiency Coefficient | Greater is better (Best = 1), Range=(-inf, 1] |
+| **** | 16 | NNSE | Normalized Nash-Sutcliffe Efficiency Coefficient | Greater is better (Best = 1), Range=[0, 1] |
+| **** | 17 | WI | Willmott Index | Greater is better (Best = 1), Range=[0, 1] |
+| **** | 18 | R / PCC | Pearson’s Correlation Coefficient | Greater is better (Best = 1), Range=[-1, 1] |
+| **** | 19 | AR / APCC | Absolute Pearson's Correlation Coefficient | Greater is better (Best = 1), Range=[-1, 1] |
+| **** | 20 | R2s | (Pearson’s Correlation Index) ^ 2 | Greater is better (Best = 1), Range=[0, 1] |
+| **** | 21 | R2 / COD | Coefficient of Determination | Greater is better (Best = 1), Range=(-inf, 1] |
+| **** | 22 | AR2 / ACOD | Adjusted Coefficient of Determination | Greater is better (Best = 1), Range=(-inf, 1] |
+| **** | 23 | CI | Confidence Index | Greater is better (Best = 1), Range=(-inf, 1] |
+| **** | 24 | DRV |  Deviation of Runoff Volume | Smaller is better (Best = 1.0), Range=[1, +inf) |
+| **** | 25 | KGE | Kling-Gupta Efficiency | Greater is better (Best = 1), Range=(-inf, 1] |
+| **** | 26 | GINI | Gini Coefficient | Smaller is better (Best = 0), Range=[0, +inf) |
+| **** | 27 | GINI_WIKI | Gini Coefficient on Wikipage | Smaller is better (Best = 0), Range=[0, +inf) |
+| **** | 28 | PCD | Prediction of Change in Direction | Greater is better (Best = 1.0), Range=[0, 1] |
+| **** | 29 | CE | Cross Entropy | Range(-inf, 0], Can't give comment about this |
+| **** | 30 | KLD | Kullback Leibler Divergence | Best = 0, Range=(-inf, +inf) |
+| **** | 31 | JSD | Jensen Shannon Divergence | Smaller is better (Best = 0), Range=[0, +inf) |
+| **** | 32 | VAF | Variance Accounted For | Greater is better (Best = 100%), Range=(-inf, 100%] |
+| **** | 33 | RAE | Relative Absolute Error | Smaller is better (Best = 0), Range=[0, +inf) |
+| **** | 34 | A10 | A10 Index | Greater is better (Best = 1), Range=[0, 1] |
+| **** | 35 | A20 | A20 Index | Greater is better (Best = 1), Range=[0, 1] |
+| **** | 36 | A30 | A30 Index | Greater is better (Best = 1), Range=[0, 1] |
+| **** | 37 | NRMSE | Normalized Root Mean Square Error | Smaller is better (Best = 0), Range=[0, +inf) |
+| **** | 38 | RSE | Residual Standard Error | Smaller is better (Best = 0), Range=[0, +inf) |
+| **** | 39 | RE / RB | Relative Error / Relative Bias | Best = 0, Range=(-inf, +inf) |
+| **** | 40 | AE | Absolute Error | Best = 0, Range=(-inf, +inf) |
+| **** | 41 | SE |  Squared Error | Smaller is better (Best = 0), Range=[0, +inf) |
+| **** | 42 | SLE | Squared Log Error | Smaller is better (Best = 0), Range=[0, +inf) |
+| **** | 43 |  |  |  |
+| **Classification** | 1 | PS | Precision Score | Higher is better (Best = 1), Range = [0, 1] |
+| **** | 2 | NPV | Negative Predictive Value | Higher is better (Best = 1), Range = [0, 1] |
+| **** | 3 | RS | Recall Score | Higher is better (Best = 1), Range = [0, 1] |
+| **** | 4 | AS | Accuracy Score | Higher is better (Best = 1), Range = [0, 1] |
+| **** | 5 | F1S | F1 Score | Higher is better (Best = 1), Range = [0, 1] |
+| **** | 6 | F2S | F2 Score | Higher is better (Best = 1), Range = [0, 1] |
+| **** | 7 | FBS | F-Beta Score | Higher is better (Best = 1), Range = [0, 1] |
+| **** | 8 | SS | Specificity Score | Higher is better (Best = 1), Range = [0, 1] |
+| **** | 9 | MCC | Matthews Correlation Coefficient | Higher is better (Best = 1), Range = [-1, +1] |
+| **** | 10 | HL | Hamming Loss | Higher is better (Best = 1), Range = [0, 1] |
+| **** | 11 | LS | Lift Score | Higher is better (Best = 0), Range = [0, +inf) |
+| **** | 12 |
+
+
+
+
+
+
 | **Problem** | **STT** | **Metric** | **Metric Fullname** | **Characteristics** |
 |---|---|---|---|---|
 | Regression | 1 | EVS | Explained Variance Score | Greater is better (Best = 1), Range=(-inf, 1.0] |
@@ -238,6 +304,7 @@ The [documentation](https://permetrics.readthedocs.io/) includes more detailed i
 |  | 43 |  |  |  |
 | Classification | 1 | MLL | Mean Log Likelihood |  |
 |  | 2 | LL | Log Likelihood |
+
 
 ## Contributions 
 

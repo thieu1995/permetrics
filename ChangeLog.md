@@ -1,3 +1,25 @@
+# Version 1.3.0
+
+### Update
+
+Add classification metrics: 
++ Add Precision Score (PS)
++ Add Negative Predictive Value (NPV)
++ Add Recall Score (RS)
++ Add Accuracy Score (AS)
++ Add F1 Score (F1S)
++ Add F2 Score (F2S)
++ Add F Beta Score (FBS)
++ Add Specificity Score (SS)
++ Add Matthews Correlation Coefficient (MCC)
++ Add Hamming Loss (HL)
++ Add Lift Score (LS)
+
++ Update reference documents
++ Update examples
+
+---------------------------------------------------------------------
+
 # Version 1.2.2
 
 ### Update
