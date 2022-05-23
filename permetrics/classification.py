@@ -39,7 +39,7 @@ class ClassificationMetric(Evaluator):
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
             clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred)
-            decimal (int): The number of fractional parts after the decimal point
+            decimal (int, None): The number of fractional parts after the decimal point
 
         Returns:
             y_true_final: y_true used in evaluation process.
@@ -59,6 +59,25 @@ class ClassificationMetric(Evaluator):
                 print("Permetrics Error! You need to pass y_true and y_pred to object creation or function called.")
                 exit(0)
         return y_true, y_pred, binary, representor, decimal
+
+    def confusion_matrix(self, y_true=None, y_pred=None, labels=None, normalize=None):
+        """
+        Generate confusion matrix and useful information
+
+        Args:
+            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
+            y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
+            labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
+            normalize ('true', 'pred', 'all', None): Normalizes confusion matrix over the true (rows), predicted (columns) conditions or all the population.
+
+        Returns:
+            matrix (np.ndarray): a 2-dimensional list of pairwise counts
+            imap (dict): a map between label and index of confusion matrix
+            imap_count (dict): a map between label and number of true label in y_true
+        """
+        y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal=None)
+        matrix, imap, imap_count = confusion_matrix(y_true, y_pred, labels, normalize)
+        return matrix, imap, imap_count
 
     def precision_score(self, y_true=None, y_pred=None, labels=None, average=None, decimal=None):
         """
@@ -437,6 +456,7 @@ class ClassificationMetric(Evaluator):
             ls = dict([(label, np.round(item["lift_score"], decimal)) for label, item in metrics.items()])
         return ls if type(ls) == dict else np.round(ls, decimal)
 
+    CM = cm = confusion_matrix
     PS = ps = precision_score
     NPV = npv = negative_predictive_value
     RS = rs = recall_score
