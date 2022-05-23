@@ -39,3 +39,23 @@ OOP Style
 	mae = evaluator.MAE()
 
 	print(f"RMSE: {rmse}, MSE: {mse}, MAE: {mae}")
+
+
+.. code-block:: python
+	:emphasize-lines: 2,7,11-13
+
+	import numpy as np
+	from permetrics.classification import ClassificationMetric
+
+	y_true = [0, 1, 0, 0, 1, 0]
+	y_pred = [0, 1, 0, 0, 0, 1]
+
+	evaluator = ClassificationMetric(y_true, y_pred, decimal=5)
+
+	## Get the result of any function you want to
+
+	hamming_loss = evaluator.hamming_loss()
+	mcc = evaluator.matthews_correlation_coefficient()
+	specificity = evaluator.specificity_score()
+	print(f"HL: {hamming_loss}, MCC: {mcc}, specificity: {specificity}")
+

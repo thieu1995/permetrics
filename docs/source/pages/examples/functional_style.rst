@@ -43,3 +43,25 @@ Functional Style
 	mae = evaluator.MAE(y_true, y_pred, decimal=5)
 	print(f"MSE: {mse}, MAE: {mae}")
 
+
+
+.. code-block:: python
+	:emphasize-lines: 2,7,9-11,14-15
+
+	import numpy as np
+	from permetrics.classification import ClassificationMetric
+
+	y_true = [0, 1, 0, 0, 1, 0]
+	y_pred = [0, 1, 0, 0, 0, 1]
+
+	evaluator = ClassificationMetric()
+
+	ps1 = evaluator.precision_score(y_true, y_pred, decimal=5)
+	ps2 = evaluator.ps(y_true, y_pred, decimal=3)
+	ps3 = evaluator.PS(y_true, y_pred, decimal=4)
+	print(f"Precision: {ps1}, {ps2}, {ps3}")
+
+	recall = evaluator.recall_score(y_true, y_pred)
+	accuracy = evaluator.accuracy_score(y_true, y_pred)
+	print(f"recall: {recall}, accuracy: {accuracy}")
+
