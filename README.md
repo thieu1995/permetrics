@@ -9,11 +9,6 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 
----
-> "Knowledge is power, sharing it is the premise of progress in life. It seems like a burden to someone, but it is the only way to achieve immortality."
->  --- [Thieu Nguyen](https://www.researchgate.net/profile/Thieu_Nguyen6)
----
-
 # Quick notification
 
 * Add classification metrics to version 1.3.0
@@ -25,12 +20,9 @@
 
 ## Introduction
 * PerMetrics is a python library for performance metrics of machine learning models.
-
 * The goals of this framework are:
     * Combine all metrics for regression, classification and clustering models
     * Helping users in all field access to metrics as fast as possible
-    * Perform Qualitative Analysis of models.
-    * Perform Quantitative Analysis of models.
 
 
 ### Dependencies
@@ -190,8 +182,8 @@ print(evaluator.f1s(average="weighted"))
 + If you use permetrics in your project, please cite my works: 
 ```code 
 @software{thieu_nguyen_2020_3951205,
-  author       = {Thieu Nguyen},
-  title        = {A framework of PERformance METRICS (PerMetrics) for artificial intelligence models},
+  author       = {Nguyen Van Thieu},
+  title        = {Permetrics: A framework of performance metrics for artificial intelligence models},
   month        = jul,
   year         = 2020,
   publisher    = {Zenodo},
