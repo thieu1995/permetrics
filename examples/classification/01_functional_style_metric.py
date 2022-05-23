@@ -17,11 +17,11 @@ from permetrics.classification import ClassificationMetric
 y_true = [0, 1, 0, 0, 1, 0]
 y_pred = [0, 1, 0, 0, 0, 1]
 
-evaluator = ClassificationMetric(y_true, y_pred, decimal=5)
+evaluator = ClassificationMetric()
 
 ## 3.1 Call specific function inside object, each function has 3 names like below
 
-ps1 = evaluator.precision_score(y_true, y_pred)
+ps1 = evaluator.precision_score(y_true, y_pred, decimal=5)
 ps2 = evaluator.ps(y_true, y_pred)
 ps3 = evaluator.PS(y_true, y_pred)
 print(f"Precision: {ps1}, {ps2}, {ps3}")
