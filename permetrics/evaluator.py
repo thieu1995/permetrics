@@ -52,8 +52,7 @@ class Evaluator:
         if isinstance(multi_output, (tuple, list, set, np.ndarray)):
             weights = np.array(multi_output)
             if self.y_true.shape[1] != len(weights):
-                print("Permetrics Error! Multi-output weights has different length with y_true")
-                exit(0)
+                raise ValueError("Multi-output weights must have the same length with y_true or y_pred!")
             return np.round(np.dot(result, multi_output), decimal)
         elif multi_output == "raw_values":  # Default: raw_values
             return np.round(result, decimal)
@@ -94,8 +93,7 @@ class Evaluator:
                 results[metric_name] = obj()
             else:
                 if len(list_metric_names) != len(list_paras):
-                    print("Permetrics Error! Different length between list of functions and list of parameters.")
-                    exit(0)
+                    raise ValueError("list_metric_names and list_paras must have the same length!")
                 if list_paras[idx] is None:
                     results[metric_name] = obj()
                 else:

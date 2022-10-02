@@ -58,8 +58,7 @@ class RegressionMetric(Evaluator):
                 y_true, y_pred = format_regression_data_type(self.y_true, self.y_pred)
                 y_true, y_pred, one_dim = format_regression_data(y_true, y_pred)
             else:
-                print("Permetrics Error! You need to pass y_true and y_pred to object creation or function called.")
-                exit(0)
+                raise ValueError("y_true or y_pred is None. You need to pass y_true and y_pred to object creation or function called.")
         return y_true, y_pred, one_dim, decimal
 
     def explained_variance_score(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
@@ -580,11 +579,9 @@ class RegressionMetric(Evaluator):
         if positive:
             y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         if X_shape is None:
-            print("Permetrics Error! You need to pass the shape of X_train dataset to calculate Adjusted R2.")
-            exit(0)
+            raise ValueError("You need to pass the shape of X_train dataset to calculate Adjusted R2.")
         if len(X_shape) != 2 or X_shape[0] < 4 or X_shape[1] < 1:
-            print("Permetrics Error! You need to pass the real shape of X_train dataset to calculate Adjusted R2.")
-            exit(0)
+            raise ValueError("You need to pass the real shape of X_train dataset to calculate Adjusted R2.")
         dft = X_shape[0] - 1.0
         dfe = X_shape[0] - X_shape[1] - 1.0
         df_final = dft/dfe

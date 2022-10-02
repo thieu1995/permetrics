@@ -17,11 +17,9 @@ def format_regression_data_type(y_true, y_pred):
             # x = x[~np.isnan(x)] can't remove if array is dtype object, only work with dtype float
             return y_true.astype('float64'), y_pred.astype('float64')
         else:
-            print("Permetrics Error! y_true and y_pred need to have same number of dimensions.")
-            exit(0)
+            raise ValueError("y_true and y_pred need to have same number of dimensions.")
     else:
-        print("Permetrics Error! y_true and y_pred need to be a list, tuple or np.array.")
-        exit(0)
+        raise TypeError("y_true and y_pred need to be a list, tuple or np.array.")
 
 
 def format_regression_data(y_true: np.ndarray, y_pred: np.ndarray):
@@ -118,11 +116,9 @@ def format_classification_data_type(y_true, y_pred):
         if y_true.ndim == y_pred.ndim == 1:
             return y_true, y_pred
         else:
-            print("Permetrics Error! y_true and y_pred need to have same number of dimension.")
-            exit(0)
+            raise TypeError("y_true and y_pred need to be a list, tuple or np.array.")
     else:
-        print("Permetrics Error! y_true and y_pred need to be a list, tuple or np.array.")
-        exit(0)
+        raise TypeError("y_true and y_pred need to be a list, tuple or np.array.")
 
 
 def format_classification_data(y_true: np.ndarray, y_pred: np.ndarray):
@@ -142,8 +138,4 @@ def format_classification_data(y_true: np.ndarray, y_pred: np.ndarray):
         else:
             return y_true, y_pred, binary, "string"
     else:
-        print("Permetrics Error! Existed at least one new label in y_pred.")
-        exit(0)
-
-
-
+        raise ValueError("Existed at least one new label in y_pred.")

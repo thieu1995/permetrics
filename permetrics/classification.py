@@ -56,8 +56,7 @@ class ClassificationMetric(Evaluator):
                 y_true, y_pred = format_classification_data_type(self.y_true, self.y_pred)
                 y_true, y_pred, binary, representor = format_classification_data(y_true, y_pred)
             else:
-                print("Permetrics Error! You need to pass y_true and y_pred to object creation or function called.")
-                exit(0)
+                raise ValueError("y_true or y_pred is None. You need to pass y_true and y_pred to object creation or function called.")
         return y_true, y_pred, binary, representor, decimal
 
     def confusion_matrix(self, y_true=None, y_pred=None, labels=None, normalize=None):

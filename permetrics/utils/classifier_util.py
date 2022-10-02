@@ -77,11 +77,9 @@ def confusion_matrix(y_true=None, y_pred=None, labels=None, normalize=None):
                     matrix_final[imap_final[label1]][imap_final[label2]] = matrix_normalized[imap[label1]][imap[label2]]
             return np.array(matrix_final), imap_final, imap_count_final
         else:
-            print("All specified label should be in y_true!")
-            exit(0)
+            raise TypeError("All specified label should be in y_true!")
     else:
-        print("Labels should be a tuple / a list / a numpy array!")
-        exit(0)
+        raise TypeError("Labels should be a tuple / a list / a numpy array!")
 
 
 def calculate_single_label_metric(matrix, imap, imap_count, beta=1.0):
