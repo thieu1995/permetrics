@@ -1,3 +1,16 @@
+# Version 1.3.1
+
+### Update
+
+Add classification metrics: 
++ Fix bug in MCC metric
++ Fix bug exit() program
++ Update documents
++ Update examples
+
+---------------------------------------------------------------------
+
+
 # Version 1.3.0
 
 ### Update

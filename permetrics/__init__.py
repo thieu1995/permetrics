@@ -38,7 +38,7 @@
 # print(evaluator.f1s(average="weighted"))
 
 
-__version__ = "1.3.0"
+__version__ = "1.3.1"
 
 from . import regression
 from . import classification
