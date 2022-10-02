@@ -78,7 +78,7 @@ class ClassificationMetric(Evaluator):
         matrix, imap, imap_count = confusion_matrix(y_true, y_pred, labels, normalize)
         return matrix, imap, imap_count
 
-    def precision_score(self, y_true=None, y_pred=None, labels=None, average=None, decimal=None):
+    def precision_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
         """
         Generate precision score for multiple classification problem
 
@@ -86,7 +86,7 @@ class ClassificationMetric(Evaluator):
             y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
             y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
             labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
-            average (str, None): {'micro', 'macro', 'weighted'} or None, default=None, others=None
+            average (str, None): {'micro', 'macro', 'weighted'} or None, default="macro"
                 If None, the scores for each class are returned. Otherwise, this determines the type of averaging performed on the data:
 
                 ``'micro'``:
@@ -120,7 +120,7 @@ class ClassificationMetric(Evaluator):
             precision = dict([(label, np.round(item["precision"], decimal)) for label, item in metrics.items()])
         return precision if type(precision) == dict else np.round(precision, decimal)
 
-    def negative_predictive_value(self, y_true=None, y_pred=None, labels=None, average=None, decimal=None):
+    def negative_predictive_value(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
         """
         Generate negative predictive value for multiple classification problem
 
@@ -128,7 +128,7 @@ class ClassificationMetric(Evaluator):
             y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
             y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
             labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
-            average (str, None): {'micro', 'macro', 'weighted'} or None, default=None, others=None
+            average (str, None): {'micro', 'macro', 'weighted'} or None, default="macro"
             decimal (int): The number of fractional parts after the decimal point
 
         Returns:
@@ -153,7 +153,7 @@ class ClassificationMetric(Evaluator):
             npv = dict([(label, np.round(item["negative_predictive_value"], decimal)) for label, item in metrics.items()])
         return npv if type(npv) == dict else np.round(npv, decimal)
 
-    def specificity_score(self, y_true=None, y_pred=None, labels=None, average=None, decimal=None):
+    def specificity_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
         """
         Generate specificity score for multiple classification problem
 
@@ -161,7 +161,7 @@ class ClassificationMetric(Evaluator):
             y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
             y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
             labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
-            average (str, None): {'micro', 'macro', 'weighted'} or None, default=None, others=None
+            average (str, None): {'micro', 'macro', 'weighted'} or None, default="macro"
             decimal (int): The number of fractional parts after the decimal point
 
         Returns:
@@ -186,7 +186,7 @@ class ClassificationMetric(Evaluator):
             ss = dict([(label, np.round(item["specificity"], decimal)) for label, item in metrics.items()])
         return ss if type(ss) == dict else np.round(ss, decimal)
 
-    def recall_score(self, y_true=None, y_pred=None, labels=None, average=None, decimal=None):
+    def recall_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
         """
         Generate recall score for multiple classification problem
 
@@ -194,7 +194,7 @@ class ClassificationMetric(Evaluator):
             y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
             y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
             labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
-            average (str, None): {'micro', 'macro', 'weighted'} or None, default=None, others=None
+            average (str, None): {'micro', 'macro', 'weighted'} or None, default="macro"
             decimal (int): The number of fractional parts after the decimal point
 
         Returns:
@@ -219,7 +219,7 @@ class ClassificationMetric(Evaluator):
             recall = dict([(label, np.round(item["recall"], decimal)) for label, item in metrics.items()])
         return recall if type(recall) == dict else np.round(recall, decimal)
 
-    def accuracy_score(self, y_true=None, y_pred=None, labels=None, average=None, decimal=None):
+    def accuracy_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
         """
         Generate accuracy score for multiple classification problem
 
@@ -227,7 +227,7 @@ class ClassificationMetric(Evaluator):
             y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
             y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
             labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
-            average (str, None): {'micro', 'macro', 'weighted'} or None, default=None, others=None
+            average (str, None): {'micro', 'macro', 'weighted'} or None, default="macro"
             decimal (int): The number of fractional parts after the decimal point
 
         Returns:
@@ -251,7 +251,7 @@ class ClassificationMetric(Evaluator):
             accuracy = dict([(label, np.round(item["precision"], decimal)) for label, item in metrics.items()])
         return accuracy if type(accuracy) == dict else np.round(accuracy, decimal)
 
-    def f1_score(self, y_true=None, y_pred=None, labels=None, average=None, decimal=None):
+    def f1_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
         """
         Generate f1 score for multiple classification problem
 
@@ -259,7 +259,7 @@ class ClassificationMetric(Evaluator):
             y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
             y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
             labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
-            average (str, None): {'micro', 'macro', 'weighted'} or None, default=None, others=None
+            average (str, None): {'micro', 'macro', 'weighted'} or None, default="macro"
             decimal (int): The number of fractional parts after the decimal point
 
         Returns:
@@ -286,7 +286,7 @@ class ClassificationMetric(Evaluator):
             f1 = dict([(label, item["f1"]) for label, item in metrics.items()])
         return f1 if type(f1) == dict else np.round(f1, decimal)
 
-    def f2_score(self, y_true=None, y_pred=None, labels=None, average=None, decimal=None):
+    def f2_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
         """
         Generate f2 score for multiple classification problem
 
@@ -294,7 +294,7 @@ class ClassificationMetric(Evaluator):
             y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
             y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
             labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
-            average (str, None): {'micro', 'macro', 'weighted'} or None, default=None, others=None
+            average (str, None): {'micro', 'macro', 'weighted'} or None, default="macro"
             decimal (int): The number of fractional parts after the decimal point
 
         Returns:
@@ -321,7 +321,7 @@ class ClassificationMetric(Evaluator):
             f2 = dict([(label, item["f2"]) for label, item in metrics.items()])
         return f2 if type(f2) == dict else np.round(f2, decimal)
 
-    def fbeta_score(self, y_true=None, y_pred=None, beta=1.0, labels=None, average=None, decimal=None):
+    def fbeta_score(self, y_true=None, y_pred=None, beta=1.0, labels=None, average="macro", decimal=None):
         """
         The beta parameter determines the weight of recall in the combined score.
         beta < 1 lends more weight to precision, while beta > 1 favors recall
@@ -332,7 +332,7 @@ class ClassificationMetric(Evaluator):
             y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
             beta (float): the weight of recall in the combined score, default = 1.0
             labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
-            average (str, None): {'micro', 'macro', 'weighted'} or None, default=None, others=None
+            average (str, None): {'micro', 'macro', 'weighted'} or None, default="macro"
             decimal (int): The number of fractional parts after the decimal point
 
         Returns:
@@ -359,13 +359,13 @@ class ClassificationMetric(Evaluator):
             fbeta = dict([(label, item["fbeta"]) for label, item in metrics.items()])
         return fbeta if type(fbeta) == dict else np.round(fbeta, decimal)
 
-    def matthews_correlation_coefficient(self, y_true=None, y_pred=None, labels=None, average=None, decimal=None):
+    def matthews_correlation_coefficient(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
         """
         Args:
             y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
             y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
             beta (float): the weight of recall in the combined score, default = 1.0
-            average (str, None): {'micro', 'macro', 'weighted'} or None, default=None, others=None
+            average (str, None): {'micro', 'macro', 'weighted'} or None, default="macro"
             decimal (int): The number of fractional parts after the decimal point
 
         Returns:
@@ -390,7 +390,7 @@ class ClassificationMetric(Evaluator):
             mcc = dict([(label, item["mcc"]) for label, item in metrics.items()])
         return mcc if type(mcc) == dict else np.round(mcc, decimal)
 
-    def hamming_loss(self, y_true=None, y_pred=None, labels=None, average=None, decimal=None):
+    def hamming_loss(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
         """
         Generate hamming loss for multiple classification problem
 
@@ -398,7 +398,7 @@ class ClassificationMetric(Evaluator):
             y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
             y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
             labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
-            average (str, None): {'micro', 'macro', 'weighted'} or None, default=None, others=None
+            average (str, None): {'micro', 'macro', 'weighted'} or None, default="macro"
             decimal (int): The number of fractional parts after the decimal point
 
         Returns:
@@ -422,7 +422,7 @@ class ClassificationMetric(Evaluator):
             hl = dict([(label, np.round(item["hamming_loss"], decimal)) for label, item in metrics.items()])
         return hl if type(hl) == dict else np.round(hl, decimal)
 
-    def lift_score(self, y_true=None, y_pred=None, labels=None, average=None, decimal=None):
+    def lift_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
         """
         Generate lift score for multiple classification problem
 
@@ -430,7 +430,7 @@ class ClassificationMetric(Evaluator):
             y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
             y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
             labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
-            average (str, None): {'micro', 'macro', 'weighted'} or None, default=None, others=None
+            average (str, None): {'micro', 'macro', 'weighted'} or None, default="macro"
             decimal (int): The number of fractional parts after the decimal point
 
         Returns:
