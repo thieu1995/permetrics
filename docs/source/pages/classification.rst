@@ -24,7 +24,7 @@ Classification Metrics
 +------+----------+-----------------------------------+------------------------------------------------+
 | 10   | HL       | Hamming Loss                      | Higher is better (Best = 1), Range = [0, 1]    |
 +------+----------+-----------------------------------+------------------------------------------------+
-| 11   | LS       | Lift Score                        | Higher is better (Best = 0), Range = [0, +inf) |
+| 11   | LS       | Lift Score                        | Higher is better (Best=+inf), Range = [0, +inf)|
 +------+----------+-----------------------------------+------------------------------------------------+
 
 
@@ -32,17 +32,16 @@ In extending a binary metric to multiclass or multilabel problems, the data is t
 There are then a number of ways to average binary metric calculations across the set of classes, each of which may be useful in some scenario.
 Where available, you should select among these using the average parameter.
 
-+ "micro" gives each sample-class pair an equal contribution to the overall metric (except as a result of sample-weight).
-Rather than summing the metric per class, this sums the dividends and divisors that make up the per-class metrics to calculate an overall quotient.
-Micro-averaging may be preferred in multilabel settings, including multiclass classification where a majority class is to be ignored.
-Calculate metrics globally by considering each element of the label indicator matrix as a label.
++ "micro" gives each sample-class pair an equal contribution to the overall metric (except as a result of sample-weight). Rather than summing the metric per
+class, this sums the dividends and divisors that make up the per-class metrics to calculate an overall quotient.  Micro-averaging may be preferred in
+multilabel settings, including multiclass classification where a majority class is to be ignored.  Calculate metrics globally by considering each element of
+the label indicator matrix as a label.
 
 + "macro" simply calculates the mean of the binary metrics, giving equal weight to each class. In problems where infrequent classes are nonetheless important,
 macro-averaging may be a means of highlighting their performance. On the other hand, the assumption that all classes are equally
 important is often untrue, such that macro-averaging will over-emphasize the typically low performance on an infrequent class.
 
-+ "weighted" accounts for class imbalance by computing the average of binary metrics in which each class’s score is weighted by its presence in the true data
-sample.
++ "weighted" accounts for class imbalance by computing the average of binary metrics in which each class’s score is weighted by its presence in the true data sample.
 
 + None: will return an array with the score for each class.
 

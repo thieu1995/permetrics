@@ -106,7 +106,7 @@ def calculate_single_label_metric(matrix, imap, imap_count, beta=1.0):
             n_true = imap_count[label]
             precision = tp / (tp+fp)
             recall = tp / (tp + fn)
-            mcc = (tp * tn - fp * fn) / ((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn))
+            mcc = (tp * tn - fp * fn) / np.sqrt(((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn)))
             ls = (tp/(tp + fp)) / ((tp + fn) / (tp + tn + fp + fn))
 
             metric["tp"] = tp

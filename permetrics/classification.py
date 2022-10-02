@@ -364,7 +364,7 @@ class ClassificationMetric(Evaluator):
         Args:
             y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
             y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
-            beta (float): the weight of recall in the combined score, default = 1.0
+            labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
             average (str, None): {'micro', 'macro', 'weighted'} or None, default="macro"
             decimal (int): The number of fractional parts after the decimal point
 
@@ -381,7 +381,7 @@ class ClassificationMetric(Evaluator):
         if average == "micro":
             tp = tn = np.sum(np.diag(matrix))
             fp = fn = np.sum(matrix) - tp
-            mcc = (tp * tn - fp * fn) / ((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn))
+            mcc = (tp * tn - fp * fn) / np.sqrt(((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn)))
         elif average == "macro":
             mcc = np.mean(list_mcc)
         elif average == "weighted":
