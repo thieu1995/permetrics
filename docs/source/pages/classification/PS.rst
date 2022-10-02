@@ -46,7 +46,7 @@ Example:
 
 	cm = ClassificationMetric(y_true, y_pred, decimal = 5)
 
-	print(cm.PS())
+	print(cm.PS(average=None))
 	print(cm.PS(average="micro"))
 	print(cm.PS(average="macro"))
 	print(cm.PS(average="weighted"))

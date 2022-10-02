@@ -46,7 +46,7 @@ Example:
 
 	cm = ClassificationMetric(y_true, y_pred, decimal = 5)
 
-	print(cm.recall_score())
+	print(cm.recall_score(average=None))
 	print(cm.RS(average="micro"))
 	print(cm.rs(average="macro"))
 	print(cm.RS(average="weighted"))

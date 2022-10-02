@@ -40,7 +40,7 @@ Example:
 
 	cm = ClassificationMetric(y_true, y_pred, decimal = 5)
 
-	print(cm.hamming_loss())
+	print(cm.hamming_loss(average=None))
 	print(cm.hl(average="micro"))
 	print(cm.HL(average="macro"))
 	print(cm.HL(average="weighted"))

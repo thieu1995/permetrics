@@ -42,7 +42,7 @@ Example:
 
 	cm = ClassificationMetric(y_true, y_pred, decimal = 5)
 
-	print(cm.accuracy_score())
+	print(cm.accuracy_score(average=None))
 	print(cm.accuracy_score(average="micro"))
 	print(cm.AS(average="macro"))
 	print(cm.AS(average="weighted"))
