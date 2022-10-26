@@ -8,8 +8,6 @@ import pandas as pd
 from itertools import chain
 from collections import Counter
 from scipy.stats import f
-from sklearn.metrics.pairwise import pairwise_distances_chunked
-from sklearn import metrics
 from scipy.spatial.distance import pdist, cdist, squareform
 import functools
 
