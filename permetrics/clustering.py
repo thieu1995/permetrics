@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Created by "Thieu" at 18:07, 18/07/2020 ----------%
 #       Email: miq_qedquinn@yahoo.com               %
 #       Github: https://github.com/N3uralN3twork    %
@@ -69,56 +68,3 @@ class InternalMetric(object):
 
 
 
-=======
-# Created by "Thieu" at 18:07, 18/07/2020 ----------%
-#       Email: miq_qedquinn@yahoo.com               %
-#       Github: https://github.com/N3uralN3twork    %
-# --------------------------------------------------%
-
-import numpy as np
-import pandas as pd
-from itertools import chain
-from collections import Counter
-import re
-from scipy.stats import f
-from sklearn.metrics.pairwise import pairwise_distances_chunked
-from sklearn import metrics
-from scipy.spatial.distance import pdist, cdist, squareform
-import functools
-
-
-class ClusteringMetric(object):
-    """
-    This class contains a variety of clustering metrics (internal only)
-
-    Notes
-    ~~~~~
-    + An extension of scikit-learn metrics section, with the addition of many more internal metrics.
-    + https://scikit-learn.org/stable/modules/clustering.html#clustering-evaluation
-    """
-
-    def __init__(self, data, X, y, decimal=5, **kwargs):
-        """
-        Args:
-        ----
-            * X (tuple, list, np.ndarray):
-                - The ground truth values
-            * y (tuple, list, np.ndarray): 
-                - The prediction values
-            * decimal (int): 
-                - The number of fractional parts after the decimal point
-            * **kwargs ():
-        """
-
-        self.data = data
-        self.X = X
-        self.y = y
-        self.distances = pdist(self.X, metric="euclidean")
-
-        if kwargs is None: kwargs = {}
-        self.one_dim = False
-    
-
-
-
->>>>>>> parent of ee8f3d2 (Moved files to same repo instead of a fork)
