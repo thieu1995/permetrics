@@ -1,16 +1,19 @@
-# Created by "Thieu" at 18:07, 18/07/2020 ----------%
-#       Email: miq_qedquinn@yahoo.com               %
+# Created by "Matt Q." at 23:05, 27/10/2022 --------%
 #       Github: https://github.com/N3uralN3twork    %
 # --------------------------------------------------%
 
-import numpy as np
-from itertools import chain
-from collections import Counter
-from scipy.stats import f
-from scipy.spatial.distance import pdist, cdist, squareform
 import functools
+from collections import Counter
+from itertools import chain
 
-from utils.cluster_util import average_scattering, cluster_sep, density_bw, density_clusters, get_centroids, get_labels, general_sums_of_squares, pmatch
+import numpy as np
+from scipy.spatial.distance import cdist, pdist, squareform
+from scipy.stats import f
+
+from utils.cluster_util import (average_scattering, cluster_sep,
+                                density_between, density_clusters,
+                                general_sums_of_squares, get_centroids,
+                                get_labels, pmatch)
 
 
 class InternalMetric(object):
@@ -48,27 +51,29 @@ class InternalMetric(object):
         The **largest difference** between successive clustering levels indicates the optimal number of clusters.
 
         Args:
-            labels (list. pd.DataFrame, np.ndarray): The predicted cluster assignment values
-            n_clusters (int): The median number of clusters to get indices for
-            min_nc (int): The minimum number of clusters to get indices for
+            labels (list, pd.DataFrame, np.ndarray): The predicted cluster assignment values
+            n_clusters (int): The requested/median number of clusters to retrieve indices for
+            min_nc (int): The minimum number of clusters to retrieve indices for
 
         Returns:
             BH (float): The Ball-Hall index
         """
 
-        use_labels = get_labels(labels, n_clusters, min_nc, need="single")
+        # ! use_labels = get_labels(labels, n_clusters, min_nc, need="single")
+        use_labels = labels
         use_labels = np.array(use_labels).flatten()
         wgss = []
-        n_labels = len(set(use_labels))
+        n_classes = len(set(use_labels))
 
-        for k in range(n_labels):
-            cluster_k = self.X[use_labels == k]
-            mean_k = np.mean(cluster_k, axis=0)
-            wgss.append(np.sum((cluster_k - mean_k) ** 2))
+        # * For each cluster, find the centroid and then the within-group SSE
+        for k in range(n_classes):
+            centroid_mask = use_labels == k
+            cluster_k = self.X[centroid_mask]
+            centroid = np.mean(cluster_k, axis=0)
+            wgss.append(np.sum((cluster_k - centroid)**2))
 
-        BH = np.sum(wgss) / (n_labels)
+        BH = np.sum(wgss) / (n_classes)
 
         return BH
-
 
 

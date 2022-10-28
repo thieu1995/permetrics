@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from scipy.spatial.distance import pdist, cdist, squareform
+from scipy.spatial.distance import cdist, pdist, squareform
 
 "Beginning of Helper Functions for later use"
 
@@ -20,7 +20,7 @@ def pmatch(input: list, lst: list):
 
 def get_centroids(X, labels):
     """
-    Calculates the centroids from the data given, for each label
+    Calculates the centroids from the data given, for each class.
 
     Args:
         X (pd.DataFrame, np.ndarray): The original data that was clustered
@@ -36,10 +36,10 @@ def get_centroids(X, labels):
     # * Number of clusters in each class.
     nk = np.zeros(n_classes)
 
-    for cur_class in range(n_classes):
-        centroid_mask = labels == cur_class
-        nk[cur_class] = np.sum(centroid_mask)
-        centroids[cur_class] = X[centroid_mask].mean(axis=0)
+    for k in range(n_classes):
+        centroid_mask = labels == k
+        nk[k] = np.sum(centroid_mask)
+        centroids[k] = X[centroid_mask].mean(axis=0)
     
     return centroids
 
@@ -65,7 +65,7 @@ def general_sums_of_squares(X, labels):
     centroids2 = pd.DataFrame(centroids)
     x2 = (np.array(x) - centroids2.iloc[labels, :]) ** 2
     x3 = pd.DataFrame(x2)
-    # Get the sum of each row for each index
+    # * Get the sum of each row for each index
     withins = x3.sum(axis=1).reset_index().groupby(["index"]).agg({0: sum})
     withins = np.array(withins)
     wgss = float(sum(withins))
@@ -107,13 +107,14 @@ def average_scattering(X, labels):
     """
     Calculates the average scattering for a given set of clusters.
 
+    This can also be thought of as a vector of variances for a particular cluster.
+
     Args:
         X (pd.DataFrame, np.ndarray): The original data that was clustered
         labels (np.array): The predicted cluster assignment values
 
-
     Returns:
-        dict: standard deviation, centroids, Intra-class variance, average scattering
+        results (dict): standard deviation, centroids, Intra-class variance, average scattering
     """
     arr_labels = np.array(labels)
     x = np.array(X)
@@ -130,23 +131,25 @@ def average_scattering(X, labels):
                 if arr_labels[i] == u:
                     variance_clusters[u, j] = variance_clusters[u, j] + (x[i, j] - centroids[u, j]) ** 2
 
-    # Convert to an array for easier computation
+    # * Convert to an array for easier computation
     cluster_size = np.array(cluster_size)
-    # Include an empty dimension
+    # * Include an empty dimension
     cluster_size = np.expand_dims(cluster_size, axis=1)
     variance_clusters = variance_clusters / cluster_size
     variance_matrix = np.var(x, ddof=0, axis=0)
 
     sum_variance_clusters = []
     for u in range(k):
-        sum_variance_clusters.append(
-            np.sqrt(np.matmul(variance_clusters[u, ], variance_clusters[u])))
+        sum_variance_clusters.append(np.sqrt(np.matmul(variance_clusters[u, ], variance_clusters[u])))
 
     sum_variance_clusters = np.sum(sum_variance_clusters)
     stddev = (1 / k) * np.sqrt(sum_variance_clusters)
     scatter = (1 / k) * (sum_variance_clusters / np.sqrt(np.matmul(variance_matrix, variance_matrix)))
-    results = {"StdDev": stddev, "Centroids": centroids,
-                "Intra-cluster Variance": variance_clusters, "Scatter": scatter}
+    results = {"StdDev": stddev
+            , "Centroids": centroids
+            , "Intra-cluster Variance": variance_clusters
+            , "Scatter": scatter}
+    
     return results
 
 
@@ -159,7 +162,7 @@ def density_clusters(X, labels):
         labels (np.array): The predicted cluster assignment values
 
     Returns:
-        dict: distance and density of each cluster
+        results (dict): distance and density of each cluster
     """
     
     x = X
@@ -184,16 +187,16 @@ def density_clusters(X, labels):
     return results
 
 
-def density_bw(self, labels):
+def density_between(self, labels):
     """
-    Calculated the density between clusters.
+    Calculates the density between clusters, aka inter-cluster density.
 
     Args:
         X (pd.DataFrame, np.ndarray): The original data that was clustered
         labels (np.array): The predicted cluster assignment values
 
     Returns:
-        float: The density between clusters
+        density_bw (float): The density between clusters
     """
     x = self.X
     x = np.array(x)
@@ -212,8 +215,7 @@ def density_bw(self, labels):
                 for i in range(n):
                     if labels[i] == u or labels[i] == v:
                         for j in range(num_cols):
-                            distance[i] = distance[i] + \
-                                (x[i, j] - moy[j]) ** 2
+                            distance[i] = distance[i] + (x[i, j] - moy[j]) ** 2
                         distance[i] = np.sqrt(distance[i])
                         if distance[i] <= stddev:
                             density_bw[u, v] += 1
@@ -288,4 +290,5 @@ def get_labels(labels, n_clusters: int, min_nc: int, need: str):
             return np.array(df_labels[[n_clusters, n_clusters + 1]])
     elif need in ["Regular", "Normal", "Single", "single", "normal", "regular"]:
         return np.array(df_labels[[n_clusters]])
+
 
