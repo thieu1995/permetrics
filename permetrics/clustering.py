@@ -70,10 +70,47 @@ class InternalMetric(object):
             centroid_mask = use_labels == k
             cluster_k = self.X[centroid_mask]
             centroid = np.mean(cluster_k, axis=0)
-            wgss.append(np.sum((cluster_k - centroid)**2))
+            wgss.append(np.sum((cluster_k - centroid) ** 2))
 
         BH = np.sum(wgss) / (n_classes)
 
         return BH
+
+
+    def calinski_harabasz_score(self, labels, n_clusters: int = 3, min_nc: int = 2):
+        """
+        Compute the Calinski and Harabasz score.
+
+        It is also known as the Variance Ratio Criterion.
+
+        The score is defined as ratio between the within-cluster dispersion and
+        the between-cluster dispersion.
+
+        Parameters:
+            X (array-like of shape (n_samples, n_features)):
+                A list of `n_features`-dimensional data points.
+                Each row corresponds to a single data point.
+
+            labels (array-like of shape (n_samples,)):
+                Predicted labels for each sample.
+
+        Returns:
+            score (float):
+            The resulting Calinski-Harabasz score.
+
+        References:
+        .. [1] `T. Calinski and J. Harabasz, 1974. "A dendrite method for cluster
+            analysis". Communications in Statistics
+            <https://www.tandfonline.com/doi/abs/10.1080/03610927408827101>`_
+        """
+        use_labels = get_labels(labels, n_clusters, min_nc, need="single")
+        n_samples, n_vars = self.X.shape
+        n_classes = len(set(use_labels))
+
+        denom= (general_sums_of_squares(self.X, use_labels)["WGSS"] * (n_classes - 1))
+        numer = (general_sums_of_squares(self.X, use_labels)["BGSS"] * (n_samples - n_classes))
+
+        return float(numer / denom)
+
 
 
