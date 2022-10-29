@@ -79,14 +79,14 @@ class InternalMetric(object):
 
     def calinski_harabasz_score(self, labels, n_clusters: int = 3, min_nc: int = 2):
         """
-        Compute the Calinski and Harabasz score.
+        Compute the Calinski and Harabasz (1974) index.
 
         It is also known as the Variance Ratio Criterion.
 
         The score is defined as ratio between the within-cluster dispersion and
         the between-cluster dispersion.
 
-        Parameters:
+        Args:
             X (array-like of shape (n_samples, n_features)):
                 A list of `n_features`-dimensional data points.
                 Each row corresponds to a single data point.

@@ -57,22 +57,17 @@ def general_sums_of_squares(X, labels):
         dict: The within/between group sums of squares and centroids
     """
     labels = np.array(labels)
-    x = X
-    centroids = get_centroids(X, labels=labels)
-    allmean = np.mean(x)
-    dmean = x - allmean
-    allmeandist = sum(np.sum(dmean ** 2))
-    centroids2 = pd.DataFrame(centroids)
-    x2 = (np.array(x) - centroids2.iloc[labels, :]) ** 2
-    x3 = pd.DataFrame(x2)
-    # * Get the sum of each row for each index
-    withins = x3.sum(axis=1).reset_index().groupby(["index"]).agg({0: sum})
-    withins = np.array(withins)
-    wgss = float(sum(withins))
-    bgss = allmeandist - wgss
-    results = {"WGSS": wgss, "BGSS": bgss, "Centers": centroids}
+    n_classes = len(set(labels))
+    BGSS, WGSS = 0.0, 0.0
+    mean = np.mean(X, axis=0)
 
-    return results
+    for k in range(n_classes):
+        cluster_k = X[labels == k]
+        mean_k = np.mean(cluster_k, axis=0)
+        BGSS += len(cluster_k) * np.sum((mean_k - mean) ** 2)
+        WGSS += np.sum((cluster_k - mean_k) ** 2)
+
+    return {"BGSS": BGSS, "WGSS": WGSS}
 
 
 def cluster_sep(X, labels):
