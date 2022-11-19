@@ -34,7 +34,9 @@ class InternalMetric(object):
         """
         Args:
             X (pd.DataFrame, np.ndarray): The original data that was clustered
+
             y_pred (list. pd.DataFrame, np.ndarray): The predicted cluster assignment values
+            
             decimal (int): The number of fractional parts after the decimal point (Optional, default=5)
         """
         self.data = data
@@ -52,7 +54,9 @@ class InternalMetric(object):
 
         Args:
             labels (list, pd.DataFrame, np.ndarray): The predicted cluster assignment values
+
             n_clusters (int): The requested/median number of clusters to retrieve indices for
+
             min_nc (int): The minimum number of clusters to retrieve indices for
 
         Returns:
@@ -113,4 +117,49 @@ class InternalMetric(object):
         return float(numer / denom)
 
 
+    def xie_beni_index(self, labels, n_clusters: int = 3, min_nc: int = 2):
+        """
+        Computes the Xie-Beni index.
 
+        The Xie-Beni index is an index of fuzzy clustering, but it is also applicable
+        to crisp clustering.
+
+        The numerator is the mean of the squared distances of all of the points
+        with respect to their barycenter of the cluster they belong to.
+
+        The denominator is the minimal squared distances between the points in the clusters.
+
+        The **minimum** value indicates the best number of clusters.
+
+        Args:
+            labels (array-like): The predicted labels for the given clustering technique
+
+        Returns:
+            xb (float): The Xie-Beni index
+
+        """
+        labels = get_labels(labels, n_clusters, min_nc, need="Single")
+
+        nrows = self.X.shape[0]
+
+        # Get the centroids:
+        centroids = get_centroids(self.X, labels)
+
+        # Computing the WGSS:
+        def getMinDist(obs, code_book):
+            dist = cdist(obs, code_book)
+            code = dist.argmin(axis=1)
+            min_dist = dist[np.arange(len(code)), code]
+            return min_dist
+
+        euc_distance_to_centroids = getMinDist(self.X, centroids)
+
+        WGSS = np.sum(euc_distance_to_centroids**2)
+
+        # Computing the minimum squared distance to the centroids:
+        MinSqDist = np.min(pdist(centroids, metric='sqeuclidean'))
+
+        # Computing the XB index:
+        xb = (1 / nrows) * (WGSS / MinSqDist)
+
+        return xb
