@@ -90,7 +90,8 @@ Regression Metrics
 +------+------------+---------------------------------------------------+------------------------------------------------------+
 | 43   | COV        | Covariance                                        | Greater is better (No best value), Range=[-inf, +inf)|
 +------+------------+---------------------------------------------------+------------------------------------------------------+
-
+| 44   | COR        | Correlation                                       | Greater is better (Best = 1), Range=[-1, +1]         |
++------+------------+---------------------------------------------------+------------------------------------------------------+
 
 From now on:
 
@@ -146,6 +147,7 @@ From now on:
    regression/NRMSE.rst
    regression/RSE.rst
    regression/COV.rst
+   regression/COR.rst
 
    regression/RE.rst
    regression/AE.rst

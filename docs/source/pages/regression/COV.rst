@@ -18,7 +18,7 @@ COV - Covariance
 
 .. math::
 
-	\text{COV}(y, \hat{y}) = \sqrt{\frac{\sum_{i=0}^{N - 1} (y_i - \hat{y}_i)^2}{N}}
+   \text{COV}(y, \hat{y}) = \sqrt{\frac{\sum_{i=1}^{N} (y_i - mean(Y)) (\hat{y}_i - mean(\hat{Y}))}{N}}
 
 
 + There is no best value, bigger value is better. Range = [-inf, +inf)
