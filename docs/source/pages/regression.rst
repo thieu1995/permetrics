@@ -92,6 +92,9 @@ Regression Metrics
 +------+------------+---------------------------------------------------+------------------------------------------------------+
 | 44   | COR        | Correlation                                       | Greater is better (Best = 1), Range=[-1, +1]         |
 +------+------------+---------------------------------------------------+------------------------------------------------------+
+| 45   | EC         | Efficiency Coefficient                            | Greater is better (Best = 1), Range=[-inf, +1]       |
++------+------------+---------------------------------------------------+------------------------------------------------------+
+
 
 From now on:
 
@@ -148,6 +151,7 @@ From now on:
    regression/RSE.rst
    regression/COV.rst
    regression/COR.rst
+   regression/EC.rst
 
    regression/RE.rst
    regression/AE.rst
