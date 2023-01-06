@@ -152,6 +152,7 @@ From now on:
    regression/COV.rst
    regression/COR.rst
    regression/EC.rst
+   regression/OI.rst
 
    regression/RE.rst
    regression/AE.rst

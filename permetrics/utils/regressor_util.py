@@ -64,3 +64,10 @@ def calculate_ec(y_true, y_pred, one_dim):
         numerator = np.sum((y_true - y_pred)**2, axis=0)
         denominator = np.sum((y_true - m1) ** 2, axis=0)
     return 1.0 - numerator / denominator
+
+
+def calculate_mse(y_true, y_pred, one_dim):
+    if one_dim:
+        return np.mean((y_true - y_pred) ** 2)
+    else:
+        return np.mean((y_true - y_pred) ** 2, axis=0)
