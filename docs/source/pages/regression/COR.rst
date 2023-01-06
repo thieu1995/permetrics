@@ -18,7 +18,7 @@ COR - Correlation
 
 .. math::
 
-   \text{COR}(y, \hat{y}) = \frac{ COV(y, \hat{y}) }{ std(y) * std(\hat{y})}}
+   \text{COR}(y, \hat{y}) = \frac{ COV(y, \hat{y}) }{ std(y) * std(\hat{y})}
 
 
 + Best possible value = 1, bigger value is better. Range = [-1, +1)
@@ -26,7 +26,7 @@ COR - Correlation
 
 Latex equation code::
 
-	\text{COR}(y, \hat{y}) = \frac{ COV(y, \hat{y}) }{ std(y) * std(\hat{y})}}
+	\text{COR}(y, \hat{y}) = \frac{ COV(y, \hat{y}) }{ std(y) * std(\hat{y})}
 
 + measures the strength of the relationship between variables
 + is the scaled measure of covariance. It is dimensionless.

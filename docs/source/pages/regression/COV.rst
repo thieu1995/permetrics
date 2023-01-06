@@ -18,7 +18,7 @@ COV - Covariance
 
 .. math::
 
-   \text{COV}(y, \hat{y}) = \sqrt{\frac{\sum_{i=1}^{N} (y_i - mean(Y)) (\hat{y}_i - mean(\hat{Y}))}{N}}
+   \text{COV}(y, \hat{y}) = \frac{\sum_{i=1}^{N} (y_i - mean(Y)) (\hat{y}_i - mean(\hat{Y}))}{N}
 
 
 + There is no best value, bigger value is better. Range = [-inf, +inf)
@@ -28,11 +28,11 @@ COV - Covariance
 
 Latex equation code for covariance of population::
 
-	\text{COV}(y, \hat{y}) = \sqrt{\frac{\sum_{i=1}^{N} (y_i - mean(Y)) (\hat{y}_i - mean(\hat{Y}))}{N}}
+	\text{COV}(y, \hat{y}) = \frac{\sum_{i=1}^{N} (y_i - mean(Y)) (\hat{y}_i - mean(\hat{Y}))}{N}
 
 Latex equation code for covariance of sample::
 
-	\text{COV}(y, \hat{y}) = \sqrt{\frac{\sum_{i=1}^{N} (y_i - mean(Y)) (\hat{y}_i - mean(\hat{Y}))}{N - 1}}
+	\text{COV}(y, \hat{y}) = \frac{\sum_{i=1}^{N} (y_i - mean(Y)) (\hat{y}_i - mean(\hat{Y}))}{N - 1}
 
 + COV is a measure of the relationship between two random variables.
 + evaluates how much – to what extent – the variables change together.
