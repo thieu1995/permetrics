@@ -1,7 +1,7 @@
 Introduction
 ############
 
-.. image:: https://img.shields.io/badge/release-1.3.0-yellow.svg?style=svg
+.. image:: https://img.shields.io/badge/release-1.3.2-yellow.svg?style=svg
     :target: https://github.com/thieu1995/permetrics
 
 .. image:: https://img.shields.io/pypi/wheel/gensim.svg?style=svg
@@ -35,8 +35,8 @@ PerMetrics is library written in Python, for PERformance METRICS (PerMetrics) of
     * Perform Qualitative Analysis of models.
     * Perform Quantitative Analysis of models.
 
-* Currently, It contains 2 sub-packages including:
-	* regression: contains 42 metrics
+* Currently, it contains 2 sub-packages including:
+	* regression: contains 47 metrics
 	* classification: contains 11 metrics
 
 
@@ -52,18 +52,6 @@ If you see my code and data useful and use it, please cites my works here::
 	  url          = {https://doi.org/10.5281/zenodo.3951205}
 	}
 
-	@article{nguyen2019efficient,
-	  title={Efficient Time-Series Forecasting Using Neural Network and Opposition-Based Coral Reefs Optimization},
-	  author={Nguyen, Thieu and Nguyen, Tu and Nguyen, Binh Minh and Nguyen, Giang},
-	  journal={International Journal of Computational Intelligence Systems},
-	  volume={12},
-	  number={2},
-	  pages={1144--1161},
-	  year={2019},
-	  publisher={Atlantis Press}
-	}
-
-
 Setup
 #####
 
@@ -71,7 +59,7 @@ Install the [current PyPI release](https://pypi.python.org/pypi/permetrics):
 
 This is a simple example::
 
-	pip install permetrics==1.3.0
+	pip install permetrics==1.3.2
 
 Or install the development version from GitHub::
 

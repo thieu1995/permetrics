@@ -3,7 +3,7 @@
 
 
 
-[![GitHub release](https://img.shields.io/badge/release-1.3.1-yellow.svg)](https://github.com/thieu1995/permetrics/releases)
+[![GitHub release](https://img.shields.io/badge/release-1.3.2-yellow.svg)](https://github.com/thieu1995/permetrics/releases)
 [![Wheel](https://img.shields.io/pypi/wheel/gensim.svg)](https://pypi.python.org/pypi/permetrics) 
 [![PyPI version](https://badge.fury.io/py/permetrics.svg)](https://badge.fury.io/py/permetrics)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/permetrics.svg)
@@ -20,7 +20,7 @@
 PerMetrics is a python library for performance metrics of machine learning models. We aim to implement all performance metrics for problems such as regression, classification, clustering, ... problems. Helping users in all field access metrics as fast as possible
 
 * **Free software:** Apache License, Version 2.0
-* **Total metrics**: 53 (42 regression metrics, 11 classification metrics)
+* **Total metrics**: 68 (47 regression metrics, 11 classification metrics)
 * **Documentation:** https://permetrics.readthedocs.io/en/latest/
 * **Python versions:** 3.6.x, 3.7.x, 3.8.x, 3.9.x, 3.10.x
 * **Dependencies:** numpy
@@ -32,7 +32,7 @@ PerMetrics is a python library for performance metrics of machine learning model
 ### Install with pip
 Install the [current PyPI release](https://pypi.python.org/pypi/permetrics):
 ```sh 
-$ pip install permetrics==1.3.1
+$ pip install permetrics==1.3.2
 ```
 
 Or install the development version from GitHub:
