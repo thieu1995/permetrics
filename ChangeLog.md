@@ -1,3 +1,18 @@
+# Version 1.3.2
+
+### Update
+
+Add regression metrics:
++ covariance (COV): https://corporatefinanceinstitute.com/resources/data-science/covariance/
++ correlation (COR): https://corporatefinanceinstitute.com/resources/data-science/covariance/
++ efficiency coefficient (EC): https://doi.org/10.1016/j.solener.2019.01.037
++ overall index (OI): https://doi.org/10.1016/j.solener.2019.01.037
++ coefficient of residual mass (CRM): https://doi.org/10.1016/j.solener.2019.01.037
+
+
+---------------------------------------------------------------------
+
+
 # Version 1.3.1
 
 ### Update

@@ -1316,7 +1316,7 @@ class RegressionMetric(Evaluator):
         Efficiency Coefficient (EC): Best possible value = 1, bigger value is better. Range = [-inf, +1]
 
         Links:
-            + https://doi.org/10.1016/j.csite.2022.101797
+            + https://doi.org/10.1016/j.solener.2019.01.037
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
@@ -1342,7 +1342,7 @@ class RegressionMetric(Evaluator):
         Overall Index (OI): Best possible value = 1, bigger value is better. Range = [-inf, +1]
 
         Links:
-            + https://doi.org/10.1016/j.csite.2022.101797
+            + https://doi.org/10.1016/j.solener.2019.01.037
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
@@ -1367,6 +1367,35 @@ class RegressionMetric(Evaluator):
             return np.round(score, decimal)
         else:
             score = (1 - rmse / (np.max(y_true, axis=0) - np.min(y_true, axis=0)) + ec) / 2.0
+            return self.get_multi_output_result(score, multi_output, decimal)
+
+    def coefficient_of_residual_mass(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+        """
+        Coefficient of Residual Mass (CRM): Best possible value = 0.0, smaller value is better. Range = [-inf, +inf]
+
+        Links:
+            + https://doi.org/10.1016/j.csite.2022.101797
+
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
+            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): CRM metric for single column or multiple columns
+        """
+        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
+        if non_zero:
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 1)
+        if positive:
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
+        if one_dim:
+            return np.round((np.sum(y_pred) - np.sum(y_true)) / np.sum(y_true), decimal)
+        else:
+            score = (np.sum(y_pred, axis=0) - np.sum(y_true, axis=0)) / np.sum(y_true, axis=0)
             return self.get_multi_output_result(score, multi_output, decimal)
 
     def single_relative_error(self, y_true=None, y_pred=None, decimal=None, non_zero=True, positive=False):
@@ -1507,6 +1536,7 @@ class RegressionMetric(Evaluator):
     COR = cor = correlation
     EC = ec = efficiency_coefficient
     OI = oi = overall_index
+    CRM = crm = coefficient_of_residual_mass
 
     RE = re = RB = rb = single_relative_bias = single_relative_error
     AE = ae = single_absolute_error

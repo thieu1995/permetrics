@@ -152,7 +152,7 @@ If you are using mealpy in your project, we would appreciate citations:
 
 
 | **Problem** | **STT** | **Metric** | **Metric Fullname** |                 **Characteristics**                 |
-|:---:|:---:|:----------:|:---:|:---------------------------------------------------:|
+|:---:|:--:|:----------:|:---:|:---------------------------------------------------:|
 | **Regression** | 1 |    EVS     | Explained Variance Score |   Greater is better (Best = 1), Range=(-inf, 1.0]   |
 | **** | 2 |     ME     | Max Error |    Smaller is better (Best = 0), Range=[0, +inf)    |
 | **** | 3 |    MBE     | Mean Bias Error |            Best = 0, Range=(-inf, +inf)             |
@@ -195,7 +195,12 @@ If you are using mealpy in your project, we would appreciate citations:
 | **** | 40 |     AE     | Absolute Error |            Best = 0, Range=(-inf, +inf)             |
 | **** | 41 |     SE     |  Squared Error |    Smaller is better (Best = 0), Range=[0, +inf)    |
 | **** | 42 |    SLE     | Squared Log Error |    Smaller is better (Best = 0), Range=[0, +inf)    |
-| **** | 43 |            |  |                                                     |
+| **** | 43 |    COV     | Covariance |    Greater is better (No best value), Range=(-inf, +inf)    |
+| **** | 44 |    COR     | Correlation |    Greater is better (Best = 1), Range=[-1, +1]     |
+| **** | 45 |    EC      | Efficiency Coefficient |  Greater is better (Best = 1), Range=(-inf, +1]    |
+| **** | 46 |    OI      | Overall Index  |    Greater is better (Best = 1), Range=(-inf, +1]    |
+| **** | 47 |  CRM       | Coefficient of Residual Mass |   Smaller is better (Best = 0), Range=(-inf, +inf)  |
+| **** | 48 |         |       |             |
 | **Classification** | 1 |     PS     | Precision Score |     Higher is better (Best = 1), Range = [0, 1]     |
 | **** | 2 |    NPV     | Negative Predictive Value |     Higher is better (Best = 1), Range = [0, 1]     |
 | **** | 3 |     RS     | Recall Score |     Higher is better (Best = 1), Range = [0, 1]     |
@@ -208,7 +213,6 @@ If you are using mealpy in your project, we would appreciate citations:
 | **** | 10 |     HL     | Hamming Loss |     Higher is better (Best = 1), Range = [0, 1]     |
 | **** | 11 |     LS     | Lift Score |  Higher is better (Best = +inf), Range = [0, +inf)  |
 | **** | 12 |
-
 
 
 # Future works
