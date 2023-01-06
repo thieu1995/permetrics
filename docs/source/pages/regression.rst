@@ -88,7 +88,8 @@ Regression Metrics
 +------+------------+---------------------------------------------------+------------------------------------------------------+
 | 42   | SLE        | Squared Log Error                                 | Smaller is better (Best = 0), Range=[0, +inf)        |
 +------+------------+---------------------------------------------------+------------------------------------------------------+
-
+| 43   | COV        | Covariance                                        | Greater is better (No best value), Range=[-inf, +inf)|
++------+------------+---------------------------------------------------+------------------------------------------------------+
 
 
 From now on:
@@ -144,6 +145,7 @@ From now on:
    regression/A30.rst
    regression/NRMSE.rst
    regression/RSE.rst
+   regression/COV.rst
 
    regression/RE.rst
    regression/AE.rst

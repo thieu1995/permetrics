@@ -1239,6 +1239,45 @@ class RegressionMetric(Evaluator):
             score = np.sqrt(ss_residuals / df_residuals)
             return self.get_multi_output_result(score, multi_output, decimal)
 
+    def covariance(self, y_true=None, y_pred=None, sample=False, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+        """
+        Covariance (COV): There is no best value, bigger value is better. Range = [-inf, +inf)
+            + is a measure of the relationship between two random variables
+            + evaluates how much – to what extent – the variables change together
+            + does not assess the dependency between variables
+            + Positive covariance: Indicates that two variables tend to move in the same direction.
+            + Negative covariance: Reveals that two variables tend to move in inverse directions.
+
+        Links:
+            + https://corporatefinanceinstitute.com/resources/data-science/covariance/
+
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            sample (bool): sample covariance or population covariance. See the website above for more details
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
+            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): COV metric for single column or multiple columns
+        """
+        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
+        denominator = len(y_true) - 1 if sample else len(y_true)
+        if non_zero:
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 1)
+        if positive:
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
+        if one_dim:
+            s1 = y_true - np.mean(y_true)
+            s2 = y_pred - np.mean(y_pred)
+            return np.round(np.dot(s1, s2) / denominator, decimal)
+        else:
+            s1 = y_true - np.mean(y_true, axis=0)
+            s2 = y_pred - np.mean(y_pred, axis=0)
+            return self.get_multi_output_result(np.sum(s1 * s2, axis=0) / denominator, multi_output, decimal)
+
     def single_relative_error(self, y_true=None, y_pred=None, decimal=None, non_zero=True, positive=False):
         """
         Relative Error (RE): Best possible score is 0.0, smaller value is better. Range = (-inf, +inf)
@@ -1373,6 +1412,7 @@ class RegressionMetric(Evaluator):
     A30 = a30 = a30_index
     NRMSE = nrmse = normalized_root_mean_square_error
     RSE = rse = residual_standard_error
+    COV = cov = covariance
 
     RE = re = RB = rb = single_relative_bias = single_relative_error
     AE = ae = single_absolute_error
