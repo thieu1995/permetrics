@@ -32,6 +32,7 @@ class ClassificationMetric(Evaluator):
         self.set_keyword_arguments(kwargs)
         self.binary = True
         self.representor = "number"     # "number" or "string"
+        self.le = None  # LabelEncoder
 
     def get_processed_data(self, y_true=None, y_pred=None, decimal=None):
         """
@@ -453,6 +454,38 @@ class ClassificationMetric(Evaluator):
             ls = dict([(label, np.round(item["lift_score"], decimal)) for label, item in metrics.items()])
         return ls if type(ls) == dict else np.round(ls, decimal)
 
+    def cohen_kappa_score(self, y_true=None, y_pred=None, decimal=None):
+        """
+        Generate Cohen Kappa score for multiple classification problem
+
+        Args:
+            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
+            y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            cks (float, dict): the Cohen Kappa score
+        """
+        y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
+        if representor == "string":
+            # Convert labels to integers
+            self.le = LabelEncoder()
+            y_true = self.le.fit_transform(y_true)
+            y_pred = self.le.transform(y_pred)
+        n = y_true.shape[0]
+        labels = np.unique(np.concatenate((y_true, y_pred)))
+        n_labels = labels.shape[0]
+        confusion_matrix = np.zeros((n_labels, n_labels), dtype=np.int64)
+        for i in range(n_labels):
+            for j in range(n_labels):
+                y_true_idx = (y_true == labels[i])
+                y_pred_idx = (y_pred == labels[j])
+                n_ij = np.sum(y_true_idx & y_pred_idx)
+                confusion_matrix[i, j] = n_ij
+        expected_agreement = np.sum(np.sum(confusion_matrix, axis=0) * np.sum(confusion_matrix, axis=1)) / (n ** 2)
+        observed_agreement = np.sum(np.diag(confusion_matrix)) / n
+        k = (observed_agreement - expected_agreement) / (1.0 - expected_agreement)
+        return k
 
 
     CM = cm = confusion_matrix

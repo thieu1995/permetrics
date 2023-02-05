@@ -134,16 +134,43 @@ def calculate_single_label_metric(matrix, imap, imap_count, beta=1.0):
     return metrics
 
 
-def calculate_cohen_kappa(y1, y2):
-    n = len(y1)
-    observed_agreement = np.sum(y1 == y2)
-    expected_agreement = 0.0
-    for label in np.unique(y1):
-        p_i = np.sum(y1 == label) / n
-        p_j = np.sum(y2 == label) / n
-        expected_agreement += p_i * p_j
-    k = (observed_agreement - expected_agreement) / (n - expected_agreement)
-    return k
+class LabelEncoder:
+    def __init__(self):
+        self.classes_ = None
+        self.encoded_classes_ = None
+
+    def fit(self, y):
+        self.classes_, indices = np.unique(y, return_inverse=True)
+        self.encoded_classes_ = np.arange(len(self.classes_))
+        return self
+
+    def transform(self, y):
+        return np.searchsorted(self.classes_, y)
+
+    def inverse_transform(self, y):
+        return self.classes_[y]
+
+    def fit_transform(self, y):
+        self.fit(y)
+        return self.transform(y)
+
+
+# class LabelEncoder:
+#     def __init__(self):
+#         self.classes_ = None
+#         self.encoded_classes_ = None
+#
+#     def fit(self, y):
+#         self.classes_ = list(set(y))
+#         self.encoded_classes_ = {c: i for i, c in enumerate(self.classes_)}
+#         return self
+#
+#     def transform(self, y):
+#         return [self.encoded_classes_[c] for c in y]
+#
+#     def inverse_transform(self, y):
+#         return [self.classes_[i] for i in y]
+
 
 
 
