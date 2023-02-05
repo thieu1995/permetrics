@@ -113,10 +113,13 @@ def format_classification_data_type(y_true, y_pred):
         y_true, y_pred = np.array(y_true), np.array(y_pred)
         ## Remove all dimensions of size 1
         y_true, y_pred = np.squeeze(y_true), np.squeeze(y_pred)
-        if y_true.ndim == y_pred.ndim == 1:
-            return y_true, y_pred
+        if y_true.ndim == y_pred.ndim:
+            if y_true.ndim == 1:
+                return y_true, y_pred
+            else:
+                return y_true.argmax(axis=1), y_pred.argmax(axis=1)
         else:
-            raise TypeError("y_true and y_pred need to be a list, tuple or np.array.")
+            raise TypeError("y_true and y_pred need to be a list, tuple or np.array with the same number of dimensions.")
     else:
         raise TypeError("y_true and y_pred need to be a list, tuple or np.array.")
 

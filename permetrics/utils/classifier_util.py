@@ -7,7 +7,7 @@
 import numpy as np
 
 
-def confusion_matrix(y_true=None, y_pred=None, labels=None, normalize=None):
+def calculate_confusion_matrix(y_true=None, y_pred=None, labels=None, normalize=None):
     """
     Generate a confusion matrix for multiple classification
 
