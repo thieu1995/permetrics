@@ -10,16 +10,14 @@ import copy as cp
 
 def format_regression_data_type(y_true, y_pred):
     if isinstance(y_true, (list, tuple, np.ndarray)) and isinstance(y_pred, (list, tuple, np.ndarray)):
-        y_true, y_pred = np.array(y_true), np.array(y_pred)
         ## Remove all dimensions of size 1
-        y_true, y_pred = np.squeeze(y_true), np.squeeze(y_pred)
+        y_true, y_pred = np.squeeze(np.asarray(y_true, dtype='float64')), np.squeeze(np.asarray(y_pred, dtype='float64'))
         if y_true.ndim == y_pred.ndim:
-            # x = x[~np.isnan(x)] can't remove if array is dtype object, only work with dtype float
-            return y_true.astype('float64'), y_pred.astype('float64')
+            return y_true, y_pred
         else:
-            raise ValueError("y_true and y_pred need to have same number of dimensions.")
+            raise ValueError("y_true and y_pred must have the same number of dimensions.")
     else:
-        raise TypeError("y_true and y_pred need to be a list, tuple or np.array.")
+        raise TypeError("y_true and y_pred must be lists, tuples or numpy arrays.")
 
 
 def format_regression_data(y_true: np.ndarray, y_pred: np.ndarray):
@@ -108,37 +106,27 @@ def get_regression_positive_data(y_true, y_pred, one_dim=True, rule_idx=0):
     return y_true, y_pred
 
 
-def format_classification_data_type(y_true, y_pred):
-    if isinstance(y_true, (list, tuple, np.ndarray)) and isinstance(y_pred, (list, tuple, np.ndarray)):
-        y_true, y_pred = np.array(y_true), np.array(y_pred)
-        ## Remove all dimensions of size 1
-        y_true, y_pred = np.squeeze(y_true), np.squeeze(y_pred)
-        if y_true.ndim == y_pred.ndim:
-            if y_true.ndim == 1:
-                return y_true, y_pred
-            else:
-                return y_true.argmax(axis=1), y_pred.argmax(axis=1)
-        else:
-            raise TypeError("y_true and y_pred need to be a list, tuple or np.array with the same number of dimensions.")
-    else:
-        raise TypeError("y_true and y_pred need to be a list, tuple or np.array.")
-
-
 def format_classification_data(y_true: np.ndarray, y_pred: np.ndarray):
-    # ## Remove all Nan in y_pred
-    # y_true = y_true[~np.isnan(y_pred)]
-    # y_pred = y_pred[~np.isnan(y_pred)]
-    # ## Remove all Inf in y_pred
-    # y_true = y_true[np.isfinite(y_pred)]
-    # y_pred = y_pred[np.isfinite(y_pred)]
-
-    unique_true_labels = sorted(set(y_true))
-    unique_pred_labels = sorted(set(y_pred))
-    if len(unique_pred_labels) <= len(unique_true_labels) and np.all(np.isin(unique_pred_labels, unique_true_labels)):
-        binary = True if len(unique_true_labels) == 2 else False
-        if isinstance(unique_true_labels[0], (int, float)):
-            return y_true, y_pred, binary, "number"
-        else:
-            return y_true, y_pred, binary, "string"
+    if not (isinstance(y_true, (list, tuple, np.ndarray)) and isinstance(y_pred, (list, tuple, np.ndarray))):
+        raise TypeError("y_true and y_pred must be lists, tuples or numpy arrays.")
     else:
-        raise ValueError("Existed at least one new label in y_pred.")
+        ## Remove all dimensions of size 1
+        y_true, y_pred = np.squeeze(np.asarray(y_true)), np.squeeze(np.asarray(y_pred))
+        if not (y_true.ndim == y_pred.ndim):
+            raise TypeError("y_true and y_pred must have the same number of dimensions.")
+        else:
+            if np.issubdtype(y_true.dtype, np.number):
+                var_type = "number"
+                if y_true.ndim > 1:
+                    y_true, y_pred = y_true.argmax(axis=1), y_pred.argmax(axis=1)
+            else:
+                var_type = "string"
+                if y_true.ndim > 1:
+                    raise ValueError("y_true and y_pred have n_dim > 1 need to be a number.")
+            unique_true, unique_pred = sorted(np.unique(y_true)), sorted(np.unique(y_pred))
+            if not (len(unique_pred) <= len(unique_true) and np.isin(unique_pred, unique_true).all()):
+                raise ValueError("Existed at least one new label in y_pred.")
+            else:
+                binary = len(unique_true) == 2
+            return y_true, y_pred, binary, var_type
+

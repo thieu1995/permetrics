@@ -134,7 +134,16 @@ def calculate_single_label_metric(matrix, imap, imap_count, beta=1.0):
     return metrics
 
 
-
+def calculate_cohen_kappa(y1, y2):
+    n = len(y1)
+    observed_agreement = np.sum(y1 == y2)
+    expected_agreement = 0.0
+    for label in np.unique(y1):
+        p_i = np.sum(y1 == label) / n
+        p_j = np.sum(y2 == label) / n
+        expected_agreement += p_i * p_j
+    k = (observed_agreement - expected_agreement) / (n - expected_agreement)
+    return k
 
 
 

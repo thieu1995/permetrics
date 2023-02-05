@@ -49,12 +49,10 @@ class ClassificationMetric(Evaluator):
         """
         decimal = self.decimal if decimal is None else decimal
         if (y_true is not None) and (y_pred is not None):
-            y_true, y_pred = format_classification_data_type(y_true, y_pred)
             y_true, y_pred, binary, representor = format_classification_data(y_true, y_pred)
         else:
             if (self.y_true is not None) and (self.y_pred is not None):
-                y_true, y_pred = format_classification_data_type(self.y_true, self.y_pred)
-                y_true, y_pred, binary, representor = format_classification_data(y_true, y_pred)
+                y_true, y_pred, binary, representor = format_classification_data(self.y_true, self.y_pred)
             else:
                 raise ValueError("y_true or y_pred is None. You need to pass y_true and y_pred to object creation or function called.")
         return y_true, y_pred, binary, representor, decimal
@@ -454,6 +452,7 @@ class ClassificationMetric(Evaluator):
         else:
             ls = dict([(label, np.round(item["lift_score"], decimal)) for label, item in metrics.items()])
         return ls if type(ls) == dict else np.round(ls, decimal)
+
 
 
     CM = cm = confusion_matrix
