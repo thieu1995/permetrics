@@ -487,6 +487,39 @@ class ClassificationMetric(Evaluator):
         k = (observed_agreement - expected_agreement) / (1.0 - expected_agreement)
         return k
 
+    def jaccard_similarity_index(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
+        """
+        Generate Jaccard similarity index for multiple classification problem
+
+        Args:
+            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
+            y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
+            labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
+            average (str, None): {'micro', 'macro', 'weighted'} or None, default="macro"
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            jsi (float, dict): the Jaccard similarity index
+        """
+        y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
+        matrix, imap, imap_count = calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
+        metrics = calculate_single_label_metric(matrix, imap, imap_count)
+
+        list_js = np.array([item["jaccard_similarities"] for item in metrics.values()])
+        list_weights = np.array([item["n_true"] for item in metrics.values()])
+
+        if average == "micro":
+            tp = tn = np.sum(np.diag(matrix))
+            fp = fn = np.sum(matrix) - tp
+            js = tp / (tp + fp + fn)
+        elif average == "macro":
+            js = np.mean(list_js)
+        elif average == "weighted":
+            js = np.dot(list_weights, list_js) / np.sum(list_weights)
+        else:
+            js = dict([(label, np.round(item["jaccard_similarities"], decimal)) for label, item in metrics.items()])
+        return js if type(js) == dict else np.round(js, decimal)
+
 
     CM = cm = confusion_matrix
     PS = ps = precision_score
@@ -501,5 +534,6 @@ class ClassificationMetric(Evaluator):
     HL = hl = hamming_loss
     LS = ls = lift_score
     CKS = cks = cohen_kappa_score
+    JSI = jsi = JSC = jsc = jaccard_similarity_coefficient = jaccard_similarity_index
 
 
