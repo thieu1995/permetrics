@@ -500,5 +500,6 @@ class ClassificationMetric(Evaluator):
     MCC = mcc = matthews_correlation_coefficient
     HL = hl = hamming_loss
     LS = ls = lift_score
+    CKS = cks = cohen_kappa_score
 
 
