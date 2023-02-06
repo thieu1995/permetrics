@@ -29,6 +29,27 @@ The formula for the Cohen's Kappa score is as follows::
 where observed agreement is the proportion of items that are classified the same way by both annotators, and expected
 agreement is theproportion of items that are classified the same way by chance.
 
+or::
+
+	$\kappa = \frac{p_o - p_e}{1 - p_e}$
+
+	where
+
+	$p_o = \frac{tp + tn}{tp + tn + fp + fn}$
+
+	$p_e = \frac{(tp + fp) \cdot (tp + fn) + (tn + fn) \cdot (tn + fp)}{(tp + tn + fp + fn)^2}$
+
+	$tp$ represents the number of true positive annotations (agreements between the two annotators)
+
+	$tn$ represents the number of true negative annotations (agreements between the two annotators)
+
+	$fp$ represents the number of false positive annotations (disagreements between the two annotators)
+
+	$fn$ represents the number of false negative annotations (disagreements between the two annotators)
+
+	$p_o$ represents the observed agreement, and $p_e$ represents the expected agreement based on chance.
+
+
 + Best possible score is 1.0, higher value is better. Range = [-1, 1]
 + The value of k ranges from -1 to 1, with values closer to 1 indicating high levels of agreement, and values closer to -1 indicating low levels of agreement.
 A value of 0 indicates that the agreement between the annotators is no better than chance. A value of 1 indicates perfect agreement.
@@ -68,7 +89,9 @@ Example:
 
 	cm = ClassificationMetric(y_true, y_pred, decimal = 5)
 
-	print(cm.cohen_kappa_score())
-	print(cm.cks())
-	print(cm.CKS())
+	cm = ClassificationMetric(y_true, y_pred, decimal=5)
 
+	print(cm.cohen_kappa_score(average=None))
+	print(cm.cks(average="micro"))
+	print(cm.CKS(average="macro"))
+	print(cm.CKS(average="weighted"))
