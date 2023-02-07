@@ -454,39 +454,6 @@ class ClassificationMetric(Evaluator):
             ls = dict([(label, np.round(item["lift_score"], decimal)) for label, item in metrics.items()])
         return ls if type(ls) == dict else np.round(ls, decimal)
 
-    # def cohen_kappa_score(self, y_true=None, y_pred=None, decimal=None):
-    #     """
-    #     Generate Cohen Kappa score for multiple classification problem
-    #
-    #     Args:
-    #         y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
-    #         y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
-    #         decimal (int): The number of fractional parts after the decimal point
-    #
-    #     Returns:
-    #         cks (float, dict): the Cohen Kappa score
-    #     """
-    #     y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
-    #     if representor == "string":
-    #         # Convert labels to integers
-    #         self.le = LabelEncoder()
-    #         y_true = self.le.fit_transform(y_true)
-    #         y_pred = self.le.transform(y_pred)
-    #     n = y_true.shape[0]
-    #     labels = np.unique(np.concatenate((y_true, y_pred)))
-    #     n_labels = labels.shape[0]
-    #     confusion_matrix = np.zeros((n_labels, n_labels), dtype=np.int64)
-    #     for i in range(n_labels):
-    #         for j in range(n_labels):
-    #             y_true_idx = (y_true == labels[i])
-    #             y_pred_idx = (y_pred == labels[j])
-    #             n_ij = np.sum(y_true_idx & y_pred_idx)
-    #             confusion_matrix[i, j] = n_ij
-    #     expected_agreement = np.sum(np.sum(confusion_matrix, axis=0) * np.sum(confusion_matrix, axis=1)) / (n ** 2)
-    #     observed_agreement = np.sum(np.diag(confusion_matrix)) / n
-    #     k = (observed_agreement - expected_agreement) / (1.0 - expected_agreement)
-    #     return k
-
     def cohen_kappa_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
         """
         Generate Cohen Kappa score for multiple classification problem
@@ -551,6 +518,40 @@ class ClassificationMetric(Evaluator):
             js = dict([(label, np.round(item["jaccard_similarities"], decimal)) for label, item in metrics.items()])
         return js if type(js) == dict else np.round(js, decimal)
 
+    def g_mean_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
+        """
+        Calculates the G-mean score between y_true and y_pred.
+
+        Args:
+            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
+            y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
+            labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
+            average (str, None): {'micro', 'macro', 'weighted'} or None, default="macro"
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            float, dict: The G-mean score.
+        """
+        y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
+        matrix, imap, imap_count = calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
+        metrics = calculate_single_label_metric(matrix, imap, imap_count)
+
+        list_gm = np.array([item["g_mean"] for item in metrics.values()])
+        list_weights = np.array([item["n_true"] for item in metrics.values()])
+
+        if average == "micro":
+            tp = tn = np.sum(np.diag(matrix))
+            fp = fn = np.sum(matrix) - tp
+            gm = np.sqrt((tp / (tp + fn)) * (tn / (tn + fp)))
+        elif average == "macro":
+            gm = np.mean(list_gm)
+        elif average == "weighted":
+            gm = np.dot(list_weights, list_gm) / np.sum(list_weights)
+        else:
+            gm = dict([(label, np.round(item["g_mean"], decimal)) for label, item in metrics.items()])
+        return gm if type(gm) == dict else np.round(gm, decimal)
+
+
 
     CM = cm = confusion_matrix
     PS = ps = precision_score
@@ -566,5 +567,6 @@ class ClassificationMetric(Evaluator):
     LS = ls = lift_score
     CKS = cks = cohen_kappa_score
     JSI = jsi = JSC = jsc = jaccard_similarity_coefficient = jaccard_similarity_index
+    GMS = gms = g_mean_score
 
 

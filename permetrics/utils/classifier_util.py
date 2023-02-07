@@ -112,6 +112,7 @@ def calculate_single_label_metric(matrix, imap, imap_count, beta=1.0):
             numerator = tp + tn - ((tp + fp) * (tp + fn) / (tp + tn + fp + fn))
             denominator = (tp + tn + fp + fn) - ((tp + fp) * (tp + fn) / (tp + tn + fp + fn))
             kappa_score = numerator / denominator
+            g_mean = np.sqrt((tp / (tp + fn)) / (tn / (tn + fp)))
 
             metric["tp"] = tp
             metric["fp"] = fp
@@ -132,6 +133,7 @@ def calculate_single_label_metric(matrix, imap, imap_count, beta=1.0):
             metric["lift_score"] = np.nan_to_num(ls, nan=0.0, posinf=0.0, neginf=0.0)
             metric["jaccard_similarities"] = np.nan_to_num(jsi, nan=0.0, posinf=0.0, neginf=0.0)
             metric["kappa_score"] = np.nan_to_num(kappa_score, nan=0.0, posinf=0.0, neginf=0.0)
+            metric["g_mean"] = np.nan_to_num(g_mean, nan=0.0, posinf=0.0, neginf=0.0)
             metrics[label] = metric
 
         # list_precision = np.nan_to_num([value[0] / (value[0] + value[1]) for value in cm.values()])
