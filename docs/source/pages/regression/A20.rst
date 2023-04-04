@@ -17,17 +17,22 @@ A20 - A20 index
 
 .. math::
 
-	\text{A20}(y, \hat{y}) =
+	\text{A20}(y, \hat{y}) = \text{A10}(y, \hat{y}) = \frac{1}{n}\sum_{i=1}^{n} \left\{\begin{array}{ll} 1, & \textrm{if } \frac{|\hat{y}_i - y_i|}{y_i} \leq 0.2\\ 0, & \textrm{otherwise} \end{array}\right.
+
 
 
 + Best possible score is 1.0, bigger value is better. Range = [0, 1]
 + a20-index evaluated metric by showing the number of samples that fit the prediction values with a deviation of ±20% compared to experimental values
 + I developed this metric based on a10-index
++ In other words, the A20 metric measures the proportion of cases where the absolute difference between the predicted and actual values is less than or equal
+to 20% of the actual value. A higher A20 score indicates better predictive accuracy, as the model is able to make more accurate predictions that are closer
+to the actual values.
 
 
 Latex equation code::
 
-	\text{A20}(y, \hat{y}) =
+	\text{A20}(y, \hat{y}) = \frac{1}{n}\sum_{i=1}^{n} \left\{\begin{array}{ll} 1, & \textrm{if } \frac{|\hat{y}_i - y_i|}{y_i} \leq 0.2\\ 0, & \textrm{otherwise} \end{array}\right.
+
 
 
 Example to use A20 metric:

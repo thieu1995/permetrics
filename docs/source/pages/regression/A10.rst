@@ -17,7 +17,8 @@ A10 - A10 index
 
 .. math::
 
-	\text{A10}(y, \hat{y}) =
+	\text{A10}(y, \hat{y}) = \frac{1}{n}\sum_{i=1}^{n} \left\{\begin{array}{ll} 1, & \textrm{if } \frac{|\hat{y}_i - y_i|}{y_i} \leq 0.1\\ 0, & \textrm{otherwise} \end{array}\right.
+
 
 
 + Best possible score is 1.0, bigger value is better. Range = [0, 1]
@@ -26,7 +27,12 @@ A10 - A10 index
 
 Latex equation code::
 
-	\text{A10}(y, \hat{y}) =
+	\text{A10}(y, \hat{y}) = \frac{1}{n}\sum_{i=1}^{n} \left\{\begin{array}{ll} 1, & \textrm{if } \frac{|\hat{y}_i - y_i|}{y_i} \leq 0.1\\ 0, & \textrm{otherwise} \end{array}\right.
+
+
+In other words, the A10 metric measures the proportion of cases where the absolute difference between the predicted and actual values is less than or equal
+to 10% of the actual value. A higher A10 score indicates better predictive accuracy, as the model is able to make more accurate predictions that are closer
+to the actual values.
 
 
 Example to use A10 metric:

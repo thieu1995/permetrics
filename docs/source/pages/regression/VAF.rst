@@ -17,17 +17,18 @@ VAF - Variance Accounted For
 
 .. math::
 
-	\text{VAF}(y, \hat{y}) =
+	\text{VAF}(y, f_i) = 100\% \times \frac{\sum_{i=1}^{n}(y_i - \bar{y})(f_i - \bar{f})}{\sum_{i=1}^{n}(y_i - \bar{y})^2}
 
 
 
 + Variance Accounted For between 2 signals (VAF): Best possible score is 100% (identical signal), bigger value is better. Range = (-inf, 100%]
 + Link: https://www.dcsc.tudelft.nl/~jwvanwingerden/lti/doc/html/vaf.html
++ Variance Accounted For (VAF) is a metric used to evaluate the performance of a regression model. It measures the proportion of the total variance in the actual values that is accounted for by the variance in the predicted values.
 
 
 Latex equation code::
 
-	\text{VAF}(y, \hat{y}) =
+	\text{VAF}(y, f_i) = 100\% \times \frac{\sum_{i=1}^{n}(y_i - \bar{y})(f_i - \bar{f})}{\sum_{i=1}^{n}(y_i - \bar{y})^2}
 
 
 Example to use VAF metric:

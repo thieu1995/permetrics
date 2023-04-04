@@ -15,18 +15,8 @@ KLD - Kullback-Leibler Divergence
    :maxdepth: 3
 
 
-.. math::
-
-	\text{KLD}(y, \hat{y}) =
-
-
 + Best possible score is 0.0 . Range = (-inf, +inf)
 + Link: https://machinelearningmastery.com/divergence-between-probability-distributions/
-
-
-Latex equation code::
-
-	\text{KLD}(y, \hat{y}) =
 
 
 Example to use KLD metric:

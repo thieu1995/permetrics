@@ -22,6 +22,11 @@ EC - Efficiency Coefficient
 
 
 + Best possible value = 1, bigger value is better. Range = [-inf, +1]
++ Efficiency Coefficient (EC) is a metric used to evaluate the accuracy of a regression model in predicting continuous values.
++ The EC ranges from negative infinity to 1, where a value of 1 indicates a perfect match between the model predictions and the observed data, and a value
+of 0 indicates that the model predictions are no better than the benchmark prediction. A negative value indicates that the model predictions are worse than
+the benchmark prediction.
+
 
 
 Latex equation code::

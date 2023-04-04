@@ -18,7 +18,7 @@ MBE - Mean Bias Error
 
 .. math::
 
-	\text{MBE}(y, \hat{y}) =
+	\text{MBE}(y, \hat{y}) = \frac{1}{n} \sum_{i=1}^{n}(f_i - y_i)
 
 
 + Mean Bias Error (MBE): Best possible score is 0.0. Range = (-inf, +inf)
@@ -27,7 +27,7 @@ MBE - Mean Bias Error
 
 Latex equation code::
 
-	\text{MBE}(y, \hat{y}) =
+	\text{MBE}(y, \hat{y}) = \frac{1}{n} \sum_{i=1}^{n}(f_i - y_i)
 
 
 Example to use MBE metric:

@@ -17,16 +17,17 @@ SE - Squared Error
 
 .. math::
 
-	\text{SE}(y, \hat{y}) =
+	\text{SE}(y, f_i) = \frac{1}{n}\sum_{i=1}^{n}(y_i - f_i)^2
 
 
 + Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 + Note: Computes the squared error between two numbers, or for element between a pair of list, tuple or numpy arrays.
++ The Squared Error (SE) is a metric used to evaluate the accuracy of a regression model by measuring the average of the squared differences between the predicted and actual values.
 
 
 Latex equation code::
 
-	\text{SE}(y, \hat{y}) =
+	\text{SE}(y, f_i) = \frac{1}{n}\sum_{i=1}^{n}(y_i - f_i)^2
 
 
 

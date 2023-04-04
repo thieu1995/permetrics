@@ -28,8 +28,7 @@ Latex equation code::
 
 	\text{COR}(y, \hat{y}) = \frac{ COV(y, \hat{y}) }{ std(y) * std(\hat{y})}
 
-+ measures the strength of the relationship between variables
-+ is the scaled measure of covariance. It is dimensionless.
++ Measures the strength of the relationship between variables, is the scaled measure of covariance. It is dimensionless.
 + the correlation coefficient is always a pure value and not measured in any units.
 + https://corporatefinanceinstitute.com/resources/data-science/covariance/
 

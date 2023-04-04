@@ -17,7 +17,7 @@ CE - Cross Entropy
 
 .. math::
 
-	\text{CE}(y, \hat{y}) =
+    \text{CE}(y, \hat{y}) = -\frac{1}{n}\sum_{i=1}^{n} \left[y_i\log(\hat{y}_i) + (1-y_i)\log(1-\hat{y}_i)\right]
 
 
 + Range = (-inf, 0]. Can't give comment about this one
@@ -27,7 +27,7 @@ CE - Cross Entropy
 
 Latex equation code::
 
-	\text{CE}(y, \hat{y}) =
+	\text{CE}(y, \hat{y}) = -\frac{1}{n}\sum_{i=1}^{n} \left[y_i\log(\hat{y}_i) + (1-y_i)\log(1-\hat{y}_i)\right]
 
 
 Example to use CE metric:
