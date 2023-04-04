@@ -26,6 +26,16 @@ PerMetrics is a python library for performance metrics of machine learning model
 * **Dependencies:** numpy
 
 
+# Notification
+
+* **Currently, there is a huge misunderstanding among frameworks around the world about the notation of R, R2, and R^2.** 
+* Please read the file [R-R2-Rsquared.docx](https://github.com/thieu1995/permetrics/blob/master/R-R2-Rsquared.docx) to understand the differences between them and why there is such confusion.
+
+<p align="center"><img src=".github/img/rr2.png" alt="R" title="R"/></p>
+
+* **My recommendation is to denote the Coefficient of Determination as COD or R2, while the squared Pearson's 
+  Correlation Coefficient should be denoted as R^2 or RSQ (as in Excel software).**
+
 
 # Installation
 
