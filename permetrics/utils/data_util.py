@@ -130,3 +130,26 @@ def format_classification_data(y_true: np.ndarray, y_pred: np.ndarray):
                 binary = len(unique_true) == 2
             return y_true, y_pred, binary, var_type
 
+
+def format_y_score(y_true: np.ndarray, y_score: np.ndarray):
+    binary = True
+    if not (isinstance(y_true, (list, tuple, np.ndarray)) and isinstance(y_score, (list, tuple, np.ndarray))):
+        raise TypeError("y_true and y_score must be lists, tuples or numpy arrays.")
+    else:
+        y_true, y_score = np.squeeze(np.asarray(y_true)), np.squeeze(np.asarray(y_score))
+        if y_true.ndim == y_score.ndim:
+            if len(np.unique(y_true)) != 2:
+                raise TypeError("y_true should have two classes only or y_score must have shape (n_examples, n_labels)")
+            else:
+                if np.issubdtype(y_true.dtype, np.number):
+                    return y_true, y_score, binary, "number"
+                else:
+                    return y_true, y_score, binary, "string"
+        else:
+            if len(np.unique(y_true)) <= 2:
+                raise TypeError("y_score must have shape (n_examples, n_labels) in case of multi-classification problem")
+            else:
+                if np.issubdtype(y_true.dtype, np.number):
+                    return y_true, y_score, not binary, "number"
+                else:
+                    return y_true, y_score, not binary, "string"
