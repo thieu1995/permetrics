@@ -551,6 +551,85 @@ class ClassificationMetric(Evaluator):
             gm = dict([(label, np.round(item["g_mean"], decimal)) for label, item in metrics.items()])
         return gm if type(gm) == dict else np.round(gm, decimal)
 
+    def gini_index(self, y_true=None, y_pred=None, average="macro", decimal=None):
+        """
+        Calculates the Gini index between y_true and y_pred. Higher is better. Range [0, 1]
+
+        Args:
+            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
+            y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
+            average (str, None): {'macro', 'weighted'} or None, default="macro"
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            float, dict: The Gini index
+        """
+        y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
+        if binary:
+            return calculate_gini(y_true, y_pred)
+        else:
+            # Compute the number of classes and examples
+            num_classes = len(np.unique(y_true))
+            num_examples = len(y_true)
+            # Initialize arrays to store class weights and Gini indices
+            class_weights = np.zeros(num_classes)
+            class_ginis = np.zeros(num_classes)
+            # Compute the Gini index for each class
+            for i in range(num_classes):
+                # Create a binary array indicating whether the example belongs to the current class
+                y_true_binary = np.where(y_true == i, 1, 0)
+                # Compute the Gini index for the current class using the binary array and predicted scores
+                class_ginis[i] = calculate_gini(y_true_binary, y_pred)
+                # Compute the class weight based on the number of examples
+                class_weights[i] = np.sum(y_true_binary) / num_examples
+
+            if average == "macro":
+                result = np.mean(class_ginis)
+            elif average == "weighted":
+                result = np.dot(class_weights, class_ginis) / np.sum(class_weights)
+            else:
+                result = dict([(idx, np.round(class_ginis[idx], decimal)) for idx in range(num_classes)])
+            return result if type(result) == dict else np.round(result, decimal)
+
+    def roc_auc_score(self, y_true=None, y_score=None, average="macro", decimal=5):
+        """
+        Calculates the ROC-AUC score between y_true and y_score.
+
+        Args:
+            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
+            y_score (tuple, list, np.ndarray): a list of predicted scores.
+            average (str, None): {'macro', 'weighted'} or None, default="macro"
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            float, dict: The AUC score.
+        """
+        y_true, y_score, binary, representor = format_y_score(y_true, y_score)
+        if binary:
+            tpr, fpr, thresholds = calculate_roc_curve(y_true, y_score)
+            # Calculate the area under the curve (AUC) using the trapezoidal rule
+            return np.trapz(tpr, fpr)
+        else:
+            list_weights = calculate_class_weights(y_true, y_pred=None, y_score=y_score)
+            # one-vs-all (rest) approach
+            tpr = dict()
+            fpr = dict()
+            thresholds = dict()
+            auc = []
+            n_classes = len(np.unique(y_true))
+            for i in range(n_classes):
+                y_true_i = np.array([1 if y == i else 0 for y in y_true])
+                y_score_i = y_score[:, i]
+                tpr[i], fpr[i], thresholds[i] = calculate_roc_curve(y_true_i, y_score_i)
+                # Calculate the area under the curve (AUC) using the trapezoidal rule
+                auc.append(np.trapz(tpr[i], fpr[i]))
+            if average == "macro":
+                result = np.mean(auc)
+            elif average == "weighted":
+                result = np.dot(list_weights, auc) / np.sum(list_weights)
+            else:
+                result = dict([(idx, np.round(auc[idx], decimal)) for idx in range(n_classes)])
+            return result if type(result) == dict else np.round(result, decimal)
 
 
     CM = cm = confusion_matrix
@@ -568,5 +647,5 @@ class ClassificationMetric(Evaluator):
     CKS = cks = cohen_kappa_score
     JSI = jsi = JSC = jsc = jaccard_similarity_coefficient = jaccard_similarity_index
     GMS = gms = g_mean_score
-
-
+    GINI = gini = gini_index
+    ROC = AUC = RAS = roc = auc = ras = roc_auc_score
