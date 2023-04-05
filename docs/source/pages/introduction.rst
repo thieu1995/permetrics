@@ -1,7 +1,7 @@
 Introduction
 ############
 
-.. image:: https://img.shields.io/badge/release-1.3.2-yellow.svg?style=svg
+.. image:: https://img.shields.io/badge/release-1.3.3-yellow.svg?style=svg
     :target: https://github.com/thieu1995/permetrics
 
 .. image:: https://img.shields.io/pypi/wheel/gensim.svg?style=svg
@@ -37,7 +37,7 @@ PerMetrics is library written in Python, for PERformance METRICS (PerMetrics) of
 
 * Currently, it contains 2 sub-packages including:
 	* regression: contains 47 metrics
-	* classification: contains 11 metrics
+	* classification: contains 17 metrics
 
 
 If you see my code and data useful and use it, please cites my works here::
@@ -59,7 +59,7 @@ Install the [current PyPI release](https://pypi.python.org/pypi/permetrics):
 
 This is a simple example::
 
-	pip install permetrics==1.3.2
+	pip install permetrics==1.3.3
 
 Or install the development version from GitHub::
 

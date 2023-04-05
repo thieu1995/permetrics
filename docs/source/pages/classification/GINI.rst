@@ -1,12 +1,9 @@
-GINI - GINI Coefficient
-=======================
+GINI Index
+==========
 
 .. toctree::
    :maxdepth: 3
-   :caption: GINI - Gini coefficient
-
-.. toctree::
-   :maxdepth: 3
+   :caption: GINI Index (GINI)
 
 .. toctree::
    :maxdepth: 3
@@ -14,43 +11,45 @@ GINI - GINI Coefficient
 .. toctree::
    :maxdepth: 3
 
-
-.. math::
-
-	\text{GINI}(y, \hat{y}) =
+.. toctree::
+   :maxdepth: 3
 
 
-+ Best possible score is 1, bigger value is better. Range = [0, 1]
-+ This version is based on: https://github.com/benhamner/Metrics/blob/master/MATLAB/metrics/gini.m
+The Gini index is also used as a metric to evaluate the performance of a binary classification model. It is a measure of how well the model separates the
+positive and negative classes.
+
+The Gini index is calculated as follows:
+
++ Sort the predicted probabilities of the positive class in descending order.
++ Calculate the cumulative sum of the true positive rate (TPR) and false positive rate (FPR) at each threshold, where TPR is the proportion of positive
+samples correctly classified as positive, and FPR is the proportion of negative samples incorrectly classified as positive.
++ Calculate the area under the curve (AUC) of the cumulative sum, and multiply it by 2.
 
 
-Latex equation code::
+The resulting value ranges from 0 to 1, where 0 indicates that the model predicts all negative samples as positive and 1 indicates perfect separation between the positive and negative classes.
 
-	\text{GINI}(y, \hat{y}) =
+The Gini index can be used as an alternative to the AUC-ROC metric, and it has some advantages in terms of interpretation and sensitivity to class imbalance. However, it can be less commonly used in practice, and the AUC-ROC is often preferred as a metric for binary classification.
+
++ Best possible score is 1.0, higher value is better. Range = [0, 1]
++ There is no "micro" average mode in GINI index metric
 
 
-Example to use Gini metric, there are two GINI versions:
+Example:
 
 .. code-block:: python
-	:emphasize-lines: 8-10,16-18
+	:emphasize-lines: 11-14
 
 	from numpy import array
-	from permetrics.regression import RegressionMetric
+	from permetrics.classification import ClassificationMetric
 
-	## For 1-D array
-	y_true = array([3, -0.5, 2, 7])
-	y_pred = array([2.5, 0.0, 2, 8])
+	## For integer labels or categorical labels
+	y_true = [0, 1, 0, 0, 1, 0]
+	y_pred = [0, 1, 0, 0, 0, 1]
 
-	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
-	print(evaluator.gini())
-	print(evaluator.gini_wiki())
+	# y_true = ["cat", "ant", "cat", "cat", "ant", "bird", "bird", "bird"]
+	# y_pred = ["ant", "ant", "cat", "cat", "ant", "cat", "bird", "ant"]
 
-	## For > 1-D array
-	y_true = array([[0.5, 1], [-1, 1], [7, -6]])
-	y_pred = array([[0, 2], [-1, 2], [8, -5]])
-
-	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
-	print(evaluator.GINI(multi_output="raw_values"))
-	print(evaluator.GINI_WIKI(multi_output="raw_values"))
-
-
+	cm = ClassificationMetric(y_true, y_pred, decimal=5)
+	print(cm.gini_index(average=None))
+	print(cm.GINI(average="macro"))
+	print(cm.gini(average="weighted"))

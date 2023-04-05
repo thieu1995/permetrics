@@ -1301,6 +1301,103 @@ class RegressionMetric(Evaluator):
             score = (np.sum(y_pred, axis=0) - np.sum(y_true, axis=0)) / np.sum(y_true, axis=0)
             return self.get_multi_output_result(score, multi_output, decimal)
 
+    def gini_coefficient(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+        """
+        Gini coefficient (Gini): Best possible score is 1, bigger value is better. Range = [0, 1]
+
+        Notes
+        ~~~~~
+            + This version is based on below repository matlab code.
+            + https://github.com/benhamner/Metrics/blob/master/MATLAB/metrics/gini.m
+
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
+            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): Gini metric for single column or multiple columns
+        """
+        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
+        if non_zero:
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
+        if positive:
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
+        if one_dim:
+            idx_sort = np.argsort(-y_pred)
+            population_delta = 1.0 / len(y_true)
+            accumulated_population_percentage_sum, accumulated_loss_percentage_sum, score = 0, 0, 0
+            total_losses = np.sum(y_true)
+            for i in range(0, len(y_true)):
+                accumulated_loss_percentage_sum += y_true[idx_sort[i]] / total_losses
+                accumulated_population_percentage_sum += population_delta
+                score += accumulated_loss_percentage_sum - accumulated_population_percentage_sum
+            score = score / len(y_true)
+            return np.round(score, decimal)
+        else:
+            col = y_true.shape[1]
+            idx_sort = np.argsort(-y_pred, axis=0)
+            population_delta = 1.0 / len(y_true)
+            accumulated_population_percentage_sum, accumulated_loss_percentage_sum, score = np.zeros(col), np.zeros(col), np.zeros(col)
+            total_losses = np.sum(y_true, axis=0)
+            for i in range(0, col):
+                for j in range(0, len(y_true)):
+                    accumulated_loss_percentage_sum[i] += y_true[idx_sort[j, i], i] / total_losses[i]
+                    accumulated_population_percentage_sum[i] += population_delta
+                    score[i] += accumulated_loss_percentage_sum[i] - accumulated_population_percentage_sum[i]
+            result = score / len(y_true)
+            return self.get_multi_output_result(result, multi_output, decimal)
+
+    def gini_coefficient_wiki(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+        """
+        Gini coefficient (Gini): Best possible score is 1, bigger value is better. Range = [0, 1]
+
+        Notes
+        ~~~~~
+            + This version is based on wiki page, may be is the true version
+            + https://en.wikipedia.org/wiki/Gini_coefficient
+            + Gini coefficient can theoretically range from 0 (complete equality) to 1 (complete inequality)
+            + It is sometimes expressed as a percentage ranging between 0 and 100.
+            + If negative values are possible, then the Gini coefficient could theoretically be more than 1.
+
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
+            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): Gini metric for single column or multiple columns
+        """
+        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
+        if non_zero:
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
+        if positive:
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
+        if one_dim:
+            y = np.concatenate((y_true, y_pred), axis=0)
+            score = 0
+            for i in range(0, len(y)):
+                score += np.sum(np.abs(y[i] - y))
+            score = score / (2 * len(y) * np.sum(y))
+            return np.round(score, decimal)
+        else:
+            y = np.concatenate((y_true, y_pred), axis=0)
+            col = y.shape[1]
+            d = len(y)
+            score = np.zeros(col)
+            for k in range(0, col):
+                for i in range(0, d):
+                    for j in range(0, d):
+                        score[k] += np.abs(y[i, k] - y[j, k])
+            result = score / (2 * len(y) ** 2 * np.mean(y, axis=0))
+            return self.get_multi_output_result(result, multi_output, decimal)
+
     def single_relative_error(self, y_true=None, y_pred=None, decimal=None, non_zero=True, positive=False):
         """
         Relative Error (RE): Best possible score is 0.0, smaller value is better. Range = (-inf, +inf)
@@ -1438,6 +1535,8 @@ class RegressionMetric(Evaluator):
     EC = ec = efficiency_coefficient
     OI = oi = overall_index
     CRM = crm = coefficient_of_residual_mass
+    GINI = gini = gini_coefficient
+    GINI_WIKI = gini_wiki = gini_coefficient_wiki
 
     RE = re = RB = rb = single_relative_bias = single_relative_error
     AE = ae = single_absolute_error

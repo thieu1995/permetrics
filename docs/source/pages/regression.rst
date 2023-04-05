@@ -139,6 +139,7 @@ From now on:
    regression/R2s.rst
    regression/DRV.rst
    regression/KGE.rst
+   regression/GINI.rst
 
    regression/PCD.rst
    regression/CE.rst

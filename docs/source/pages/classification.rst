@@ -26,6 +26,12 @@ Classification Metrics
 +------+----------+-----------------------------------+------------------------------------------------+
 | 11   | LS       | Lift Score                        | Higher is better (Best=+inf), Range = [0, +inf)|
 +------+----------+-----------------------------------+------------------------------------------------+
+| 12   |        | Lift Score                        | Higher is better (Best=+inf), Range = [0, +inf)|
++------+----------+-----------------------------------+------------------------------------------------+
+| 13   | GINI       | Lift Score                        | Higher is better (Best=+inf), Range = [0, +inf)|
++------+----------+-----------------------------------+------------------------------------------------+
+| 14   | LS       | Lift Score                        | Higher is better (Best=+inf), Range = [0, +inf)|
++------+----------+-----------------------------------+------------------------------------------------+
 
 
 In extending a binary metric to multiclass or multilabel problems, the data is treated as a collection of binary problems, one for each class.
@@ -64,6 +70,7 @@ important is often untrue, such that macro-averaging will over-emphasize the typ
    classification/CKS.rst
    classification/JSI.rst
    classification/GINI.rst
+   classification/ROC-AUC.rst
 
 .. toctree::
    :maxdepth: 3
