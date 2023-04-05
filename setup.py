@@ -9,14 +9,14 @@ def readme():
 
 setup(
     name="permetrics",
-    version="1.3.2",
+    version="1.3.3",
     author="Nguyen Van Thieu",
     author_email="nguyenthieu2102@gmail.com",
     description="PerMetrics: A framework of PERformance METRICS for machine learning models",
     long_description=readme(),
     long_description_content_type="text/markdown",
     url="https://github.com/thieu1995/permetrics",
-    download_url="https://github.com/thieu1995/permetrics/archive/v1.3.2.zip",
+    download_url="https://github.com/thieu1995/permetrics/archive/v1.3.3.zip",
     packages=find_packages(exclude=['tests*', 'examples*']),
     include_package_data=True,
     license="MIT",

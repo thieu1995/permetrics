@@ -1,3 +1,20 @@
+# Version 1.3.3
+
+### Update
+
+Update ClassificationMetric:
++ Rename confusion_matrix() in util file
++ Support binary and multi-class classification with one-hot-encoder format
++ Add Cohen's Kappa score 
++ Add Jaccard Similarity Index (Jaccard similarity coefficient)
++ Add G-mean score 
++ Add GINI index 
++ Add ROC-AUC metric 
+
+
+---------------------------------------------------------------------
+
+
 # Version 1.3.2
 
 ### Update

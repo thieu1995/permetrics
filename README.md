@@ -3,7 +3,7 @@
 
 
 
-[![GitHub release](https://img.shields.io/badge/release-1.3.2-yellow.svg)](https://github.com/thieu1995/permetrics/releases)
+[![GitHub release](https://img.shields.io/badge/release-1.3.3-yellow.svg)](https://github.com/thieu1995/permetrics/releases)
 [![Wheel](https://img.shields.io/pypi/wheel/gensim.svg)](https://pypi.python.org/pypi/permetrics) 
 [![PyPI version](https://badge.fury.io/py/permetrics.svg)](https://badge.fury.io/py/permetrics)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/permetrics.svg)
@@ -20,7 +20,7 @@
 PerMetrics is a python library for performance metrics of machine learning models. We aim to implement all performance metrics for problems such as regression, classification, clustering, ... problems. Helping users in all field access metrics as fast as possible
 
 * **Free software:** Apache License, Version 2.0
-* **Total metrics**: 68 (47 regression metrics, 11 classification metrics)
+* **Total metrics**: 63 (47 regression metrics, 16 classification metrics)
 * **Documentation:** https://permetrics.readthedocs.io/en/latest/
 * **Python versions:** 3.6.x, 3.7.x, 3.8.x, 3.9.x, 3.10.x
 * **Dependencies:** numpy
@@ -42,7 +42,7 @@ PerMetrics is a python library for performance metrics of machine learning model
 ### Install with pip
 Install the [current PyPI release](https://pypi.python.org/pypi/permetrics):
 ```sh 
-$ pip install permetrics==1.3.2
+$ pip install permetrics==1.3.3
 ```
 
 Or install the development version from GitHub:
@@ -221,8 +221,12 @@ If you are using mealpy in your project, we would appreciate citations:
 | **** | 8 |     SS     | Specificity Score |     Higher is better (Best = 1), Range = [0, 1]     |
 | **** | 9 |    MCC     | Matthews Correlation Coefficient |    Higher is better (Best = 1), Range = [-1, +1]    |
 | **** | 10 |     HL     | Hamming Loss |     Higher is better (Best = 1), Range = [0, 1]     |
-| **** | 11 |     LS     | Lift Score |  Higher is better (Best = +inf), Range = [0, +inf)  |
-| **** | 12 |
+| **** | 11 |     CKS     | Cohen's kappa score |  Higher is better (Best = +1), Range = [-1, +1]  |
+| **** | 12 |     JSI     | Jaccard Similarity Coefficient |  Higher is better (Best = +1), Range = [0, +1]  |
+| **** | 13 | GMS | Geometric Mean Score | Higher is better (Best = +1), Range = [0, +1]  |
+| **** | 14 | GINI | GINI Index | Higher is better (Best = +1), Range = [0, +1]  |
+| **** | 15 | ROC-AUC | ROC-AUC | Higher is better (Best = +1), Range = [0, +1]  |
+| **** | 16 |     |       |             |
 
 
 # Future works
