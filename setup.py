@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+# Created by "Thieu" at 13:24, 27/02/2022 ----------%
+#       Email: nguyenthieu2102@gmail.com            %
+#       Github: https://github.com/thieu1995        %
+# --------------------------------------------------%
+
 from setuptools import setup, find_packages
 
 
@@ -9,7 +15,7 @@ def readme():
 
 setup(
     name="permetrics",
-    version="1.3.3",
+    version="1.4.0-alpha.1",
     author="Nguyen Van Thieu",
     author_email="nguyenthieu2102@gmail.com",
     description="PerMetrics: A framework of PERformance METRICS for machine learning models",

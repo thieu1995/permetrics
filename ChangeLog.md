@@ -1,3 +1,13 @@
+# Version 1.4.0
+
+Add ClusteringMetric: 
++ Add BHI = ball_hall_index
++ CHS = calinski_harabasz_score
++ XBI = xie_beni_index
+
+
+---------------------------------------------------------------------
+
 # Version 1.3.3
 
 ### Update

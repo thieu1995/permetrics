@@ -38,7 +38,9 @@
 # print(evaluator.f1s(average="weighted"))
 
 
-__version__ = "1.3.3"
+__version__ = "1.4.0-alpha.1"
 
-from . import regression
-from . import classification
+from .evaluator import Evaluator
+from .classification import ClassificationMetric
+from .regression import RegressionMetric
+from .clustering import ClusteringMetric
