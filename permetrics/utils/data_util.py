@@ -153,3 +153,15 @@ def format_y_score(y_true: np.ndarray, y_score: np.ndarray):
                     return y_true, y_score, not binary, "number"
                 else:
                     return y_true, y_score, not binary, "string"
+
+
+def format_clustering_label(label: np.ndarray):
+    if not (isinstance(label, (list, tuple, np.ndarray))):
+        raise TypeError("label must be lists, tuples or numpy arrays.")
+    else:
+        ## Remove all dimensions of size 1
+        label = np.squeeze(np.asarray(label))
+        if np.issubdtype(label.dtype, np.number):
+            if label.ndim > 1:
+                label = label.argmax(axis=1)
+        return label

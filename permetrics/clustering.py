@@ -1,28 +1,26 @@
+# !/usr/bin/env python
 # Created by "Matt Q." at 23:05, 27/10/2022 --------%
 #       Github: https://github.com/N3uralN3twork    %
+#                                                   %
+# Improved by: "Thieu" at 11:45, 25/07/2023 --------%
+#       Email: nguyenthieu2102@gmail.com            %
+#       Github: https://github.com/thieu1995        %
 # --------------------------------------------------%
 
 import functools
 from collections import Counter
 from itertools import chain
-
 import numpy as np
-from scipy.spatial.distance import cdist, pdist, squareform
-from scipy.stats import f
-
-from utils.cluster_util import (average_scattering, cluster_sep,
-                                density_between, density_clusters,
-                                general_sums_of_squares, get_centroids,
-                                get_labels, pmatch)
+from permetrics.evaluator import Evaluator
+from permetrics.utils.data_util import *
+from permetrics.utils.cluster_util import (get_min_dist, get_centroids, general_sums_of_squares, pdist,
+                                cdist, squareform, get_labels,
+                                average_scattering, cluster_sep, density_between, density_clusters, pmatch)
 
 
-class InternalMetric(object):
+class ClusteringMetric(Evaluator):
     """
-    This class contains a variety of clustering metrics (internal only)
-
-    Internal clustering metrics only consider the data that used for clustering, disregarding any additional labels.
-
-    External clustering metrics utilize both the data used for clustering as well as a set of true clustering solutions.
+    This is class contains all clustering metrics (for both internal and external performance metrics)
 
     Notes
     ~~~~~
@@ -30,136 +28,143 @@ class InternalMetric(object):
     + https://scikit-learn.org/stable/modules/clustering.html#clustering-evaluation
     """
 
-    def __init__(self, data, X, y, decimal=5):
+    def __init__(self, y_true=None, y_pred=None, X=None, decimal=5, **kwargs):
         """
         Args:
-            X (pd.DataFrame, np.ndarray): The original data that was clustered
-
-            y_pred (list. pd.DataFrame, np.ndarray): The predicted cluster assignment values
-            
-            decimal (int): The number of fractional parts after the decimal point (Optional, default=5)
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            X (tuple, list, np.ndarray): The features of datasets
+            decimal (int): The number of fractional parts after the decimal point
+            **kwargs ():
         """
-        self.data = data
+        super().__init__(y_true, y_pred, decimal, **kwargs)
+        if kwargs is None: kwargs = {}
+        self.set_keyword_arguments(kwargs)
         self.X = X
-        self.y = y
-        self.distances = pdist(self.X, metric="euclidean")
-        self.decimal = decimal
+        self.binary = True
+        self.representor = "number"  # "number" or "string"
+        self.le = None  # LabelEncoder
 
+    def get_processed_data(self, y_true=None, y_pred=None, decimal=None):
+        """
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred)
+            decimal (int, None): The number of fractional parts after the decimal point
 
-    def ball_hall_index(self, labels, n_clusters: int, min_nc: int):
+        Returns:
+            y_true_final: y_true used in evaluation process.
+            y_pred_final: y_pred used in evaluation process
+            one_dim: is y_true has 1 dimensions or not
+            decimal: The number of fractional parts after the decimal point
+        """
+        decimal = self.decimal if decimal is None else decimal
+        if (y_true is not None) and (y_pred is not None):
+            y_true, y_pred, binary, representor = format_classification_data(y_true, y_pred)
+        else:
+            if (self.y_true is not None) and (self.y_pred is not None):
+                y_true, y_pred, binary, representor = format_classification_data(self.y_true, self.y_pred)
+            else:
+                raise ValueError("y_true or y_pred is None. You need to pass y_true and y_pred to object creation or function called.")
+        return y_true, y_pred, binary, representor, decimal
+
+    def get_processed_y_pred(self, y_pred=None):
+        if y_pred is not None:
+            return format_clustering_label(y_pred)
+        else:
+            if self.y_pred is None:
+                raise ValueError("To calculate clustering metrics, you need to pass y_pred")
+            else:
+                return format_clustering_label(self.y_pred)
+
+    def check_X(self, X):
+        if X is None:
+            if self.X is None:
+                raise ValueError("To calculate internal metrics, you need to pass X.")
+            else:
+                return self.X
+        return X
+
+    def ball_hall_index(self, X=None, y_pred=None, **kwargs):
         """
         The Ball-Hall Index (1995) is the mean of the mean dispersion across all clusters.
-
         The **largest difference** between successive clustering levels indicates the optimal number of clusters.
 
         Args:
-            labels (list, pd.DataFrame, np.ndarray): The predicted cluster assignment values
-
-            n_clusters (int): The requested/median number of clusters to retrieve indices for
-
-            min_nc (int): The minimum number of clusters to retrieve indices for
+            X (array-like of shape (n_samples, n_features)):
+                A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
+            y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
 
         Returns:
             BH (float): The Ball-Hall index
         """
-
-        # ! use_labels = get_labels(labels, n_clusters, min_nc, need="single")
-        use_labels = labels
-        use_labels = np.array(use_labels).flatten()
+        X = self.check_X(X)
+        y_pred = self.get_processed_y_pred(y_pred)
+        n_classes = len(np.unique(y_pred))
         wgss = []
-        n_classes = len(set(use_labels))
-
-        # * For each cluster, find the centroid and then the within-group SSE
+        ## For each cluster, find the centroid and then the within-group SSE
         for k in range(n_classes):
-            centroid_mask = use_labels == k
-            cluster_k = self.X[centroid_mask]
+            centroid_mask = y_pred == k
+            cluster_k = X[centroid_mask]
             centroid = np.mean(cluster_k, axis=0)
             wgss.append(np.sum((cluster_k - centroid) ** 2))
+        return np.sum(wgss) / n_classes
 
-        BH = np.sum(wgss) / (n_classes)
-
-        return BH
-
-
-    def calinski_harabasz_score(self, labels, n_clusters: int = 3, min_nc: int = 2):
+    def calinski_harabasz_score(self, X=None, y_pred=None, **kwargs):
         """
-        Compute the Calinski and Harabasz (1974) index.
-
-        It is also known as the Variance Ratio Criterion.
-
-        The score is defined as ratio between the within-cluster dispersion and
-        the between-cluster dispersion.
+        Compute the Calinski and Harabasz (1974) index. It is also known as the Variance Ratio Criterion.
+        The score is defined as ratio between the within-cluster dispersion and the between-cluster dispersion.
 
         Args:
             X (array-like of shape (n_samples, n_features)):
-                A list of `n_features`-dimensional data points.
-                Each row corresponds to a single data point.
-
-            labels (array-like of shape (n_samples,)):
-                Predicted labels for each sample.
+                A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
+            y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
 
         Returns:
-            score (float):
-            The resulting Calinski-Harabasz score.
+            score (float): The resulting Calinski-Harabasz score.
 
         References:
         .. [1] `T. Calinski and J. Harabasz, 1974. "A dendrite method for cluster
-            analysis". Communications in Statistics
-            <https://www.tandfonline.com/doi/abs/10.1080/03610927408827101>`_
+            analysis". Communications in Statistics <https://www.tandfonline.com/doi/abs/10.1080/03610927408827101>`_
         """
-        use_labels = get_labels(labels, n_clusters, min_nc, need="single")
-        n_samples, n_vars = self.X.shape
-        n_classes = len(set(use_labels))
+        X = self.check_X(X)
+        y_pred = self.get_processed_y_pred(y_pred)
+        n_samples, n_vars = X.shape
+        n_classes = len(np.unique(y_pred))
+        denom= (general_sums_of_squares(X, y_pred)["WGSS"] * (n_classes - 1))
+        numer = (general_sums_of_squares(X, y_pred)["BGSS"] * (n_samples - n_classes))
+        return numer / denom
 
-        denom= (general_sums_of_squares(self.X, use_labels)["WGSS"] * (n_classes - 1))
-        numer = (general_sums_of_squares(self.X, use_labels)["BGSS"] * (n_samples - n_classes))
-
-        return float(numer / denom)
-
-
-    def xie_beni_index(self, labels, n_clusters: int = 3, min_nc: int = 2):
+    def xie_beni_index(self, X=None, y_pred=None, **kwargs):
         """
         Computes the Xie-Beni index.
 
-        The Xie-Beni index is an index of fuzzy clustering, but it is also applicable
-        to crisp clustering.
-
-        The numerator is the mean of the squared distances of all of the points
-        with respect to their barycenter of the cluster they belong to.
-
-        The denominator is the minimal squared distances between the points in the clusters.
-
-        The **minimum** value indicates the best number of clusters.
+        The Xie-Beni index is an index of fuzzy clustering, but it is also applicable to crisp clustering.
+        The numerator is the mean of the squared distances of all of the points with respect to their
+        barycenter of the cluster they belong to. The denominator is the minimal squared distances between
+        the points in the clusters. The **minimum** value indicates the best number of clusters.
 
         Args:
-            labels (array-like): The predicted labels for the given clustering technique
+            X (array-like of shape (n_samples, n_features)):
+                A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
+            y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
 
         Returns:
             xb (float): The Xie-Beni index
-
         """
-        labels = get_labels(labels, n_clusters, min_nc, need="Single")
-
-        nrows = self.X.shape[0]
-
-        # Get the centroids:
-        centroids = get_centroids(self.X, labels)
-
-        # Computing the WGSS:
-        def getMinDist(obs, code_book):
-            dist = cdist(obs, code_book)
-            code = dist.argmin(axis=1)
-            min_dist = dist[np.arange(len(code)), code]
-            return min_dist
-
-        euc_distance_to_centroids = getMinDist(self.X, centroids)
-
+        X = self.check_X(X)
+        y_pred = self.get_processed_y_pred(y_pred)
+        # Get the centroids
+        centroids = get_centroids(X, y_pred)
+        euc_distance_to_centroids = get_min_dist(X, centroids)
         WGSS = np.sum(euc_distance_to_centroids**2)
-
         # Computing the minimum squared distance to the centroids:
         MinSqDist = np.min(pdist(centroids, metric='sqeuclidean'))
-
         # Computing the XB index:
-        xb = (1 / nrows) * (WGSS / MinSqDist)
-
+        xb = (1 / X.shape[0]) * (WGSS / MinSqDist)
         return xb
+
+    BHI = ball_hall_index
+    CHS = calinski_harabasz_score
+    XBI = xie_beni_index

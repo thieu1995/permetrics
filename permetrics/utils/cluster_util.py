@@ -1,21 +1,24 @@
+# !/usr/bin/env python
+# Created by "Matt Q." at 23:05, 27/10/2022 --------%
+#       Github: https://github.com/N3uralN3twork    %
+#                                                   %
+# Improved by: "Thieu" at 17:10, 25/07/2023 --------%
+#       Email: nguyenthieu2102@gmail.com            %
+#       Github: https://github.com/thieu1995        %
+# --------------------------------------------------%
+
 import numpy as np
 import pandas as pd
 from scipy.spatial.distance import cdist, pdist, squareform
 
-"Beginning of Helper Functions for later use"
 
-def pmatch(input: list, lst: list):
+def get_min_dist(X, centers):
     """
-    A function that mimics R's pmatch function
-
-    Args:
-        input (list): The input list
-        lst (list): The list of interest
-
-    Returns:
-        list: A list of integers representing indices
+    Get the min distance from samples X to centers
     """
-    return [lst.index(i) for i in input]
+    dist = cdist(X, centers, metric='euclidean')
+    min_dist = np.min(dist, axis=1)
+    return min_dist
 
 
 def get_centroids(X, labels):
@@ -35,19 +38,16 @@ def get_centroids(X, labels):
     centroids = np.empty((n_classes, n_features), dtype=np.float64)
     # * Number of clusters in each class.
     nk = np.zeros(n_classes)
-
     for k in range(n_classes):
         centroid_mask = labels == k
         nk[k] = np.sum(centroid_mask)
         centroids[k] = X[centroid_mask].mean(axis=0)
-    
     return centroids
 
 
-# * Sum of Squares calculations:
 def general_sums_of_squares(X, labels):
     """
-    Calculates a variety of sums of squares for a given index.
+    Sum of Squares calculations: Calculates a variety of sums of squares for a given index.
 
     Args:
         X (pd.DataFrame, np.ndarray): The original data that was clustered
@@ -57,17 +57,29 @@ def general_sums_of_squares(X, labels):
         dict: The within/between group sums of squares and centroids
     """
     labels = np.array(labels)
-    n_classes = len(set(labels))
+    n_classes = len(np.unique(labels))
     BGSS, WGSS = 0.0, 0.0
     mean = np.mean(X, axis=0)
-
     for k in range(n_classes):
         cluster_k = X[labels == k]
         mean_k = np.mean(cluster_k, axis=0)
         BGSS += len(cluster_k) * np.sum((mean_k - mean) ** 2)
         WGSS += np.sum((cluster_k - mean_k) ** 2)
-
     return {"BGSS": BGSS, "WGSS": WGSS}
+
+
+def pmatch(input: list, lst: list):
+    """
+    A function that mimics R's pmatch function
+
+    Args:
+        input (list): The input list
+        lst (list): The list of interest
+
+    Returns:
+        list: A list of integers representing indices
+    """
+    return [lst.index(i) for i in input]
 
 
 def cluster_sep(X, labels):
@@ -285,5 +297,3 @@ def get_labels(labels, n_clusters: int, min_nc: int, need: str):
             return np.array(df_labels[[n_clusters, n_clusters + 1]])
     elif need in ["Regular", "Normal", "Single", "single", "normal", "regular"]:
         return np.array(df_labels[[n_clusters]])
-
-
