@@ -15,17 +15,9 @@ JSD - Jensen-Shannon Divergence
    :maxdepth: 3
 
 
-.. math::
-
-	\text{JSD}(y, \hat{y}) =
-
 
 + Best possible score is 0.0 (identical), smaller value is better . Range = [0, +inf)
 + Link: https://machinelearningmastery.com/divergence-between-probability-distributions/
-
-Latex equation code::
-
-	\text{JSD}(y, \hat{y}) =
 
 
 Example to use JSD metric:

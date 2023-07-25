@@ -53,3 +53,21 @@ def calculate_entropy(y_true, y_pred, one_dim):
     else:
         return -np.sum(y_true * np.log2(y_pred), axis=0)
 
+
+def calculate_ec(y_true, y_pred, one_dim):
+    if one_dim:
+        m1 = np.mean(y_true)
+        numerator = np.sum((y_true - y_pred)**2)
+        denominator = np.sum((y_true - m1)**2)
+    else:
+        m1 = np.mean(y_true, axis=0)
+        numerator = np.sum((y_true - y_pred)**2, axis=0)
+        denominator = np.sum((y_true - m1) ** 2, axis=0)
+    return 1.0 - numerator / denominator
+
+
+def calculate_mse(y_true, y_pred, one_dim):
+    if one_dim:
+        return np.mean((y_true - y_pred) ** 2)
+    else:
+        return np.mean((y_true - y_pred) ** 2, axis=0)

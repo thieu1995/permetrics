@@ -17,17 +17,17 @@ RE - Relative Error
 
 .. math::
 
-	\text{RE}(y, \hat{y}) =
+	\text{RE}(y, \hat{y}) = \frac{|y_i - \hat{y}_i|}{|y_i|}
 
 
 + Relative Error (RE): Best possible score is 0.0, smaller value is better. Range = (-inf, +inf)
 + Note: Computes the relative error between two numbers, or for element between a pair of list, tuple or numpy arrays.
-
++ The Relative Error (RE) is a metric used to evaluate the accuracy of a regression model by measuring the ratio of the absolute error to the actual value.
 
 
 Latex equation code::
 
-	\text{RE}(y, \hat{y}) =
+	\text{RE}(y, \hat{y}) = \frac{|y_i - \hat{y}_i|}{|y_i|}
 
 
 Example to use RE metric:

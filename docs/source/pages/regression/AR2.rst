@@ -30,7 +30,11 @@ where :math:`\bar{y} = \frac{1}{N} \sum_{i=1}^{N} y_i` and :math:`\sum_{i=1}^{N}
 
 Latex equation code::
 
-	\text{AR2}(y, \hat{y}) =
+	\text{AR2}(y, \hat{y}) = \textrm{Adjusted R}^2 = 1 - \frac{(1 - R^2)(n - 1)}{n - k - 1}
+
+Here, $n$ is the sample size, $k$ is the number of predictors, $R^2$ is the coefficient of determination, and the Adjusted R2 is calculated as a modification
+of the R2 that takes into account the number of predictors in the model. The Adjusted R2 provides a more accurate measure of the goodness-of-fit of a model
+with multiple predictors.
 
 
 Example to use AR2 metric:

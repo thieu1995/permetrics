@@ -1,36 +1,36 @@
-MBE - Mean Bias Error
-=====================
+CRM - Coefficient of Residual Mass
+==================================
 
 .. toctree::
    :maxdepth: 3
-   :caption: MBE - Mean Bias Error
+   :caption: CRM - Coefficient of Residual Mass
 
-.. toctree::
-   :maxdepth: 3
-
-.. toctree::
-   :maxdepth: 3
 
 .. toctree::
    :maxdepth: 3
 
+.. toctree::
+   :maxdepth: 3
+
+.. toctree::
+   :maxdepth: 3
 
 
 .. math::
 
-	\text{MBE}(y, \hat{y}) = \frac{1}{n} \sum_{i=1}^{n}(f_i - y_i)
+   \text{CRM}(y, \hat{y}) = \frac{\sum{\hat{Y}} - \sum{Y}}{\sum{Y}}
 
 
-+ Mean Bias Error (MBE): Best possible score is 0.0. Range = (-inf, +inf)
-
++ Best possible value = 0, smaller value is better. Range = (-inf, +inf)
 
 
 Latex equation code::
 
-	\text{MBE}(y, \hat{y}) = \frac{1}{n} \sum_{i=1}^{n}(f_i - y_i)
+	\text{CRM}(y, \hat{y}) = \frac{\sum{\hat{Y}} - \sum{Y}}{\sum{Y}}
 
++ https://doi.org/10.1016/j.csite.2022.101797
 
-Example to use MBE metric:
+Example to use CRM metric:
 
 .. code-block:: python
 	:emphasize-lines: 8-9,15-16
@@ -43,14 +43,12 @@ Example to use MBE metric:
 	y_pred = array([2.5, 0.0, 2, 8])
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
-	print(evaluator.mean_bias_error())
+	print(evaluator.coefficient_of_residual_mass())
 
 	## For > 1-D array
 	y_true = array([[0.5, 1], [-1, 1], [7, -6]])
 	y_pred = array([[0, 2], [-1, 2], [8, -5]])
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
-	print(evaluator.MBE(multi_output="raw_values"))
-
-
+	print(evaluator.CRM(multi_output="raw_values"))
 

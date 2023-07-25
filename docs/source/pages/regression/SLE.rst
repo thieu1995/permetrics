@@ -17,16 +17,17 @@ SLE - Squared Log Error
 
 .. math::
 
-	\text{SLE}(y, \hat{y}) =
+	\text{SLE}(y, f_i) = \frac{1}{n}\sum_{i=1}^{n}(\log(y_i + 1) - \log(f_i + 1))^2
 
 
 + Squared Log Error (SLE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 + Note: Computes the squared log error between two numbers, or for element between a pair of list, tuple or numpy arrays.
++ The Squared Log Error (SLE) is a metric used to evaluate the accuracy of regression models that predict logarithmic values. It measures the average of the squared differences between the logarithm of the predicted values and the logarithm of the actual values.
 
 
 Latex equation code::
 
-	\text{SLE}(y, \hat{y}) =
+	\text{SLE}(y, f_i) = \frac{1}{n}\sum_{i=1}^{n}(\log(y_i + 1) - \log(f_i + 1))^2
 
 
 Example to use SLE metric:

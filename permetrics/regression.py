@@ -185,11 +185,8 @@ class RegressionMetric(Evaluator):
             y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
         if positive:
             y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        if one_dim:
-            return np.round(np.sum((y_pred - y_true) ** 2) / len(y_true), decimal)
-        else:
-            result = np.sum((y_pred - y_true) ** 2, axis=0) / len(y_true)
-            return self.get_multi_output_result(result, multi_output, decimal)
+        score = calculate_mse(y_true, y_pred, one_dim)
+        return np.round(score, decimal) if one_dim else self.get_multi_output_result(score, multi_output, decimal)
 
     def root_mean_squared_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
         """
@@ -211,11 +208,8 @@ class RegressionMetric(Evaluator):
             y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
         if positive:
             y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        if one_dim:
-            return np.round(np.sqrt(np.sum((y_pred - y_true) ** 2) / len(y_true)), decimal)
-        else:
-            result = np.sqrt(np.sum((y_pred - y_true) ** 2, axis=0) / len(y_true))
-            return self.get_multi_output_result(result, multi_output, decimal)
+        score = np.sqrt(calculate_mse(y_true, y_pred, one_dim))
+        return np.round(score, decimal) if one_dim else self.get_multi_output_result(score, multi_output, decimal)
 
     def mean_squared_log_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=True):
         """
@@ -771,103 +765,6 @@ class RegressionMetric(Evaluator):
             result = 1 - np.sqrt((r - 1) ** 2 + (beta - 1) ** 2 + (gamma - 1) ** 2)
             return self.get_multi_output_result(result, multi_output, decimal)
 
-    def gini_coefficient(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
-        """
-        Gini coefficient (Gini): Best possible score is 1, bigger value is better. Range = [0, 1]
-
-        Notes
-        ~~~~~
-            + This version is based on below repository matlab code.
-            + https://github.com/benhamner/Metrics/blob/master/MATLAB/metrics/gini.m
-
-        Args:
-            y_true (tuple, list, np.ndarray): The ground truth values
-            y_pred (tuple, list, np.ndarray): The prediction values
-            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
-
-        Returns:
-            result (float, int, np.ndarray): Gini metric for single column or multiple columns
-        """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if non_zero:
-            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
-        if positive:
-            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        if one_dim:
-            idx_sort = np.argsort(-y_pred)
-            population_delta = 1.0 / len(y_true)
-            accumulated_population_percentage_sum, accumulated_loss_percentage_sum, score = 0, 0, 0
-            total_losses = np.sum(y_true)
-            for i in range(0, len(y_true)):
-                accumulated_loss_percentage_sum += y_true[idx_sort[i]] / total_losses
-                accumulated_population_percentage_sum += population_delta
-                score += accumulated_loss_percentage_sum - accumulated_population_percentage_sum
-            score = score / len(y_true)
-            return np.round(score, decimal)
-        else:
-            col = y_true.shape[1]
-            idx_sort = np.argsort(-y_pred, axis=0)
-            population_delta = 1.0 / len(y_true)
-            accumulated_population_percentage_sum, accumulated_loss_percentage_sum, score = np.zeros(col), np.zeros(col), np.zeros(col)
-            total_losses = np.sum(y_true, axis=0)
-            for i in range(0, col):
-                for j in range(0, len(y_true)):
-                    accumulated_loss_percentage_sum[i] += y_true[idx_sort[j, i], i] / total_losses[i]
-                    accumulated_population_percentage_sum[i] += population_delta
-                    score[i] += accumulated_loss_percentage_sum[i] - accumulated_population_percentage_sum[i]
-            result = score / len(y_true)
-            return self.get_multi_output_result(result, multi_output, decimal)
-
-    def gini_coefficient_wiki(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
-        """
-        Gini coefficient (Gini): Best possible score is 1, bigger value is better. Range = [0, 1]
-
-        Notes
-        ~~~~~
-            + This version is based on wiki page, may be is the true version
-            + https://en.wikipedia.org/wiki/Gini_coefficient
-            + Gini coefficient can theoretically range from 0 (complete equality) to 1 (complete inequality)
-            + It is sometimes expressed as a percentage ranging between 0 and 100.
-            + If negative values are possible, then the Gini coefficient could theoretically be more than 1.
-
-        Args:
-            y_true (tuple, list, np.ndarray): The ground truth values
-            y_pred (tuple, list, np.ndarray): The prediction values
-            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
-
-        Returns:
-            result (float, int, np.ndarray): Gini metric for single column or multiple columns
-        """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if non_zero:
-            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
-        if positive:
-            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        if one_dim:
-            y = np.concatenate((y_true, y_pred), axis=0)
-            score = 0
-            for i in range(0, len(y)):
-                score += np.sum(np.abs(y[i] - y))
-            score = score / (2 * len(y) * np.sum(y))
-            return np.round(score, decimal)
-        else:
-            y = np.concatenate((y_true, y_pred), axis=0)
-            col = y.shape[1]
-            d = len(y)
-            score = np.zeros(col)
-            for k in range(0, col):
-                for i in range(0, d):
-                    for j in range(0, d):
-                        score[k] += np.abs(y[i, k] - y[j, k])
-            result = score / (2 * len(y) ** 2 * np.mean(y, axis=0))
-            return self.get_multi_output_result(result, multi_output, decimal)
-
     def prediction_of_change_in_direction(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
         """
         Prediction of Change in Direction (PCD): Best possible score is 1.0, bigger value is better. Range = [0, 1]
@@ -1239,6 +1136,268 @@ class RegressionMetric(Evaluator):
             score = np.sqrt(ss_residuals / df_residuals)
             return self.get_multi_output_result(score, multi_output, decimal)
 
+    def covariance(self, y_true=None, y_pred=None, sample=False, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+        """
+        Covariance (COV): There is no best value, bigger value is better. Range = [-inf, +inf)
+            + is a measure of the relationship between two random variables
+            + evaluates how much – to what extent – the variables change together
+            + does not assess the dependency between variables
+            + Positive covariance: Indicates that two variables tend to move in the same direction.
+            + Negative covariance: Reveals that two variables tend to move in inverse directions.
+
+        Links:
+            + https://corporatefinanceinstitute.com/resources/data-science/covariance/
+
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            sample (bool): sample covariance or population covariance. See the website above for more details
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
+            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): COV metric for single column or multiple columns
+        """
+        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
+        denominator = len(y_true) - 1 if sample else len(y_true)
+        if non_zero:
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 1)
+        if positive:
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
+        if one_dim:
+            s1 = y_true - np.mean(y_true)
+            s2 = y_pred - np.mean(y_pred)
+            return np.round(np.dot(s1, s2) / denominator, decimal)
+        else:
+            s1 = y_true - np.mean(y_true, axis=0)
+            s2 = y_pred - np.mean(y_pred, axis=0)
+            return self.get_multi_output_result(np.sum(s1 * s2, axis=0) / denominator, multi_output, decimal)
+
+    def correlation(self, y_true=None, y_pred=None, sample=False, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+        """
+        Correlation (COR): Best possible value = 1, bigger value is better. Range = [-1, +1]
+            + measures the strength of the relationship between variables
+            + is the scaled measure of covariance. It is dimensionless.
+            + the correlation coefficient is always a pure value and not measured in any units.
+
+        Links:
+            + https://corporatefinanceinstitute.com/resources/data-science/covariance/
+
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            sample (bool): sample covariance or population covariance. See the website above for more details
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
+            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): COR metric for single column or multiple columns
+        """
+        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
+        denominator = len(y_true) - 1 if sample else len(y_true)
+        if non_zero:
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 1)
+        if positive:
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
+        if one_dim:
+            s1 = y_true - np.mean(y_true)
+            s2 = y_pred - np.mean(y_pred)
+            return np.round((np.dot(s1, s2) / denominator) / (np.std(y_true) * np.std(y_pred)), decimal)
+        else:
+            s1 = y_true - np.mean(y_true, axis=0)
+            s2 = y_pred - np.mean(y_pred, axis=0)
+            cov = np.sum(s1 * s2, axis=0) / denominator
+            den = np.std(y_true, axis=0) * np.std(y_pred, axis=0)
+            return self.get_multi_output_result(cov / den, multi_output, decimal)
+
+    def efficiency_coefficient(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+        """
+        Efficiency Coefficient (EC): Best possible value = 1, bigger value is better. Range = [-inf, +1]
+
+        Links:
+            + https://doi.org/10.1016/j.solener.2019.01.037
+
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
+            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): EC metric for single column or multiple columns
+        """
+        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
+        if non_zero:
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 1)
+        if positive:
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
+        score = calculate_ec(y_true, y_pred, one_dim)
+        return np.round(score, decimal) if one_dim else self.get_multi_output_result(score, multi_output, decimal)
+
+    def overall_index(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+        """
+        Overall Index (OI): Best possible value = 1, bigger value is better. Range = [-inf, +1]
+
+        Links:
+            + https://doi.org/10.1016/j.solener.2019.01.037
+
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
+            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): OI metric for single column or multiple columns
+        """
+        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
+        if non_zero:
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 1)
+        if positive:
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
+        ec = calculate_ec(y_true, y_pred, one_dim)
+        rmse = np.sqrt(calculate_mse(y_true, y_pred, one_dim))
+        if one_dim:
+            score = (1 - rmse / (np.max(y_true) - np.min(y_true)) + ec) / 2.0
+            return np.round(score, decimal)
+        else:
+            score = (1 - rmse / (np.max(y_true, axis=0) - np.min(y_true, axis=0)) + ec) / 2.0
+            return self.get_multi_output_result(score, multi_output, decimal)
+
+    def coefficient_of_residual_mass(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+        """
+        Coefficient of Residual Mass (CRM): Best possible value = 0.0, smaller value is better. Range = [-inf, +inf]
+
+        Links:
+            + https://doi.org/10.1016/j.csite.2022.101797
+
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
+            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): CRM metric for single column or multiple columns
+        """
+        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
+        if non_zero:
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 1)
+        if positive:
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
+        if one_dim:
+            return np.round((np.sum(y_pred) - np.sum(y_true)) / np.sum(y_true), decimal)
+        else:
+            score = (np.sum(y_pred, axis=0) - np.sum(y_true, axis=0)) / np.sum(y_true, axis=0)
+            return self.get_multi_output_result(score, multi_output, decimal)
+
+    def gini_coefficient(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+        """
+        Gini coefficient (Gini): Best possible score is 1, bigger value is better. Range = [0, 1]
+
+        Notes
+        ~~~~~
+            + This version is based on below repository matlab code.
+            + https://github.com/benhamner/Metrics/blob/master/MATLAB/metrics/gini.m
+
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
+            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): Gini metric for single column or multiple columns
+        """
+        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
+        if non_zero:
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
+        if positive:
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
+        if one_dim:
+            idx_sort = np.argsort(-y_pred)
+            population_delta = 1.0 / len(y_true)
+            accumulated_population_percentage_sum, accumulated_loss_percentage_sum, score = 0, 0, 0
+            total_losses = np.sum(y_true)
+            for i in range(0, len(y_true)):
+                accumulated_loss_percentage_sum += y_true[idx_sort[i]] / total_losses
+                accumulated_population_percentage_sum += population_delta
+                score += accumulated_loss_percentage_sum - accumulated_population_percentage_sum
+            score = score / len(y_true)
+            return np.round(score, decimal)
+        else:
+            col = y_true.shape[1]
+            idx_sort = np.argsort(-y_pred, axis=0)
+            population_delta = 1.0 / len(y_true)
+            accumulated_population_percentage_sum, accumulated_loss_percentage_sum, score = np.zeros(col), np.zeros(col), np.zeros(col)
+            total_losses = np.sum(y_true, axis=0)
+            for i in range(0, col):
+                for j in range(0, len(y_true)):
+                    accumulated_loss_percentage_sum[i] += y_true[idx_sort[j, i], i] / total_losses[i]
+                    accumulated_population_percentage_sum[i] += population_delta
+                    score[i] += accumulated_loss_percentage_sum[i] - accumulated_population_percentage_sum[i]
+            result = score / len(y_true)
+            return self.get_multi_output_result(result, multi_output, decimal)
+
+    def gini_coefficient_wiki(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+        """
+        Gini coefficient (Gini): Best possible score is 1, bigger value is better. Range = [0, 1]
+
+        Notes
+        ~~~~~
+            + This version is based on wiki page, may be is the true version
+            + https://en.wikipedia.org/wiki/Gini_coefficient
+            + Gini coefficient can theoretically range from 0 (complete equality) to 1 (complete inequality)
+            + It is sometimes expressed as a percentage ranging between 0 and 100.
+            + If negative values are possible, then the Gini coefficient could theoretically be more than 1.
+
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
+            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
+            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+
+        Returns:
+            result (float, int, np.ndarray): Gini metric for single column or multiple columns
+        """
+        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
+        if non_zero:
+            y_true, y_pred = get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
+        if positive:
+            y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
+        if one_dim:
+            y = np.concatenate((y_true, y_pred), axis=0)
+            score = 0
+            for i in range(0, len(y)):
+                score += np.sum(np.abs(y[i] - y))
+            score = score / (2 * len(y) * np.sum(y))
+            return np.round(score, decimal)
+        else:
+            y = np.concatenate((y_true, y_pred), axis=0)
+            col = y.shape[1]
+            d = len(y)
+            score = np.zeros(col)
+            for k in range(0, col):
+                for i in range(0, d):
+                    for j in range(0, d):
+                        score[k] += np.abs(y[i, k] - y[j, k])
+            result = score / (2 * len(y) ** 2 * np.mean(y, axis=0))
+            return self.get_multi_output_result(result, multi_output, decimal)
+
     def single_relative_error(self, y_true=None, y_pred=None, decimal=None, non_zero=True, positive=False):
         """
         Relative Error (RE): Best possible score is 0.0, smaller value is better. Range = (-inf, +inf)
@@ -1354,14 +1513,12 @@ class RegressionMetric(Evaluator):
     WI = wi = willmott_index
     R = r = PCC = pcc = pearson_correlation_coefficient
     AR = ar = APCC = apcc = absolute_pearson_correlation_coefficient
-    R2s = r2s = pearson_correlation_coefficient_square
+    RSQ = rsq = R2s = r2s = pearson_correlation_coefficient_square
     CI = ci = confidence_index
     COD = cod = R2 = r2 = coefficient_of_determination
     ACOD = acod = AR2 = ar2 = adjusted_coefficient_of_determination
     DRV = drv = deviation_of_runoff_volume
     KGE = kge = kling_gupta_efficiency
-    GINI = gini = gini_coefficient
-    GINI_WIKI = gini_wiki = gini_coefficient_wiki
     PCD = pcd = prediction_of_change_in_direction
     CE = ce = cross_entropy
     KLD = kld = kullback_leibler_divergence
@@ -1373,6 +1530,13 @@ class RegressionMetric(Evaluator):
     A30 = a30 = a30_index
     NRMSE = nrmse = normalized_root_mean_square_error
     RSE = rse = residual_standard_error
+    COV = cov = covariance
+    COR = cor = correlation
+    EC = ec = efficiency_coefficient
+    OI = oi = overall_index
+    CRM = crm = coefficient_of_residual_mass
+    GINI = gini = gini_coefficient
+    GINI_WIKI = gini_wiki = gini_coefficient_wiki
 
     RE = re = RB = rb = single_relative_bias = single_relative_error
     AE = ae = single_absolute_error

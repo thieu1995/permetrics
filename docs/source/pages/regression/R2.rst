@@ -35,7 +35,7 @@ where :math:`\bar{y} = \frac{1}{N} \sum_{i=1}^{N} y_i` and :math:`\sum_{i=1}^{N}
 
 Latex equation code::
 
-	\text{RMSE}(y, \hat{y}) = \sqrt{\frac{\sum_{i=0}^{N - 1} (y_i - \hat{y}_i)^2}{N}}
+	R2(y, \hat{y}) = 1 - \frac{\sum_{i=1}^{N} (y_i - \hat{y}_i)^2}{\sum_{i=1}^{N} (y_i - \bar{y})^2}
 
 
 Example to use R2 metric:
@@ -51,12 +51,12 @@ Example to use R2 metric:
 	y_pred = array([2.5, 0.0, 2, 8])
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
-	print(evaluator.pearson_correlation_coefficient())
+	print(evaluator.coefficient_of_determination())
 
 	## For > 1-D array
 	y_true = array([[0.5, 1], [-1, 1], [7, -6]])
 	y_pred = array([[0, 2], [-1, 2], [8, -5]])
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
-	print(evaluator.R(multi_output="raw_values"))
+	print(evaluator.R2(multi_output="raw_values"))
 

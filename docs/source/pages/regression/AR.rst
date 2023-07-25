@@ -26,8 +26,7 @@ AR - Absolute Pearson’s Correlation Index
 
 Latex equation code::
 
-	\text{AR}(y, \hat{y}) = \frac{ \sum_{i=0}^{N - 1} (|y_i - mean(y)|*|\hat{y_i} - mean(\hat{y})|) }{ \sqrt{ \sum_{i=0}^{N - 1} (y_i - mean(y))^2} *\sqrt{
-	\sum_{i=0}^{N - 1} (\hat{y_i} - mean(\hat{y}))^2} }
+	\text{AR}(y, \hat{y}) = \frac{ \sum_{i=0}^{N - 1} (|y_i - mean(y)|*|\hat{y_i} - mean(\hat{y})|) }{ \sqrt{ \sum_{i=0}^{N - 1} (y_i - mean(y))^2} *\sqrt{\sum_{i=0}^{N - 1} (\hat{y_i} - mean(\hat{y}))^2} }
 
 
 Example to use AR metric:

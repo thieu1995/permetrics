@@ -88,8 +88,16 @@ Regression Metrics
 +------+------------+---------------------------------------------------+------------------------------------------------------+
 | 42   | SLE        | Squared Log Error                                 | Smaller is better (Best = 0), Range=[0, +inf)        |
 +------+------------+---------------------------------------------------+------------------------------------------------------+
-
-
+| 43   | COV        | Covariance                                        | Greater is better (No best value), Range=(-inf, +inf)|
++------+------------+---------------------------------------------------+------------------------------------------------------+
+| 44   | COR        | Correlation                                       | Greater is better (Best = 1), Range=[-1, +1]         |
++------+------------+---------------------------------------------------+------------------------------------------------------+
+| 45   | EC         | Efficiency Coefficient                            | Greater is better (Best = 1), Range=(-inf, +1]       |
++------+------------+---------------------------------------------------+------------------------------------------------------+
+| 46   | OI         | Overall Index                                     | Greater is better (Best = 1), Range=(-inf, +1]       |
++------+------------+---------------------------------------------------+------------------------------------------------------+
+| 47   | CRM        | Coefficient of Residual Mass                      | Smaller is better (Best = 0), Range=(-inf, +inf)     |
++------+------------+---------------------------------------------------+------------------------------------------------------+
 
 From now on:
 
@@ -131,8 +139,8 @@ From now on:
    regression/R2s.rst
    regression/DRV.rst
    regression/KGE.rst
-
    regression/GINI.rst
+
    regression/PCD.rst
    regression/CE.rst
    regression/KLD.rst
@@ -144,6 +152,11 @@ From now on:
    regression/A30.rst
    regression/NRMSE.rst
    regression/RSE.rst
+   regression/COV.rst
+   regression/COR.rst
+   regression/EC.rst
+   regression/OI.rst
+   regression/CRM.rst
 
    regression/RE.rst
    regression/AE.rst

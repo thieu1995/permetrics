@@ -1,36 +1,36 @@
-MBE - Mean Bias Error
-=====================
+OI - Overall Index
+==================
 
 .. toctree::
    :maxdepth: 3
-   :caption: MBE - Mean Bias Error
+   :caption: OI - Overall Index
 
-.. toctree::
-   :maxdepth: 3
-
-.. toctree::
-   :maxdepth: 3
 
 .. toctree::
    :maxdepth: 3
 
+.. toctree::
+   :maxdepth: 3
+
+.. toctree::
+   :maxdepth: 3
 
 
 .. math::
 
-	\text{MBE}(y, \hat{y}) = \frac{1}{n} \sum_{i=1}^{n}(f_i - y_i)
+   \text{OI}(y, \hat{y}) = \frac{1}{2} \biggr[ 1 - \frac{RMSE}{y_{max} - y_{min}} + EC \biggr]
 
 
-+ Mean Bias Error (MBE): Best possible score is 0.0. Range = (-inf, +inf)
-
++ Best possible value = 1, bigger value is better. Range = [-1, +1)
 
 
 Latex equation code::
 
-	\text{MBE}(y, \hat{y}) = \frac{1}{n} \sum_{i=1}^{n}(f_i - y_i)
+	\text{OI}(y, \hat{y}) = \frac{1}{2} \biggr[ 1 - \frac{RMSE}{y_{max} - y_{min}} + EC \biggr]
 
++ https://doi.org/10.1016/j.csite.2022.101797
 
-Example to use MBE metric:
+Example to use COR metric:
 
 .. code-block:: python
 	:emphasize-lines: 8-9,15-16
@@ -43,14 +43,12 @@ Example to use MBE metric:
 	y_pred = array([2.5, 0.0, 2, 8])
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
-	print(evaluator.mean_bias_error())
+	print(evaluator.overall_index())
 
 	## For > 1-D array
 	y_true = array([[0.5, 1], [-1, 1], [7, -6]])
 	y_pred = array([[0, 2], [-1, 2], [8, -5]])
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
-	print(evaluator.MBE(multi_output="raw_values"))
-
-
+	print(evaluator.OI(multi_output="raw_values"))
 

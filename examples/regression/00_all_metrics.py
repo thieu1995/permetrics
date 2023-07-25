@@ -14,14 +14,25 @@ from permetrics.regression import RegressionMetric
 y_true = np.array([3, -0.5, 2, 7, 5, 6])
 y_pred = np.array([2.5, 0.0, 2, 8, 5, 6])
 
+# y_true = np.array([[3, 0.0, 2], [1, 2, 3]])
+# y_pred = np.array([[3, 0.0, 2], [1, 2, 3]])
+
 evaluator = RegressionMetric()
+
+oi1 = evaluator.coefficient_of_residual_mass(y_true, y_pred)
+oi2 = evaluator.crm(y_true, y_pred)
+oi3 = evaluator.CRM(y_true, y_pred)
+print(f"OI: {oi1}, {oi2}, {oi3}")
+
 
 ## Call specific function inside object, each function has 3 names like below
 
-rmse_1 = evaluator.RMSE(y_true, y_pred)
-rmse_2 = evaluator.rmse(y_true, y_pred)
-rmse_3 = evaluator.root_mean_squared_error(y_true, y_pred)
-print(f"RMSE: {rmse_1}, {rmse_2}, {rmse_3}")
+# rmse_1 = evaluator.RMSE(y_true, y_pred)
+# rmse_2 = evaluator.rmse(y_true, y_pred)
+# rmse_3 = evaluator.root_mean_squared_error(y_true, y_pred)
+# print(f"RMSE: {rmse_1}, {rmse_2}, {rmse_3}")
+
+
 
 
 # EVS = evs = explained_variance_score
@@ -62,7 +73,12 @@ print(f"RMSE: {rmse_1}, {rmse_2}, {rmse_3}")
 # A30 = a30 = a30_index
 # NRMSE = nrmse = normalized_root_mean_square_error
 # RSE = rse = residual_standard_error
-#
+# COV = cov = covariance
+# COR = cor = correlation
+# EC = ec = efficiency_coefficient
+# OI = oi = overall_index
+# CRM = crm = coefficient_of_residual_mass
+
 # RE = re = RB = rb = single_relative_bias = single_relative_error
 # AE = ae = single_absolute_error
 # SE = se = single_squared_error
