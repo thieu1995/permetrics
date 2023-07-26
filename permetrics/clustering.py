@@ -632,7 +632,9 @@ class ClusteringMetric(Evaluator):
     def homogeneity_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Homogeneity Score between two clusterings.
-        It assesses the similarity between two clustering results by comparing them to a ground truth or reference clustering (if available).
+        It measures the extent to which each cluster contains only data points that belong to a single class or category.
+        In other words, homogeneity assesses whether all the data points in a cluster are members of the same true class or label.
+        A higher homogeneity score indicates better clustering results, where each cluster corresponds well to a single ground truth class.
 
         Args:
             y_true (array-like): The true labels for each sample.
@@ -643,13 +645,7 @@ class ClusteringMetric(Evaluator):
             result (float): The Homogeneity Score
         """
         y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-
-        h_labels_true = cu.compute_entropy(y_true)
-        h_labels_true_given_pred = cu.compute_conditional_entropy(y_true, y_pred)
-        if h_labels_true == 0:
-            cc = 1.
-        else:
-            cc = 1 - h_labels_true_given_pred / h_labels_true
+        cc = cu.compute_homogeneity(y_true, y_pred)
         return np.round(cc, decimal)
 
     def completeness_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
@@ -666,12 +662,32 @@ class ClusteringMetric(Evaluator):
             result (float): The completeness score.
         """
         y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        # Create a contingency matrix to count occurrences of true_label and predicted_label pairs.
-        contingency_matrix = cu.compute_contingency_matrix(y_true, y_pred)
-        # Compute the completeness score using the contingency matrix.
-        contingency_matrix_max = np.max(contingency_matrix, axis=0)
-        completeness = np.sum(contingency_matrix_max) / y_true.shape[0]
-        return np.round(completeness, decimal)
+        cc = cu.compute_homogeneity(y_pred, y_true)
+        return np.round(cc, decimal)
+
+    def v_measure_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+        """
+        Computes the V measure score between two clusterings.
+        It is a combination of two other metrics: homogeneity and completeness. Homogeneity measures whether all the
+        data points in a given cluster belong to the same class. Completeness measures whether all the data points of a certain
+        class are assigned to the same cluster. The V-measure combines these two metrics into a single score.
+
+        Args:
+            y_true (array-like): The true labels for each sample.
+            y_pred (array-like): The predicted cluster labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            result (float): The V measure score
+        """
+        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
+        h = cu.compute_homogeneity(y_true, y_pred)
+        c = cu.compute_homogeneity(y_pred, y_true)
+        if h + c == 0:
+            cc = 0
+        else:
+            cc = 2 * (h * c) / (h + c)
+        return np.round(cc, decimal)
 
 
     BHI = ball_hall_index
@@ -695,3 +711,4 @@ class ClusteringMetric(Evaluator):
     FMS = fowlkes_mallows_score
     HS = homogeneity_score
     CS = completeness_score
+    VMS = v_measure_score

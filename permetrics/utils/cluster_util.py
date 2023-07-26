@@ -144,15 +144,24 @@ def compute_entropy(labels):
     return -np.sum(probabilities * np.log2(probabilities))
 
 
-def compute_conditional_entropy(labels_true, labels_pred):
-    unique_labels_pred = np.unique(labels_pred)
+def compute_conditional_entropy(y_true, y_pred):
+    unique_labels_pred = np.unique(y_true)
     entropy_sum = 0
     for label in unique_labels_pred:
-        mask = labels_pred == label
-        cluster_labels_true = labels_true[mask]
+        mask = y_pred == label
+        cluster_labels_true = y_true[mask]
         cluster_entropy = compute_entropy(cluster_labels_true)
-        entropy_sum += len(cluster_labels_true) / len(labels_true) * cluster_entropy
+        entropy_sum += len(cluster_labels_true) / len(y_true) * cluster_entropy
     return entropy_sum
+
+
+def compute_homogeneity(y_true, y_pred):
+    h_labels_true = compute_entropy(y_true)
+    h_labels_true_given_pred = compute_conditional_entropy(y_true, y_pred)
+    if h_labels_true == 0:
+        return 1
+    else:
+        return 1 - h_labels_true_given_pred / h_labels_true
 
 
 def pmatch(input: list, lst: list):
