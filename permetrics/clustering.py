@@ -793,6 +793,30 @@ class ClusteringMetric(Evaluator):
         cc = (NT*yy - (yy+yn)*(yy+ny)) / np.sqrt((yy+yn)*(yy+ny)*(nn+yn)*(nn+ny))
         return np.round(cc, decimal)
 
+    def jaccard_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+        """
+        Computes the Jaccard score between two clusterings.
+        It ranges from 0 to 1, where a value of 1 indicates perfect agreement between the two partitions being compared.
+        A value of 0 indicates complete disagreement between the two partitions.
+
+        The Jaccard score is similar to the Czekanowski-Dice score, but it is less sensitive to differences in cluster size. However,
+        like the Czekanowski-Dice score, it may not be sensitive to certain types of differences between partitions. Therefore,
+        it is often used in conjunction with other external indices to get a more complete picture of the similarity between partitions.
+
+        Args:
+            y_true (array-like): The true labels for each sample.
+            y_pred (array-like): The predicted cluster labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            result (float): The Jaccard score
+        """
+        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
+        cm = cu.compute_confusion_matrix(y_true, y_pred)
+        yy, yn, ny, nn = cm
+        return np.round(yy / (yy + yn + ny), decimal)
+
+
     BHI = ball_hall_index
     CHI = calinski_harabasz_index
     XBI = xie_beni_index
@@ -820,3 +844,4 @@ class ClusteringMetric(Evaluator):
     FmS = f_measure_score
     CDS = czekanowski_dice_score
     HGS = hubert_gamma_score
+    JS = jaccard_score
