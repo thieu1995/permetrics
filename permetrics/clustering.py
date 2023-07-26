@@ -372,3 +372,26 @@ class ClusteringMetric(Evaluator):
         bgss = cu.compute_BGSS(X, y_pred)
         wgss = cu.compute_WGSS(X, y_pred)
         return np.round(np.log(bgss/wgss), decimal)
+
+    def silhouette_index(self, X=None, y_pred=None, **kwarg):
+        """
+        Computes the Silhouette Index
+
+        Args:
+            X (array-like of shape (n_samples, n_features)):
+                A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
+            y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
+
+        Returns:
+            result (float): The Silhouette Index
+        """
+        X = self.check_X(X)
+        y_pred, _, decimal = self.get_processed_internal_data(y_pred)
+        dm = cu.distance_matrix(X, X)
+        silhouette_scores = np.zeros(X.shape[0])
+        for i in range(X.shape[0]):
+            a = np.mean(dm[i, y_pred == y_pred[i]])  # Cohesion
+            b_values = [np.mean(dm[i, y_pred == label]) for label in np.unique(y_pred) if label != y_pred[i]]
+            b = np.min(b_values) if len(b_values) > 0 else 0  # Separation
+            silhouette_scores[i] = (b - a) / max(a, b)
+        return np.mean(silhouette_scores)
