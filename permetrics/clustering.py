@@ -116,7 +116,7 @@ class ClusteringMetric(Evaluator):
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
 
         Returns:
-            BH (float): The Ball-Hall index
+            result (float): The Ball-Hall index
         """
         X = self.check_X(X)
         y_pred, _, decimal = self.get_processed_internal_data(y_pred)
@@ -130,7 +130,7 @@ class ClusteringMetric(Evaluator):
             wgss += np.sum((cluster_k - centroid) ** 2)
         return np.round(wgss / n_clusters, decimal)
 
-    def calinski_harabasz_score(self, X=None, y_pred=None, **kwargs):
+    def calinski_harabasz_index(self, X=None, y_pred=None, **kwargs):
         """
         Compute the Calinski and Harabasz (1974) index. It is also known as the Variance Ratio Criterion.
         The score is defined as ratio between the within-cluster dispersion and the between-cluster dispersion.
@@ -146,7 +146,7 @@ class ClusteringMetric(Evaluator):
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
 
         Returns:
-            score (float): The resulting Calinski-Harabasz score.
+            result (float): The resulting Calinski-Harabasz index.
 
         References:
         .. [1] `T. Calinski and J. Harabasz, 1974. "A dendrite method for cluster
@@ -175,7 +175,7 @@ class ClusteringMetric(Evaluator):
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
 
         Returns:
-            xb (float): The Xie-Beni index
+            result (float): The Xie-Beni index
         """
         X = self.check_X(X)
         y_pred, _, decimal = self.get_processed_internal_data(y_pred)
@@ -188,3 +188,27 @@ class ClusteringMetric(Evaluator):
         # Computing the XB index:
         xb = (1 / X.shape[0]) * (WGSS / MinSqDist)
         return xb
+
+    def banfeld_raftery_index(self, X=None, y_pred=None, **kwargs):
+        """
+        Computes the Banfeld-Raftery Index.
+        This index is the weighted sum of the logarithms of the traces of the variancecovariance matrix of each cluster
+
+        Args:
+            X (array-like of shape (n_samples, n_features)):
+                A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
+            y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
+
+        Returns:
+            result (float): The Banfeld-Raftery Index
+        """
+        X = self.check_X(X)
+        y_pred, _, decimal = self.get_processed_internal_data(y_pred)
+        clusters_dict, cluster_sizes_dict = cu.compute_clusters(y_pred)
+        cc = 0.0
+        for k in clusters_dict.keys():
+            X_k = X[clusters_dict[k]]
+            cluster_dispersion = np.trace(cu.compute_WG(X_k)) / cluster_sizes_dict[k]
+            if cluster_sizes_dict[k] > 1:
+                cc += cluster_sizes_dict[k] * np.log(cluster_dispersion)
+        return np.round(cc, decimal)
