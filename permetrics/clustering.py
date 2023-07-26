@@ -834,7 +834,34 @@ class ClusteringMetric(Evaluator):
         y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
         cm = cu.compute_confusion_matrix(y_true, y_pred)
         yy, yn, ny, nn = cm
-        return np.round(yy / (yy + yn + ny), decimal)
+        cc = 0.5 * ((yy / (yy + ny)) + (yy / (yy + yn)))
+        return np.round(cc, decimal)
+
+    def mc_nemar_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+        """
+        Computes the Mc Nemar score between two clusterings.
+
+        It is an adaptation of the non-parametric McNemar test for the comparison of frequencies between two paired samples.
+        The McNemar index ranges from -1 to 1, where a value of 1 indicates perfect agreement between the two partitions
+        being compared, a value of 0 indicates no association between the partitions, and a value of -1 indicates
+        complete disagreement between the two partitions.
+
+        Under the null hypothesis that the discordances between the partitions P1 and P2 are random, the McNemar index
+        follows approximately a normal distribution. The McNemar index can be transformed into a chi-squared
+        distance, which follows a chi-squared distribution with 1 degree of freedom
+
+        Args:
+            y_true (array-like): The true labels for each sample.
+            y_pred (array-like): The predicted cluster labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            result (float): The Mc Nemar score
+        """
+        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
+        cm = cu.compute_confusion_matrix(y_true, y_pred)
+        yy, yn, ny, nn = cm
+        return np.round((nn - ny) / np.sqrt(nn + ny), decimal)
 
 
     BHI = ball_hall_index
@@ -866,3 +893,4 @@ class ClusteringMetric(Evaluator):
     HGS = hubert_gamma_score
     JS = jaccard_score
     KS = kulczynski_score
+    MNS = mc_nemar_score
