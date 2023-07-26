@@ -692,7 +692,7 @@ class ClusteringMetric(Evaluator):
     def precision_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Precision score between two clusterings.
-        It The precision coefficient measures the proportion of points that are correctly grouped together in P2, given that
+        It measures the proportion of points that are correctly grouped together in P2, given that
         they are grouped together in P1. It is calculated as the ratio of yy (the number of points that are correctly
         grouped together in both P1 and P2) to the sum of yy and ny (the number of points that are grouped together
         in P2 but not in P1). The formula for P is P = yy / (yy + ny).
@@ -710,6 +710,25 @@ class ClusteringMetric(Evaluator):
         yy, yn, ny, nn = cm
         return np.round(yy / (yy + ny), decimal)
 
+    def recall_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+        """
+        Computes the Recall score between two clusterings.
+        It measures the proportion of points that are correctly grouped together in P2, given that they are grouped
+        together in P1. It is calculated as the ratio of yy to the sum of yy and yn (the number of points that
+        are grouped together in P1 but not in P2). The formula for R is R = yy / (yy + yn).
+
+        Args:
+            y_true (array-like): The true labels for each sample.
+            y_pred (array-like): The predicted cluster labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            result (float): The Recall score
+        """
+        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
+        cm = cu.compute_confusion_matrix(y_true, y_pred)
+        yy, yn, ny, nn = cm
+        return np.round(yy / (yy + yn), decimal)
 
 
     BHI = ball_hall_index
