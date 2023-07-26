@@ -911,6 +911,28 @@ class ClusteringMetric(Evaluator):
         cc = (yy + nn) / (yy + nn + 2 * (yn + ny))
         return np.round(cc, decimal)
 
+    def russel_rao_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+        """
+        Computes the Russel-Rao score between two clusterings.
+
+        It measures the proportion of concordances between the two partitions by computing the proportion of pairs of samples
+        that are in the same cluster in both partitions. The Russel-Rao index ranges from 0 to 1, where a value of 1 indicates
+        perfect agreement between the two partitions being compared. A value of 0 indicates complete disagreement between the two partitions.
+
+        Args:
+            y_true (array-like): The true labels for each sample.
+            y_pred (array-like): The predicted cluster labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            result (float): The Russel-Rao score
+        """
+        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
+        cm = cu.compute_confusion_matrix(y_true, y_pred)
+        yy, yn, ny, nn = cm
+        NT = np.sum(cm)
+        return np.round(yy / NT, decimal)
+
 
     BHI = ball_hall_index
     CHI = calinski_harabasz_index
@@ -944,3 +966,4 @@ class ClusteringMetric(Evaluator):
     MNS = mc_nemar_score
     PhS = phi_score
     RTS = rogers_tanimoto_score
+    RRS = russel_rao_score
