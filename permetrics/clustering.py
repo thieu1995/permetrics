@@ -396,7 +396,7 @@ class ClusteringMetric(Evaluator):
             silhouette_scores[i] = (b - a) / max(a, b)
         return np.mean(silhouette_scores)
 
-    def baker_hubert_gamma(self, X=None, y_pred=None, **kwargs):
+    def baker_hubert_gamma_index(self, X=None, y_pred=None, **kwargs):
         """
         Computes the Baker-Hubert Gamma index
         TODO: Calculate based on O(N^2) of samples --> Very slow
@@ -433,3 +433,48 @@ class ClusteringMetric(Evaluator):
         denominator = s_plus + s_minus
         gamma_index = (s_plus - s_minus) / denominator if denominator != 0 else 0.0
         return np.round(gamma_index, decimal)
+
+    def g_plus_index(self, X=None, y_pred=None, **kwargs):
+        """
+        Computes the G plus index
+        TODO: Calculate based on O(N^2) of samples --> Very slow
+
+        Args:
+            X (array-like of shape (n_samples, n_features)):
+                A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
+            y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
+
+        Returns:
+            result (float): The G plus index
+        """
+        X = self.check_X(X)
+        y_pred, _, decimal = self.get_processed_internal_data(y_pred)
+        num_samples, num_features = X.shape
+        n_pairs = (num_samples * (num_samples - 1)) // 2
+        distances = np.zeros(n_pairs)
+        binary_vector = np.zeros(n_pairs)
+        num_discordant_pairs = 0
+        for idx in range(0, n_pairs-1):
+            for jdx in range(idx+1, n_pairs):
+                if binary_vector[idx] == 0 and binary_vector[jdx] == 1:
+                    # For each within-cluster distance (B = 0), check if it is greater than between-cluster distances (B = 1).
+                    num_discordant_pairs += int(distances[idx] > distances[jdx])
+        # Calculate the G plus index
+        g_p = 2 * num_discordant_pairs / (n_pairs * (n_pairs - 1))
+        return np.round(g_p, decimal)
+
+
+    BHI = ball_hall_index
+    CHI = calinski_harabasz_index
+    XBI = xie_beni_index
+    BRI = banfeld_raftery_index
+    DBI = davies_bouldin_index
+    DRI = det_ratio_index
+    DI = dunn_index
+    KDI = ksq_detw_index
+    LDRI = log_det_ratio_index
+    LSRI = log_ss_ratio_index
+    SI = silhouette_index
+
+    BHGI = baker_hubert_gamma_index
+    GPI = g_plus_index
