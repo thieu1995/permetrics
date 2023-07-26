@@ -534,40 +534,6 @@ class ClusteringMetric(Evaluator):
         nmi = mi / denominator
         return np.round(nmi, decimal)
 
-    # def adjusted_mutual_info_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
-    #     """
-    #     Computes the adjusted mutual information between two clusterings.
-    #     It is a variation of the mutual information score that corrects for the expected amount of mutual information
-    #     that can be due to random chance alone, which makes it more suitable for comparing clusterings.
-    #
-    #     Args:
-    #         y_true (array-like): The true labels for each sample.
-    #         y_pred (array-like): The predicted cluster labels for each sample.
-    #         decimal (int): The number of fractional parts after the decimal point
-    #
-    #     Returns:
-    #         result (float): The mutual information score.
-    #     """
-    #     mi = self.mutual_info_score(y_true, y_pred, decimal, **kwargs)
-    #     if mi == 0.:
-    #         return 0
-    #     y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-    #     n_samples = y_true.shape[0]
-    #     n_clusters_true = len(np.unique(y_true))
-    #     n_clusters_pred = len(np.unique(y_pred))
-    #     if n_clusters_true == 1 or n_clusters_pred == 1:
-    #         # If either of the clusterings has only one cluster, MI is not defined
-    #         return 0.0
-    #     # Calculate entropy of true and predicted clusterings
-    #     entropy_true = -np.sum((np.bincount(y_true) / n_samples) * np.log(np.bincount(y_true) / n_samples))
-    #     entropy_pred = -np.sum((np.bincount(y_pred) / n_samples) * np.log(np.bincount(y_pred) / n_samples))
-    #     # Calculate normalized mutual information
-    #     denominator = (entropy_true + entropy_pred) / 2.0
-    #     if denominator == 0:
-    #         return 1.0  # Perfect agreement when both entropies are 0 (all samples in one cluster)
-    #     nmi = mi / denominator
-    #     return np.round(nmi, decimal)
-
     def rand_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the rand score between two clusterings.
@@ -632,6 +598,7 @@ class ClusteringMetric(Evaluator):
     def homogeneity_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Homogeneity Score between two clusterings.
+
         It measures the extent to which each cluster contains only data points that belong to a single class or category.
         In other words, homogeneity assesses whether all the data points in a cluster are members of the same true class or label.
         A higher homogeneity score indicates better clustering results, where each cluster corresponds well to a single ground truth class.
@@ -668,6 +635,7 @@ class ClusteringMetric(Evaluator):
     def v_measure_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the V measure score between two clusterings.
+
         It is a combination of two other metrics: homogeneity and completeness. Homogeneity measures whether all the
         data points in a given cluster belong to the same class. Completeness measures whether all the data points of a certain
         class are assigned to the same cluster. The V-measure combines these two metrics into a single score.
@@ -692,6 +660,7 @@ class ClusteringMetric(Evaluator):
     def precision_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Precision score between two clusterings.
+
         It measures the proportion of points that are correctly grouped together in P2, given that
         they are grouped together in P1. It is calculated as the ratio of yy (the number of points that are correctly
         grouped together in both P1 and P2) to the sum of yy and ny (the number of points that are grouped together
@@ -713,6 +682,7 @@ class ClusteringMetric(Evaluator):
     def recall_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Recall score between two clusterings.
+
         It measures the proportion of points that are correctly grouped together in P2, given that they are grouped
         together in P1. It is calculated as the ratio of yy to the sum of yy and yn (the number of points that
         are grouped together in P1 but not in P2). The formula for R is R = yy / (yy + yn).
@@ -733,6 +703,7 @@ class ClusteringMetric(Evaluator):
     def f_measure_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the F-Measure score between two clusterings.
+
         It is the harmonic mean of the precision and recall coefficients, given by the formula F = 2PR / (P + R). It provides a
         single score that summarizes both precision and recall. The Fα-measure is a weighted version of the F-measure that
         allows for a trade-off between precision and recall. It is defined as Fα = (1 + α)PR / (αP + R),
@@ -774,6 +745,7 @@ class ClusteringMetric(Evaluator):
     def hubert_gamma_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Hubert Gamma score between two clusterings.
+
         The Hubert Γˆ index ranges from -1 to 1, where a value of 1 indicates perfect agreement between the two partitions
         being compared, a value of 0 indicates no association between the partitions, and a value of -1 indicates
         complete disagreement between the two partitions.
@@ -796,6 +768,7 @@ class ClusteringMetric(Evaluator):
     def jaccard_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Jaccard score between two clusterings.
+
         It ranges from 0 to 1, where a value of 1 indicates perfect agreement between the two partitions being compared.
         A value of 0 indicates complete disagreement between the two partitions.
 
@@ -819,6 +792,7 @@ class ClusteringMetric(Evaluator):
     def kulczynski_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Kulczynski score between two clusterings.
+
         It is the arithmetic mean of the precision and recall coefficients, which means that it takes into account both precision and recall.
         The Kulczynski index ranges from 0 to 1, where a value of 1 indicates perfect agreement between the two partitions
         being compared. A value of 0 indicates complete disagreement between the two partitions.
