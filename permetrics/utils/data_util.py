@@ -6,6 +6,7 @@
 
 import numpy as np
 import copy as cp
+from permetrics.utils.encoder import LabelEncoder
 
 
 def format_regression_data_type(y_true, y_pred):
@@ -155,13 +156,49 @@ def format_y_score(y_true: np.ndarray, y_score: np.ndarray):
                     return y_true, y_score, not binary, "string"
 
 
-def format_clustering_label(label: np.ndarray):
-    if not (isinstance(label, (list, tuple, np.ndarray))):
-        raise TypeError("label must be lists, tuples or numpy arrays.")
+def is_consecutive_and_start_zero(vector):
+    if sorted(vector) == list(range(min(vector), max(vector) + 1)):
+        if 0 in vector:
+            return True
+    return False
+
+
+def format_external_clustering_data(y_true: np.ndarray, y_pred: np.ndarray):
+    """
+    Need both of y_true and y_pred to format
+    """
+    if not (isinstance(y_true, (list, tuple, np.ndarray)) and isinstance(y_pred, (list, tuple, np.ndarray))):
+        raise TypeError("To calculate external clustering metrics, y_true and y_pred must be lists, tuples or numpy arrays.")
     else:
         ## Remove all dimensions of size 1
-        label = np.squeeze(np.asarray(label))
-        if np.issubdtype(label.dtype, np.number):
-            if label.ndim > 1:
-                label = label.argmax(axis=1)
-        return label
+        y_true, y_pred = np.squeeze(np.asarray(y_true)), np.squeeze(np.asarray(y_pred))
+        if not (y_true.ndim == y_pred.ndim):
+            raise TypeError("To calculate external clustering metrics, y_true and y_pred must have the same number of dimensions.")
+        else:
+            if y_true.ndim == 1:
+                if np.issubdtype(y_true.dtype, np.number):
+                    if is_consecutive_and_start_zero(y_true):
+                        return y_true, y_pred, None
+                le = LabelEncoder()
+                y_true = le.fit_transform(y_true)
+                y_pred = le.transform(y_pred)
+                return y_true, y_pred, le
+            else:
+                raise TypeError("To calculate clustering metrics, y_true and y_pred must be a 1-D vector.")
+
+
+def format_internal_clustering_data(labels: np.ndarray):
+    if not (isinstance(labels, (list, tuple, np.ndarray))):
+        raise TypeError("To calculate internal clustering metrics, labels must be lists, tuples or numpy arrays.")
+    else:
+        ## Remove all dimensions of size 1
+        labels = np.squeeze(np.asarray(labels))
+        if labels.ndim == 1:
+            if np.issubdtype(labels.dtype, np.number):
+                if is_consecutive_and_start_zero(labels):
+                    return labels, None
+            le = LabelEncoder()
+            labels = le.fit_transform(labels)
+            return labels, le
+        else:
+            raise TypeError("To calculate clustering metrics, labels must be a 1-D vector.")
