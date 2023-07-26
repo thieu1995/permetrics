@@ -816,6 +816,26 @@ class ClusteringMetric(Evaluator):
         yy, yn, ny, nn = cm
         return np.round(yy / (yy + yn + ny), decimal)
 
+    def kulczynski_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+        """
+        Computes the Kulczynski score between two clusterings.
+        It is the arithmetic mean of the precision and recall coefficients, which means that it takes into account both precision and recall.
+        The Kulczynski index ranges from 0 to 1, where a value of 1 indicates perfect agreement between the two partitions
+        being compared. A value of 0 indicates complete disagreement between the two partitions.
+
+        Args:
+            y_true (array-like): The true labels for each sample.
+            y_pred (array-like): The predicted cluster labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            result (float): The Kulczynski score
+        """
+        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
+        cm = cu.compute_confusion_matrix(y_true, y_pred)
+        yy, yn, ny, nn = cm
+        return np.round(yy / (yy + yn + ny), decimal)
+
 
     BHI = ball_hall_index
     CHI = calinski_harabasz_index
@@ -845,3 +865,4 @@ class ClusteringMetric(Evaluator):
     CDS = czekanowski_dice_score
     HGS = hubert_gamma_score
     JS = jaccard_score
+    KS = kulczynski_score
