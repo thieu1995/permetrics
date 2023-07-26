@@ -212,3 +212,36 @@ class ClusteringMetric(Evaluator):
             if cluster_sizes_dict[k] > 1:
                 cc += cluster_sizes_dict[k] * np.log(cluster_dispersion)
         return np.round(cc, decimal)
+
+    def davies_bouldin_index(self, X=None, y_pred=None, **kwargs):
+        """
+        Computes the Davies-Bouldin index
+
+        Args:
+            X (array-like of shape (n_samples, n_features)):
+                A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
+            y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
+
+        Returns:
+            result (float): The Davies-Bouldin index
+        """
+        X = self.check_X(X)
+        y_pred, _, decimal = self.get_processed_internal_data(y_pred)
+        clusters_dict, cluster_sizes_dict = cu.compute_clusters(y_pred)
+        centers, _ = cu.compute_barycenters(X, y_pred)
+        n_clusters = len(clusters_dict)
+        # Calculate delta for each cluster
+        delta = {}
+        for k in range(n_clusters):
+            X_k = X[clusters_dict[k]]
+            delta[k] = np.mean(np.linalg.norm(X_k - centers[k], axis=1))
+        # Calculate the Davies-Bouldin index
+        cc = 0.0
+        for kdx in range(n_clusters):
+            list_dist = []
+            for jdx in range(n_clusters):
+                if jdx != kdx:
+                    m = (delta[kdx] + delta[jdx]) / np.linalg.norm(centers[kdx] - centers[jdx])
+                    list_dist.append(m)
+            cc += np.max(list_dist)
+        return np.round(cc/n_clusters, decimal)
