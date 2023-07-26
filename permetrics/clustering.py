@@ -933,6 +933,52 @@ class ClusteringMetric(Evaluator):
         NT = np.sum(cm)
         return np.round(yy / NT, decimal)
 
+    def sokal_sneath1_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+        """
+        Computes the Sokal-Sneath 1 score between two clusterings.
+
+        It measures the similarity between two partitions by computing the proportion of pairs of samples that are in the same cluster
+        in both partitions, with an adjustment for the number of pairs of samples that are in different clusters in one partition
+        but in the same cluster in the other partition. The Sokal-Sneath indices range from 0 to 1, where a value of 1 indicates
+        perfect agreement between the two partitions being compared. A value of 0 indicates complete disagreement between the two partitions.
+
+        Args:
+            y_true (array-like): The true labels for each sample.
+            y_pred (array-like): The predicted cluster labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            result (float): The Sokal-Sneath 1 score
+        """
+        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
+        cm = cu.compute_confusion_matrix(y_true, y_pred)
+        yy, yn, ny, nn = cm
+        cc = yy / (yy + 2 * (yn + ny))
+        return np.round(cc, decimal)
+
+    def sokal_sneath2_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+        """
+        Computes the Sokal-Sneath 2 score between two clusterings.
+
+        It measures the similarity between two partitions by computing the proportion of pairs of samples that are in the same cluster
+        in both partitions, with an adjustment for the number of pairs of samples that are in different clusters in one partition
+        but in the same cluster in the other partition. The Sokal-Sneath indices range from 0 to 1, where a value of 1 indicates
+        perfect agreement between the two partitions being compared. A value of 0 indicates complete disagreement between the two partitions.
+
+        Args:
+            y_true (array-like): The true labels for each sample.
+            y_pred (array-like): The predicted cluster labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            result (float): The Sokal-Sneath 2 score
+        """
+        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
+        cm = cu.compute_confusion_matrix(y_true, y_pred)
+        yy, yn, ny, nn = cm
+        cc = (yy + nn) / (yy + nn + 0.5 * (yn + ny))
+        return np.round(cc, decimal)
+
 
     BHI = ball_hall_index
     CHI = calinski_harabasz_index
@@ -967,3 +1013,5 @@ class ClusteringMetric(Evaluator):
     PhS = phi_score
     RTS = rogers_tanimoto_score
     RRS = russel_rao_score
+    SS1S = sokal_sneath1_score
+    SS2S = sokal_sneath2_score
