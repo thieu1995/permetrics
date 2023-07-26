@@ -353,3 +353,22 @@ class ClusteringMetric(Evaluator):
             WG += cu.compute_WG(X_k)
         cc = X.shape[0] * np.log(np.linalg.det(T) / np.linalg.det(WG))
         return np.round(cc, decimal)
+
+    def log_ss_ratio_index(self, X=None, y_pred=None, **kwargs):
+        """
+        Computes the Log SS Ratio Index
+
+        Args:
+            X (array-like of shape (n_samples, n_features)):
+                A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
+            y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
+
+        Returns:
+            result (float): The Log SS Ratio Index
+        """
+        X = self.check_X(X)
+        y_pred, _, decimal = self.get_processed_internal_data(y_pred)
+        centers, _ = cu.compute_barycenters(X, y_pred)
+        bgss = cu.compute_BGSS(X, y_pred)
+        wgss = cu.compute_WGSS(X, y_pred)
+        return np.round(np.log(bgss/wgss), decimal)
