@@ -764,13 +764,34 @@ class ClusteringMetric(Evaluator):
             decimal (int): The number of fractional parts after the decimal point
 
         Returns:
-            result (float): The  Czekanowski-Dice score
+            result (float): The Czekanowski-Dice score
         """
         y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
         cm = cu.compute_confusion_matrix(y_true, y_pred)
         yy, yn, ny, nn = cm
         return np.round(2 * yy / (2 * yy + yn + ny), decimal)
 
+    def hubert_gamma_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+        """
+        Computes the Hubert Gamma score between two clusterings.
+        The Hubert Γˆ index ranges from -1 to 1, where a value of 1 indicates perfect agreement between the two partitions
+        being compared, a value of 0 indicates no association between the partitions, and a value of -1 indicates
+        complete disagreement between the two partitions.
+
+        Args:
+            y_true (array-like): The true labels for each sample.
+            y_pred (array-like): The predicted cluster labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            result (float): The Hubert Gamma score
+        """
+        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
+        cm = cu.compute_confusion_matrix(y_true, y_pred)
+        yy, yn, ny, nn = cm
+        NT = np.sum(cm)
+        cc = (NT*yy - (yy+yn)*(yy+ny)) / np.sqrt((yy+yn)*(yy+ny)*(nn+yn)*(nn+ny))
+        return np.round(cc, decimal)
 
     BHI = ball_hall_index
     CHI = calinski_harabasz_index
@@ -798,3 +819,4 @@ class ClusteringMetric(Evaluator):
     ReS = recall_score
     FmS = f_measure_score
     CDS = czekanowski_dice_score
+    HGS = hubert_gamma_score
