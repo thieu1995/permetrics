@@ -568,6 +568,36 @@ class ClusteringMetric(Evaluator):
     #     nmi = mi / denominator
     #     return np.round(nmi, decimal)
 
+    def rand_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+        """
+        Computes the rand score between two clusterings.
+         It measures the similarity of the two sets of clusters by comparing the number
+         of pairs of samples that are correctly or incorrectly clustered together.
+
+        Args:
+            y_true (array-like): The true labels for each sample.
+            y_pred (array-like): The predicted cluster labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            result (float): The rand score.
+        """
+        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
+        n_samples = len(y_true)
+        n_pairs = n_samples * (n_samples - 1) / 2
+        a = 0  # Number of pairs that are in the same cluster in both true and predicted labels
+        b = 0  # Number of pairs that are in different clusters in both true and predicted labels
+        for idx in range(n_samples):
+            for jdx in range(idx + 1, n_samples):
+                same_cluster_true = y_true[idx] == y_true[jdx]
+                same_cluster_pred = y_pred[idx] == y_pred[jdx]
+                if same_cluster_true and same_cluster_pred:
+                    a += 1
+                elif not same_cluster_true and not same_cluster_pred:
+                    b += 1
+        ri = (a + b) / n_pairs
+        return np.round(ri, decimal)
+
     def completeness_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the completeness score between two clusterings.
@@ -607,4 +637,5 @@ class ClusteringMetric(Evaluator):
 
     MIS = mutual_info_score
     NMIS = normalized_mutual_info_score
+    RS = rand_score
     CS = completeness_score
