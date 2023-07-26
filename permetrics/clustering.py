@@ -730,6 +730,29 @@ class ClusteringMetric(Evaluator):
         yy, yn, ny, nn = cm
         return np.round(yy / (yy + yn), decimal)
 
+    def f_measure_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+        """
+        Computes the F-Measure score between two clusterings.
+        It is the harmonic mean of the precision and recall coefficients, given by the formula F = 2PR / (P + R). It provides a
+        single score that summarizes both precision and recall. The Fα-measure is a weighted version of the F-measure that
+        allows for a trade-off between precision and recall. It is defined as Fα = (1 + α)PR / (αP + R),
+        where α is a parameter that determines the relative importance of precision and recall.
+
+        Args:
+            y_true (array-like): The true labels for each sample.
+            y_pred (array-like): The predicted cluster labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            result (float): The F-Measure score
+        """
+        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
+        cm = cu.compute_confusion_matrix(y_true, y_pred)
+        yy, yn, ny, nn = cm
+        p = yy / (yy + ny)
+        r = yy / (yy + yn)
+        return np.round(2 * p * r / (p + r), decimal)
+
 
     BHI = ball_hall_index
     CHI = calinski_harabasz_index
@@ -748,9 +771,11 @@ class ClusteringMetric(Evaluator):
 
     MIS = mutual_info_score
     NMIS = normalized_mutual_info_score
-    RS = rand_score
+    RaS = rand_score
     FMS = fowlkes_mallows_score
     HS = homogeneity_score
     CS = completeness_score
     VMS = v_measure_score
-    PS = precision_score
+    PrS = precision_score
+    ReS = recall_score
+    FmS = f_measure_score()
