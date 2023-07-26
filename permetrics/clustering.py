@@ -753,6 +753,24 @@ class ClusteringMetric(Evaluator):
         r = yy / (yy + yn)
         return np.round(2 * p * r / (p + r), decimal)
 
+    def czekanowski_dice_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+        """
+        Computes the  Czekanowski-Dice score between two clusterings.
+        It is the harmonic mean of the precision and recall coefficients
+
+        Args:
+            y_true (array-like): The true labels for each sample.
+            y_pred (array-like): The predicted cluster labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            result (float): The  Czekanowski-Dice score
+        """
+        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
+        cm = cu.compute_confusion_matrix(y_true, y_pred)
+        yy, yn, ny, nn = cm
+        return np.round(2 * yy / (2 * yy + yn + ny), decimal)
+
 
     BHI = ball_hall_index
     CHI = calinski_harabasz_index
@@ -778,4 +796,5 @@ class ClusteringMetric(Evaluator):
     VMS = v_measure_score
     PrS = precision_score
     ReS = recall_score
-    FmS = f_measure_score()
+    FmS = f_measure_score
+    CDS = czekanowski_dice_score
