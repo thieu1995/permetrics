@@ -164,6 +164,25 @@ def compute_homogeneity(y_true, y_pred):
         return 1 - h_labels_true_given_pred / h_labels_true
 
 
+def compute_confusion_matrix(y_true, y_pred):
+    """
+    Computes the confusion matrix for a clustering problem given the true labels and the predicted labels.
+    """
+    n = len(y_true)
+    yy, yn, ny, nn = 0, 0, 0, 0
+    for i in range(n):
+        for j in range(i+1, n):
+            if y_true[i] == y_true[j] and y_pred[i] == y_pred[j]:
+                yy += 1
+            elif y_true[i] == y_true[j] and y_pred[i] != y_pred[j]:
+                yn += 1
+            elif y_true[i] != y_true[j] and y_pred[i] == y_pred[j]:
+                ny += 1
+            else:
+                nn += 1
+    return np.array([yy, yn, ny, nn])
+
+
 def pmatch(input: list, lst: list):
     """
     A function that mimics R's pmatch function

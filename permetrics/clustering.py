@@ -689,6 +689,28 @@ class ClusteringMetric(Evaluator):
             cc = 2 * (h * c) / (h + c)
         return np.round(cc, decimal)
 
+    def precision_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+        """
+        Computes the Precision score between two clusterings.
+        It The precision coefficient measures the proportion of points that are correctly grouped together in P2, given that
+        they are grouped together in P1. It is calculated as the ratio of yy (the number of points that are correctly
+        grouped together in both P1 and P2) to the sum of yy and ny (the number of points that are grouped together
+        in P2 but not in P1). The formula for P is P = yy / (yy + ny).
+
+        Args:
+            y_true (array-like): The true labels for each sample.
+            y_pred (array-like): The predicted cluster labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            result (float): The Precision score
+        """
+        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
+        cm = cu.compute_confusion_matrix(y_true, y_pred)
+        yy, yn, ny, nn = cm
+        return np.round(yy / (yy + ny), decimal)
+
+
 
     BHI = ball_hall_index
     CHI = calinski_harabasz_index
@@ -712,3 +734,4 @@ class ClusteringMetric(Evaluator):
     HS = homogeneity_score
     CS = completeness_score
     VMS = v_measure_score
+    PS = precision_score
