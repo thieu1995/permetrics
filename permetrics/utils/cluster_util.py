@@ -10,6 +10,89 @@
 import numpy as np
 import pandas as pd
 from scipy.spatial.distance import cdist, pdist, squareform
+from scipy.spatial import distance_matrix
+
+
+def compute_clusters(labels):
+    """
+    Get the dict of clusters and dict of cluster size
+    """
+    dict_clusters = {}
+    for idx, label in enumerate(labels):
+        if label in dict_clusters:
+            dict_clusters[label].append(idx)
+        else:
+            dict_clusters[label] = [idx]
+    dict_cluster_sizes = {}
+    for label, group in dict_clusters.items():
+        dict_cluster_sizes[label] = len(group)
+    return dict_clusters, dict_cluster_sizes
+
+
+def compute_barycenters(X, labels):
+    """
+    Get the barycenter for each cluster and barycenter for all observations
+
+    Args:
+        X (np.ndarray): The features of datasets
+        labels (np.ndarray): The predicted labels
+
+    Returns:
+        barycenters (np.ndarray): The barycenter for each clusters in form of matrix
+        overall_barycenter (np.ndarray): the barycenter for all observations
+    """
+    n_samples, n_features = X.shape
+    list_clusters = np.unique(labels)
+    ## Mask mapping each class to its members.
+    centroids = np.empty((len(list_clusters), n_features), dtype=np.float64)
+    for idx, k in enumerate(list_clusters):
+        centroid_mask = labels == k
+        centroids[idx] = X[centroid_mask].mean(axis=0)
+    return centroids, np.mean(X, axis=0)
+
+
+def compute_WG(X):
+    # Compute the scatter matrix WG using Eq.11
+    # Centering the column vectors
+    means = np.mean(X, axis=0)
+    centered_X = X - means
+    # Computing the scatter matrix
+    scatter_matrix = np.dot(centered_X.T, centered_X)
+    return scatter_matrix
+
+
+def compute_TSS(X):
+    # The total scattering TSS (total sum of squares)
+    # Computing the scatter matrix
+    scatter_matrix = compute_WG(X)
+    # Computing the total sum of squares (TSS)
+    TSS = np.trace(scatter_matrix)
+    return TSS
+
+
+def compute_WGSS(X, labels):
+    """
+    Calculate the pooled within-cluster sum of squares WGSS
+    """
+    clusters_dict, cluster_sizes_dict = compute_clusters(labels)
+    wg = []
+    for label, indices in clusters_dict.items():
+        scatter_mat = compute_WG(X[indices])
+        wg.append(np.trace(scatter_mat))
+    return np.sum(wg)
+
+
+def compute_BGSS(X, labels):
+    """
+    The between-group dispersion BGSS
+    """
+    barycenters, overall_barycenter = compute_barycenters(X, labels)
+    clusters, cluster_sizes = compute_clusters(labels)
+    dispersion = 0
+    for label, indices in clusters.items():
+        diff = barycenters[label] - overall_barycenter
+        dispersion += cluster_sizes[label] * np.sum(diff**2)
+    return dispersion
 
 
 def get_min_dist(X, centers):
@@ -43,29 +126,6 @@ def get_centroids(X, labels):
         nk[k] = np.sum(centroid_mask)
         centroids[k] = X[centroid_mask].mean(axis=0)
     return centroids
-
-
-def general_sums_of_squares(X, labels):
-    """
-    Sum of Squares calculations: Calculates a variety of sums of squares for a given index.
-
-    Args:
-        X (pd.DataFrame, np.ndarray): The original data that was clustered
-        labels (np.array): The predicted cluster assignment values
-
-    Returns:
-        dict: The within/between group sums of squares and centroids
-    """
-    labels = np.array(labels)
-    n_classes = len(np.unique(labels))
-    BGSS, WGSS = 0.0, 0.0
-    mean = np.mean(X, axis=0)
-    for k in range(n_classes):
-        cluster_k = X[labels == k]
-        mean_k = np.mean(cluster_k, axis=0)
-        BGSS += len(cluster_k) * np.sum((mean_k - mean) ** 2)
-        WGSS += np.sum((cluster_k - mean_k) ** 2)
-    return {"BGSS": BGSS, "WGSS": WGSS}
 
 
 def pmatch(input: list, lst: list):
