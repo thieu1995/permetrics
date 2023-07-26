@@ -481,22 +481,58 @@ class ClusteringMetric(Evaluator):
             result (float): The mutual information score.
         """
         y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        n_samples = y_true.shape[0]
         contingency_matrix = cu.compute_contingency_matrix(y_true, y_pred)
         # Convert contingency matrix to probability matrix
-        contingency_matrix = contingency_matrix / n_samples
+        contingency_matrix = contingency_matrix / y_true.shape[0]
         # Calculate marginal probabilities
         cluster_probs_true = np.sum(contingency_matrix, axis=1)
         cluster_probs_pred = np.sum(contingency_matrix, axis=0)
         # Calculate mutual information
         n_clusters_true = len(np.unique(y_true))
         n_clusters_pred = len(np.unique(y_pred))
+        if n_clusters_true == 1 or n_clusters_pred == 1:
+            # If either of the clusterings has only one cluster, MI is not defined
+            return 0.0
         mi = 0.0
         for idx in range(n_clusters_true):
             for jdx in range(n_clusters_pred):
                 if contingency_matrix[idx, jdx] > 0.0:
                     mi += contingency_matrix[idx, jdx] * np.log(contingency_matrix[idx, jdx] / (cluster_probs_true[idx] * cluster_probs_pred[jdx]))
         return np.round(mi, decimal)
+
+    def normalized_mutual_info_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+        """
+        Computes the normalized mutual information between two clusterings.
+        It is a variation of the mutual information score that normalizes the result to take values between 0 and 1.
+        It is defined as the mutual information divided by the average entropy of the true and predicted clusterings.
+
+        Args:
+            y_true (array-like): The true labels for each sample.
+            y_pred (array-like): The predicted cluster labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            result (float): The mutual information score.
+        """
+        mi = self.mutual_info_score(y_true, y_pred, decimal, **kwargs)
+        if mi == 0.:
+            return 0
+        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
+        n_samples = y_true.shape[0]
+        n_clusters_true = len(np.unique(y_true))
+        n_clusters_pred = len(np.unique(y_pred))
+        if n_clusters_true == 1 or n_clusters_pred == 1:
+            # If either of the clusterings has only one cluster, MI is not defined
+            return 0.0
+        # Calculate entropy of true and predicted clusterings
+        entropy_true = -np.sum((np.bincount(y_true) / n_samples) * np.log(np.bincount(y_true) / n_samples))
+        entropy_pred = -np.sum((np.bincount(y_pred) / n_samples) * np.log(np.bincount(y_pred) / n_samples))
+        # Calculate normalized mutual information
+        denominator = (entropy_true + entropy_pred) / 2.0
+        if denominator == 0:
+            return 1.0  # Perfect agreement when both entropies are 0 (all samples in one cluster)
+        nmi = mi / denominator
+        return np.round(nmi, decimal)
 
 
     BHI = ball_hall_index
@@ -515,3 +551,4 @@ class ClusteringMetric(Evaluator):
     GPI = g_plus_index
 
     MIS = mutual_info_score
+    NMIS = normalized_mutual_info_score
