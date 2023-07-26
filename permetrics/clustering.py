@@ -887,6 +887,30 @@ class ClusteringMetric(Evaluator):
         denominator = (yy + yn) * (yy + ny) * (yn + nn) * (ny + nn)
         return np.round(numerator / denominator, decimal)
 
+    def rogers_tanimoto_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+        """
+        Computes the Rogers-Tanimoto score between two clusterings.
+
+        It measures the similarity between two partitions by computing the proportion of pairs of samples that are either
+        in the same cluster in both partitions or in different clusters in both partitions, with an adjustment for the
+        number of pairs of samples that are in different clusters in one partition but in the same cluster in the other
+        partition. The Rogers-Tanimoto index ranges from 0 to 1, where a value of 1 indicates perfect agreement
+        between the two partitions being compared. A value of 0 indicates complete disagreement between the two partitions.
+
+        Args:
+            y_true (array-like): The true labels for each sample.
+            y_pred (array-like): The predicted cluster labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            result (float): The Rogers-Tanimoto score
+        """
+        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
+        cm = cu.compute_confusion_matrix(y_true, y_pred)
+        yy, yn, ny, nn = cm
+        cc = (yy + nn) / (yy + nn + 2 * (yn + ny))
+        return np.round(cc, decimal)
+
 
     BHI = ball_hall_index
     CHI = calinski_harabasz_index
@@ -919,3 +943,4 @@ class ClusteringMetric(Evaluator):
     KS = kulczynski_score
     MNS = mc_nemar_score
     PhS = phi_score
+    RTS = rogers_tanimoto_score
