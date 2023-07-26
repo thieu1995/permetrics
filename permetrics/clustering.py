@@ -7,17 +7,9 @@
 #       Github: https://github.com/thieu1995        %
 # --------------------------------------------------%
 
-import functools
-from collections import Counter
-from itertools import chain
-import numpy as np
 from permetrics.evaluator import Evaluator
 from permetrics.utils.data_util import *
 from permetrics.utils import cluster_util as cu
-# from permetrics.utils.cluster_util import (get_min_dist, get_centroids, general_sums_of_squares, pdist,
-#                                 cdist, squareform, get_labels,
-#                                 average_scattering, cluster_sep, density_between, density_clusters, pmatch)
-from permetrics.utils.encoder import LabelEncoder
 
 
 class ClusteringMetric(Evaluator):
