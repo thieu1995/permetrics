@@ -629,6 +629,29 @@ class ClusteringMetric(Evaluator):
         fm = TP / np.sqrt((TP + FP) * (TP + FN))
         return np.round(fm, decimal)
 
+    def homogeneity_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+        """
+        Computes the Homogeneity Score between two clusterings.
+        It assesses the similarity between two clustering results by comparing them to a ground truth or reference clustering (if available).
+
+        Args:
+            y_true (array-like): The true labels for each sample.
+            y_pred (array-like): The predicted cluster labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            result (float): The Homogeneity Score
+        """
+        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
+
+        h_labels_true = cu.compute_entropy(y_true)
+        h_labels_true_given_pred = cu.compute_conditional_entropy(y_true, y_pred)
+        if h_labels_true == 0:
+            cc = 1.
+        else:
+            cc = 1 - h_labels_true_given_pred / h_labels_true
+        return np.round(cc, decimal)
+
     def completeness_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the completeness score between two clusterings.
@@ -670,4 +693,5 @@ class ClusteringMetric(Evaluator):
     NMIS = normalized_mutual_info_score
     RS = rand_score
     FMS = fowlkes_mallows_score
+    HS = homogeneity_score
     CS = completeness_score

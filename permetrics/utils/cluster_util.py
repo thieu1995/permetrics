@@ -138,6 +138,23 @@ def compute_contingency_matrix(y_true, y_pred):
     return contingency_matrix
 
 
+def compute_entropy(labels):
+    _, counts = np.unique(labels, return_counts=True)
+    probabilities = counts / len(labels)
+    return -np.sum(probabilities * np.log2(probabilities))
+
+
+def compute_conditional_entropy(labels_true, labels_pred):
+    unique_labels_pred = np.unique(labels_pred)
+    entropy_sum = 0
+    for label in unique_labels_pred:
+        mask = labels_pred == label
+        cluster_labels_true = labels_true[mask]
+        cluster_entropy = compute_entropy(cluster_labels_true)
+        entropy_sum += len(cluster_labels_true) / len(labels_true) * cluster_entropy
+    return entropy_sum
+
+
 def pmatch(input: list, lst: list):
     """
     A function that mimics R's pmatch function
