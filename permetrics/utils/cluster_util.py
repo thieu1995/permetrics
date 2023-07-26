@@ -163,7 +163,7 @@ def compute_homogeneity(y_true, y_pred):
         return 1 - h_labels_true_given_pred / h_labels_true
 
 
-def compute_confusion_matrix(y_true, y_pred):
+def compute_confusion_matrix(y_true, y_pred, normalize=False):
     """
     Computes the confusion matrix for a clustering problem given the true labels and the predicted labels.
     """
@@ -179,4 +179,7 @@ def compute_confusion_matrix(y_true, y_pred):
                 ny += 1
             else:
                 nn += 1
-    return np.array([yy, yn, ny, nn])
+    res = np.array([yy, yn, ny, nn])
+    if normalize:
+        return res/np.sum(res)
+    return res

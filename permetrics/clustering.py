@@ -759,7 +759,7 @@ class ClusteringMetric(Evaluator):
             result (float): The Hubert Gamma score
         """
         y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        cm = cu.compute_confusion_matrix(y_true, y_pred)
+        cm = cu.compute_confusion_matrix(y_true, y_pred, normalize=True)
         yy, yn, ny, nn = cm
         NT = np.sum(cm)
         cc = (NT*yy - (yy+yn)*(yy+ny)) / np.sqrt((yy+yn)*(yy+ny)*(nn+yn)*(nn+ny))
@@ -855,7 +855,7 @@ class ClusteringMetric(Evaluator):
             result (float): The Phi score
         """
         y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        cm = cu.compute_confusion_matrix(y_true, y_pred)
+        cm = cu.compute_confusion_matrix(y_true, y_pred, normalize=True)
         yy, yn, ny, nn = cm
         numerator = yy * nn - yn * ny
         denominator = (yy + yn) * (yy + ny) * (yn + nn) * (ny + nn)
