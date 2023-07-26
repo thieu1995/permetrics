@@ -863,6 +863,30 @@ class ClusteringMetric(Evaluator):
         yy, yn, ny, nn = cm
         return np.round((nn - ny) / np.sqrt(nn + ny), decimal)
 
+    def phi_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+        """
+        Computes the Phi score between two clusterings.
+
+        It is a classical measure of the correlation between two dichotomous variables, and it can be used to measure the
+        similarity between two partitions. The Phi index ranges from -1 to 1, where a value of 1 indicates perfect agreement
+        between the two partitions being compared, a value of 0 indicates no association between the partitions,
+        and a value of -1 indicates complete disagreement between the two partitions.
+
+        Args:
+            y_true (array-like): The true labels for each sample.
+            y_pred (array-like): The predicted cluster labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            result (float): The Phi score
+        """
+        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
+        cm = cu.compute_confusion_matrix(y_true, y_pred)
+        yy, yn, ny, nn = cm
+        numerator = yy * nn - yn * ny
+        denominator = (yy + yn) * (yy + ny) * (yn + nn) * (ny + nn)
+        return np.round(numerator / denominator, decimal)
+
 
     BHI = ball_hall_index
     CHI = calinski_harabasz_index
@@ -894,3 +918,4 @@ class ClusteringMetric(Evaluator):
     JS = jaccard_score
     KS = kulczynski_score
     MNS = mc_nemar_score
+    PhS = phi_score
