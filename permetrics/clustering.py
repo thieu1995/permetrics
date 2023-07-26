@@ -245,3 +245,29 @@ class ClusteringMetric(Evaluator):
                     list_dist.append(m)
             cc += np.max(list_dist)
         return np.round(cc/n_clusters, decimal)
+
+    def det_ratio_index(self, X=None, y_pred=None, **kwargs):
+        """
+        Computes the Det-Ratio index
+
+        Args:
+            X (array-like of shape (n_samples, n_features)):
+                A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
+            y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
+
+        Returns:
+            result (float): The Det-Ratio index
+        """
+        X = self.check_X(X)
+        y_pred, _, decimal = self.get_processed_internal_data(y_pred)
+        clusters_dict, cluster_sizes_dict = cu.compute_clusters(y_pred)
+        centers, _ = cu.compute_barycenters(X, y_pred)
+        T = cu.compute_WG(X)
+        scatter_matrices = np.zeros((X.shape[1], X.shape[1]))     # shape of (n_features, n_features)
+        for label, indices in clusters_dict.items():
+            # Retrieve data points for the current cluster
+            X_k = X[indices]
+            # Compute within-group scatter matrix for the current cluster
+            scatter_matrices += cu.compute_WG(X_k)
+        cc = np.linalg.det(T) / np.linalg.det(scatter_matrices)
+        return np.round(cc, decimal)
