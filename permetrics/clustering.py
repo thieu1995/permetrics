@@ -97,7 +97,7 @@ class ClusteringMetric(Evaluator):
                 return self.X
         return X
 
-    def ball_hall_index(self, X=None, y_pred=None, **kwargs):
+    def ball_hall_index(self, X=None, y_pred=None, decimal=None, **kwargs):
         """
         The Ball-Hall Index (1995) is the mean of the mean dispersion across all clusters.
         The **largest difference** between successive clustering levels indicates the optimal number of clusters.
@@ -106,12 +106,13 @@ class ClusteringMetric(Evaluator):
             X (array-like of shape (n_samples, n_features)):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
 
         Returns:
             result (float): The Ball-Hall index
         """
         X = self.check_X(X)
-        y_pred, _, decimal = self.get_processed_internal_data(y_pred)
+        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
         n_clusters = len(np.unique(y_pred))
         wgss = 0
         ## For each cluster, find the centroid and then the within-group SSE
@@ -122,7 +123,7 @@ class ClusteringMetric(Evaluator):
             wgss += np.sum((cluster_k - centroid) ** 2)
         return np.round(wgss / n_clusters, decimal)
 
-    def calinski_harabasz_index(self, X=None, y_pred=None, **kwargs):
+    def calinski_harabasz_index(self, X=None, y_pred=None, decimal=None, **kwargs):
         """
         Compute the Calinski and Harabasz (1974) index. It is also known as the Variance Ratio Criterion.
         The score is defined as ratio between the within-cluster dispersion and the between-cluster dispersion.
@@ -136,6 +137,7 @@ class ClusteringMetric(Evaluator):
             X (array-like of shape (n_samples, n_features)):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
 
         Returns:
             result (float): The resulting Calinski-Harabasz index.
@@ -145,14 +147,14 @@ class ClusteringMetric(Evaluator):
             analysis". Communications in Statistics <https://www.tandfonline.com/doi/abs/10.1080/03610927408827101>`_
         """
         X = self.check_X(X)
-        y_pred, _, decimal = self.get_processed_internal_data(y_pred)
+        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
         n_samples, n_vars = X.shape
         n_clusters = len(np.unique(y_pred))
         numer = cu.compute_BGSS(X, y_pred) * (n_samples - n_clusters)
         denom = cu.compute_WGSS(X, y_pred) * (n_clusters - 1)
         return np.round(numer / denom, decimal)
 
-    def xie_beni_index(self, X=None, y_pred=None, **kwargs):
+    def xie_beni_index(self, X=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Xie-Beni index.
 
@@ -165,12 +167,13 @@ class ClusteringMetric(Evaluator):
             X (array-like of shape (n_samples, n_features)):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
 
         Returns:
             result (float): The Xie-Beni index
         """
         X = self.check_X(X)
-        y_pred, _, decimal = self.get_processed_internal_data(y_pred)
+        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
         # Get the centroids
         centroids = cu.get_centroids(X, y_pred)
         euc_distance_to_centroids = cu.get_min_dist(X, centroids)
@@ -181,7 +184,7 @@ class ClusteringMetric(Evaluator):
         xb = (1 / X.shape[0]) * (WGSS / MinSqDist)
         return xb
 
-    def banfeld_raftery_index(self, X=None, y_pred=None, **kwargs):
+    def banfeld_raftery_index(self, X=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Banfeld-Raftery Index.
         This index is the weighted sum of the logarithms of the traces of the variancecovariance matrix of each cluster
@@ -190,12 +193,13 @@ class ClusteringMetric(Evaluator):
             X (array-like of shape (n_samples, n_features)):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
 
         Returns:
             result (float): The Banfeld-Raftery Index
         """
         X = self.check_X(X)
-        y_pred, _, decimal = self.get_processed_internal_data(y_pred)
+        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
         clusters_dict, cluster_sizes_dict = cu.compute_clusters(y_pred)
         cc = 0.0
         for k in clusters_dict.keys():
@@ -205,7 +209,7 @@ class ClusteringMetric(Evaluator):
                 cc += cluster_sizes_dict[k] * np.log(cluster_dispersion)
         return np.round(cc, decimal)
 
-    def davies_bouldin_index(self, X=None, y_pred=None, **kwargs):
+    def davies_bouldin_index(self, X=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Davies-Bouldin index
 
@@ -213,12 +217,13 @@ class ClusteringMetric(Evaluator):
             X (array-like of shape (n_samples, n_features)):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
 
         Returns:
             result (float): The Davies-Bouldin index
         """
         X = self.check_X(X)
-        y_pred, _, decimal = self.get_processed_internal_data(y_pred)
+        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
         clusters_dict, cluster_sizes_dict = cu.compute_clusters(y_pred)
         centers, _ = cu.compute_barycenters(X, y_pred)
         n_clusters = len(clusters_dict)
@@ -238,7 +243,7 @@ class ClusteringMetric(Evaluator):
             cc += np.max(list_dist)
         return np.round(cc/n_clusters, decimal)
 
-    def det_ratio_index(self, X=None, y_pred=None, **kwargs):
+    def det_ratio_index(self, X=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Det-Ratio index
 
@@ -246,12 +251,13 @@ class ClusteringMetric(Evaluator):
             X (array-like of shape (n_samples, n_features)):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
 
         Returns:
             result (float): The Det-Ratio index
         """
         X = self.check_X(X)
-        y_pred, _, decimal = self.get_processed_internal_data(y_pred)
+        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
         clusters_dict, cluster_sizes_dict = cu.compute_clusters(y_pred)
         centers, _ = cu.compute_barycenters(X, y_pred)
         T = cu.compute_WG(X)
@@ -264,7 +270,7 @@ class ClusteringMetric(Evaluator):
         cc = np.linalg.det(T) / np.linalg.det(scatter_matrices)
         return np.round(cc, decimal)
 
-    def dunn_index(self, X=None, y_pred=None, **kwargs):
+    def dunn_index(self, X=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Dunn Index
 
@@ -272,12 +278,13 @@ class ClusteringMetric(Evaluator):
             X (array-like of shape (n_samples, n_features)):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
 
         Returns:
             result (float): The Dunn Index
         """
         X = self.check_X(X)
-        y_pred, _, decimal = self.get_processed_internal_data(y_pred)
+        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
         clusters_dict, cluster_sizes_dict = cu.compute_clusters(y_pred)
         n_clusters = len(clusters_dict)
         # Calculate dmin
@@ -299,7 +306,7 @@ class ClusteringMetric(Evaluator):
             dmax = max(dmax, max_d_cluster)
         return np.round(dmin/dmax, decimal)
 
-    def ksq_detw_index(self, X=None, y_pred=None, **kwargs):
+    def ksq_detw_index(self, X=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Ksq-DetW Index
 
@@ -307,12 +314,13 @@ class ClusteringMetric(Evaluator):
             X (array-like of shape (n_samples, n_features)):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
 
         Returns:
             result (float): The Ksq-DetW Index
         """
         X = self.check_X(X)
-        y_pred, _, decimal = self.get_processed_internal_data(y_pred)
+        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
         clusters_dict, cluster_sizes_dict = cu.compute_clusters(y_pred)
         centers, _ = cu.compute_barycenters(X, y_pred)
         scatter_matrices = np.zeros((X.shape[1], X.shape[1]))     # shape of (n_features, n_features)
@@ -322,7 +330,7 @@ class ClusteringMetric(Evaluator):
         cc = len(clusters_dict)**2 * np.linalg.det(scatter_matrices)
         return np.round(cc, decimal)
 
-    def log_det_ratio_index(self, X=None, y_pred=None, **kwargs):
+    def log_det_ratio_index(self, X=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Log Det Ratio Index
 
@@ -330,12 +338,13 @@ class ClusteringMetric(Evaluator):
             X (array-like of shape (n_samples, n_features)):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
 
         Returns:
             result (float): The Log Det Ratio Index
         """
         X = self.check_X(X)
-        y_pred, _, decimal = self.get_processed_internal_data(y_pred)
+        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
         clusters_dict, cluster_sizes_dict = cu.compute_clusters(y_pred)
         centers, _ = cu.compute_barycenters(X, y_pred)
         T = cu.compute_WG(X)
@@ -346,7 +355,7 @@ class ClusteringMetric(Evaluator):
         cc = X.shape[0] * np.log(np.linalg.det(T) / np.linalg.det(WG))
         return np.round(cc, decimal)
 
-    def log_ss_ratio_index(self, X=None, y_pred=None, **kwargs):
+    def log_ss_ratio_index(self, X=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Log SS Ratio Index
 
@@ -354,18 +363,19 @@ class ClusteringMetric(Evaluator):
             X (array-like of shape (n_samples, n_features)):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
 
         Returns:
             result (float): The Log SS Ratio Index
         """
         X = self.check_X(X)
-        y_pred, _, decimal = self.get_processed_internal_data(y_pred)
+        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
         centers, _ = cu.compute_barycenters(X, y_pred)
         bgss = cu.compute_BGSS(X, y_pred)
         wgss = cu.compute_WGSS(X, y_pred)
         return np.round(np.log(bgss/wgss), decimal)
 
-    def silhouette_index(self, X=None, y_pred=None, **kwarg):
+    def silhouette_index(self, X=None, y_pred=None, decimal=None, **kwarg):
         """
         Computes the Silhouette Index
 
@@ -373,12 +383,13 @@ class ClusteringMetric(Evaluator):
             X (array-like of shape (n_samples, n_features)):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
 
         Returns:
             result (float): The Silhouette Index
         """
         X = self.check_X(X)
-        y_pred, _, decimal = self.get_processed_internal_data(y_pred)
+        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
         dm = cu.distance_matrix(X, X)
         silhouette_scores = np.zeros(X.shape[0])
         for i in range(X.shape[0]):
@@ -388,7 +399,7 @@ class ClusteringMetric(Evaluator):
             silhouette_scores[i] = (b - a) / max(a, b)
         return np.mean(silhouette_scores)
 
-    def baker_hubert_gamma_index(self, X=None, y_pred=None, **kwargs):
+    def baker_hubert_gamma_index(self, X=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Baker-Hubert Gamma index
         TODO: Calculate based on O(N^2) of samples --> Very slow
@@ -397,12 +408,13 @@ class ClusteringMetric(Evaluator):
             X (array-like of shape (n_samples, n_features)):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
 
         Returns:
             result (float): The Baker-Hubert Gamma index
         """
         X = self.check_X(X)
-        y_pred, _, decimal = self.get_processed_internal_data(y_pred)
+        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
         num_samples, num_features = X.shape
         n_pairs = (num_samples * (num_samples - 1)) // 2
         distances = np.zeros(n_pairs)
@@ -426,7 +438,7 @@ class ClusteringMetric(Evaluator):
         gamma_index = (s_plus - s_minus) / denominator if denominator != 0 else 0.0
         return np.round(gamma_index, decimal)
 
-    def g_plus_index(self, X=None, y_pred=None, **kwargs):
+    def g_plus_index(self, X=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the G plus index
         TODO: Calculate based on O(N^2) of samples --> Very slow
@@ -435,12 +447,13 @@ class ClusteringMetric(Evaluator):
             X (array-like of shape (n_samples, n_features)):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
 
         Returns:
             result (float): The G plus index
         """
         X = self.check_X(X)
-        y_pred, _, decimal = self.get_processed_internal_data(y_pred)
+        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
         num_samples, num_features = X.shape
         n_pairs = (num_samples * (num_samples - 1)) // 2
         distances = np.zeros(n_pairs)
@@ -454,6 +467,36 @@ class ClusteringMetric(Evaluator):
         # Calculate the G plus index
         g_p = 2 * num_discordant_pairs / (n_pairs * (n_pairs - 1))
         return np.round(g_p, decimal)
+
+    def mutual_info_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+        """
+        Computes the mutual information between two clusterings.
+
+        Args:
+            y_true (array-like): The true labels for each sample.
+            y_pred (array-like): The predicted cluster labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            result (float): The mutual information score.
+        """
+        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
+        n_samples = y_true.shape[0]
+        contingency_matrix = cu.compute_contingency_matrix(y_true, y_pred)
+        # Convert contingency matrix to probability matrix
+        contingency_matrix = contingency_matrix / n_samples
+        # Calculate marginal probabilities
+        cluster_probs_true = np.sum(contingency_matrix, axis=1)
+        cluster_probs_pred = np.sum(contingency_matrix, axis=0)
+        # Calculate mutual information
+        n_clusters_true = len(np.unique(y_true))
+        n_clusters_pred = len(np.unique(y_pred))
+        mi = 0.0
+        for idx in range(n_clusters_true):
+            for jdx in range(n_clusters_pred):
+                if contingency_matrix[idx, jdx] > 0.0:
+                    mi += contingency_matrix[idx, jdx] * np.log(contingency_matrix[idx, jdx] / (cluster_probs_true[idx] * cluster_probs_pred[jdx]))
+        return np.round(mi, decimal)
 
 
     BHI = ball_hall_index
@@ -470,3 +513,5 @@ class ClusteringMetric(Evaluator):
 
     BHGI = baker_hubert_gamma_index
     GPI = g_plus_index
+
+    MIS = mutual_info_score

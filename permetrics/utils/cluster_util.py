@@ -128,6 +128,16 @@ def get_centroids(X, labels):
     return centroids
 
 
+def compute_contingency_matrix(y_true, y_pred):
+    n_samples = y_true.shape[0]
+    n_clusters_true = len(np.unique(y_true))
+    n_clusters_pred = len(np.unique(y_pred))
+    contingency_matrix = np.zeros((n_clusters_true, n_clusters_pred), dtype=np.int64)
+    for i in range(n_samples):
+        contingency_matrix[y_true[i], y_pred[i]] += 1
+    return contingency_matrix
+
+
 def pmatch(input: list, lst: list):
     """
     A function that mimics R's pmatch function
