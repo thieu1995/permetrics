@@ -1,33 +1,41 @@
-permetrics
-==========
+PERMETRICS Library
+==================
+
+permetrics.utils package
+------------------------
+
+.. toctree::
+   :maxdepth: 4
+
+   permetrics.utils
 
 
-permetrics.classification
--------------------------
-
-.. automodule:: permetrics.classification
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-permetrics.evaluator
---------------------
+permetrics.evaluator module
+---------------------------
 
 .. automodule:: permetrics.evaluator
    :members:
    :undoc-members:
    :show-inheritance:
 
-permetrics.regression
----------------------
+permetrics.regression module
+----------------------------
 
 .. automodule:: permetrics.regression
    :members:
    :undoc-members:
    :show-inheritance:
 
-permetrics.clustering
----------------------
+permetrics.classification module
+--------------------------------
+
+.. automodule:: permetrics.classification
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+permetrics.clustering module
+----------------------------
 
 .. automodule:: permetrics.clustering
    :members:
