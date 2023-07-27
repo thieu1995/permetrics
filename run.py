@@ -5,7 +5,8 @@
 # --------------------------------------------------%
 
 import numpy as np
-from permetrics.classification import ClassificationMetric
+from permetrics import ClassificationMetric, RegressionMetric, ClusteringMetric
+
 
 ## For integer labels or categorical labels
 y_true = [0, 1, 0, 0, 1, 0, 0, 0, 1, 2, 2, 2, 0]
@@ -57,9 +58,20 @@ y_pred = [0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1]
 # cm = ClassificationMetric(y_true, y_pred, decimal=5)
 # print(cm.roc_auc_score(y_true, y_score, average="weighted"))
 
-
 cm = ClassificationMetric(y_true, y_pred, decimal=5)
 print(cm.gini_index(average=None))
 print(cm.GINI(average="macro"))
 print(cm.gini(average="weighted"))
 
+
+# generate sample data
+X = np.random.uniform(-1, 10, size=(300, 6))
+y_true = np.random.randint(0, 3, size=300)
+y_pred = np.random.randint(0, 3, size=300)
+
+external = ClusteringMetric(y_true=y_true, y_pred=y_pred, decimal=5)
+print(external.get_metrics_by_list_names(["MIS", "NMIS", "RaS", "FMS", "HS", "CS", "VMS", "PrS", "ReS", "FmS",
+                                           "CDS", "HGS", "JS", "KS", "MNS", "PhS", "RTS", "RRS", "SS1S", "SS2S"]))
+
+internal = ClusteringMetric(y_pred=y_pred, X=X, decimal=4)
+print(internal.get_metrics_by_list_names(["BHI", "CHI", "XBI", "BRI", "DBI", "DRI", "DI", "KDI", "LDRI", "LSRI", "SI"]))

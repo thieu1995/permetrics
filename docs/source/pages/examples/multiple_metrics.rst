@@ -21,7 +21,7 @@ Multiple Metrics
 	:emphasize-lines: 15,20,31
 
 	import numpy as np
-	from permetrics.regression import RegressionMetric
+	from permetrics import RegressionMetric
 
 	y_true = np.array([3, -0.5, 2, 7, 5, 6])
 	y_pred = np.array([2.5, 0.0, 2, 8, 5, 6])
@@ -58,7 +58,7 @@ Multiple Metrics
 	:emphasize-lines: 2,7,10,13,17,21-27
 
 	import numpy as np
-	from permetrics.classification import ClassificationMetric
+	from permetrics import ClassificationMetric
 
 	y_true = [0, 1, 0, 0, 1, 0]
 	y_pred = [0, 1, 0, 0, 0, 1]

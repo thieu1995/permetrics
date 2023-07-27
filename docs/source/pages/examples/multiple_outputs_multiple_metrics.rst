@@ -20,7 +20,7 @@ Multiple Outputs Multiple Metrics
 .. code-block:: python
 
 	import numpy as np
-	from permetrics.regression import RegressionMetric
+	from permetrics import RegressionMetric
 
 	## This y_true and y_pred have 4 columns, 4 outputs
 	y_true = np.array([ [3, -0.5, 2, 7],

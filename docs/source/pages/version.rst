@@ -1,6 +1,10 @@
 Version
 =======
 
++ Permetrics version >= 1.2.0::
+
+	from permetrics import RegressionMetric, ClassificationMetric, ClusteringMetric
+
 
 + Permetrics version >= 1.2.0::
 

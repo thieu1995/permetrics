@@ -26,7 +26,7 @@ OOP Style
 	## 3. From object call function and use
 
 	import numpy as np
-	from permetrics.regression import RegressionMetric
+	from permetrics import RegressionMetric
 
 	y_true = np.array([3, -0.5, 2, 7, 5, 6])
 	y_pred = np.array([2.5, 0.0, 2, 8, 5, 6])
@@ -45,7 +45,7 @@ OOP Style
 	:emphasize-lines: 2,7,11-13
 
 	import numpy as np
-	from permetrics.classification import ClassificationMetric
+	from permetrics import ClassificationMetric
 
 	y_true = [0, 1, 0, 0, 1, 0]
 	y_pred = [0, 1, 0, 0, 0, 1]
@@ -59,3 +59,21 @@ OOP Style
 	specificity = evaluator.specificity_score()
 	print(f"HL: {hamming_loss}, MCC: {mcc}, specificity: {specificity}")
 
+
+.. code-block:: python
+	:emphasize-lines: 2,7,11-13
+
+	import numpy as np
+	from permetrics import ClusteringMetric
+
+	y_true = [0, 1, 0, 0, 1, 0]
+	y_pred = [0, 1, 0, 0, 0, 1]
+
+	evaluator = ClusteringMetric(y_true, y_pred, decimal=5)
+
+	## Get the result of any function you want to
+
+	x1 = evaluator.kulczynski_score()
+	x2 = evaluator.mc_nemar_score()
+	x3 = evaluator.rogers_tanimoto_score()
+	print(f"Kulczynski: {x1}, Mc Nemar: {x2}, Rogers Tanimoto: {x3}")

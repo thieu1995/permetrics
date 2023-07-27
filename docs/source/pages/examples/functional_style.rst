@@ -26,7 +26,7 @@ Functional Style
 	## 3. From object call function and use
 
 	import numpy as np
-	from permetrics.regression import RegressionMetric
+	from permetrics import RegressionMetric
 
 	y_true = np.array([3, -0.5, 2, 7, 5, 6])
 	y_pred = np.array([2.5, 0.0, 2, 8, 5, 6])
@@ -49,7 +49,7 @@ Functional Style
 	:emphasize-lines: 2,7,9-11,14-15
 
 	import numpy as np
-	from permetrics.classification import ClassificationMetric
+	from permetrics import ClassificationMetric
 
 	y_true = [0, 1, 0, 0, 1, 0]
 	y_pred = [0, 1, 0, 0, 0, 1]
@@ -65,3 +65,22 @@ Functional Style
 	accuracy = evaluator.accuracy_score(y_true, y_pred)
 	print(f"recall: {recall}, accuracy: {accuracy}")
 
+
+.. code-block:: python
+	:emphasize-lines: 2,7,9-11,14-15
+
+	import numpy as np
+	from permetrics import ClusteringMetric
+
+	y_true = [0, 1, 0, 0, 1, 0]
+	y_pred = [0, 1, 0, 0, 0, 1]
+
+	evaluator = ClusteringMetric()
+
+	ps1 = evaluator.mutual_info_score(y_true, y_pred, decimal=5)
+	ps2 = evaluator.MIS(y_true, y_pred, decimal=3)
+	print(f"Mutual Information score: {ps1}, {ps2}")
+
+	homogeneity = evaluator.homogeneity_score(y_true, y_pred)
+	completeness  = evaluator.CS(y_true, y_pred)
+	print(f"Homogeneity: {homogeneity}, Completeness : {completeness}")
