@@ -1,5 +1,5 @@
 
-<p align="center"><img src=".github/img/logo2.png" alt="PERMETRICS" title="PERMETRICS"/></p>
+<p align="center"><img src=".github/assets/logo2.png" alt="PERMETRICS" title="PERMETRICS"/></p>
 
 
 ---
@@ -37,7 +37,7 @@ field access metrics as fast as possible
 * **Currently, there is a huge misunderstanding among frameworks around the world about the notation of R, R2, and R^2.** 
 * Please read the file [R-R2-Rsquared.docx](https://github.com/thieu1995/permetrics/blob/master/R-R2-Rsquared.docx) to understand the differences between them and why there is such confusion.
 
-<p align="center"><img src=".github/img/rr2.png" alt="R" title="R"/></p>
+<p align="center"><img src=".github/assets/rr2.png" alt="R" title="R"/></p>
 
 * **My recommendation is to denote the Coefficient of Determination as COD or R2, while the squared Pearson's 
   Correlation Coefficient should be denoted as R^2 or RSQ (as in Excel software).**
@@ -150,73 +150,688 @@ print(evaluator.BHI())
 
 ### Metrics
 
+<table>
+    <tr>
+        <td>**Problem**</td>
+        <td>**STT**</td>
+        <td>**Metric**</td>
+        <td>**Metric Fullname**</td>
+        <td>**Characteristics**</td>
+    </tr>
+    <tr>
+        <td>**Regression**</td>
+        <td>1</td>
+        <td>EVS</td>
+        <td>Explained Variance Score</td>
+        <td>Greater is better (Best = 1), Range=(-inf, 1.0]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>2</td>
+        <td>ME</td>
+        <td>Max Error</td>
+        <td>Smaller is better (Best = 0), Range=[0, +inf)</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>3</td>
+        <td>MBE</td>
+        <td>Mean Bias Error</td>
+        <td>Best = 0, Range=(-inf, +inf)</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>4</td>
+        <td>MAE</td>
+        <td>Mean Absolute Error</td>
+        <td>Smaller is better (Best = 0), Range=[0, +inf)</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>5</td>
+        <td>MSE</td>
+        <td>Mean Squared Error</td>
+        <td>Smaller is better (Best = 0), Range=[0, +inf)</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>6</td>
+        <td>RMSE</td>
+        <td>Root Mean Squared Error</td>
+        <td>Smaller is better (Best = 0), Range=[0, +inf)</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>7</td>
+        <td>MSLE</td>
+        <td>Mean Squared Log Error</td>
+        <td>Smaller is better (Best = 0), Range=[0, +inf)</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>8</td>
+        <td>MedAE</td>
+        <td>Median Absolute Error</td>
+        <td>Smaller is better (Best = 0), Range=[0, +inf)</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>9</td>
+        <td>MRE / MRB</td>
+        <td>Mean Relative Error / Mean Relative Bias</td>
+        <td>Smaller is better (Best = 0), Range=[0, +inf)</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>10</td>
+        <td>MPE</td>
+        <td>Mean Percentage Error</td>
+        <td>Best = 0, Range=(-inf, +inf)</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>11</td>
+        <td>MAPE</td>
+        <td>Mean Absolute Percentage Error</td>
+        <td>Smaller is better (Best = 0), Range=[0, +inf)</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>12</td>
+        <td>SMAPE</td>
+        <td>Symmetric Mean Absolute Percentage Error</td>
+        <td>Smaller is better (Best = 0), Range=[0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>13</td>
+        <td>MAAPE</td>
+        <td>Mean Arctangent Absolute Percentage Error</td>
+        <td>Smaller is better (Best = 0), Range=[0, +inf)</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>14</td>
+        <td>MASE</td>
+        <td>Mean Absolute Scaled Error</td>
+        <td>Smaller is better (Best = 0), Range=[0, +inf)</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>15</td>
+        <td>NSE</td>
+        <td>Nash-Sutcliffe Efficiency Coefficient</td>
+        <td>Greater is better (Best = 1), Range=(-inf, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>16</td>
+        <td>NNSE</td>
+        <td>Normalized Nash-Sutcliffe Efficiency Coefficient</td>
+        <td>Greater is better (Best = 1), Range=[0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>17</td>
+        <td>WI</td>
+        <td>Willmott Index</td>
+        <td>Greater is better (Best = 1), Range=[0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>18</td>
+        <td>R / PCC</td>
+        <td>Pearson’s Correlation Coefficient</td>
+        <td>Greater is better (Best = 1), Range=[-1, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>19</td>
+        <td>AR / APCC</td>
+        <td>Absolute Pearson&#39;s Correlation Coefficient</td>
+        <td>Greater is better (Best = 1), Range=[-1, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>20</td>
+        <td>R2s</td>
+        <td>(Pearson’s Correlation Index) ^ 2</td>
+        <td>Greater is better (Best = 1), Range=[0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>21</td>
+        <td>R2 / COD</td>
+        <td>Coefficient of Determination</td>
+        <td>Greater is better (Best = 1), Range=(-inf, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>22</td>
+        <td>AR2 / ACOD</td>
+        <td>Adjusted Coefficient of Determination</td>
+        <td>Greater is better (Best = 1), Range=(-inf, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>23</td>
+        <td>CI</td>
+        <td>Confidence Index</td>
+        <td>Greater is better (Best = 1), Range=(-inf, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>24</td>
+        <td>DRV</td>
+        <td>Deviation of Runoff Volume</td>
+        <td>Smaller is better (Best = 1.0), Range=[1, +inf)</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>25</td>
+        <td>KGE</td>
+        <td>Kling-Gupta Efficiency</td>
+        <td>Greater is better (Best = 1), Range=(-inf, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>26</td>
+        <td>GINI</td>
+        <td>Gini Coefficient</td>
+        <td>Smaller is better (Best = 0), Range=[0, +inf)</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>27</td>
+        <td>GINI_WIKI</td>
+        <td>Gini Coefficient on Wikipage</td>
+        <td>Smaller is better (Best = 0), Range=[0, +inf)</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>28</td>
+        <td>PCD</td>
+        <td>Prediction of Change in Direction</td>
+        <td>Greater is better (Best = 1.0), Range=[0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>29</td>
+        <td>CE</td>
+        <td>Cross Entropy</td>
+        <td>Range(-inf, 0], Can&#39;t give comment about this</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>30</td>
+        <td>KLD</td>
+        <td>Kullback Leibler Divergence</td>
+        <td>Best = 0, Range=(-inf, +inf)</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>31</td>
+        <td>JSD</td>
+        <td>Jensen Shannon Divergence</td>
+        <td>Smaller is better (Best = 0), Range=[0, +inf)</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>32</td>
+        <td>VAF</td>
+        <td>Variance Accounted For</td>
+        <td>Greater is better (Best = 100%), Range=(-inf, 100%]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>33</td>
+        <td>RAE</td>
+        <td>Relative Absolute Error</td>
+        <td>Smaller is better (Best = 0), Range=[0, +inf)</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>34</td>
+        <td>A10</td>
+        <td>A10 Index</td>
+        <td>Greater is better (Best = 1), Range=[0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>35</td>
+        <td>A20</td>
+        <td>A20 Index</td>
+        <td>Greater is better (Best = 1), Range=[0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>36</td>
+        <td>A30</td>
+        <td>A30 Index</td>
+        <td>Greater is better (Best = 1), Range=[0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>37</td>
+        <td>NRMSE</td>
+        <td>Normalized Root Mean Square Error</td>
+        <td>Smaller is better (Best = 0), Range=[0, +inf)</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>38</td>
+        <td>RSE</td>
+        <td>Residual Standard Error</td>
+        <td>Smaller is better (Best = 0), Range=[0, +inf)</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>39</td>
+        <td>RE / RB</td>
+        <td>Relative Error / Relative Bias</td>
+        <td>Best = 0, Range=(-inf, +inf)</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>40</td>
+        <td>AE</td>
+        <td>Absolute Error</td>
+        <td>Best = 0, Range=(-inf, +inf)</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>41</td>
+        <td>SE</td>
+        <td>Squared Error</td>
+        <td>Smaller is better (Best = 0), Range=[0, +inf)</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>42</td>
+        <td>SLE</td>
+        <td>Squared Log Error</td>
+        <td>Smaller is better (Best = 0), Range=[0, +inf)</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>43</td>
+        <td>COV</td>
+        <td>Covariance</td>
+        <td>Greater is better (No best value), Range=(-inf, +inf)</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>44</td>
+        <td>COR</td>
+        <td>Correlation</td>
+        <td>Greater is better (Best = 1), Range=[-1, +1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>45</td>
+        <td>EC</td>
+        <td>Efficiency Coefficient</td>
+        <td>Greater is better (Best = 1), Range=(-inf, +1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>46</td>
+        <td>OI</td>
+        <td>Overall Index</td>
+        <td>Greater is better (Best = 1), Range=(-inf, +1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>47</td>
+        <td>CRM</td>
+        <td>Coefficient of Residual Mass</td>
+        <td>Smaller is better (Best = 0), Range=(-inf, +inf)</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>****</td>
+        <td>****</td>
+        <td>****</td>
+        <td>****</td>
+    </tr>
+    <tr>
+        <td>**Classification**</td>
+        <td>1</td>
+        <td>PS</td>
+        <td>Precision Score</td>
+        <td>Higher is better (Best = 1), Range = [0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>2</td>
+        <td>NPV</td>
+        <td>Negative Predictive Value</td>
+        <td>Higher is better (Best = 1), Range = [0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>3</td>
+        <td>RS</td>
+        <td>Recall Score</td>
+        <td>Higher is better (Best = 1), Range = [0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>4</td>
+        <td>AS</td>
+        <td>Accuracy Score</td>
+        <td>Higher is better (Best = 1), Range = [0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>5</td>
+        <td>F1S</td>
+        <td>F1 Score</td>
+        <td>Higher is better (Best = 1), Range = [0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>6</td>
+        <td>F2S</td>
+        <td>F2 Score</td>
+        <td>Higher is better (Best = 1), Range = [0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>7</td>
+        <td>FBS</td>
+        <td>F-Beta Score</td>
+        <td>Higher is better (Best = 1), Range = [0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>8</td>
+        <td>SS</td>
+        <td>Specificity Score</td>
+        <td>Higher is better (Best = 1), Range = [0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>9</td>
+        <td>MCC</td>
+        <td>Matthews Correlation Coefficient</td>
+        <td>Higher is better (Best = 1), Range = [-1, +1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>10</td>
+        <td>HL</td>
+        <td>Hamming Loss</td>
+        <td>Higher is better (Best = 1), Range = [0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>11</td>
+        <td>CKS</td>
+        <td>Cohen&#39;s kappa score</td>
+        <td>Higher is better (Best = +1), Range = [-1, +1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>12</td>
+        <td>JSI</td>
+        <td>Jaccard Similarity Coefficient</td>
+        <td>Higher is better (Best = +1), Range = [0, +1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>13</td>
+        <td>GMS</td>
+        <td>Geometric Mean Score</td>
+        <td>Higher is better (Best = +1), Range = [0, +1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>14</td>
+        <td>GINI</td>
+        <td>GINI Index</td>
+        <td>Higher is better (Best = +1), Range = [0, +1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>15</td>
+        <td>ROC-AUC</td>
+        <td>ROC-AUC</td>
+        <td>Higher is better (Best = +1), Range = [0, +1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>****</td>
+        <td>****</td>
+        <td>****</td>
+        <td>****</td>
+    </tr>
+    <tr>
+        <td>**Clustering**</td>
+        <td>1</td>
+        <td>BHI</td>
+        <td>Ball Hall Index</td>
+        <td>Smaller is better (Best = 0), Range=[0, +inf)</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>2</td>
+        <td>CHI</td>
+        <td>Calinski Harabasz Index</td>
+        <td>Greater is better (No best value), Range=[0, inf)</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>3</td>
+        <td>XBI</td>
+        <td>Xie Beni Index</td>
+        <td>Smaller is better (Best = 0), Range=[0, +inf)</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>4</td>
+        <td>BRI</td>
+        <td>Banfeld Raftery Index</td>
+        <td>Greater is better (No best value), Range=[0, inf)</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>5</td>
+        <td>DBI</td>
+        <td>Davies Bouldin Index</td>
+        <td>Smaller is better (Best = 0), Range=[0, +inf)</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>6</td>
+        <td>DRI</td>
+        <td>Det Ratio Index</td>
+        <td>Smaller is better (Best = 0), Range=[0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>7</td>
+        <td>DI</td>
+        <td>Dunn Index</td>
+        <td>Greater is better (No best value), Range=[0, inf)</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>8</td>
+        <td>KDI</td>
+        <td>Ksq Detw Index</td>
+        <td>Smaller is better (Best = 0), Range=[0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>9</td>
+        <td>LDRI</td>
+        <td>Log Det Ratio Index</td>
+        <td>Smaller is better (No best value), Range=(-inf, 0]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>10</td>
+        <td>LSRI</td>
+        <td>Log SS Ratio Index</td>
+        <td>Smaller is better (No best value), Range=(-inf, 0]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>11</td>
+        <td>SI</td>
+        <td>Silhouette Index</td>
+        <td>Higher is better (Best = 1), Range = [-1, +1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>12</td>
+        <td>MIS</td>
+        <td>Mutual Info Score</td>
+        <td>Higher is better (Best = 1), Range = [0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>13</td>
+        <td>NMIS</td>
+        <td>Normalized Mutual Info Score</td>
+        <td>Higher is better (Best = 1), Range = [0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>14</td>
+        <td>RaS</td>
+        <td>Rand Score</td>
+        <td>Higher is better (Best = 1), Range = [0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>15</td>
+        <td>FMS</td>
+        <td>Fowlkes Mallows Score</td>
+        <td>Higher is better (Best = 1), Range = [0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>16</td>
+        <td>HS</td>
+        <td>Homogeneity Score</td>
+        <td>Higher is better (Best = 1), Range = [0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>17</td>
+        <td>CS</td>
+        <td>Completeness Score</td>
+        <td>Higher is better (Best = 1), Range = [0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>18</td>
+        <td>VMS</td>
+        <td>V-Measure Score</td>
+        <td>Higher is better (Best = 1), Range = [0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>19</td>
+        <td>PrS</td>
+        <td>Precision Score</td>
+        <td>Higher is better (Best = 1), Range = [0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>20</td>
+        <td>ReS</td>
+        <td>Recall Score</td>
+        <td>Higher is better (Best = 1), Range = [0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>21</td>
+        <td>FmS</td>
+        <td>F-Measure Score</td>
+        <td>Higher is better (Best = 1), Range = [0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>22</td>
+        <td>CDS</td>
+        <td>Czekanowski Dice Score</td>
+        <td>Higher is better (Best = 1), Range = [0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>23</td>
+        <td>HGS</td>
+        <td>Hubert Gamma Score</td>
+        <td>Greater is better (Best = 1), Range=[-1, +1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>24</td>
+        <td>JS</td>
+        <td>Jaccard Score</td>
+        <td>Higher is better (Best = 1), Range = [0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>25</td>
+        <td>KS</td>
+        <td>Kulczynski Score</td>
+        <td>Higher is better (Best = 1), Range = [0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>26</td>
+        <td>MNS</td>
+        <td>Mc Nemar Score</td>
+        <td>Smaller is better (Best = 0), Range=[0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>27</td>
+        <td>PhS</td>
+        <td>Phi Score</td>
+        <td>Higher is better (Best = 1), Range = [-1, +1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>28</td>
+        <td>RTS</td>
+        <td>Rogers Tanimoto Score</td>
+        <td>Higher is better (Best = 1), Range = [0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>29</td>
+        <td>RRS</td>
+        <td>Russel Rao Score</td>
+        <td>Higher is better (Best = 1), Range = [0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>30</td>
+        <td>SS1S</td>
+        <td>Sokal Sneath1 Score</td>
+        <td>Higher is better (Best = 1), Range = [0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>31</td>
+        <td>SS2S</td>
+        <td>Sokal Sneath2 Score</td>
+        <td>Higher is better (Best = 1), Range = [0, 1]</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>****</td>
+        <td>****</td>
+        <td>****</td>
+        <td>****</td>
+    </tr>
+</table>
 
-| **Problem** | **STT** | **Metric** | **Metric Fullname** |                 **Characteristics**                 |
-|:---:|:--:|:----------:|:---:|:---------------------------------------------------:|
-| **Regression** | 1 |    EVS     | Explained Variance Score |   Greater is better (Best = 1), Range=(-inf, 1.0]   |
-| **** | 2 |     ME     | Max Error |    Smaller is better (Best = 0), Range=[0, +inf)    |
-| **** | 3 |    MBE     | Mean Bias Error |            Best = 0, Range=(-inf, +inf)             |
-| **** | 4 |    MAE     | Mean Absolute Error |    Smaller is better (Best = 0), Range=[0, +inf)    |
-| **** | 5 |    MSE     | Mean Squared Error |    Smaller is better (Best = 0), Range=[0, +inf)    |
-| **** | 6 |    RMSE    | Root Mean Squared Error |    Smaller is better (Best = 0), Range=[0, +inf)    |
-| **** | 7 |    MSLE    | Mean Squared Log Error |    Smaller is better (Best = 0), Range=[0, +inf)    |
-| **** | 8 |   MedAE    | Median Absolute Error |    Smaller is better (Best = 0), Range=[0, +inf)    |
-| **** | 9 | MRE / MRB  | Mean Relative Error / Mean Relative Bias |    Smaller is better (Best = 0), Range=[0, +inf)    |
-| **** | 10 |    MPE     | Mean Percentage Error |            Best = 0, Range=(-inf, +inf)             |
-| **** | 11 |    MAPE    | Mean Absolute Percentage Error |    Smaller is better (Best = 0), Range=[0, +inf)    |
-| **** | 12 |   SMAPE    | Symmetric Mean Absolute Percentage Error |     Smaller is better (Best = 0), Range=[0, 1]      |
-| **** | 13 |   MAAPE    | Mean Arctangent Absolute Percentage Error |    Smaller is better (Best = 0), Range=[0, +inf)    |
-| **** | 14 |    MASE    | Mean Absolute Scaled Error |    Smaller is better (Best = 0), Range=[0, +inf)    |
-| **** | 15 |    NSE     | Nash-Sutcliffe Efficiency Coefficient |    Greater is better (Best = 1), Range=(-inf, 1]    |
-| **** | 16 |    NNSE    | Normalized Nash-Sutcliffe Efficiency Coefficient |     Greater is better (Best = 1), Range=[0, 1]      |
-| **** | 17 |     WI     | Willmott Index |     Greater is better (Best = 1), Range=[0, 1]      |
-| **** | 18 |  R / PCC   | Pearson’s Correlation Coefficient |     Greater is better (Best = 1), Range=[-1, 1]     |
-| **** | 19 | AR / APCC  | Absolute Pearson's Correlation Coefficient |     Greater is better (Best = 1), Range=[-1, 1]     |
-| **** | 20 |    R2s     | (Pearson’s Correlation Index) ^ 2 |     Greater is better (Best = 1), Range=[0, 1]      |
-| **** | 21 |  R2 / COD  | Coefficient of Determination |    Greater is better (Best = 1), Range=(-inf, 1]    |
-| **** | 22 | AR2 / ACOD | Adjusted Coefficient of Determination |    Greater is better (Best = 1), Range=(-inf, 1]    |
-| **** | 23 |     CI     | Confidence Index |    Greater is better (Best = 1), Range=(-inf, 1]    |
-| **** | 24 |    DRV     |  Deviation of Runoff Volume |   Smaller is better (Best = 1.0), Range=[1, +inf)   |
-| **** | 25 |    KGE     | Kling-Gupta Efficiency |    Greater is better (Best = 1), Range=(-inf, 1]    |
-| **** | 26 |    GINI    | Gini Coefficient |    Smaller is better (Best = 0), Range=[0, +inf)    |
-| **** | 27 | GINI_WIKI  | Gini Coefficient on Wikipage |    Smaller is better (Best = 0), Range=[0, +inf)    |
-| **** | 28 |    PCD     | Prediction of Change in Direction |    Greater is better (Best = 1.0), Range=[0, 1]     |
-| **** | 29 |     CE     | Cross Entropy |    Range(-inf, 0], Can't give comment about this    |
-| **** | 30 |    KLD     | Kullback Leibler Divergence |            Best = 0, Range=(-inf, +inf)             |
-| **** | 31 |    JSD     | Jensen Shannon Divergence |    Smaller is better (Best = 0), Range=[0, +inf)    |
-| **** | 32 |    VAF     | Variance Accounted For | Greater is better (Best = 100%), Range=(-inf, 100%] |
-| **** | 33 |    RAE     | Relative Absolute Error |    Smaller is better (Best = 0), Range=[0, +inf)    |
-| **** | 34 |    A10     | A10 Index |     Greater is better (Best = 1), Range=[0, 1]      |
-| **** | 35 |    A20     | A20 Index |     Greater is better (Best = 1), Range=[0, 1]      |
-| **** | 36 |    A30     | A30 Index |     Greater is better (Best = 1), Range=[0, 1]      |
-| **** | 37 |   NRMSE    | Normalized Root Mean Square Error |    Smaller is better (Best = 0), Range=[0, +inf)    |
-| **** | 38 |    RSE     | Residual Standard Error |    Smaller is better (Best = 0), Range=[0, +inf)    |
-| **** | 39 |  RE / RB   | Relative Error / Relative Bias |            Best = 0, Range=(-inf, +inf)             |
-| **** | 40 |     AE     | Absolute Error |            Best = 0, Range=(-inf, +inf)             |
-| **** | 41 |     SE     |  Squared Error |    Smaller is better (Best = 0), Range=[0, +inf)    |
-| **** | 42 |    SLE     | Squared Log Error |    Smaller is better (Best = 0), Range=[0, +inf)    |
-| **** | 43 |    COV     | Covariance |    Greater is better (No best value), Range=(-inf, +inf)    |
-| **** | 44 |    COR     | Correlation |    Greater is better (Best = 1), Range=[-1, +1]     |
-| **** | 45 |    EC      | Efficiency Coefficient |  Greater is better (Best = 1), Range=(-inf, +1]    |
-| **** | 46 |    OI      | Overall Index  |    Greater is better (Best = 1), Range=(-inf, +1]    |
-| **** | 47 |  CRM       | Coefficient of Residual Mass |   Smaller is better (Best = 0), Range=(-inf, +inf)  |
-| **** | 48 |         |       |             |
-| **Classification** | 1 |     PS     | Precision Score |     Higher is better (Best = 1), Range = [0, 1]     |
-| **** | 2 |    NPV     | Negative Predictive Value |     Higher is better (Best = 1), Range = [0, 1]     |
-| **** | 3 |     RS     | Recall Score |     Higher is better (Best = 1), Range = [0, 1]     |
-| **** | 4 |     AS     | Accuracy Score |     Higher is better (Best = 1), Range = [0, 1]     |
-| **** | 5 |    F1S     | F1 Score |     Higher is better (Best = 1), Range = [0, 1]     |
-| **** | 6 |    F2S     | F2 Score |     Higher is better (Best = 1), Range = [0, 1]     |
-| **** | 7 |    FBS     | F-Beta Score |     Higher is better (Best = 1), Range = [0, 1]     |
-| **** | 8 |     SS     | Specificity Score |     Higher is better (Best = 1), Range = [0, 1]     |
-| **** | 9 |    MCC     | Matthews Correlation Coefficient |    Higher is better (Best = 1), Range = [-1, +1]    |
-| **** | 10 |     HL     | Hamming Loss |     Higher is better (Best = 1), Range = [0, 1]     |
-| **** | 11 |     CKS     | Cohen's kappa score |  Higher is better (Best = +1), Range = [-1, +1]  |
-| **** | 12 |     JSI     | Jaccard Similarity Coefficient |  Higher is better (Best = +1), Range = [0, +1]  |
-| **** | 13 | GMS | Geometric Mean Score | Higher is better (Best = +1), Range = [0, +1]  |
-| **** | 14 | GINI | GINI Index | Higher is better (Best = +1), Range = [0, +1]  |
-| **** | 15 | ROC-AUC | ROC-AUC | Higher is better (Best = +1), Range = [0, +1]  |
-| **** | 16 |     |       |             |
 
 
 # References

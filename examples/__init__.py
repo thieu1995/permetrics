@@ -3,6 +3,3 @@
 #       Email: nguyenthieu2102@gmail.com            %
 #       Github: https://github.com/thieu1995        %
 # --------------------------------------------------%
-from permetrics.classification import ClassificationMetric
-from permetrics.clustering import InternalMetric
-from permetrics.regression import RegressionMetric
