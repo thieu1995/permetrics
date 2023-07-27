@@ -3,7 +3,7 @@
 
 
 
-[![GitHub release](https://img.shields.io/badge/release-1.3.3-yellow.svg)](https://github.com/thieu1995/permetrics/releases)
+[![GitHub release](https://img.shields.io/badge/release-1.4.0-yellow.svg)](https://github.com/thieu1995/permetrics/releases)
 [![Wheel](https://img.shields.io/pypi/wheel/gensim.svg)](https://pypi.python.org/pypi/permetrics) 
 [![PyPI version](https://badge.fury.io/py/permetrics.svg)](https://badge.fury.io/py/permetrics)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/permetrics.svg)
@@ -20,7 +20,7 @@
 PerMetrics is a python library for performance metrics of machine learning models. We aim to implement all performance metrics for problems such as regression, classification, clustering, ... problems. Helping users in all field access metrics as fast as possible
 
 * **Free software:** Apache License, Version 2.0
-* **Total metrics**: 63 (47 regression metrics, 16 classification metrics)
+* **Total metrics**: 94 (47 regression metrics, 16 classification metrics, 31 clustering metrics)
 * **Documentation:** https://permetrics.readthedocs.io/en/latest/
 * **Python versions:** 3.6.x, 3.7.x, 3.8.x, 3.9.x, 3.10.x
 * **Dependencies:** numpy
@@ -42,7 +42,7 @@ PerMetrics is a python library for performance metrics of machine learning model
 ### Install with pip
 Install the [current PyPI release](https://pypi.python.org/pypi/permetrics):
 ```sh 
-$ pip install permetrics==1.3.3
+$ pip install permetrics==1.4.0
 ```
 
 Or install the development version from GitHub:
@@ -80,20 +80,20 @@ The [documentation](https://permetrics.readthedocs.io/) includes more detailed i
 
 
 ```python
-from numpy import array
-from permetrics.regression import RegressionMetric
+import numpy as np
+from permetrics import RegressionMetric
 
 ## For 1-D array
-y_true = array([3, -0.5, 2, 7])
-y_pred = array([2.5, 0.0, 2, 8])
+y_true = [3, -0.5, 2, 7]
+y_pred = [2.5, 0.0, 2, 8]
 
 evaluator = RegressionMetric(y_true, y_pred, decimal=5)
 print(evaluator.RMSE())
 print(evaluator.MSE())
 
 ## For > 1-D array
-y_true = array([[0.5, 1], [-1, 1], [7, -6]])
-y_pred = array([[0, 2], [-1, 2], [8, -5]])
+y_true = np.array([[0.5, 1], [-1, 1], [7, -6]])
+y_pred = np.array([[0, 2], [-1, 2], [8, -5]])
 
 evaluator = RegressionMetric(y_true, y_pred, decimal=5)
 print(evaluator.RMSE(multi_output="raw_values", decimal=5))
@@ -104,8 +104,7 @@ print(evaluator.MAE(multi_output="raw_values", decimal=5))
 ### Example with Classification metrics
 
 ```python
-from numpy import array
-from permetrics.classification import ClassificationMetric
+from permetrics import ClassificationMetric
 
 ## For integer labels or categorical labels
 y_true = [0, 1, 0, 0, 1, 0]
@@ -124,6 +123,29 @@ print(evaluator.f1s(average="macro"))
 print(evaluator.f1s(average="weighted"))
 
 ```
+
+### Example with Clustering metrics
+
+```python
+import numpy as np
+from permetrics import ClusteringMetric
+
+# generate sample data
+X = np.random.uniform(-1, 10, size=(500, 7))        # 500 examples, 7 features
+y_true = np.random.randint(0, 4, size=500)          # 4 clusters
+y_pred = np.random.randint(0, 4, size=500)
+
+evaluator = ClusteringMetric(y_true=y_true, y_pred=y_pred, X=X, decimal=5)
+
+## Call specific function inside object, each function has 2 names (fullname and short name)
+##    + Internal metrics: Need X and y_pred and has suffix as index
+##    + External metrics: Need y_true and y_pred and has suffix as score
+
+print(evaluator.ball_hall_index())
+print(evaluator.BHI())
+```
+
+
 
 ### Get helps (questions, problems)
 

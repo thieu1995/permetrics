@@ -26,6 +26,14 @@ permetrics.regression
    :undoc-members:
    :show-inheritance:
 
+permetrics.clustering
+---------------------
+
+.. automodule:: permetrics.clustering
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 .. toctree::
    :maxdepth: 3

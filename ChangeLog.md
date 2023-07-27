@@ -1,10 +1,41 @@
 # Version 1.4.0
 
-Add ClusteringMetric: 
-+ Add BHI = ball_hall_index
-+ CHS = calinski_harabasz_score
-+ XBI = xie_beni_index
-
++ Add ClusteringMetric:
+  + Add internal metrics (Need X features and y_pred)
+    + ball_hall_index (BHI)
+    + calinski_harabasz_index (CHI)
+    + xie_beni_index (XBI)
+    + banfeld_raftery_index (BRI)
+    + davies_bouldin_index (DBI)
+    + det_ratio_index (DRI)
+    + dunn_index (DI)
+    + ksq_detw_index (KDI)
+    + log_det_ratio_index (LDRI)
+    + log_ss_ratio_index (LSRI)
+    + silhouette_index (SI)
+  + Add external metrics (Need y_true and y_pred)
+    + mutual_info_score (MIS)
+    + normalized_mutual_info_score (NMIS)
+    + rand_score (RaS)
+    + fowlkes_mallows_score (FMS)
+    + homogeneity_score (HS)
+    + completeness_score (CS)
+    + v_measure_score (VMS)
+    + precision_score (PrS)
+    + recall_score (ReS)
+    + f_measure_score (FmS)
+    + czekanowski_dice_score (CDS)
+    + hubert_gamma_score (HGS)
+    + jaccard_score (JS)
+    + kulczynski_score (KS)
+    + mc_nemar_score (MNS)
+    + phi_score (PhS)
+    + rogers_tanimoto_score (RTS)
+    + russel_rao_score (RRS)
+    + sokal_sneath1_score (SS1S)
+    + sokal_sneath2_score (SS2S)
++ Add examples for ClusteringMetric
++ Add LabelEncoder class 
 
 ---------------------------------------------------------------------
 
