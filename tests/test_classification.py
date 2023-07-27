@@ -10,7 +10,7 @@ from permetrics import ClassificationMetric
 np.random.seed(42)
 
 
-def test_RegressionMetric_class():
+def test_ClassificationMetric_class():
     y_true = [0, 1, 0, 0, 1, 0]
     y_pred = [0, 1, 0, 0, 0, 1]
 
