@@ -2,6 +2,7 @@
 <p align="center"><img src=".github/img/logo2.png" alt="PERMETRICS" title="PERMETRICS"/></p>
 
 
+---
 
 [![GitHub release](https://img.shields.io/badge/release-1.4.0-yellow.svg)](https://github.com/thieu1995/permetrics/releases)
 [![Wheel](https://img.shields.io/pypi/wheel/gensim.svg)](https://pypi.python.org/pypi/permetrics) 
@@ -10,20 +11,25 @@
 ![PyPI - Status](https://img.shields.io/pypi/status/permetrics.svg)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/permetrics.svg)
 [![Downloads](https://pepy.tech/badge/permetrics)](https://pepy.tech/project/permetrics)
+[![Tests & Publishes to PyPI](https://github.com/thieu1995/permetrics/actions/workflows/publish-package.yaml/badge.svg)](https://github.com/thieu1995/permetrics/actions/workflows/publish-package.yaml)
 ![GitHub Release Date](https://img.shields.io/github/release-date/thieu1995/permetrics.svg)
 [![Documentation Status](https://readthedocs.org/projects/permetrics/badge/?version=latest)](https://permetrics.readthedocs.io/en/latest/?badge=latest)
-[![Percentage of issues still open](http://isitmaintained.com/badge/open/thieu1995/permetrics.svg)](http://isitmaintained.com/project/thieu1995/permetrics "Percentage of issues still open")
+[![Chat](https://img.shields.io/badge/Chat-on%20Telegram-blue)](https://t.me/+fRVCJGuGJg1mNDg1)
+![GitHub contributors](https://img.shields.io/github/contributors/thieu1995/permetrics.svg)
+[![GitTutorial](https://img.shields.io/badge/PR-Welcome-%23FF8300.svg?)](https://git-scm.com/book/en/v2/GitHub-Contributing-to-a-Project)
 [![DOI](https://zenodo.org/badge/280617738.svg)](https://zenodo.org/badge/latestdoi/280617738)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 
-PerMetrics is a python library for performance metrics of machine learning models. We aim to implement all performance metrics for problems such as regression, classification, clustering, ... problems. Helping users in all field access metrics as fast as possible
+PerMetrics is a python library for performance metrics of machine learning models. We aim to implement all 
+performance metrics for problems such as regression, classification, clustering, ... problems. Helping users in all 
+field access metrics as fast as possible
 
-* **Free software:** Apache License, Version 2.0
+* **Free software:** GNU General Public License (GPL) V3 license
 * **Total metrics**: 94 (47 regression metrics, 16 classification metrics, 31 clustering metrics)
 * **Documentation:** https://permetrics.readthedocs.io/en/latest/
-* **Python versions:** 3.6.x, 3.7.x, 3.8.x, 3.9.x, 3.10.x
-* **Dependencies:** numpy
+* **Python versions:** > 3.7.x
+* **Dependencies:** numpy, scipy
 
 
 # Notification
@@ -45,20 +51,17 @@ Install the [current PyPI release](https://pypi.python.org/pypi/permetrics):
 $ pip install permetrics==1.4.0
 ```
 
-Or install the development version from GitHub:
-
-```bash
-pip install git+https://github.com/thieu1995/permetrics
-```
-
-### Install from source
-In case you want to install directly from the source code, use:
+Or installing from the source code, use:
 ```sh 
 $ git clone https://github.com/thieu1995/permetrics.git
 $ cd permetrics
 $ python setup.py install
 ```
 
+Or install the development version from GitHub:
+```bash
+pip install git+https://github.com/thieu1995/permetrics
+```
 
 
 # Usage
@@ -145,41 +148,6 @@ print(evaluator.ball_hall_index())
 print(evaluator.BHI())
 ```
 
-
-
-### Get helps (questions, problems)
-
-* Official source code repo: https://github.com/thieu1995/permetrics
-* Official document: https://permetrics.readthedocs.io/
-* Download releases: https://pypi.org/project/permetrics/
-* Issue tracker: https://github.com/thieu1995/permetrics/issues
-* Notable changes log: https://github.com/thieu1995/permetrics/blob/master/ChangeLog.md
-
-* This project also related to our another projects which are "meta-heuristics" and "neural-network", check it here 
-    * https://github.com/thieu1995/mealpy
-    * https://github.com/thieu1995/opfunu
-    * https://github.com/thieu1995/metaheuristics
-    * https://github.com/aiir-team
-  
-**Want to have an instant assistant? Join our telegram community at [link](https://t.me/+fRVCJGuGJg1mNDg1)**
-We share lots of information, questions, and answers there. You will get more support and knowledge there.
-
-### Cite Us
-
-If you are using mealpy in your project, we would appreciate citations:
-
-```code 
-@software{thieu_nguyen_2020_3951205,
-  author       = {Nguyen Van Thieu},
-  title        = {Permetrics: A framework of performance metrics for artificial intelligence models},
-  month        = jul,
-  year         = 2020,
-  publisher    = {Zenodo},
-  doi          = {10.5281/zenodo.3951205},
-  url          = {https://doi.org/10.5281/zenodo.3951205}
-}
-```
-
 ### Metrics
 
 
@@ -251,26 +219,52 @@ If you are using mealpy in your project, we would appreciate citations:
 | **** | 16 |     |       |             |
 
 
-# Future works
+# References
 
-### Classification
+### Official channels (questions, problems)
 
-+ Calibration Error
-+ Cohen Kappa
-+ Coverage Error
-+ Dice Score
-+ Hinge Loss
-+ Jaccard Index
+* Official source code repo: https://github.com/thieu1995/permetrics
+* Official document: https://permetrics.readthedocs.io/
+* Download releases: https://pypi.org/project/permetrics/
+* Issue tracker: https://github.com/thieu1995/permetrics/issues
+* Notable changes log: https://github.com/thieu1995/permetrics/blob/master/ChangeLog.md
+* Official chat group: https://t.me/+fRVCJGuGJg1mNDg1
 
-
-### Clustering
-+ Adjusted Mutual Information
-+ Adjusted Rand Score
-+ Calinski And Harabasz Score
-+ Davies-bouldin Score
-+ Completeness Score
-+ Contingency Matrix
-+ Silhouette Coefficient
-+ V-measure Score
+* This project also related to our another projects which are "meta-heuristics", "neural-network", and "optimization" 
+  check it here
+    * https://github.com/thieu1995/mealpy
+    * https://github.com/thieu1995/metaheuristics
+    * https://github.com/thieu1995/opfunu
+    * https://github.com/thieu1995/enoppy
+    * https://github.com/thieu1995/mafese
+    * https://github.com/aiir-team
 
 
+### Citation
+
+If you are using permetrics in your project, we would appreciate a citations:
+
+```code 
+@software{thieu_nguyen_2020_3951205,
+  author       = {Nguyen Van Thieu},
+  title        = {Permetrics: A framework of performance metrics for artificial intelligence models},
+  month        = jul,
+  year         = 2020,
+  publisher    = {Zenodo},
+  doi          = {10.5281/zenodo.3951205},
+  url          = {https://doi.org/10.5281/zenodo.3951205}
+}
+```
+
+### Helpful links
+
+1) https://www.debadityachakravorty.com/ai-ml/cmatrix/
+2) https://neptune.ai/blog/evaluation-metrics-binary-classification
+3) https://danielyang1009.github.io/model-performance-measure/
+4) https://towardsdatascience.com/multi-class-metrics-made-simple-part-i-precision-and-recall-9250280bddc2
+5) http://cran.nexr.com/web/packages/clusterCrit/vignettes/clusterCrit.pdf
+6) https://torchmetrics.readthedocs.io/en/latest/
+7) http://rasbt.github.io/mlxtend/user_guide/evaluate/lift_score/
+8) https://www.baeldung.com/cs/multi-class-f1-score
+9) https://kavita-ganesan.com/how-to-compute-precision-and-recall-for-a-multi-class-classification-problem/#.YoXMSqhBy3A
+10) https://machinelearningmastery.com/precision-recall-and-f-measure-for-imbalanced-classification/
