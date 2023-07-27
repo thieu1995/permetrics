@@ -15,7 +15,7 @@ def readme():
 
 setup(
     name="permetrics",
-    version="1.4.0-alpha.1",
+    version="1.4.0",
     author="Nguyen Van Thieu",
     author_email="nguyenthieu2102@gmail.com",
     description="PerMetrics: A framework of PERformance METRICS for machine learning models",
