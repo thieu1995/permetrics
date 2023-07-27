@@ -76,6 +76,7 @@ field access metrics as fast as possible
 
    pages/regression.rst
    pages/classification.rst
+   pages/clustering.rst
 
 
 .. toctree::

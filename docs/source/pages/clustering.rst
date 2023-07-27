@@ -71,6 +71,19 @@ Clustering Metrics
 
 Most of the clustering metrics is implemented based on the paper `Cluster Indices <http://cran.nexr.com/web/packages/clusterCrit/vignettes/clusterCrit.pdf>`_
 
+There are several types of clustering metrics that are commonly used to evaluate the quality of clustering results.
+
++ Internal evaluation metrics: These are metrics that evaluate the clustering results based solely on the data and the clustering algorithm used, without any
+external information. Examples of internal evaluation metrics include Silhouette Coefficient, Calinski-Harabasz Index, and Davies-Bouldin Index.
+
++ External evaluation metrics: These are metrics that evaluate the clustering results by comparing them to some external reference, such as expert labels or a
+gold standard. Examples of external evaluation metrics include Adjusted Rand score, Normalized Mutual Information score, and Fowlkes-Mallows score.
+
+It's important to choose the appropriate clustering metrics based on the specific problem and data at hand.
+
+In this library, metrics that belong to the internal evaluation category will have a metric name suffix of "index"
+On the other hand, metrics that belong to the external evaluation category will have a metric name suffix of "score"
+
 
 .. toctree::
    :maxdepth: 3
