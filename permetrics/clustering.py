@@ -232,6 +232,8 @@ class ClusteringMetric(Evaluator):
         clusters_dict, cluster_sizes_dict = cu.compute_clusters(y_pred)
         centers, _ = cu.compute_barycenters(X, y_pred)
         n_clusters = len(clusters_dict)
+        if n_clusters == 1:
+            raise ValueError("The Davies-Bouldin index is undefined when y_pred has only 1 cluster.")
         # Calculate delta for each cluster
         delta = {}
         for k in range(n_clusters):
@@ -272,8 +274,10 @@ class ClusteringMetric(Evaluator):
             X_k = X[indices]
             # Compute within-group scatter matrix for the current cluster
             scatter_matrices += cu.compute_WG(X_k)
-        cc = np.linalg.det(T) / np.linalg.det(scatter_matrices)
-        return np.round(cc, decimal)
+        t1 = np.linalg.det(scatter_matrices)
+        if t1 == 0:
+            raise ValueError("The Det-Ratio index is undefined when determinant of matrix is 0.")
+        return np.round(np.linalg.det(T) / t1, decimal)
 
     def dunn_index(self, X=None, y_pred=None, decimal=None, **kwargs):
         """
