@@ -381,6 +381,9 @@ class ClusteringMetric(Evaluator):
         """
         X = self.check_X(X)
         y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
+        n_clusters = len(np.unique(y_pred))
+        if n_clusters == 1:
+            raise ValueError("The Log SS Ratio Index is undefined when y_pred has only 1 cluster.")
         centers, _ = cu.compute_barycenters(X, y_pred)
         bgss = cu.compute_BGSS(X, y_pred)
         wgss = cu.compute_WGSS(X, y_pred)
