@@ -178,6 +178,9 @@ class ClusteringMetric(Evaluator):
         """
         X = self.check_X(X)
         y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
+        n_clusters = len(np.unique(y_pred))
+        if n_clusters == 1:
+            raise ValueError("The Xie-Beni index is undefined when y_pred has only 1 cluster.")
         # Get the centroids
         centroids = cu.get_centroids(X, y_pred)
         euc_distance_to_centroids = cu.get_min_dist(X, centroids)
