@@ -296,6 +296,8 @@ class ClusteringMetric(Evaluator):
         y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
         clusters_dict, cluster_sizes_dict = cu.compute_clusters(y_pred)
         n_clusters = len(clusters_dict)
+        if n_clusters == 1:
+            raise ValueError("The Davies-Bouldin index is undefined when y_pred has only 1 cluster.")
         # Calculate dmin
         dmin = np.inf
         for kdx in range(n_clusters-1):
