@@ -195,6 +195,7 @@ def format_internal_clustering_data(labels: np.ndarray):
         labels = np.squeeze(np.asarray(labels))
         if labels.ndim == 1:
             if np.issubdtype(labels.dtype, np.number):
+                labels = np.round(labels).astype(int)
                 if is_consecutive_and_start_zero(labels):
                     return labels, None
             le = LabelEncoder()
