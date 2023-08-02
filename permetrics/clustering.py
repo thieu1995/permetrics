@@ -114,6 +114,8 @@ class ClusteringMetric(Evaluator):
         X = self.check_X(X)
         y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
         n_clusters = len(np.unique(y_pred))
+        if n_clusters == 1:
+            raise ValueError("The Ball-Hall index is undefined when y_pred has only 1 cluster.")
         wgss = 0
         ## For each cluster, find the centroid and then the within-group SSE
         for k in range(n_clusters):
