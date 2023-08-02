@@ -150,8 +150,10 @@ class ClusteringMetric(Evaluator):
         """
         X = self.check_X(X)
         y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        n_samples, n_vars = X.shape
+        n_samples, _ = X.shape
         n_clusters = len(np.unique(y_pred))
+        if n_clusters == 1:
+            raise ValueError("The Calinski-Harabasz index is undefined when y_pred has only 1 cluster.")
         numer = cu.compute_BGSS(X, y_pred) * (n_samples - n_clusters)
         denom = cu.compute_WGSS(X, y_pred) * (n_clusters - 1)
         return np.round(numer / denom, decimal)
