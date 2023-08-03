@@ -18,7 +18,7 @@ def test_ClassificationMetric_class():
 
     mcc1 = evaluator.matthews_correlation_coefficient()
     mcc2 = evaluator.MCC()
-    mcc3 = evaluator.mcc(y_true, y_pred)
+    mcc3 = evaluator.MCC(y_true, y_pred)
 
     assert mcc1 == mcc2
     assert mcc2 == mcc3

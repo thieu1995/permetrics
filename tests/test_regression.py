@@ -17,6 +17,4 @@ def test_RegressionMetric_class():
     evaluator = RegressionMetric(y_true, y_pred, decimal=5)
     rmse1 = evaluator.RMSE()
     rmse2 = evaluator.root_mean_squared_error()
-    rmse3 = evaluator.rmse()
     assert rmse1 == rmse2
-    assert rmse2 == rmse3
