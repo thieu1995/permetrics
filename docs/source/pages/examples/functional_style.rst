@@ -33,11 +33,10 @@ Functional Style
 
 	evaluator = RegressionMetric()
 
-	## 3.1 Call specific function inside object, each function has 3 names like below
+	## 3.1 Call specific function inside object, each function has 2 names like below
 	rmse_1 = evaluator.RMSE(y_true, y_pred)
-	rmse_2 = evaluator.rmse(y_true, y_pred)
-	rmse_3 = evaluator.root_mean_squared_error(y_true, y_pred)
-	print(f"RMSE: {rmse_1}, {rmse_2}, {rmse_3}")
+	rmse_2 = evaluator.root_mean_squared_error(y_true, y_pred)
+	print(f"RMSE: {rmse_1}, {rmse_2}")
 
 	mse = evaluator.MSE(y_true, y_pred)
 	mae = evaluator.MAE(y_true, y_pred, decimal=5)
@@ -57,7 +56,7 @@ Functional Style
 	evaluator = ClassificationMetric()
 
 	ps1 = evaluator.precision_score(y_true, y_pred, decimal=5)
-	ps2 = evaluator.ps(y_true, y_pred, decimal=3)
+	ps2 = evaluator.PS(y_true, y_pred, decimal=3)
 	ps3 = evaluator.PS(y_true, y_pred, decimal=4)
 	print(f"Precision: {ps1}, {ps2}, {ps3}")
 

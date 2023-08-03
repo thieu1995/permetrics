@@ -2,7 +2,7 @@
 Cite Us
 =======
 
-If you are using mafese in your project, we would appreciate citations::
+Please include these citations if you plan to use this library::
 
 	@software{thieu_nguyen_2020_3951205,
       author       = {Nguyen Van Thieu},
@@ -13,6 +13,15 @@ If you are using mafese in your project, we would appreciate citations::
       doi          = {10.5281/zenodo.3951205},
       url          = {https://doi.org/10.5281/zenodo.3951205}
     }
+
+    @article{van2023mealpy,
+	  title={MEALPY: An open-source library for latest meta-heuristic algorithms in Python},
+	  author={Van Thieu, Nguyen and Mirjalili, Seyedali},
+	  journal={Journal of Systems Architecture},
+	  year={2023},
+	  publisher={Elsevier},
+	  doi={10.1016/j.sysarc.2023.102871}
+	}
 
 
 If you have an open-ended or a research question, you can contact me via nguyenthieu2102@gmail.com
@@ -35,6 +44,8 @@ Important links
     * https://github.com/thieu1995/opfunu
     * https://github.com/thieu1995/enoppy
     * https://github.com/thieu1995/mafese
+    * https://github.com/thieu1995/MetaCluster
+    * https://github.com/thieu1995/pfevaluator
     * https://github.com/aiir-team
 
 
