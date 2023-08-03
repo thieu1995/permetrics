@@ -59,6 +59,7 @@ important is often untrue, such that macro-averaging will over-emphasize the typ
 
 .. toctree::
    :maxdepth: 3
+
    classification/AS.rst
    classification/CKS.rst
    classification/F1S.rst

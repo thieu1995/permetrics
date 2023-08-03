@@ -1,5 +1,5 @@
 Hamming Score (HS)
-=================
+==================
 
 .. toctree::
    :maxdepth: 3
