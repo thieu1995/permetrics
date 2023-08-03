@@ -57,7 +57,7 @@ performance metrics for problems such as regression, classification, clustering,
 field access metrics as fast as possible
 
 * **Free software:** GNU General Public License (GPL) V3 license
-* **Total metrics**: 94 (47 regression metrics, 16 classification metrics, 31 clustering metrics)
+* **Total metrics**: 103 (47 regression metrics, 16 classification metrics, 40 clustering metrics)
 * **Documentation:** https://permetrics.readthedocs.io/en/latest/
 * **Python versions:** > 3.7.x
 * **Dependencies:** numpy, scipy

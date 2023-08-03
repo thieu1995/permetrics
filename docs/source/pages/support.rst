@@ -1,6 +1,6 @@
-=======
-Cite Us
-=======
+================
+Citation Request
+================
 
 Please include these citations if you plan to use this library::
 
@@ -27,9 +27,9 @@ Please include these citations if you plan to use this library::
 If you have an open-ended or a research question, you can contact me via nguyenthieu2102@gmail.com
 
 
-===============
-Important links
-===============
+==============
+Official Links
+==============
 
 * Official source code repo: https://github.com/thieu1995/permetrics
 * Official document: https://permetrics.readthedocs.io/
@@ -38,16 +38,15 @@ Important links
 * Notable changes log: https://github.com/thieu1995/permetrics/blob/master/ChangeLog.md
 * Official chat group: https://t.me/+fRVCJGuGJg1mNDg1
 
-* This project also related to our another projects which are "meta-heuristics", "neural-network", and "optimization" check it here
+* This project also related to our another projects which are "optimization" and "machine learning", check it here:
     * https://github.com/thieu1995/mealpy
     * https://github.com/thieu1995/metaheuristics
     * https://github.com/thieu1995/opfunu
     * https://github.com/thieu1995/enoppy
-    * https://github.com/thieu1995/mafese
     * https://github.com/thieu1995/MetaCluster
     * https://github.com/thieu1995/pfevaluator
+    * https://github.com/thieu1995/mafese
     * https://github.com/aiir-team
-
 
 =======
 License

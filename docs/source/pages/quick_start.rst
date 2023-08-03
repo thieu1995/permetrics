@@ -5,7 +5,7 @@ Installation
 
 * Install the `current PyPI release <https://pypi.python.org/pypi/permetrics />`_::
 
-   $ pip install permetrics==1.4.0
+   $ pip install permetrics==1.4.1
 
 
 * Install directly from source code::
@@ -18,10 +18,6 @@ Installation
 
    $ pip install git+https://github.com/thieu1995/permetrics
 
-
-=====
-Usage
-=====
 
 After installation, you can import Permetrics as any other Python module::
 
