@@ -12,30 +12,31 @@ import numpy as np
 
 class RegressionMetric(Evaluator):
     """
-    This is class contains all regression metrics (for both regression and time-series problem)
+    Defines a RegressionMetric class that hold all regression metrics (for both regression and time-series problems)
 
-    Notes
-    ~~~~~
-    + An extension of scikit-learn metrics section, besides so many new metrics
+    + An extension of scikit-learn metrics section, with the addition of many more regression metrics.
+    + https://scikit-learn.org/stable/modules/model_evaluation.html#classification-metrics
     + Some methods in scikit-learn can't generate the multi-output metrics, we re-implement all of them and allow multi-output metrics
-    + Therefore, this class can calculate the multi-output metrics for all methods
-    + https://scikit-learn.org/stable/modules/model_evaluation.html#regression-metrics
-    """
+    + Therefore, we support calculate the multi-output metrics for all methods
 
+    Parameters
+    ----------
+    y_true: tuple, list, np.ndarray, default = None
+        The ground truth values.
+
+    y_pred: tuple, list, np.ndarray, default = None
+        The prediction values.
+
+    decimal: int, default = 5
+        The number of fractional parts after the decimal point
+    """
     def __init__(self, y_true=None, y_pred=None, decimal=5, **kwargs):
-        """
-        Args:
-            y_true (tuple, list, np.ndarray): The ground truth values
-            y_pred (tuple, list, np.ndarray): The prediction values
-            decimal (int): The number of fractional parts after the decimal point
-            **kwargs ():
-        """
         super().__init__(y_true, y_pred, decimal, **kwargs)
         if kwargs is None: kwargs = {}
         self.set_keyword_arguments(kwargs)
         self.one_dim = False
 
-    def get_processed_data(self, y_true=None, y_pred=None, decimal=None):
+    def get_processed_data(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
@@ -61,7 +62,7 @@ class RegressionMetric(Evaluator):
                 raise ValueError("y_true or y_pred is None. You need to pass y_true and y_pred to object creation or function called.")
         return y_true, y_pred, one_dim, decimal
 
-    def explained_variance_score(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def explained_variance_score(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
         """
         Explained Variance Score (EVS). Best possible score is 1.0, greater value is better. Range = (-inf, 1.0]
 
@@ -87,7 +88,7 @@ class RegressionMetric(Evaluator):
             result = 1 - np.var(y_true - y_pred, axis=0) / np.var(y_true, axis=0)
             return self.get_multi_output_result(result, multi_output, decimal)
 
-    def max_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def max_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
         """
         Max Error (ME): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
@@ -113,7 +114,7 @@ class RegressionMetric(Evaluator):
             result = np.max(np.abs(y_true - y_pred), axis=0)
             return self.get_multi_output_result(result, multi_output, decimal)
 
-    def mean_bias_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def mean_bias_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
         """
         Mean Bias Error (MBE): Best possible score is 0.0. Range = (-inf, +inf)
 
@@ -139,7 +140,7 @@ class RegressionMetric(Evaluator):
             result = np.mean(y_pred - y_true, axis=0)
             return self.get_multi_output_result(result, multi_output, decimal)
 
-    def mean_absolute_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def mean_absolute_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
         """
         Mean Absolute Error (MAE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
@@ -165,7 +166,7 @@ class RegressionMetric(Evaluator):
             result = np.sum(np.abs(y_pred - y_true), axis=0) / len(y_true)
             return self.get_multi_output_result(result, multi_output, decimal)
 
-    def mean_squared_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def mean_squared_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
         """
         Mean Squared Error (MSE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
@@ -188,7 +189,7 @@ class RegressionMetric(Evaluator):
         score = calculate_mse(y_true, y_pred, one_dim)
         return np.round(score, decimal) if one_dim else self.get_multi_output_result(score, multi_output, decimal)
 
-    def root_mean_squared_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def root_mean_squared_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
         """
         Root Mean Squared Error (RMSE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
@@ -211,7 +212,7 @@ class RegressionMetric(Evaluator):
         score = np.sqrt(calculate_mse(y_true, y_pred, one_dim))
         return np.round(score, decimal) if one_dim else self.get_multi_output_result(score, multi_output, decimal)
 
-    def mean_squared_log_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=True):
+    def mean_squared_log_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, **kwargs):
         """
         Mean Squared Log Error (MSLE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
         Link: https://peltarion.com/knowledge-center/documentation/modeling-view/build-an-ai-model/loss-functions/mean-squared-logarithmic-error-(msle)
@@ -237,7 +238,7 @@ class RegressionMetric(Evaluator):
             result = np.sum(np.log((y_true + 1) / (y_pred + 1)) ** 2, axis=0) / len(y_true)
             return self.get_multi_output_result(result, multi_output, decimal)
 
-    def median_absolute_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def median_absolute_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
         """
         Median Absolute Error (MedAE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
@@ -263,7 +264,7 @@ class RegressionMetric(Evaluator):
             result = np.median(np.abs(y_true - y_pred), axis=0)
             return self.get_multi_output_result(result, multi_output, decimal)
 
-    def mean_relative_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=False):
+    def mean_relative_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=False, **kwargs):
         """
         Mean Relative Error (MRE) - Mean Relative Bias (MRB): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
@@ -291,7 +292,7 @@ class RegressionMetric(Evaluator):
             result = np.mean(np.abs((y_pred - y_true) / y_true), axis=0)
             return self.get_multi_output_result(result, multi_output, decimal)
 
-    def mean_percentage_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=False):
+    def mean_percentage_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=False, **kwargs):
         """
         Mean Percentage Error (MPE): Best possible score is 0.0. Range = (-inf, +inf)
         Link: https://www.dataquest.io/blog/understanding-regression-error-metrics/
@@ -320,7 +321,7 @@ class RegressionMetric(Evaluator):
             result = np.mean((y_true - y_pred) / y_true, axis=0)
             return self.get_multi_output_result(result, multi_output, decimal)
 
-    def mean_absolute_percentage_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=False):
+    def mean_absolute_percentage_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=False, **kwargs):
         """
         Mean Absolute Percentage Error (MAPE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
@@ -348,7 +349,8 @@ class RegressionMetric(Evaluator):
             result = np.mean(np.abs(y_true - y_pred) / np.abs(y_true), axis=0)
             return self.get_multi_output_result(result, multi_output, decimal)
 
-    def symmetric_mean_absolute_percentage_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def symmetric_mean_absolute_percentage_error(self, y_true=None, y_pred=None, multi_output="raw_values",
+                                                 decimal=None, non_zero=False, positive=False, **kwargs):
         """
         Symmetric Mean Absolute Percentage Error (SMAPE): Best possible score is 0.0, smaller value is better. Range = [0, 1]
         If you want percentage then multiply with 100%
@@ -377,7 +379,8 @@ class RegressionMetric(Evaluator):
             result = np.mean(np.abs(y_pred - y_true) / (np.abs(y_true) + np.abs(y_pred)), axis=0)
             return self.get_multi_output_result(result, multi_output, decimal)
 
-    def mean_arctangent_absolute_percentage_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def mean_arctangent_absolute_percentage_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None,
+                                                  non_zero=False, positive=False, **kwargs):
         """
         Mean Arctangent Absolute Percentage Error (MAAPE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
@@ -405,7 +408,7 @@ class RegressionMetric(Evaluator):
             result = np.mean(np.arctan(np.abs((y_true - y_pred)/y_true)), axis=0)
             return self.get_multi_output_result(result, multi_output, decimal)
 
-    def mean_absolute_scaled_error(self, y_true=None, y_pred=None, m=1, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def mean_absolute_scaled_error(self, y_true=None, y_pred=None, m=1, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
         """
         Mean Absolute Scaled Error (MASE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
@@ -434,7 +437,7 @@ class RegressionMetric(Evaluator):
             result = np.mean(np.abs(y_true - y_pred), axis=0) / np.mean(np.abs(y_true[m:] - y_true[:-m]), axis=0)
             return self.get_multi_output_result(result, multi_output, decimal)
 
-    def nash_sutcliffe_efficiency(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def nash_sutcliffe_efficiency(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
         """
         Nash-Sutcliffe Efficiency (NSE): Best possible score is 1.0, bigger value is better. Range = (-inf, 1]
 
@@ -459,7 +462,8 @@ class RegressionMetric(Evaluator):
         nse = calculate_nse(y_true, y_pred, one_dim)
         return np.round(nse, decimal) if one_dim else self.get_multi_output_result(nse, multi_output, decimal)
 
-    def normalized_nash_sutcliffe_efficiency(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def normalized_nash_sutcliffe_efficiency(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None,
+                                             non_zero=False, positive=False, **kwargs):
         """
         Normalize Nash-Sutcliffe Efficiency (NNSE): Best possible score is 1.0, bigger value is better. Range = [0, 1]
 
@@ -485,7 +489,7 @@ class RegressionMetric(Evaluator):
         nnse = 1 / (2 - nse)
         return np.round(nnse, decimal) if one_dim else self.get_multi_output_result(nnse, multi_output, decimal)
 
-    def willmott_index(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def willmott_index(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
         """
         Willmott Index (WI): Best possible score is 1.0, bigger value is better. Range = [0, 1]
 
@@ -513,7 +517,7 @@ class RegressionMetric(Evaluator):
         wi = calculate_wi(y_true, y_pred, one_dim)
         return np.round(wi, decimal) if one_dim else self.get_multi_output_result(wi, multi_output, decimal)
 
-    def coefficient_of_determination(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def coefficient_of_determination(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
         """
         Coefficient of Determination (COD/R2): Best possible score is 1.0, bigger value is better. Range = (-inf, 1]
 
@@ -545,7 +549,8 @@ class RegressionMetric(Evaluator):
             result = 1 - np.sum((y_true - y_pred) ** 2, axis=0) / np.sum((y_true - np.mean(y_true, axis=0)) ** 2, axis=0)
             return self.get_multi_output_result(result, multi_output, decimal)
 
-    def adjusted_coefficient_of_determination(self, y_true=None, y_pred=None, X_shape=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def adjusted_coefficient_of_determination(self, y_true=None, y_pred=None, X_shape=None, multi_output="raw_values", decimal=None,
+                                              non_zero=False, positive=False, **kwargs):
         """
         Adjusted Coefficient of Determination (ACOD/AR2): Best possible score is 1.0, bigger value is better. Range = (-inf, 1]
 
@@ -585,7 +590,7 @@ class RegressionMetric(Evaluator):
             result = 1 - df_final * np.sum((y_true - y_pred) ** 2, axis=0) / np.sum((y_true - np.mean(y_true, axis=0)) ** 2, axis=0)
             return self.get_multi_output_result(result, multi_output, decimal)
 
-    def pearson_correlation_coefficient(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def pearson_correlation_coefficient(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
         """
         Pearson’s Correlation Coefficient (PCC or R): Best possible score is 1.0, bigger value is better. Range = [-1, 1]
         Notes
@@ -613,7 +618,8 @@ class RegressionMetric(Evaluator):
         pcc = calculate_pcc(y_true, y_pred, one_dim)
         return np.round(pcc, decimal) if one_dim else self.get_multi_output_result(pcc, multi_output, decimal)
 
-    def absolute_pearson_correlation_coefficient(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def absolute_pearson_correlation_coefficient(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None,
+                                                 non_zero=False, positive=False, **kwargs):
         """
         Absolute Pearson’s Correlation Coefficient (APCC or AR): Best possible score is 1.0, bigger value is better. Range = [0, 1]
 
@@ -636,7 +642,8 @@ class RegressionMetric(Evaluator):
         pcc = calculate_absolute_pcc(y_true, y_pred, one_dim)
         return np.round(pcc, decimal) if one_dim else self.get_multi_output_result(pcc, multi_output, decimal)
 
-    def pearson_correlation_coefficient_square(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def pearson_correlation_coefficient_square(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None,
+                                               non_zero=False, positive=False, **kwargs):
         """
         (Pearson’s Correlation Index)^2 = R^2 = R2s (R square): Best possible score is 1.0, bigger value is better. Range = [0, 1]
         Notes
@@ -666,7 +673,7 @@ class RegressionMetric(Evaluator):
         pcc = calculate_pcc(y_true, y_pred, one_dim)
         return np.round(pcc**2, decimal) if one_dim else self.get_multi_output_result(pcc**2, multi_output, decimal)
 
-    def confidence_index(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def confidence_index(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
         """
         Confidence Index (or Performance Index): CI (PI): Best possible score is 1.0, bigger value is better. Range = (-inf, 1]
 
@@ -679,7 +686,7 @@ class RegressionMetric(Evaluator):
         - 0.61-0.65,       Satisfactory
         - 0.51-0.60,       Poor
         - 0.41-0.50,       Bad
-        - ≤ 0.40,          Very bad
+        - < 0.40,          Very bad
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
@@ -701,7 +708,7 @@ class RegressionMetric(Evaluator):
         d = calculate_wi(y_true, y_pred, one_dim)
         return np.round(r*d, decimal) if one_dim else self.get_multi_output_result(r*d, multi_output, decimal)
 
-    def deviation_of_runoff_volume(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def deviation_of_runoff_volume(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
         """
         Deviation of Runoff Volume (DRV): Best possible score is 1.0, smaller value is better. Range = [1, +inf)
         Link: https://rstudio-pubs-static.s3.amazonaws.com/433152_56d00c1e29724829bad5fc4fd8c8ebff.html
@@ -728,7 +735,7 @@ class RegressionMetric(Evaluator):
             result = np.sum(y_pred, axis=0) / np.sum(y_true, axis=0)
             return self.get_multi_output_result(result, multi_output, decimal)
 
-    def kling_gupta_efficiency(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def kling_gupta_efficiency(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
         """
         Kling-Gupta Efficiency (KGE): Best possible score is 1, bigger value is better. Range = (-inf, 1]
         Link: https://rstudio-pubs-static.s3.amazonaws.com/433152_56d00c1e29724829bad5fc4fd8c8ebff.html
@@ -765,7 +772,7 @@ class RegressionMetric(Evaluator):
             result = 1 - np.sqrt((r - 1) ** 2 + (beta - 1) ** 2 + (gamma - 1) ** 2)
             return self.get_multi_output_result(result, multi_output, decimal)
 
-    def prediction_of_change_in_direction(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def prediction_of_change_in_direction(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
         """
         Prediction of Change in Direction (PCD): Best possible score is 1.0, bigger value is better. Range = [0, 1]
 
@@ -795,7 +802,7 @@ class RegressionMetric(Evaluator):
             result = np.mean(np.sign(d) == np.sign(dp), axis=0)
             return self.get_multi_output_result(result, multi_output, decimal)
 
-    def cross_entropy(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=True):
+    def cross_entropy(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=True, **kwargs):
         """
         Cross Entropy (CE) or Entropy (E): Range = (-inf, 0]. Can't give comment about this one
 
@@ -825,7 +832,7 @@ class RegressionMetric(Evaluator):
         entropy = calculate_entropy(y_true, y_pred, one_dim)
         return np.round(entropy, decimal) if one_dim else self.get_multi_output_result(entropy, multi_output, decimal)
 
-    def kullback_leibler_divergence(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=True):
+    def kullback_leibler_divergence(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, **kwargs):
         """
         Kullback-Leibler Divergence (KLD): Best possible score is 0.0 . Range = (-inf, +inf)
         Link: https://machinelearningmastery.com/divergence-between-probability-distributions/
@@ -853,7 +860,7 @@ class RegressionMetric(Evaluator):
             score = np.sum(y_true * np.log2(y_true / y_pred), axis=0)
             return self.get_multi_output_result(score, multi_output, decimal)
 
-    def jensen_shannon_divergence(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=True):
+    def jensen_shannon_divergence(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=True, **kwargs):
         """
         Jensen-Shannon Divergence (JSD): Best possible score is 0.0 (identical), smaller value is better . Range = [0, +inf)
         Link: https://machinelearningmastery.com/divergence-between-probability-distributions/
@@ -883,7 +890,7 @@ class RegressionMetric(Evaluator):
             score = 0.5 * np.sum(y_true * np.log2(y_true / m), axis=0) + 0.5 * np.sum(y_pred * np.log2(y_pred / m), axis=0)
             return self.get_multi_output_result(score, multi_output, decimal)
 
-    def variance_accounted_for(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def variance_accounted_for(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
         """
         Variance Accounted For between 2 signals (VAF): Best possible score is 100% (identical signal), bigger value is better. Range = (-inf, 100%]
 
@@ -912,7 +919,7 @@ class RegressionMetric(Evaluator):
             result = (1 - np.var(y_true - y_pred, axis=0) / np.var(y_true, axis=0)) * 100
             return self.get_multi_output_result(result, multi_output, decimal)
 
-    def relative_absolute_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def relative_absolute_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
         """
         Relative Absolute Error (RAE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
@@ -946,7 +953,7 @@ class RegressionMetric(Evaluator):
             denominator = np.power(np.sum(y_true ** 2, axis=0), 1 / 2)
             return self.get_multi_output_result(numerator/denominator, multi_output, decimal)
 
-    def a10_index(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=False):
+    def a10_index(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=False, **kwargs):
         """
         A10 index (A10): Best possible score is 1.0, bigger value is better. Range = [0, 1]
 
@@ -984,7 +991,7 @@ class RegressionMetric(Evaluator):
             div = np.where(np.logical_and(div >= 0.9, div <= 1.1), 1, 0)
             return self.get_multi_output_result(np.mean(div, axis=0), multi_output, decimal)
 
-    def a20_index(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=False):
+    def a20_index(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=False, **kwargs):
         """
         A20 index (A20): Best possible score is 1.0, bigger value is better. Range = [0, 1]
 
@@ -1020,7 +1027,7 @@ class RegressionMetric(Evaluator):
             div = np.where(np.logical_and(div >= 0.8, div <= 1.2), 1, 0)
             return self.get_multi_output_result(np.mean(div, axis=0), multi_output, decimal)
 
-    def a30_index(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=False):
+    def a30_index(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=False, **kwargs):
         """
         A30 index (A30): Best possible score is 1.0, bigger value is better. Range = [0, 1]
 
@@ -1053,7 +1060,8 @@ class RegressionMetric(Evaluator):
             div = np.where(np.logical_and(div >= 0.7, div <= 1.3), 1, 0)
             return self.get_multi_output_result(np.mean(div, axis=0), multi_output, decimal)
 
-    def normalized_root_mean_square_error(self, y_true=None, y_pred=None, model=0, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def normalized_root_mean_square_error(self, y_true=None, y_pred=None, model=0, multi_output="raw_values", decimal=None,
+                                          non_zero=False, positive=False, **kwargs):
         """
         Normalized Root Mean Square Error (NRMSE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
@@ -1099,7 +1107,8 @@ class RegressionMetric(Evaluator):
                 result = rmse / y_pred.std(axis=0)
             return self.get_multi_output_result(result, multi_output, decimal)
 
-    def residual_standard_error(self, y_true=None, y_pred=None, n_paras=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def residual_standard_error(self, y_true=None, y_pred=None, n_paras=None, multi_output="raw_values", decimal=None,
+                                non_zero=False, positive=False, **kwargs):
         """
         Residual Standard Error (RSE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
@@ -1136,7 +1145,7 @@ class RegressionMetric(Evaluator):
             score = np.sqrt(ss_residuals / df_residuals)
             return self.get_multi_output_result(score, multi_output, decimal)
 
-    def covariance(self, y_true=None, y_pred=None, sample=False, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def covariance(self, y_true=None, y_pred=None, sample=False, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
         """
         Covariance (COV): There is no best value, bigger value is better. Range = [-inf, +inf)
             + is a measure of the relationship between two random variables
@@ -1175,7 +1184,7 @@ class RegressionMetric(Evaluator):
             s2 = y_pred - np.mean(y_pred, axis=0)
             return self.get_multi_output_result(np.sum(s1 * s2, axis=0) / denominator, multi_output, decimal)
 
-    def correlation(self, y_true=None, y_pred=None, sample=False, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def correlation(self, y_true=None, y_pred=None, sample=False, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
         """
         Correlation (COR): Best possible value = 1, bigger value is better. Range = [-1, +1]
             + measures the strength of the relationship between variables
@@ -1214,7 +1223,7 @@ class RegressionMetric(Evaluator):
             den = np.std(y_true, axis=0) * np.std(y_pred, axis=0)
             return self.get_multi_output_result(cov / den, multi_output, decimal)
 
-    def efficiency_coefficient(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def efficiency_coefficient(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
         """
         Efficiency Coefficient (EC): Best possible value = 1, bigger value is better. Range = [-inf, +1]
 
@@ -1240,7 +1249,7 @@ class RegressionMetric(Evaluator):
         score = calculate_ec(y_true, y_pred, one_dim)
         return np.round(score, decimal) if one_dim else self.get_multi_output_result(score, multi_output, decimal)
 
-    def overall_index(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def overall_index(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
         """
         Overall Index (OI): Best possible value = 1, bigger value is better. Range = [-inf, +1]
 
@@ -1272,7 +1281,7 @@ class RegressionMetric(Evaluator):
             score = (1 - rmse / (np.max(y_true, axis=0) - np.min(y_true, axis=0)) + ec) / 2.0
             return self.get_multi_output_result(score, multi_output, decimal)
 
-    def coefficient_of_residual_mass(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def coefficient_of_residual_mass(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
         """
         Coefficient of Residual Mass (CRM): Best possible value = 0.0, smaller value is better. Range = [-inf, +inf]
 
@@ -1301,7 +1310,7 @@ class RegressionMetric(Evaluator):
             score = (np.sum(y_pred, axis=0) - np.sum(y_true, axis=0)) / np.sum(y_true, axis=0)
             return self.get_multi_output_result(score, multi_output, decimal)
 
-    def gini_coefficient(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def gini_coefficient(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
         """
         Gini coefficient (Gini): Best possible score is 1, bigger value is better. Range = [0, 1]
 
@@ -1351,7 +1360,7 @@ class RegressionMetric(Evaluator):
             result = score / len(y_true)
             return self.get_multi_output_result(result, multi_output, decimal)
 
-    def gini_coefficient_wiki(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False):
+    def gini_coefficient_wiki(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
         """
         Gini coefficient (Gini): Best possible score is 1, bigger value is better. Range = [0, 1]
 
@@ -1398,7 +1407,7 @@ class RegressionMetric(Evaluator):
             result = score / (2 * len(y) ** 2 * np.mean(y, axis=0))
             return self.get_multi_output_result(result, multi_output, decimal)
 
-    def single_relative_error(self, y_true=None, y_pred=None, decimal=None, non_zero=True, positive=False):
+    def single_relative_error(self, y_true=None, y_pred=None, decimal=None, non_zero=True, positive=False, **kwargs):
         """
         Relative Error (RE): Best possible score is 0.0, smaller value is better. Range = (-inf, +inf)
 
@@ -1423,7 +1432,7 @@ class RegressionMetric(Evaluator):
             y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         return np.round(y_pred / y_true - 1, decimal)
 
-    def single_absolute_error(self, y_true=None, y_pred=None, decimal=None, non_zero=False, positive=False):
+    def single_absolute_error(self, y_true=None, y_pred=None, decimal=None, non_zero=False, positive=False, **kwargs):
         """
         Absolute Error (AE): Best possible score is 0.0, smaller value is better. Range = (-inf, +inf)
 
@@ -1446,7 +1455,7 @@ class RegressionMetric(Evaluator):
             y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         return np.round(np.abs(y_true) - np.abs(y_pred), decimal)
 
-    def single_squared_error(self, y_true=None, y_pred=None, decimal=None, non_zero=False, positive=False):
+    def single_squared_error(self, y_true=None, y_pred=None, decimal=None, non_zero=False, positive=False, **kwargs):
         """
         Squared Error (SE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
@@ -1469,7 +1478,7 @@ class RegressionMetric(Evaluator):
             y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         return np.round((y_true - y_pred) ** 2, decimal)
 
-    def single_squared_log_error(self, y_true=None, y_pred=None, decimal=None, non_zero=True, positive=True):
+    def single_squared_log_error(self, y_true=None, y_pred=None, decimal=None, non_zero=True, positive=True, **kwargs):
         """
         Squared Log Error (SLE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
@@ -1494,51 +1503,51 @@ class RegressionMetric(Evaluator):
             y_true, y_pred = get_regression_positive_data(y_true, y_pred, one_dim, 2)
         return np.round((np.log(y_true) - np.log(y_pred)) ** 2, decimal)
 
-    EVS = evs = explained_variance_score
-    ME = me = max_error
-    MBE = mbe = mean_bias_error
-    MAE = mae = mean_absolute_error
-    MSE = mse = mean_squared_error
-    RMSE = rmse = root_mean_squared_error
-    MSLE = msle = mean_squared_log_error
-    MedAE = medae = median_absolute_error
-    MRE = mre = MRB = mrb = mean_relative_bias = mean_relative_error
-    MPE = mpe = mean_percentage_error
-    MAPE = mape = mean_absolute_percentage_error
-    SMAPE = smape = symmetric_mean_absolute_percentage_error
-    MAAPE = maape = mean_arctangent_absolute_percentage_error
-    MASE = mase = mean_absolute_scaled_error
-    NSE = nse = nash_sutcliffe_efficiency
-    NNSE = nnse = normalized_nash_sutcliffe_efficiency
-    WI = wi = willmott_index
-    R = r = PCC = pcc = pearson_correlation_coefficient
-    AR = ar = APCC = apcc = absolute_pearson_correlation_coefficient
-    RSQ = rsq = R2s = r2s = pearson_correlation_coefficient_square
-    CI = ci = confidence_index
-    COD = cod = R2 = r2 = coefficient_of_determination
-    ACOD = acod = AR2 = ar2 = adjusted_coefficient_of_determination
-    DRV = drv = deviation_of_runoff_volume
-    KGE = kge = kling_gupta_efficiency
-    PCD = pcd = prediction_of_change_in_direction
-    CE = ce = cross_entropy
-    KLD = kld = kullback_leibler_divergence
-    JSD = jsd = jensen_shannon_divergence
-    VAF = vaf = variance_accounted_for
-    RAE = rae = relative_absolute_error
-    A10 = a10 = a10_index
-    A20 = a20 = a20_index
-    A30 = a30 = a30_index
-    NRMSE = nrmse = normalized_root_mean_square_error
-    RSE = rse = residual_standard_error
-    COV = cov = covariance
-    COR = cor = correlation
-    EC = ec = efficiency_coefficient
-    OI = oi = overall_index
-    CRM = crm = coefficient_of_residual_mass
-    GINI = gini = gini_coefficient
-    GINI_WIKI = gini_wiki = gini_coefficient_wiki
+    EVS = explained_variance_score
+    ME = max_error
+    MBE = mean_bias_error
+    MAE = mean_absolute_error
+    MSE = mean_squared_error
+    RMSE = root_mean_squared_error
+    MSLE = mean_squared_log_error
+    MedAE = median_absolute_error
+    MRE = MRB = mean_relative_bias = mean_relative_error
+    MPE = mean_percentage_error
+    MAPE = mean_absolute_percentage_error
+    SMAPE = symmetric_mean_absolute_percentage_error
+    MAAPE = mean_arctangent_absolute_percentage_error
+    MASE = mean_absolute_scaled_error
+    NSE = nash_sutcliffe_efficiency
+    NNSE = normalized_nash_sutcliffe_efficiency
+    WI = willmott_index
+    R = PCC = pearson_correlation_coefficient
+    AR = APCC = absolute_pearson_correlation_coefficient
+    RSQ = R2s = pearson_correlation_coefficient_square
+    CI = confidence_index
+    COD = R2 = coefficient_of_determination
+    ACOD = AR2 = adjusted_coefficient_of_determination
+    DRV = deviation_of_runoff_volume
+    KGE = kling_gupta_efficiency
+    PCD = prediction_of_change_in_direction
+    CE = cross_entropy
+    KLD = kullback_leibler_divergence
+    JSD = jensen_shannon_divergence
+    VAF = variance_accounted_for
+    RAE = relative_absolute_error
+    A10 = a10_index
+    A20 = a20_index
+    A30 = a30_index
+    NRMSE = normalized_root_mean_square_error
+    RSE = residual_standard_error
+    COV = covariance
+    COR = correlation
+    EC = efficiency_coefficient
+    OI = overall_index
+    CRM = coefficient_of_residual_mass
+    GINI = gini_coefficient
+    GINI_WIKI = gini_coefficient_wiki
 
-    RE = re = RB = rb = single_relative_bias = single_relative_error
-    AE = ae = single_absolute_error
-    SE = se = single_squared_error
-    SLE = sle = single_squared_log_error
+    RE = RB = single_relative_bias = single_relative_error
+    AE = single_absolute_error
+    SE = single_squared_error
+    SLE = single_squared_log_error
