@@ -14,28 +14,48 @@ from permetrics.utils import cluster_util as cu
 
 class ClusteringMetric(Evaluator):
     """
-    This is class contains all clustering metrics (for both internal and external performance metrics)
+    Defines a ClusteringMetric class that hold all internal and external metrics for clustering problems
 
-    Notes
-    ~~~~~
     + An extension of scikit-learn metrics section, with the addition of many more internal metrics.
     + https://scikit-learn.org/stable/modules/clustering.html#clustering-evaluation
+
+    Parameters
+    ----------
+    y_true: tuple, list, np.ndarray, default = None
+        The ground truth values. This is for calculating external metrics
+
+    y_pred: tuple, list, np.ndarray, default = None
+        The prediction values. This is for both calculating internal and external metrics
+
+    X: tuple, list, np.ndarray, default = None
+        The features of datasets. This is for calculating internal metrics
+
+    decimal: int, default = 5
+        The number of fractional parts after the decimal point
+
+    raise_error: bool, default = False
+        Some metrics can't be calculate when some problems occur, show it will raise error as usual.
+        We can return the biggest value or smallest value depend on metric instead of raising error.
+
+    biggest_value: float, default = None
+        The biggest value will be returned for metric that has min characteristic and ``raise_error=True``
+        Default = None, then the value will be ``np.inf``.
+
+    smallest_value: float, default = None
+        The smallest value will be returned for metric that has max characteristic and ``raise_error=True``
+        Default = None, then the value will be ``-np.inf``.
     """
 
-    def __init__(self, y_true=None, y_pred=None, X=None, decimal=5, **kwargs):
-        """
-        Args:
-            y_true (tuple, list, np.ndarray): The ground truth values
-            y_pred (tuple, list, np.ndarray): The prediction values
-            X (tuple, list, np.ndarray): The features of datasets
-            decimal (int): The number of fractional parts after the decimal point
-            **kwargs ():
-        """
+    def __init__(self, y_true=None, y_pred=None, X=None, decimal=5,
+                 raise_error=False, biggest_value=None, smallest_value=None, **kwargs):
         super().__init__(y_true, y_pred, decimal, **kwargs)
         if kwargs is None: kwargs = {}
         self.set_keyword_arguments(kwargs)
         self.X = X
         self.le = None
+        self.raise_error = raise_error
+        self.biggest_value = np.inf if biggest_value is None else biggest_value
+        self.smallest_value = -np.inf if smallest_value is None else smallest_value
 
     def get_processed_external_data(self, y_true=None, y_pred=None, decimal=None):
         """
@@ -141,17 +161,16 @@ class ClusteringMetric(Evaluator):
 
         Returns:
             result (float): The resulting Calinski-Harabasz index.
-
-        References:
-        .. [1] `T. Calinski and J. Harabasz, 1974. "A dendrite method for cluster
-            analysis". Communications in Statistics <https://www.tandfonline.com/doi/abs/10.1080/03610927408827101>`_
         """
         X = self.check_X(X)
         y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
         n_samples, _ = X.shape
         n_clusters = len(np.unique(y_pred))
         if n_clusters == 1:
-            raise ValueError("The Calinski-Harabasz index is undefined when y_pred has only 1 cluster.")
+            if self.raise_error:
+                raise ValueError("The Calinski-Harabasz index is undefined when y_pred has only 1 cluster.")
+            else:
+                return self.smallest_value
         numer = cu.compute_BGSS(X, y_pred) * (n_samples - n_clusters)
         denom = cu.compute_WGSS(X, y_pred) * (n_clusters - 1)
         return np.round(numer / denom, decimal)
@@ -178,7 +197,10 @@ class ClusteringMetric(Evaluator):
         y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
         n_clusters = len(np.unique(y_pred))
         if n_clusters == 1:
-            raise ValueError("The Xie-Beni index is undefined when y_pred has only 1 cluster.")
+            if self.raise_error:
+                raise ValueError("The Xie-Beni index is undefined when y_pred has only 1 cluster.")
+            else:
+                return self.biggest_value
         # Get the centroids
         centroids = cu.get_centroids(X, y_pred)
         euc_distance_to_centroids = cu.get_min_dist(X, centroids)
@@ -233,7 +255,10 @@ class ClusteringMetric(Evaluator):
         centers, _ = cu.compute_barycenters(X, y_pred)
         n_clusters = len(clusters_dict)
         if n_clusters == 1:
-            raise ValueError("The Davies-Bouldin index is undefined when y_pred has only 1 cluster.")
+            if self.raise_error:
+                raise ValueError("The Davies-Bouldin index is undefined when y_pred has only 1 cluster.")
+            else:
+                return self.biggest_value
         # Calculate delta for each cluster
         delta = {}
         for k in range(n_clusters):
@@ -276,7 +301,10 @@ class ClusteringMetric(Evaluator):
             scatter_matrices += cu.compute_WG(X_k)
         t1 = np.linalg.det(scatter_matrices)
         if t1 == 0:
-            raise ValueError("The Det-Ratio index is undefined when determinant of matrix is 0.")
+            if self.raise_error:
+                raise ValueError("The Det-Ratio index is undefined when determinant of matrix is 0.")
+            else:
+                return self.smallest_value
         return np.round(np.linalg.det(T) / t1, decimal)
 
     def dunn_index(self, X=None, y_pred=None, decimal=None, **kwargs):
@@ -297,7 +325,10 @@ class ClusteringMetric(Evaluator):
         clusters_dict, cluster_sizes_dict = cu.compute_clusters(y_pred)
         n_clusters = len(clusters_dict)
         if n_clusters == 1:
-            raise ValueError("The Davies-Bouldin index is undefined when y_pred has only 1 cluster.")
+            if self.raise_error:
+                raise ValueError("The Davies-Bouldin index is undefined when y_pred has only 1 cluster.")
+            else:
+                return self.smallest_value
         # Calculate dmin
         dmin = np.inf
         for kdx in range(n_clusters-1):
@@ -363,8 +394,19 @@ class ClusteringMetric(Evaluator):
         for label, indices in clusters_dict.items():
             X_k = X[indices]
             WG += cu.compute_WG(X_k)
-        cc = X.shape[0] * np.log(np.linalg.det(T) / np.linalg.det(WG))
-        return np.round(cc, decimal)
+        t2 = np.linalg.det(WG)
+        if t2 == 0:
+            if self.raise_error:
+                raise ValueError("The Log Det Ratio Index is undefined when determinant of matrix WG is 0.")
+            else:
+                return self.smallest_value
+        t1 = np.linalg.det(T) / t2
+        if t1 <= 0:
+            if self.raise_error:
+                raise ValueError("The Log Det Ratio Index is undefined when det(T)/det(WG) <= 0.")
+            else:
+                return self.smallest_value
+        return np.round(X.shape[0] * np.log(t1), decimal)
 
     def log_ss_ratio_index(self, X=None, y_pred=None, decimal=None, **kwargs):
         """
