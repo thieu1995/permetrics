@@ -194,23 +194,3 @@ def calculate_roc_curve(y_true, y_score):
         tpr[i] = tp / n_positive
         fpr[i] = fp / n_negative
     return tpr, fpr, thresholds
-
-
-def calculate_gini(y_true, y_pred):
-    # Compute the sorted indices of y_pred
-    sorted_indices = np.argsort(y_pred)
-
-    # Sort y_true and y_pred according to y_pred
-    y_true_sorted = y_true[sorted_indices]
-    y_pred_sorted = y_pred[sorted_indices]
-
-    # Compute the cumulative sums of y_true_sorted and y_pred_sorted
-    cumsum_true = np.cumsum(y_true_sorted)
-    cumsum_pred = np.cumsum(y_pred_sorted)
-
-    # Compute the Gini index
-    sum_true = cumsum_true.sum()
-    sum_pred = cumsum_pred.sum()
-    n = len(y_true)
-    gini = 1 - (2 * (cumsum_true.dot(y_pred_sorted)) / (sum_true * sum_pred + n * y_pred_sorted.sum()))
-    return gini

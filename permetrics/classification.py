@@ -12,21 +12,38 @@ import numpy as np
 
 class ClassificationMetric(Evaluator):
     """
-    This is class contains all classification metrics (for both binary and multiple classification problem)
+    Defines a ClassificationMetric class that hold all classification metrics (for both binary and multiple classification problem)
 
-    Notes
-    ~~~~~
-    + Extension of: https://scikit-learn.org/stable/modules/model_evaluation.html#classification-metrics
+    + An extension of scikit-learn metrics section, with the addition of many more classification metrics.
+    + https://scikit-learn.org/stable/modules/model_evaluation.html#classification-metrics
+
+    Parameters
+    ----------
+    y_true: tuple, list, np.ndarray, default = None
+        The ground truth values.
+
+    y_pred: tuple, list, np.ndarray, default = None
+        The prediction values.
+
+    decimal: int, default = 5
+        The number of fractional parts after the decimal point
+
+    labels: tuple, list, np.ndarray, default = None
+        List of labels to index the matrix. This may be used to reorder or select a subset of labels.
+
+    average: (str, None): {'micro', 'macro', 'weighted'} or None, default="macro"
+        If None, the scores for each class are returned. Otherwise, this determines the type of averaging performed on the data:
+
+        ``'micro'``:
+            Calculate metrics globally by considering each element of the label indicator matrix as a label.
+        ``'macro'``:
+            Calculate metrics for each label, and find their unweighted mean.  This does not take label imbalance into account.
+        ``'weighted'``:
+            Calculate metrics for each label, and find their average, weighted by support (the number of true instances for each label).
+
     """
 
     def __init__(self, y_true=None, y_pred=None, decimal=5, **kwargs):
-        """
-        Args:
-            y_true (tuple, list, np.ndarray): The ground truth values
-            y_pred (tuple, list, np.ndarray): The prediction values
-            decimal (int): The number of fractional parts after the decimal point
-            **kwargs ():
-        """
         super().__init__(y_true, y_pred, decimal, **kwargs)
         if kwargs is None: kwargs = {}
         self.set_keyword_arguments(kwargs)
@@ -80,6 +97,7 @@ class ClassificationMetric(Evaluator):
     def precision_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
         """
         Generate precision score for multiple classification problem
+        Higher is better (Best = 1), Range = [0, 1]
 
         Args:
             y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
@@ -122,6 +140,7 @@ class ClassificationMetric(Evaluator):
     def negative_predictive_value(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
         """
         Generate negative predictive value for multiple classification problem
+        Higher is better (Best = 1), Range = [0, 1]
 
         Args:
             y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
@@ -155,6 +174,7 @@ class ClassificationMetric(Evaluator):
     def specificity_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
         """
         Generate specificity score for multiple classification problem
+        Higher is better (Best = 1), Range = [0, 1]
 
         Args:
             y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
@@ -188,6 +208,7 @@ class ClassificationMetric(Evaluator):
     def recall_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
         """
         Generate recall score for multiple classification problem
+        Higher is better (Best = 1), Range = [0, 1]
 
         Args:
             y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
@@ -221,6 +242,7 @@ class ClassificationMetric(Evaluator):
     def accuracy_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
         """
         Generate accuracy score for multiple classification problem
+        Higher is better (Best = 1), Range = [0, 1]
 
         Args:
             y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
@@ -253,6 +275,7 @@ class ClassificationMetric(Evaluator):
     def f1_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
         """
         Generate f1 score for multiple classification problem
+        Higher is better (Best = 1), Range = [0, 1]
 
         Args:
             y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
@@ -288,6 +311,7 @@ class ClassificationMetric(Evaluator):
     def f2_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
         """
         Generate f2 score for multiple classification problem
+        Higher is better (Best = 1), Range = [0, 1]
 
         Args:
             y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
@@ -325,6 +349,7 @@ class ClassificationMetric(Evaluator):
         The beta parameter determines the weight of recall in the combined score.
         beta < 1 lends more weight to precision, while beta > 1 favors recall
         (beta -> 0 considers only precision, beta -> +inf only recall).
+        Higher is better (Best = 1), Range = [0, 1]
 
         Args:
             y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
@@ -360,6 +385,9 @@ class ClassificationMetric(Evaluator):
 
     def matthews_correlation_coefficient(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
         """
+        Generate Matthews Correlation Coefficient
+        Higher is better (Best = 1), Range = [-1, +1]
+
         Args:
             y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
             y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
@@ -392,6 +420,7 @@ class ClassificationMetric(Evaluator):
     def hamming_loss(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
         """
         Generate hamming loss for multiple classification problem
+        Higher is better (Best = 1), Range = [0, 1]
 
         Args:
             y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
@@ -424,6 +453,7 @@ class ClassificationMetric(Evaluator):
     def lift_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
         """
         Generate lift score for multiple classification problem
+        Higher is better (Best = +1), Range = [0, +1]
 
         Args:
             y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
@@ -457,6 +487,7 @@ class ClassificationMetric(Evaluator):
     def cohen_kappa_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
         """
         Generate Cohen Kappa score for multiple classification problem
+        Higher is better (Best = +1), Range = [-1, +1]
 
         Args:
             y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
@@ -488,6 +519,7 @@ class ClassificationMetric(Evaluator):
     def jaccard_similarity_index(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
         """
         Generate Jaccard similarity index for multiple classification problem
+        Higher is better (Best = +1), Range = [0, +1]
 
         Args:
             y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
@@ -520,7 +552,8 @@ class ClassificationMetric(Evaluator):
 
     def g_mean_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
         """
-        Calculates the G-mean score between y_true and y_pred.
+        Calculates the G-mean (Geometric mean) score between y_true and y_pred.
+        Higher is better (Best = +1), Range = [0, +1]
 
         Args:
             y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
@@ -551,9 +584,10 @@ class ClassificationMetric(Evaluator):
             gm = dict([(label, np.round(item["g_mean"], decimal)) for label, item in metrics.items()])
         return gm if type(gm) == dict else np.round(gm, decimal)
 
-    def gini_index(self, y_true=None, y_pred=None, average="macro", decimal=None):
+    def gini_index(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
-        Calculates the Gini index between y_true and y_pred. Higher is better. Range [0, 1]
+        Calculates the Gini index between y_true and y_pred.
+        Smaller is better (Best = 0), Range = [0, +1]
 
         Args:
             y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
@@ -565,35 +599,26 @@ class ClassificationMetric(Evaluator):
             float, dict: The Gini index
         """
         y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if binary:
-            return calculate_gini(y_true, y_pred)
-        else:
-            # Compute the number of classes and examples
-            num_classes = len(np.unique(y_true))
-            num_examples = len(y_true)
-            # Initialize arrays to store class weights and Gini indices
-            class_weights = np.zeros(num_classes)
-            class_ginis = np.zeros(num_classes)
-            # Compute the Gini index for each class
-            for i in range(num_classes):
-                # Create a binary array indicating whether the example belongs to the current class
-                y_true_binary = np.where(y_true == i, 1, 0)
-                # Compute the Gini index for the current class using the binary array and predicted scores
-                class_ginis[i] = calculate_gini(y_true_binary, y_pred)
-                # Compute the class weight based on the number of examples
-                class_weights[i] = np.sum(y_true_binary) / num_examples
-
-            if average == "macro":
-                result = np.mean(class_ginis)
-            elif average == "weighted":
-                result = np.dot(class_weights, class_ginis) / np.sum(class_weights)
+        # Calculate class probabilities
+        total_samples = len(y_true)
+        y_prob = np.zeros(total_samples)
+        for idx in range(0, total_samples):
+            if y_true[idx] == y_pred[idx]:
+                y_prob[idx] = 1
             else:
-                result = dict([(idx, np.round(class_ginis[idx], decimal)) for idx in range(num_classes)])
-            return result if type(result) == dict else np.round(result, decimal)
+                y_prob[idx] = 0
+        positive_samples = np.sum(y_prob)
+        negative_samples = total_samples - positive_samples
+        p_positive = positive_samples / total_samples
+        p_negative = negative_samples / total_samples
+        # Calculate Gini index
+        result = 1 - (p_positive ** 2 + p_negative ** 2)
+        return np.round(result, decimal)
 
     def roc_auc_score(self, y_true=None, y_score=None, average="macro", decimal=5):
         """
         Calculates the ROC-AUC score between y_true and y_score.
+        Higher is better (Best = +1), Range = [0, +1]
 
         Args:
             y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
@@ -630,7 +655,6 @@ class ClassificationMetric(Evaluator):
             else:
                 result = dict([(idx, np.round(auc[idx], decimal)) for idx in range(n_classes)])
             return result if type(result) == dict else np.round(result, decimal)
-
 
     CM = cm = confusion_matrix
     PS = ps = precision_score
