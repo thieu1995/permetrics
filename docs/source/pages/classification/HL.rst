@@ -19,7 +19,7 @@ The Hamming loss is the fraction of labels that are incorrectly predicted.
 
 In the multi-class and multi-label case, this is the average of the HL score of each class with weighting depending on the average parameter.
 
-+ Best possible score is 0.0, lower value is better. Range = [0, 1]
++ Higher is better (Best = 1), Range = [0, 1]
 + https://scikit-learn.org/stable/modules/generated/sklearn.metrics.hamming_loss.html#sklearn.metrics.hamming_loss
 
 

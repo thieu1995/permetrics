@@ -19,7 +19,7 @@ Accuracy Score (AS)
 
 In the multi-class and multi-label case, this is the average of the AS score of each class with weighting depending on the average parameter.
 
-+ Best possible score is 1.0, higher value is better. Range = [0, 1]
++ Higher is better (Best = 1), Range = [0, 1]
 + https://towardsdatascience.com/multi-class-metrics-made-simple-part-i-precision-and-recall-9250280bddc2
 + https://www.debadityachakravorty.com/ai-ml/cmatrix/
 + https://neptune.ai/blog/evaluation-metrics-binary-classification
