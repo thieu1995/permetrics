@@ -75,7 +75,7 @@ class ClassificationMetric(Evaluator):
                 raise ValueError("y_true or y_pred is None. You need to pass y_true and y_pred to object creation or function called.")
         return y_true, y_pred, binary, representor, decimal
 
-    def confusion_matrix(self, y_true=None, y_pred=None, labels=None, normalize=None):
+    def confusion_matrix(self, y_true=None, y_pred=None, labels=None, normalize=None, **kwargs):
         """
         Generate confusion matrix and useful information
 
@@ -94,7 +94,7 @@ class ClassificationMetric(Evaluator):
         matrix, imap, imap_count = calculate_confusion_matrix(y_true, y_pred, labels, normalize)
         return matrix, imap, imap_count
 
-    def precision_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
+    def precision_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None, **kwargs):
         """
         Generate precision score for multiple classification problem
         Higher is better (Best = 1), Range = [0, 1]
@@ -137,7 +137,7 @@ class ClassificationMetric(Evaluator):
             precision = dict([(label, np.round(item["precision"], decimal)) for label, item in metrics.items()])
         return precision if type(precision) == dict else np.round(precision, decimal)
 
-    def negative_predictive_value(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
+    def negative_predictive_value(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None, **kwargs):
         """
         Generate negative predictive value for multiple classification problem
         Higher is better (Best = 1), Range = [0, 1]
@@ -171,7 +171,7 @@ class ClassificationMetric(Evaluator):
             npv = dict([(label, np.round(item["negative_predictive_value"], decimal)) for label, item in metrics.items()])
         return npv if type(npv) == dict else np.round(npv, decimal)
 
-    def specificity_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
+    def specificity_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None, **kwargs):
         """
         Generate specificity score for multiple classification problem
         Higher is better (Best = 1), Range = [0, 1]
@@ -205,7 +205,7 @@ class ClassificationMetric(Evaluator):
             ss = dict([(label, np.round(item["specificity"], decimal)) for label, item in metrics.items()])
         return ss if type(ss) == dict else np.round(ss, decimal)
 
-    def recall_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
+    def recall_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None, **kwargs):
         """
         Generate recall score for multiple classification problem
         Higher is better (Best = 1), Range = [0, 1]
@@ -239,7 +239,7 @@ class ClassificationMetric(Evaluator):
             recall = dict([(label, np.round(item["recall"], decimal)) for label, item in metrics.items()])
         return recall if type(recall) == dict else np.round(recall, decimal)
 
-    def accuracy_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
+    def accuracy_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None, **kwargs):
         """
         Generate accuracy score for multiple classification problem
         Higher is better (Best = 1), Range = [0, 1]
@@ -272,7 +272,7 @@ class ClassificationMetric(Evaluator):
             accuracy = dict([(label, np.round(item["precision"], decimal)) for label, item in metrics.items()])
         return accuracy if type(accuracy) == dict else np.round(accuracy, decimal)
 
-    def f1_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
+    def f1_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None, **kwargs):
         """
         Generate f1 score for multiple classification problem
         Higher is better (Best = 1), Range = [0, 1]
@@ -308,7 +308,7 @@ class ClassificationMetric(Evaluator):
             f1 = dict([(label, item["f1"]) for label, item in metrics.items()])
         return f1 if type(f1) == dict else np.round(f1, decimal)
 
-    def f2_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
+    def f2_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None, **kwargs):
         """
         Generate f2 score for multiple classification problem
         Higher is better (Best = 1), Range = [0, 1]
@@ -344,7 +344,7 @@ class ClassificationMetric(Evaluator):
             f2 = dict([(label, item["f2"]) for label, item in metrics.items()])
         return f2 if type(f2) == dict else np.round(f2, decimal)
 
-    def fbeta_score(self, y_true=None, y_pred=None, beta=1.0, labels=None, average="macro", decimal=None):
+    def fbeta_score(self, y_true=None, y_pred=None, beta=1.0, labels=None, average="macro", decimal=None, **kwargs):
         """
         The beta parameter determines the weight of recall in the combined score.
         beta < 1 lends more weight to precision, while beta > 1 favors recall
@@ -383,7 +383,7 @@ class ClassificationMetric(Evaluator):
             fbeta = dict([(label, item["fbeta"]) for label, item in metrics.items()])
         return fbeta if type(fbeta) == dict else np.round(fbeta, decimal)
 
-    def matthews_correlation_coefficient(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
+    def matthews_correlation_coefficient(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None, **kwargs):
         """
         Generate Matthews Correlation Coefficient
         Higher is better (Best = 1), Range = [-1, +1]
@@ -417,7 +417,7 @@ class ClassificationMetric(Evaluator):
             mcc = dict([(label, item["mcc"]) for label, item in metrics.items()])
         return mcc if type(mcc) == dict else np.round(mcc, decimal)
 
-    def hamming_loss(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
+    def hamming_loss(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None, **kwargs):
         """
         Generate hamming loss for multiple classification problem
         Higher is better (Best = 1), Range = [0, 1]
@@ -450,7 +450,7 @@ class ClassificationMetric(Evaluator):
             hl = dict([(label, np.round(item["hamming_loss"], decimal)) for label, item in metrics.items()])
         return hl if type(hl) == dict else np.round(hl, decimal)
 
-    def lift_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
+    def lift_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None, **kwargs):
         """
         Generate lift score for multiple classification problem
         Higher is better (Best = +1), Range = [0, +1]
@@ -484,7 +484,7 @@ class ClassificationMetric(Evaluator):
             ls = dict([(label, np.round(item["lift_score"], decimal)) for label, item in metrics.items()])
         return ls if type(ls) == dict else np.round(ls, decimal)
 
-    def cohen_kappa_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
+    def cohen_kappa_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None, **kwargs):
         """
         Generate Cohen Kappa score for multiple classification problem
         Higher is better (Best = +1), Range = [-1, +1]
@@ -516,7 +516,7 @@ class ClassificationMetric(Evaluator):
             kappa = dict([(label, np.round(item["kappa_score"], decimal)) for label, item in metrics.items()])
         return kappa if type(kappa) == dict else np.round(kappa, decimal)
 
-    def jaccard_similarity_index(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
+    def jaccard_similarity_index(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None, **kwargs):
         """
         Generate Jaccard similarity index for multiple classification problem
         Higher is better (Best = +1), Range = [0, +1]
@@ -550,7 +550,7 @@ class ClassificationMetric(Evaluator):
             js = dict([(label, np.round(item["jaccard_similarities"], decimal)) for label, item in metrics.items()])
         return js if type(js) == dict else np.round(js, decimal)
 
-    def g_mean_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None):
+    def g_mean_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None, **kwargs):
         """
         Calculates the G-mean (Geometric mean) score between y_true and y_pred.
         Higher is better (Best = +1), Range = [0, +1]
@@ -615,7 +615,7 @@ class ClassificationMetric(Evaluator):
         result = 1 - (p_positive ** 2 + p_negative ** 2)
         return np.round(result, decimal)
 
-    def roc_auc_score(self, y_true=None, y_score=None, average="macro", decimal=5):
+    def roc_auc_score(self, y_true=None, y_score=None, average="macro", decimal=5, **kwargs):
         """
         Calculates the ROC-AUC score between y_true and y_score.
         Higher is better (Best = +1), Range = [0, +1]
@@ -656,20 +656,20 @@ class ClassificationMetric(Evaluator):
                 result = dict([(idx, np.round(auc[idx], decimal)) for idx in range(n_classes)])
             return result if type(result) == dict else np.round(result, decimal)
 
-    CM = cm = confusion_matrix
-    PS = ps = precision_score
-    NPV = npv = negative_predictive_value
-    RS = rs = recall_score
+    CM = confusion_matrix
+    PS = precision_score
+    NPV = negative_predictive_value
+    RS = recall_score
     AS = accuracy_score
-    F1S = f1s = f1_score
-    F2S = f2s = f2_score
-    FBS = fbs = fbeta_score
-    SS = ss = specificity_score
-    MCC = mcc = matthews_correlation_coefficient
-    HL = hl = hamming_loss
-    LS = ls = lift_score
-    CKS = cks = cohen_kappa_score
-    JSI = jsi = JSC = jsc = jaccard_similarity_coefficient = jaccard_similarity_index
-    GMS = gms = g_mean_score
-    GINI = gini = gini_index
-    ROC = AUC = RAS = roc = auc = ras = roc_auc_score
+    F1S = f1_score
+    F2S = f2_score
+    FBS = fbeta_score
+    SS = specificity_score
+    MCC = matthews_correlation_coefficient
+    HL = hamming_loss
+    LS = lift_score
+    CKS = cohen_kappa_score
+    JSI = JSC = jaccard_similarity_coefficient = jaccard_similarity_index
+    GMS = g_mean_score
+    GINI = gini_index
+    ROC = AUC = RAS = roc_auc_score
