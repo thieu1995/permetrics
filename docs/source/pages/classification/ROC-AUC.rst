@@ -39,9 +39,7 @@ In either case, it is important to ensure that the classes are balanced, meaning
 It is worth noting that ROC-AUC may not always be the best metric for multiclass problems, especially when the classes are highly imbalanced or the cost of false positives and false negatives varies across classes. In such cases, other metrics such as precision, recall, F1-score, or weighted average of these metrics may be more appropriate.
 
 + Best possible score is 1.0, higher value is better. Range = [0, 1]
-
 + https://www.analyticsvidhya.com/blog/2020/06/auc-roc-curve-machine-learning/
-
 + There is no "micro" average mode in ROC-AUC metric
 
 Example:

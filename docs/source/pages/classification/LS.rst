@@ -17,10 +17,9 @@ Lift Score (LS)
 
 In the multi-class and multi-label case, this is the average of the LS score of each class with weighting depending on the average parameter.
 
-+ Best possible score is +inf, higher value is better. Range = [0, +inf)
++ Higher is better (No best value), Range = [0, +inf)
 + http://rasbt.github.io/mlxtend/user_guide/evaluate/lift_score/
 + https://neptune.ai/blog/evaluation-metrics-binary-classification
-
 
 
 Example:
@@ -41,7 +40,7 @@ Example:
 	cm = ClassificationMetric(y_true, y_pred, decimal = 5)
 
 	print(cm.lift_score(average=None))
-	print(cm.ls(average="micro"))
+	print(cm.LS(average="micro"))
 	print(cm.LS(average="macro"))
 	print(cm.LS(average="weighted"))
 

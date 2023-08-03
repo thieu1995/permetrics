@@ -42,5 +42,5 @@ Example:
 	print(cm.mcc(average=None))
 	print(cm.MCC(average="micro"))
 	print(cm.MCC(average="macro"))
-	print(cm.mcc(average="weighted"))
+	print(cm.MCC(average="weighted"))
 

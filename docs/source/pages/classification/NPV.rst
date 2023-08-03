@@ -30,7 +30,6 @@ In the multi-class and multi-label case, this is the average of the NPV score of
 + https://towardsdatascience.com/multi-class-metrics-made-simple-part-i-precision-and-recall-9250280bddc2
 
 
-
 Example:
 
 .. code-block:: python

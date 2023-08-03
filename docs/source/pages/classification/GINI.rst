@@ -59,4 +59,4 @@ Example:
 	cm = ClassificationMetric(y_true, y_pred, decimal=5)
 	print(cm.gini_index(average=None))
 	print(cm.GINI()
-	print(cm.gini()
+	print(cm.GINI()

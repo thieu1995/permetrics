@@ -48,6 +48,6 @@ Example:
 
 	print(cm.fbeta_score(average=None))
 	print(cm.fbeta_score(average="micro"))
-	print(cm.fbs(average="macro"))
-	print(cm.fbs(average="weighted"))
+	print(cm.FBS(average="macro"))
+	print(cm.FBS(average="weighted"))
 

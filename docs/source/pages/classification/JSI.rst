@@ -15,7 +15,7 @@ Jaccard Similarity Index (JSI)
    :maxdepth: 3
 
 
-+ Best possible score is 1.0, higher value is better. Range = [0, 1]
++ Higher is better (Best = +1), Range = [0, +1]
 
 The Jaccard similarity index, also known as the Jaccard similarity coefficient or Jaccard index, is a commonly used evaluation metric in binary and
 multiclass classification problems. It measures the similarity between the predicted labels y_pred and the true labels y_true, and is defined
@@ -68,6 +68,6 @@ Example:
 
 	print(cm.jaccard_similarity_index(average=None))
 	print(cm.jaccard_similarity_coefficient(average="micro"))
-	print(cm.jsi(average="macro"))
-	print(cm.jsc(average="weighted"))
+	print(cm.JSI(average="macro"))
+	print(cm.JSC(average="weighted"))
 

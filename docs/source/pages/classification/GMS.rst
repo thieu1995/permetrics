@@ -77,6 +77,6 @@ Example:
 
 	print(cm.g_mean_score(average=None))
 	print(cm.GMS(average="micro"))
-	print(cm.gms(average="macro"))
-	print(cm.gms(average="weighted"))
+	print(cm.GMS(average="macro"))
+	print(cm.GMS(average="weighted"))
 

@@ -29,7 +29,6 @@ In the multi-class and multi-label case, this is the average of the SS score of 
 + https://towardsdatascience.com/multi-class-metrics-made-simple-part-i-precision-and-recall-9250280bddc2
 + https://www.debadityachakravorty.com/ai-ml/cmatrix/
 
-
 Example:
 
 .. code-block:: python
@@ -47,8 +46,7 @@ Example:
 
 	cm = ClassificationMetric(y_true, y_pred, decimal = 5)
 
-	print(cm.SS(average=None))
+	print(cm.specificity_score(average=None))
 	print(cm.ss(average="micro"))
 	print(cm.SS(average="macro"))
 	print(cm.SS(average="weighted"))
-
