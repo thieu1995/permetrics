@@ -1,6 +1,6 @@
 docs/_build/
 docs/build/
-
+.github/assets/pdf/
 # Pycharm
 .idea/
 tut_upcode.md

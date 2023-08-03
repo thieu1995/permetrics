@@ -122,8 +122,8 @@ evaluator = ClassificationMetric(y_true, y_pred, decimal=5)
 
 print(evaluator.f1_score())
 print(evaluator.F1S(average="micro"))
-print(evaluator.f1s(average="macro"))
-print(evaluator.f1s(average="weighted"))
+print(evaluator.F1S(average="macro"))
+print(evaluator.F1S(average="weighted"))
 
 ```
 
@@ -834,9 +834,10 @@ print(evaluator.BHI())
 
 
 
-# References
+# Support (questions, problems)
 
-### Official channels (questions, problems)
+
+### Official channels 
 
 * Official source code repo: https://github.com/thieu1995/permetrics
 * Official document: https://permetrics.readthedocs.io/
@@ -845,19 +846,20 @@ print(evaluator.BHI())
 * Notable changes log: https://github.com/thieu1995/permetrics/blob/master/ChangeLog.md
 * Official chat group: https://t.me/+fRVCJGuGJg1mNDg1
 
-* This project also related to our another projects which are "meta-heuristics", "neural-network", and "optimization" 
-  check it here
+* This project also related to our another projects which are "optimization" and "machine learning", check it here:
     * https://github.com/thieu1995/mealpy
     * https://github.com/thieu1995/metaheuristics
     * https://github.com/thieu1995/opfunu
     * https://github.com/thieu1995/enoppy
+    * https://github.com/thieu1995/MetaCluster
+    * https://github.com/thieu1995/pfevaluator
     * https://github.com/thieu1995/mafese
     * https://github.com/aiir-team
 
 
-### Citation
+### Citation Request 
 
-If you are using permetrics in your project, we would appreciate a citations:
+Please include these citations if you plan to use this library:
 
 ```code 
 @software{thieu_nguyen_2020_3951205,
@@ -869,9 +871,18 @@ If you are using permetrics in your project, we would appreciate a citations:
   doi          = {10.5281/zenodo.3951205},
   url          = {https://doi.org/10.5281/zenodo.3951205}
 }
+
+@article{van2023mealpy,
+  title={MEALPY: An open-source library for latest meta-heuristic algorithms in Python},
+  author={Van Thieu, Nguyen and Mirjalili, Seyedali},
+  journal={Journal of Systems Architecture},
+  year={2023},
+  publisher={Elsevier},
+  doi={10.1016/j.sysarc.2023.102871}
+}
 ```
 
-### Helpful links
+### Related Documents
 
 1) https://www.debadityachakravorty.com/ai-ml/cmatrix/
 2) https://neptune.ai/blog/evaluation-metrics-binary-classification
