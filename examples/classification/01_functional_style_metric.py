@@ -39,7 +39,7 @@ print(f"recall: {recall}, accuracy: {accuracy}")
 #     FBS = fbeta_score
 #     SS = specificity_score
 #     MCC = matthews_correlation_coefficient
-#     HL = hamming_loss
+#     HS = hamming_score
 #     LS = lift_score
 #     CKS = cohen_kappa_score
 #     JSI = JSC = jaccard_similarity_coefficient = jaccard_similarity_index

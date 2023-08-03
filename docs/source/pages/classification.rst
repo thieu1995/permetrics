@@ -22,7 +22,7 @@ Classification Metrics
 +-----+---------+----------------------------------+-----------------------------------------------------+
 | 9   | MCC     | Matthews Correlation Coefficient | Higher is better (Best = 1), Range = [-1, +1]       |
 +-----+---------+----------------------------------+-----------------------------------------------------+
-| 10  | HL      | Hamming Loss                     | Higher is better (Best = 1), Range = [0, 1]         |
+| 10  | HS      | Hamming Score                    | Higher is better (Best = 1), Range = [0, 1]         |
 +-----+---------+----------------------------------+-----------------------------------------------------+
 | 11  | CKS     | Cohen's kappa score              | Higher is better (Best = +1), Range = [-1, +1]      |
 +-----+---------+----------------------------------+-----------------------------------------------------+
@@ -69,7 +69,7 @@ important is often untrue, such that macro-averaging will over-emphasize the typ
    classification/FBS.rst
    classification/SS.rst
    classification/MCC.rst
-   classification/HL.rst
+   classification/HS.rst
    classification/LS.rst
    classification/CKS.rst
    classification/JSI.rst

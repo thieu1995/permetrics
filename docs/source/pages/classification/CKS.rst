@@ -92,6 +92,6 @@ Example:
 	cm = ClassificationMetric(y_true, y_pred, decimal=5)
 
 	print(cm.cohen_kappa_score(average=None))
-	print(cm.cks(average="micro"))
+	print(cm.CKS(average="micro"))
 	print(cm.CKS(average="macro"))
 	print(cm.CKS(average="weighted"))

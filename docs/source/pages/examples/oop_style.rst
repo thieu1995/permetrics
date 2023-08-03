@@ -54,10 +54,10 @@ OOP Style
 
 	## Get the result of any function you want to
 
-	hamming_loss = evaluator.hamming_loss()
+	hamming_score = evaluator.hamming_score()
 	mcc = evaluator.matthews_correlation_coefficient()
 	specificity = evaluator.specificity_score()
-	print(f"HL: {hamming_loss}, MCC: {mcc}, specificity: {specificity}")
+	print(f"HL: {hamming_score}, MCC: {mcc}, specificity: {specificity}")
 
 
 .. code-block:: python

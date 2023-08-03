@@ -1,9 +1,9 @@
-Hamming Loss (HL)
+Hamming Score (HS)
 =================
 
 .. toctree::
    :maxdepth: 3
-   :caption: Hamming Loss (HL)
+   :caption: Hamming Score (HS)
 
 .. toctree::
    :maxdepth: 3
@@ -15,12 +15,13 @@ Hamming Loss (HL)
    :maxdepth: 3
 
 
-The Hamming loss is the fraction of labels that are incorrectly predicted.
+The Hamming score is 1 - the fraction of labels that are incorrectly predicted.
 
 In the multi-class and multi-label case, this is the average of the HL score of each class with weighting depending on the average parameter.
 
 + Higher is better (Best = 1), Range = [0, 1]
-+ https://scikit-learn.org/stable/modules/generated/sklearn.metrics.hamming_loss.html#sklearn.metrics.hamming_loss
++ A little bit difference than hamming_score in scikit-learn library.
++ https://scikit-learn.org/stable/modules/generated/sklearn.metrics.hamming_score.html#sklearn.metrics.hamming_score
 
 
 Example:
@@ -40,8 +41,8 @@ Example:
 
 	cm = ClassificationMetric(y_true, y_pred, decimal = 5)
 
-	print(cm.hamming_loss(average=None))
-	print(cm.hl(average="micro"))
-	print(cm.HL(average="macro"))
-	print(cm.HL(average="weighted"))
+	print(cm.hamming_score(average=None))
+	print(cm.HS(average="micro"))
+	print(cm.HS(average="macro"))
+	print(cm.HS(average="weighted"))
 

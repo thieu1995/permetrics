@@ -22,11 +22,11 @@ evaluator = ClassificationMetric(y_true, y_pred, decimal=5)
 
 ## Get the result of any function you want to
 
-hamming_loss = evaluator.hamming_loss()
+hamming_score = evaluator.hamming_score()
 mcc = evaluator.matthews_correlation_coefficient()
 specificity = evaluator.specificity_score()
 
-print(f"HL: {hamming_loss}, MCC: {mcc}, specificity: {specificity}")
+print(f"HL: {hamming_score}, MCC: {mcc}, specificity: {specificity}")
 
 #     CM = confusion_matrix
 #     PS = precision_score
@@ -38,7 +38,7 @@ print(f"HL: {hamming_loss}, MCC: {mcc}, specificity: {specificity}")
 #     FBS = fbeta_score
 #     SS = specificity_score
 #     MCC = matthews_correlation_coefficient
-#     HL = hamming_loss
+#     HS = hamming_score
 #     LS = lift_score
 #     CKS = cohen_kappa_score
 #     JSI = JSC = jaccard_similarity_coefficient = jaccard_similarity_index

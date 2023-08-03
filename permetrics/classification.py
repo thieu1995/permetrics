@@ -417,9 +417,9 @@ class ClassificationMetric(Evaluator):
             mcc = dict([(label, item["mcc"]) for label, item in metrics.items()])
         return mcc if type(mcc) == dict else np.round(mcc, decimal)
 
-    def hamming_loss(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None, **kwargs):
+    def hamming_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None, **kwargs):
         """
-        Generate hamming loss for multiple classification problem
+        Generate hamming score for multiple classification problem
         Higher is better (Best = 1), Range = [0, 1]
 
         Args:
@@ -430,7 +430,7 @@ class ClassificationMetric(Evaluator):
             decimal (int): The number of fractional parts after the decimal point
 
         Returns:
-            hl (float, dict): the hamming loss
+            hl (float, dict): the hamming score
         """
         y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
         matrix, imap, imap_count = calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
@@ -447,7 +447,7 @@ class ClassificationMetric(Evaluator):
         elif average == "weighted":
             hl = np.dot(list_weights, list_accuracy) / np.sum(list_weights)
         else:
-            hl = dict([(label, np.round(item["hamming_loss"], decimal)) for label, item in metrics.items()])
+            hl = dict([(label, np.round(item["hamming_score"], decimal)) for label, item in metrics.items()])
         return hl if type(hl) == dict else np.round(hl, decimal)
 
     def lift_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None, **kwargs):
@@ -666,7 +666,7 @@ class ClassificationMetric(Evaluator):
     FBS = fbeta_score
     SS = specificity_score
     MCC = matthews_correlation_coefficient
-    HL = hamming_loss
+    HS = hamming_score
     LS = lift_score
     CKS = cohen_kappa_score
     JSI = JSC = jaccard_similarity_coefficient = jaccard_similarity_index
