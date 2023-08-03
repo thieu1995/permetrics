@@ -578,6 +578,30 @@ class ClusteringMetric(Evaluator):
         result = ms_within / ms_between
         return np.round(result, decimal)
 
+    def r_squared_index(self, X=None, y_pred=None, decimal=None, **kwarg):
+        """
+        Computes the R-squared index
+        Higher is better (Best=1), Range = (-inf, 1]
+
+        Args:
+            X (array-like of shape (n_samples, n_features)):
+                A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
+            y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            result (float): The R-squared index
+        """
+        X = self.check_X(X)
+        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
+        n_clusters = len(np.unique(y_pred))
+        total_var = np.var(X, axis=0).sum()
+        var_within = 0
+        for k in range(n_clusters):
+            var_within += np.var(X[y_pred == k], axis=0).sum()
+        result = (total_var - var_within) / total_var
+        return np.round(result, decimal)
+
     def baker_hubert_gamma_index(self, X=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Baker-Hubert Gamma index
@@ -1259,6 +1283,7 @@ class ClusteringMetric(Evaluator):
     SSEI = sum_squared_error_index
     DHI = duda_hart_index
     BI = beale_index
+    RSI = r_squared_index
 
     BHGI = baker_hubert_gamma_index
     GPI = g_plus_index
