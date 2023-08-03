@@ -519,6 +519,11 @@ class ClusteringMetric(Evaluator):
         y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
         # Find the unique cluster labels
         unique_labels = np.unique(y_pred)
+        if len(unique_labels) == 1:
+            if self.raise_error:
+                raise ValueError("The Duda-Hart index is undefined when y_pred has only 1 cluster.")
+            else:
+                return self.biggest_value
         # Compute the pairwise distances between data points
         pairwise_distances = cu.cdist(X, X)
         # Initialize the numerator and denominator for Duda index calculation
@@ -535,6 +540,42 @@ class ClusteringMetric(Evaluator):
             inter_cluster_distances += np.mean(pairwise_distances[np.ix_(cluster_indices, other_cluster_indices)])
         # Calculate the Duda index
         result = intra_cluster_distances / inter_cluster_distances
+        return np.round(result, decimal)
+
+    def beale_index(self, X=None, y_pred=None, decimal=None, **kwarg):
+        """
+        Computes the Beale Index
+        Smaller is better (Best=0), Range = [0, +inf)
+
+        Args:
+            X (array-like of shape (n_samples, n_features)):
+                A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
+            y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            result (float): The Beale Index
+        """
+        X = self.check_X(X)
+        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
+        n_clusters = len(np.unique(y_pred))
+        if n_clusters == 1:
+            if self.raise_error:
+                raise ValueError("The Duda-Hart index is undefined when y_pred has only 1 cluster.")
+            else:
+                return self.biggest_value
+        n_samples, n_features = X.shape
+        centers, _ = cu.compute_barycenters(X, y_pred)
+        sse_within = 0
+        sse_between = 0
+        for k in range(n_clusters):
+            sse_within += np.sum((X[y_pred == k] - centers[k]) ** 2)
+            sse_between += np.sum((centers[k] - np.mean(X, axis=0)) ** 2)
+        df_within = n_samples - n_clusters
+        df_between = n_clusters - 1
+        ms_within = sse_within / df_within
+        ms_between = sse_between / df_between
+        result = ms_within / ms_between
         return np.round(result, decimal)
 
     def baker_hubert_gamma_index(self, X=None, y_pred=None, decimal=None, **kwargs):
@@ -1217,6 +1258,7 @@ class ClusteringMetric(Evaluator):
     SI = silhouette_index
     SSEI = sum_squared_error_index
     DHI = duda_hart_index
+    BI = beale_index
 
     BHGI = baker_hubert_gamma_index
     GPI = g_plus_index
