@@ -169,6 +169,7 @@ def compute_homogeneity(y_true, y_pred):
 def compute_confusion_matrix(y_true, y_pred, normalize=False):
     """
     Computes the confusion matrix for a clustering problem given the true labels and the predicted labels.
+    http://cran.nexr.com/web/packages/clusterCrit/vignettes/clusterCrit.pdf
     """
     n = len(y_true)
     yy, yn, ny, nn = 0, 0, 0, 0

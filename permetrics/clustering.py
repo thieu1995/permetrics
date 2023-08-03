@@ -686,8 +686,7 @@ class ClusteringMetric(Evaluator):
             result (float): The Precision score
         """
         y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        cm = cu.compute_confusion_matrix(y_true, y_pred)
-        yy, yn, ny, nn = cm
+        yy, yn, ny, nn = cu.compute_confusion_matrix(y_true, y_pred)
         return np.round(yy / (yy + ny), decimal)
 
     def recall_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
@@ -707,8 +706,7 @@ class ClusteringMetric(Evaluator):
             result (float): The Recall score
         """
         y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        cm = cu.compute_confusion_matrix(y_true, y_pred)
-        yy, yn, ny, nn = cm
+        yy, yn, ny, nn = cu.compute_confusion_matrix(y_true, y_pred)
         return np.round(yy / (yy + yn), decimal)
 
     def f_measure_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
@@ -729,8 +727,7 @@ class ClusteringMetric(Evaluator):
             result (float): The F-Measure score
         """
         y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        cm = cu.compute_confusion_matrix(y_true, y_pred)
-        yy, yn, ny, nn = cm
+        yy, yn, ny, nn = cu.compute_confusion_matrix(y_true, y_pred)
         p = yy / (yy + ny)
         r = yy / (yy + yn)
         return np.round(2 * p * r / (p + r), decimal)
@@ -757,7 +754,7 @@ class ClusteringMetric(Evaluator):
         """
         Computes the Hubert Gamma score between two clusterings.
 
-        The Hubert Γˆ index ranges from -1 to 1, where a value of 1 indicates perfect agreement between the two partitions
+        The Hubert Gamma index ranges from -1 to 1, where a value of 1 indicates perfect agreement between the two partitions
         being compared, a value of 0 indicates no association between the partitions, and a value of -1 indicates
         complete disagreement between the two partitions.
 
@@ -770,6 +767,9 @@ class ClusteringMetric(Evaluator):
             result (float): The Hubert Gamma score
         """
         y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
+        n_clusters = len(np.unique(y_pred))
+        if n_clusters == 1:
+            raise ValueError("The Hubert Gamma score is undefined when y_pred has only 1 cluster.")
         cm = cu.compute_confusion_matrix(y_true, y_pred, normalize=True)
         yy, yn, ny, nn = cm
         NT = np.sum(cm)
@@ -827,9 +827,8 @@ class ClusteringMetric(Evaluator):
         Computes the Mc Nemar score between two clusterings.
 
         It is an adaptation of the non-parametric McNemar test for the comparison of frequencies between two paired samples.
-        The McNemar index ranges from -1 to 1, where a value of 1 indicates perfect agreement between the two partitions
-        being compared, a value of 0 indicates no association between the partitions, and a value of -1 indicates
-        complete disagreement between the two partitions.
+        The McNemar index ranges from -inf to inf, where a bigger value indicates perfect agreement between the two partitions
+        being compared
 
         Under the null hypothesis that the discordances between the partitions P1 and P2 are random, the McNemar index
         follows approximately a normal distribution. The McNemar index can be transformed into a chi-squared
@@ -866,8 +865,10 @@ class ClusteringMetric(Evaluator):
             result (float): The Phi score
         """
         y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        cm = cu.compute_confusion_matrix(y_true, y_pred, normalize=True)
-        yy, yn, ny, nn = cm
+        n_clusters = len(np.unique(y_pred))
+        if n_clusters == 1:
+            raise ValueError("The Phi score is undefined when y_pred has only 1 cluster.")
+        yy, yn, ny, nn = cu.compute_confusion_matrix(y_true, y_pred, normalize=True)
         numerator = yy * nn - yn * ny
         denominator = (yy + yn) * (yy + ny) * (yn + nn) * (ny + nn)
         return np.round(numerator / denominator, decimal)
