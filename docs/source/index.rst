@@ -6,7 +6,7 @@
 Welcome to Permetrics's documentation!
 ======================================
 
-.. image:: https://img.shields.io/badge/release-1.4.0-yellow.svg
+.. image:: https://img.shields.io/badge/release-1.4.1-yellow.svg
    :target: https://github.com/thieu1995/permetrics/releases
 
 .. image:: https://img.shields.io/pypi/wheel/gensim.svg

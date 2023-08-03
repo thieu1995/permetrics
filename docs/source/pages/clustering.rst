@@ -69,7 +69,7 @@ Clustering Metrics
 +-----+--------+------------------------------+--------------------------------------------------------+
 
 
-Most of the clustering metrics is implemented based on the paper `Cluster Indices <http://cran.nexr.com/web/packages/clusterCrit/vignettes/clusterCrit.pdf>`_
+Most of the clustering metrics is implemented based on the paper :cite:`desgraupes2013clustering`
 
 There are several types of clustering metrics that are commonly used to evaluate the quality of clustering results.
 
