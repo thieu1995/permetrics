@@ -1089,6 +1089,53 @@ class ClusteringMetric(Evaluator):
         # Normalize the purity score by dividing by the total number of data points
         return  np.round(purity/N, decimal)
 
+    def entropy_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+        """
+        Computes the Entropy score
+        Smaller is better (Best = 0), Range = [0, 1]
+
+        Entropy is a metric used to evaluate the quality of clustering results, particularly when the ground truth labels of the
+        data points are known. It measures the amount of uncertainty or disorder within the clusters produced by a clustering algorithm.
+
+        Here's how the Entropy score is calculated:
+
+            1) For each cluster, compute the class distribution by counting the occurrences of each class label within the cluster.
+            2) Normalize the class distribution by dividing the count of each class label by the total number of data points in the cluster.
+            3) Compute the entropy for each cluster using the normalized class distribution.
+            4) Weight the entropy of each cluster by its relative size (proportion of data points in the whole dataset).
+            5) Sum up the weighted entropies of all clusters.
+
+        Args:
+            y_true (array-like): The true labels for each sample.
+            y_pred (array-like): The predicted cluster labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            result (float): The Entropy score
+        """
+        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
+        # Find the number of data points
+        N = len(y_true)
+        # Find the unique class labels in the true labels
+        unique_classes = np.unique(y_true)
+        entropy_score = 0
+        # Iterate over each unique class label
+        for c in unique_classes:
+            # Find the indices of data points with the current class label in the true labels
+            class_indices = np.where(y_true == c)[0]
+            # Find the corresponding predicted labels for these data points
+            class_predictions = y_pred[class_indices]
+            # Count the occurrences of each predicted label
+            class_counts = np.bincount(class_predictions)
+            # Normalize the class counts by dividing by the total number of data points in the cluster
+            class_distribution = class_counts / len(class_predictions)
+            # Compute the entropy of the cluster
+            cluster_entropy = cu.calculate_entropy(class_distribution, base=2)
+            # Weight the entropy by the relative size of the cluster
+            cluster_size = len(class_indices)
+            entropy_score += (cluster_size / N) * cluster_entropy
+        return entropy_score
+
     BHI = ball_hall_index
     CHI = calinski_harabasz_index
     XBI = xie_beni_index
@@ -1125,3 +1172,4 @@ class ClusteringMetric(Evaluator):
     SS1S = sokal_sneath1_score
     SS2S = sokal_sneath2_score
     PuS = purity_score
+    ES = entropy_score

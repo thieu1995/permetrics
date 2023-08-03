@@ -10,6 +10,7 @@
 import numpy as np
 from scipy.spatial.distance import cdist, pdist, squareform
 from scipy.spatial import distance_matrix
+from scipy.stats import entropy as calculate_entropy
 
 
 def compute_clusters(labels):
