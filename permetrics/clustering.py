@@ -641,6 +641,41 @@ class ClusteringMetric(Evaluator):
         result = np.mean(intra_cluster_distances / np.maximum(min_inter_cluster_distances.reshape(-1, 1), intra_cluster_distances), axis=0).mean()
         return np.round(result, decimal)
 
+    def hartigan_index(self, X=None, y_pred=None, decimal=None, n_epochs=10, **kwarg):
+        """
+        Computes the Hartigan index for a clustering solution.
+        Lower is better (best=0), Range = [0, +inf)
+
+        Args:
+            X (array-like of shape (n_samples, n_features)):
+                A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
+            y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
+            n_epochs (int): Number of iterations to repeat the random clustering process.
+
+        Returns:
+            result (float): The Hartigan index
+        """
+        X = self.check_X(X)
+        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
+        centers, _ = cu.compute_barycenters(X, y_pred)
+        n_clusters = len(centers)
+        wcss = 0.0
+        for k in range(n_clusters):
+            cluster_points = X[y_pred == k]
+            wcss += np.sum(np.square(cluster_points - centers[k]))
+        expected_wcss = 0.0
+        for _ in range(n_epochs):
+            random_centroids = np.random.permutation(X)[:n_clusters]
+            random_wcss = 0.0
+            for k in range(0, n_clusters):
+                cluster_points = X[y_pred == k]
+                random_wcss += np.sum(np.square(cluster_points - random_centroids[k]))
+            expected_wcss += random_wcss / n_clusters
+        expected_wcss /= n_epochs
+        result = wcss / expected_wcss
+        return np.round(result, decimal)
+
     def baker_hubert_gamma_index(self, X=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Baker-Hubert Gamma index
@@ -1355,6 +1390,7 @@ class ClusteringMetric(Evaluator):
     BI = beale_index
     RSI = r_squared_index
     DBCVI = density_based_clustering_validation_index
+    HI = hartigan_index
 
     BHGI = baker_hubert_gamma_index
     GPI = g_plus_index
