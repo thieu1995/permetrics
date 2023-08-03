@@ -20,20 +20,20 @@ for idx in range(len(t1)):
     evaluator = ClassificationMetric(y_true, t1[idx], decimal=5)
     print(evaluator.gini_index())
 
-#     CM = cm = confusion_matrix
-#     PS = ps = precision_score
-#     NPV = npv = negative_predictive_value
-#     RS = rs = recall_score
+#     CM = confusion_matrix
+#     PS = precision_score
+#     NPV = negative_predictive_value
+#     RS = recall_score
 #     AS = accuracy_score
-#     F1S = f1s = f1_score
-#     F2S = f2s = f2_score
-#     FBS = fbs = fbeta_score
-#     SS = ss = specificity_score
-#     MCC = mcc = matthews_correlation_coefficient
-#     HL = hl = hamming_loss
-#     LS = ls = lift_score
-#     CKS = cks = cohen_kappa_score
-#     JSI = jsi = JSC = jsc = jaccard_similarity_coefficient = jaccard_similarity_index
-#     GMS = gms = g_mean_score
-#     GINI = gini = gini_index
-#     ROC = AUC = RAS = roc = auc = ras = roc_auc_score
+#     F1S = f1_score
+#     F2S = f2_score
+#     FBS = fbeta_score
+#     SS = specificity_score
+#     MCC = matthews_correlation_coefficient
+#     HL = hamming_loss
+#     LS = lift_score
+#     CKS = cohen_kappa_score
+#     JSI = JSC = jaccard_similarity_coefficient = jaccard_similarity_index
+#     GMS = g_mean_score
+#     GINI = gini_index
+#     ROC = AUC = RAS = roc_auc_score
