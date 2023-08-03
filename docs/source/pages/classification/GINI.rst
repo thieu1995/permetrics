@@ -15,24 +15,31 @@ GINI Index
    :maxdepth: 3
 
 
-The Gini index is also used as a metric to evaluate the performance of a binary classification model. It is a measure of how well the model separates the
-positive and negative classes.
+The Gini index is a measure of impurity or inequality often used in decision tree algorithms for evaluating the quality of a split.
+It quantifies the extent to which a split divides the target variable (class labels) unevenly across the resulting branches.
 
-The Gini index is calculated as follows:
+The Gini index ranges from 0 to 1, where 0 indicates a perfect split, meaning all the samples in each branch belong to the same class, and 1 indicates an
+impure split, where the samples are evenly distributed across all classes. To calculate the Gini index, you can use the following formula:
 
-+ Sort the predicted probabilities of the positive class in descending order.
-+ Calculate the cumulative sum of the true positive rate (TPR) and false positive rate (FPR) at each threshold, where TPR is the proportion of positive
-samples correctly classified as positive, and FPR is the proportion of negative samples incorrectly classified as positive.
-+ Calculate the area under the curve (AUC) of the cumulative sum, and multiply it by 2.
+Gini index = 1 - (sum of squared probabilities of each class)
 
+For a binary classification problem, with two classes (0 and 1), the Gini index can be calculated as::
 
-The resulting value ranges from 0 to 1, where 0 indicates that the model predicts all negative samples as positive and 1 indicates perfect separation between the positive and negative classes.
+	Gini index = 1 - (p0^2 + p1^2)
+	where p0 is the probability of class 0 and p1 is the probability of class 1 in the split.
 
-The Gini index can be used as an alternative to the AUC-ROC metric, and it has some advantages in terms of interpretation and sensitivity to class imbalance. However, it can be less commonly used in practice, and the AUC-ROC is often preferred as a metric for binary classification.
+For a multiclass classification problem, the Gini index is calculated as::
 
-+ Best possible score is 1.0, higher value is better. Range = [0, 1]
-+ There is no "micro" average mode in GINI index metric
+	Gini index = 1 - (p0^2 + p1^2 + ... + pn^2)
+	where p0, p1, ..., pn are the probabilities of each class in the split.
 
+The Gini index is used to evaluate the quality of a split and guide the decision tree algorithm to select the split that results in the lowest Gini index.
+
+It's important to note that the Gini index is not typically used as an evaluation metric for the overall performance of a classification model. Instead, it
+is primarily used within the context of decision trees for determining the optimal splits during the tree-building process. The Gini index is also used as a
+metric to evaluate the performance of a binary classification model. It is a measure of how well the model separates the positive and negative classes.
+
++ Smaller is better (Best = 0), Range = [0, +1]
 
 Example:
 
@@ -51,5 +58,5 @@ Example:
 
 	cm = ClassificationMetric(y_true, y_pred, decimal=5)
 	print(cm.gini_index(average=None))
-	print(cm.GINI(average="macro"))
-	print(cm.gini(average="weighted"))
+	print(cm.GINI()
+	print(cm.gini()
