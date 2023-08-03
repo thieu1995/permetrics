@@ -86,6 +86,8 @@ It's important to choose the appropriate clustering metrics based on the specifi
 .. toctree::
    :maxdepth: 3
 
+   clustering/DHI.rst
+   clustering/SSEI.rst
 
 .. toctree::
    :maxdepth: 3
