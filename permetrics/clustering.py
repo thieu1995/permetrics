@@ -602,6 +602,45 @@ class ClusteringMetric(Evaluator):
         result = (total_var - var_within) / total_var
         return np.round(result, decimal)
 
+    def density_based_clustering_validation_index(self, X=None, y_pred=None, decimal=None, **kwarg):
+        """
+        Computes the Density-based Clustering Validation Index
+        Lower is better (Best=0), Range = [0, 1]
+
+        Args:
+            X (array-like of shape (n_samples, n_features)):
+                A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
+            y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            result (float): The Density-based Clustering Validation Index
+        """
+        X = self.check_X(X)
+        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
+        n_clusters = len(np.unique(y_pred))
+        if n_clusters == 1:
+            if self.raise_error:
+                raise ValueError("The Density-based Clustering Validation Index is 0 when y_pred has only 1 cluster.")
+            else:
+                return 1.0
+        n_samples, n_features = X.shape
+        centroids = np.zeros((n_clusters, n_features))
+        for k in range(n_clusters):
+            centroids[k] = np.mean(X[y_pred == k], axis=0)
+        intra_cluster_distances = cu.cdist(X, centroids, 'euclidean')
+        min_inter_cluster_distances = np.zeros(n_samples)
+        for i in range(n_samples):
+            mask = np.ones(n_samples, dtype=bool)
+            mask[i] = False
+            mask[y_pred == y_pred[i]] = False
+            if np.sum(mask) > 0:
+                min_inter_cluster_distances[i] = np.min(cu.cdist(X[i, :].reshape(1, -1), X[mask, :], 'euclidean'))
+            else:
+                min_inter_cluster_distances[i] = np.inf
+        result = np.mean(intra_cluster_distances / np.maximum(min_inter_cluster_distances.reshape(-1, 1), intra_cluster_distances), axis=0).mean()
+        return np.round(result, decimal)
+
     def baker_hubert_gamma_index(self, X=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Baker-Hubert Gamma index
@@ -1284,6 +1323,7 @@ class ClusteringMetric(Evaluator):
     DHI = duda_hart_index
     BI = beale_index
     RSI = r_squared_index
+    DBCVI = density_based_clustering_validation_index
 
     BHGI = baker_hubert_gamma_index
     GPI = g_plus_index

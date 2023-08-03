@@ -90,6 +90,7 @@ It's important to choose the appropriate clustering metrics based on the specifi
    clustering/SSEI.rst
    clustering/BI.rst
    clustering/RSI.rst
+   clustering/DBCVI.rst
 
    clustering/ES.rst
    clustering/PuS.rst
