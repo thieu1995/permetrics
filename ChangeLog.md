@@ -1,3 +1,23 @@
+# Version 1.4.1
++ Remove all lowercase shortname of all metrics
++ Fix bugs in GINI function belongs to ClassificationMetric
++ Fix bugs in some functions belong to ClusteringMetric
++ Add metrics to ClusteringMetrics
+  + Entropy Score (ES)
+  + Purity Score (PuS)
+  + Tau Score (TS)
+  + Duda-Hart Index (DHI)
+  + Sum of Squared Error Index (SSEI)
+  + Beale Index (BI)
+  + R-Squared Index (RSI)
+  + Density-Based Clustering Validation Index (DBCVI)
+  + Hartigan Index (HI)
++ Update characteristics of most of the functions (valid ranges and best value)
++ Update and add more examples to all classes.
++ Update documents for all metrics.
+
+---------------------------------------------------------------------
+
 # Version 1.4.0
 
 + Add ClusteringMetric:
