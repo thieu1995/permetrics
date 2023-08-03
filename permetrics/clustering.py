@@ -469,6 +469,38 @@ class ClusteringMetric(Evaluator):
             silhouette_scores[i] = (b - a) / max(a, b)
         return np.mean(silhouette_scores)
 
+    def sum_squared_error_index(self, X=None, y_pred=None, decimal=None, **kwarg):
+        """
+        Computes the Sum of Squared Error Index
+        Smaller is better (Best = 0), Range = [0, +inf)
+
+        SSE measures the sum of squared distances between each data point and its corresponding centroid or cluster center.
+        It quantifies the compactness of the clusters. Here's how you can calculate the SSE in a clustering problem:
+
+            1) Assign each data point to its nearest centroid or cluster center based on some distance metric (e.g., Euclidean distance).
+            2) For each data point, calculate the squared Euclidean distance between the data point and its assigned centroid.
+            3) Sum up the squared distances for all data points to obtain the SSE.
+
+        Args:
+            X (array-like of shape (n_samples, n_features)):
+                A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
+            y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            result (float): The Sum of Squared Error Index
+        """
+        X = self.check_X(X)
+        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
+        centers, _ = cu.compute_barycenters(X, y_pred)
+        sse = 0
+        # Iterate over each data point
+        for idx, point in enumerate(X):
+            centroid = centers[y_pred[idx]]  # Get the centroid associated with the data point's label
+            distance = np.linalg.norm(point - centroid)  # Calculate the Euclidean distance
+            sse += distance ** 2  # Add the squared distance to the SSE
+        return sse
+
     def baker_hubert_gamma_index(self, X=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Baker-Hubert Gamma index
@@ -1147,6 +1179,7 @@ class ClusteringMetric(Evaluator):
     LDRI = log_det_ratio_index
     LSRI = log_ss_ratio_index
     SI = silhouette_index
+    SSEI = sum_squared_error_index
 
     BHGI = baker_hubert_gamma_index
     GPI = g_plus_index
