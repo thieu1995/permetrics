@@ -94,6 +94,7 @@ It's important to choose the appropriate clustering metrics based on the specifi
 
    clustering/ES.rst
    clustering/PuS.rst
+   clustering/TS.rst
 
 .. toctree::
    :maxdepth: 3

@@ -1259,7 +1259,7 @@ class ClusteringMetric(Evaluator):
             # Add the size of the majority class to the purity score
             purity += np.max(class_counts)
         # Normalize the purity score by dividing by the total number of data points
-        return  np.round(purity/N, decimal)
+        return np.round(purity/N, decimal)
 
     def entropy_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
@@ -1290,7 +1290,7 @@ class ClusteringMetric(Evaluator):
         N = len(y_true)
         # Find the unique class labels in the true labels
         unique_classes = np.unique(y_true)
-        entropy_score = 0
+        result = 0
         # Iterate over each unique class label
         for c in unique_classes:
             # Find the indices of data points with the current class label in the true labels
@@ -1305,8 +1305,39 @@ class ClusteringMetric(Evaluator):
             cluster_entropy = cu.calculate_entropy(class_distribution, base=2)
             # Weight the entropy by the relative size of the cluster
             cluster_size = len(class_indices)
-            entropy_score += (cluster_size / N) * cluster_entropy
-        return entropy_score
+            result += (cluster_size / N) * cluster_entropy
+        return np.round(result, decimal)
+
+    def tau_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+        """
+        Computes the Tau Score between two clustering solutions.
+        Higher is better (Best = 1), Range = [-1, 1]
+
+        The Tau score, also known as the Tau coefficient, is a measure of agreement or similarity between two clustering solutions.
+        It is commonly used to compare the similarity of two different clusterings or to evaluate the stability of a clustering algorithm.
+
+        Args:
+            y_true (array-like): The true labels for each sample.
+            y_pred (array-like): The predicted cluster labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            result (float): The Tau Score
+        """
+        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
+        n = len(y_true)
+        concordant_pairs = 0
+        discordant_pairs = 0
+        for idx in range(n):
+            for jdx in range(idx + 1, n):
+                if y_true[idx] == y_true[jdx] and y_pred[idx] == y_pred[jdx]:
+                    concordant_pairs += 1
+                elif y_true[idx] != y_true[jdx] and y_pred[idx] != y_pred[jdx]:
+                    concordant_pairs += 1
+                else:
+                    discordant_pairs += 1
+        result = (concordant_pairs - discordant_pairs) / (concordant_pairs + discordant_pairs)
+        return np.round(result, decimal)
 
     BHI = ball_hall_index
     CHI = calinski_harabasz_index
@@ -1350,3 +1381,4 @@ class ClusteringMetric(Evaluator):
     SS2S = sokal_sneath2_score
     PuS = purity_score
     ES = entropy_score
+    TS = tau_score
