@@ -93,6 +93,9 @@ field access metrics as fast as possible
    pages/support.rst
 
 
+.. bibliography:: mybibfile.bib
+
+
 Indices and tables
 ==================
 
