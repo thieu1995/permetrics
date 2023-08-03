@@ -14,8 +14,9 @@ F2 Score (F2S)
 .. toctree::
    :maxdepth: 3
 
+It’s a metric that combines precision and recall, putting 2x emphasis on recall
 
-It’s a metric that combines precision and recall, putting 2x emphasis on recall::
+.. math::
 
 	F2 = 5 * (precision * recall) / (4 * precision + recall)
 
@@ -25,7 +26,6 @@ In the multi-class and multi-label case, this is the average of the F2 score of 
 + https://towardsdatascience.com/multi-class-metrics-made-simple-part-i-precision-and-recall-9250280bddc2
 + https://www.debadityachakravorty.com/ai-ml/cmatrix/
 + https://neptune.ai/blog/evaluation-metrics-binary-classification
-
 
 Example:
 
@@ -48,4 +48,3 @@ Example:
 	print(cm.F2S(average="micro"))
 	print(cm.F2S(average="macro"))
 	print(cm.F2S(average="weighted"))
-

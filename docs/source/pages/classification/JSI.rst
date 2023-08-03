@@ -15,7 +15,7 @@ Jaccard Similarity Index (JSI)
    :maxdepth: 3
 
 
-+ Higher is better (Best = +1), Range = [0, +1]
++ Best possible score is 1.0, higher value is better. Range = [0, 1]
 
 The Jaccard similarity index, also known as the Jaccard similarity coefficient or Jaccard index, is a commonly used evaluation metric in binary and
 multiclass classification problems. It measures the similarity between the predicted labels y_pred and the true labels y_true, and is defined
@@ -26,7 +26,9 @@ and false positive if the true label is negative and the predicted label is posi
 true label is positive and the predicted label is negative. True negative (TN) predictions are those where both the true label and
 the predicted label are negative.
 
-To calculate the Jaccard similarity index, the formula is::
+To calculate the Jaccard similarity index, the formula is
+
+.. math::
 
 	J = TP / (TP + FP)
 
@@ -45,7 +47,6 @@ distribution is imbalanced, as it takes into account only true positive and true
 It's important to note that the Jaccard similarity index is sensitive to the number of instances in each class, so it's recommended to
 use this metric in combination with other evaluation metrics, such as precision, recall, and F1-score, to get a complete picture of
 the performance of a classification model.
-
 
 
 

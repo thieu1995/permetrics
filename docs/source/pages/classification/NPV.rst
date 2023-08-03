@@ -51,4 +51,3 @@ Example:
 	print(cm.NPV(average="micro"))
 	print(cm.NPV(average="macro"))
 	print(cm.NPV(average="weighted"))
-

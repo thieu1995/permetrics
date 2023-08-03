@@ -50,4 +50,3 @@ Example:
 	print(cm.RS(average="micro"))
 	print(cm.RS(average="macro"))
 	print(cm.RS(average="weighted"))
-

@@ -22,14 +22,14 @@ The Kappa score is calculated as the ratio of the observed agreement between two
 The observed agreement is the number of instances that are classified the same way by both annotators, and the expected agreement is
 the number of instances that are classified the same way by chance, given the individual annotator's classifications.
 
-The formula for the Cohen's Kappa score is as follows::
+The formula for the Cohen's Kappa score is as follows .. math::
 
 	k = (observed agreement - expected agreement) / (1 - expected agreement)
 
 where observed agreement is the proportion of items that are classified the same way by both annotators, and expected
 agreement is theproportion of items that are classified the same way by chance.
 
-or::
+.. math::
 
 	$\kappa = \frac{p_o - p_e}{1 - p_e}$
 

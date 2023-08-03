@@ -18,7 +18,9 @@ F-Beta Score (FBS)
 The F-beta score is the weighted harmonic mean of precision and recall, reaching its optimal value at 1 and its worst value at 0.
 
 The beta parameter determines the weight of recall in the combined score. beta < 1 lends more weight to precision,
-while beta > 1 favors recall (beta -> 0 considers only precision, beta -> +inf only recall).::
+while beta > 1 favors recall (beta -> 0 considers only precision, beta -> +inf only recall).
+
+.. math::
 
 	F-beta = (1 + beta**2) * (precision * recall) / (beta**2 * precision + recall)
 

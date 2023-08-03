@@ -23,17 +23,23 @@ The G-mean is a commonly used metric to evaluate the performance of a classifier
 number of samples than the other. It provides a balanced view of the model's performance as it penalizes low values of TPR and TNR in a single score.
 The G-mean score provides a balanced evaluation of a classifier's performance by considering both the positive and negative classes.
 
-The formula for the G-mean score is given by.. math::
+The formula for the G-mean score is given by
+
+.. math::
 
 	G-mean = sqrt(TPR * TNR)
 
 	Gmean = \sqrt{TPR * TNR}
 
-where TPR (True Positive Rate) is defined as.. math::
+where TPR (True Positive Rate) is defined as
+
+.. math::
 
 	$TPR = \frac{TP}{TP + FN}$
 
-and TNR (True Negative Rate) is defined as.. math::
+and TNR (True Negative Rate) is defined as
+
+.. math::
 
 	$TNR = \frac{TN}{TN + FP}$
 
@@ -54,8 +60,6 @@ calculated using the formula above, and then averaged over all classes to provid
 
 The G-mean score provides a way to balance the accuracy of a classifier between positive and negative classes, and is particularly useful in
 cases where the class distribution is imbalanced, or when one class is more important than the other.
-
-
 
 
 Example:

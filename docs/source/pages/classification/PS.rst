@@ -50,4 +50,3 @@ Example:
 	print(cm.PS(average="micro"))
 	print(cm.PS(average="macro"))
 	print(cm.PS(average="weighted"))
-
