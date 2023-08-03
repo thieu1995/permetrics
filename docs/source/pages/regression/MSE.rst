@@ -22,6 +22,7 @@ MSE - Mean Squared Error
 + Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 + MSE: a risk metric corresponding to the expected value of the squared (quadratic) error or loss.
 
+
 Latex equation code::
 
 	\text{MSE}(y, \hat{y}) = \frac{\sum_{i=0}^{N - 1} (y_i - \hat{y}_i)^2}{N}
@@ -48,4 +49,3 @@ Example to use MSE metric:
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
 	print(evaluator.MSE(multi_output="raw_values"))
-

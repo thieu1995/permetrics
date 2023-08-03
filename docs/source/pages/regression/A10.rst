@@ -55,6 +55,4 @@ Example to use A10 metric:
 	y_pred = array([[0, 2], [-1, 2], [8, -5]])
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
-	print(evaluator.a10(multi_output="raw_values"))
-
-
+	print(evaluator.A10(multi_output="raw_values"))

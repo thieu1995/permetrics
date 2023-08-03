@@ -29,21 +29,19 @@ where: r = correlation coefficient, CV = coefficient of variation, :math:`\mu` =
 	\gamma = \text{variability ratio} = \frac{ CV_{\hat{y}} } {CV_y} = \frac{ \sigma _{\hat{y}} / \mu _{\hat{y}} }{ \sigma _y / \mu _y}
 
 
+The Kling-Gupta Efficiency (KGE) :cite:`van2023groundwater` is a statistical measure used to evaluate the performance of hydrological models. It was proposed
+to overcome the limitations of other measures such as Nash-Sutcliffe Efficiency and R-squared that focus only on reproducing the mean and variance of
+observed data.
+
+The KGE combines three statistical metrics: correlation coefficient, variability ratio and bias ratio, into a single measure of model
+performance. The KGE ranges between -infinity and 1, where a value of 1 indicates perfect agreement between the model predictions and the observed data.
+
+The KGE measures not only the accuracy of the model predictions but also its ability to reproduce the variability and timing of the observed data. It has
+been widely used in hydrology and water resources engineering to evaluate the performance of hydrological models in simulating streamflow, groundwater
+recharge, and water quality parameters.
+
 + Best possible score is 1, bigger value is better. Range = (-inf, 1]
-+ Link: https://rstudio-pubs-static.s3.amazonaws.com/433152_56d00c1e29724829bad5fc4fd8c8ebff.html
-
-
-Latex equation code::
-
-	\text{KGE}(y, \hat{y}) = 1 - \sqrt{ (r(y, \hat{y}) - 1)^2 + (\beta(y, \hat{y}) - 1)^2 + (\gamma(y, \hat{y}) - 1)^2 }
-	where:
-		r = correlation coefficient
-		\beta = \text{bias ratio} = \frac{\mu_{\hat{y}} }{\mu_{y}}
-		\gamma = \text{variability ratio} = \frac{ CV_{\hat{y}} } {CV_y} = \frac{ \sigma _{\hat{y}} / \mu _{\hat{y}} }{ \sigma _y / \mu _y}
-	and:
-		CV = coefficient of variation
-		\mu = mean
-		\sigma = standard deviation
++ https://rstudio-pubs-static.s3.amazonaws.com/433152_56d00c1e29724829bad5fc4fd8c8ebff.html
 
 
 Example to use KGE metric:
@@ -67,5 +65,3 @@ Example to use KGE metric:
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
 	print(evaluator.KGE(multi_output="raw_values"))
-
-

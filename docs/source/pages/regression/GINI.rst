@@ -15,18 +15,27 @@ GINI - GINI Coefficient
    :maxdepth: 3
 
 
+The Gini coefficient :cite:`gupta2022integrated` is a statistical measure used to measure income or wealth inequality within a population. It is named
+after the Italian statistician Corrado Gini who developed the concept in 1912. The Gini coefficient ranges from 0 to 1, where 0 represents perfect equality
+(every individual in the population has the same income or wealth) and 1 represents perfect inequality (one individual has all the income or wealth and
+everyone else has none).
+
 .. math::
 
-	\text{GINI}(y, \hat{y}) =
+	G = \frac{A}{A + B}
 
+where G is the Gini coefficient, A is the area between the Lorenz curve and the line of perfect equality, and B is the area under the line of perfect equality.
+
+The Gini coefficient is calculated by plotting the cumulative share of income or wealth (on the x-axis) against the cumulative share of the population (on
+the y-axis) and measuring the area between this curve and the line of perfect equality (which is a straight diagonal line from the origin to the upper right
+corner of the plot).
+
+The Gini coefficient is widely used in social sciences and economics to measure income or wealth inequality within and between countries. It is also used to
+analyze the distribution of other variables, such as educational attainment, health outcomes, and access to resources.
 
 + Best possible score is 1, bigger value is better. Range = [0, 1]
 + This version is based on: https://github.com/benhamner/Metrics/blob/master/MATLAB/metrics/gini.m
 
-
-Latex equation code::
-
-	\text{GINI}(y, \hat{y}) =
 
 
 Example to use Gini metric, there are two GINI versions:

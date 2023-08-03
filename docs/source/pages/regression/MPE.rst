@@ -50,5 +50,3 @@ Example to use MPE metric:
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
 	print(evaluator.MPE(multi_output="raw_values"))
-
-

@@ -20,9 +20,15 @@ SMAPE - Symmetric Mean Absolute Percentage Error
 	\text{SMAPE}(y, \hat{y}) = \frac{100\%}{N} \sum_{i=0}^{N - 1} \frac{ 2*|y_i - \hat{y}_i|}{|y| + |\hat{y}|}
 
 
-+ Symmetric Mean Absolute Percentage Error (SMAPE): Best possible score is 0.0, smaller value is better. Range = [0, 1].
-+ If you want percentage, multiply the result with 100%
-+ Link: https://en.wikipedia.org/wiki/Symmetric_mean_absolute_percentage_error
+Symmetric Mean Absolute Percentage Error (SMAPE) :cite:`thieu2019efficient`, which is an accuracy measure commonly used in forecasting and time series
+analysis.
+
+Given the actual values y and the predicted values y_hat, the SMAPE is calculated as the average of the absolute percentage errors between the two, where
+each error is weighted by the sum of the absolute values of the actual and predicted values.
+
+The resulting score ranges between 0 and 1, where a score of 0 indicates a perfect match between the actual and predicted values, and a score of 1 indicates
+no match at all. A smaller value of SMAPE is better, and it is often multiplied by 100% to obtain the percentage error. Best possible score is 0.0, smaller
+value is better. Range = [0, 1].
 
 
 Latex equation code::
@@ -51,5 +57,3 @@ Example to use SMAPE metric:
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
 	print(evaluator.SMAPE(multi_output="raw_values"))
-
-

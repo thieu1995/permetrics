@@ -50,4 +50,3 @@ Example to use AR metric:
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
 	print(evaluator.AR(multi_output="raw_values"))
-

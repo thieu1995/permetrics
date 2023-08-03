@@ -21,12 +21,12 @@ A20 - A20 index
 
 
 
-+ Best possible score is 1.0, bigger value is better. Range = [0, 1]
-+ a20-index evaluated metric by showing the number of samples that fit the prediction values with a deviation of ±20% compared to experimental values
-+ I developed this metric based on a10-index
++ a20-index (A20) :cite:`van2023groundwater` evaluated metric by showing the number of samples that fit the prediction values with a deviation of ±20%
+compared to experimental values.
 + In other words, the A20 metric measures the proportion of cases where the absolute difference between the predicted and actual values is less than or equal
 to 20% of the actual value. A higher A20 score indicates better predictive accuracy, as the model is able to make more accurate predictions that are closer
 to the actual values.
++ Best possible score is 1.0, bigger value is better. Range = [0, 1]
 
 
 Latex equation code::
@@ -55,6 +55,4 @@ Example to use A20 metric:
 	y_pred = array([[0, 2], [-1, 2], [8, -5]])
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
-	print(evaluator.a20(multi_output="raw_values"))
-
-
+	print(evaluator.A20(multi_output="raw_values"))

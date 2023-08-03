@@ -51,5 +51,3 @@ Example to use CE metric:
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
 	print(evaluator.CE(multi_output="raw_values"))
-
-

@@ -15,15 +15,13 @@ CI - Confidence Index
    :maxdepth: 3
 
 
-`Confidence Index`_ (or Performance Index): Reference evapotranspiration for Londrina, Paraná, Brazil: performance of different estimation methods
-
 .. math::
 
 	\text{CI}(y, \hat{y}) = \text{R}(y, \hat{y}) * \text{WI}(y, \hat{y})
 
+Confidence Index :cite:`ahmed2021comprehensive` or Performance Index (CI/PI) is score that measures the performance of each estimation method, with a higher value
+indicating better performance. The range of the CI/PI is (-inf, 1], meaning it can take any value less than or equal to 1, but not including negative infinity.
 
-+ Confidence Index (or Performance Index): CI (PI)
-+ Ref: Reference evapotranspiration for Londrina, Paraná, Brazil: performance of different estimation methods
 + Best possible score is 1.0, bigger value is better. Range = (-inf, 1], meaning of values::
 
 	> 0.85          Excellent Model
@@ -32,7 +30,7 @@ CI - Confidence Index
 	0.61-0.65       Satisfactory
 	0.51-0.60       Poor
 	0.41-0.50       Bad
-	≤ 0.40          Very bad
+	< 0.40          Very bad
 
 
 Latex equation code::
@@ -61,7 +59,3 @@ Example to use CI metric:
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
 	print(evaluator.CI(multi_output="raw_values"))
-
-
-.. _Confidence Index: https://www.researchgate.net/publication/319699360_Reference_evapotranspiration_for_Londrina_Parana_Brazil_performance_of_different_estimation_methods
-

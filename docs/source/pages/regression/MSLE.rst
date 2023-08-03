@@ -22,9 +22,16 @@ MSLE - Mean Squared Logarithmic Error
 Where :math:`\log_e (x)` means the natural logarithm of x. This metric is best to use when targets having exponential growth, such as population counts,
 average sales of a commodity over a span of years etc. Note that this metric penalizes an under-predicted estimate greater than an over-predicted estimate.
 
+The Mean Squared Logarithmic Error (MSLE) :cite:`hodson2021mean` is a statistical measure used to evaluate the accuracy of a forecasting model, particularly
+when the data has a wide range of values. It measures the average of the squared differences between the logarithms of the predicted and actual values.
 
+The logarithmic transformation used in the MSLE reduces the impact of large differences between the actual and predicted values and provides a better
+measure of the relative errors between the two values. The MSLE is always a positive value, with a smaller MSLE indicating better forecast accuracy.
+
++ The MSLE is commonly used in applications such as demand forecasting, stock price prediction, and sales forecasting, where the data has a wide range of
+values and the relative errors are more important than the absolute errors.
++ It is important to note that the MSLE is not suitable for data with negative values or zero values, as the logarithm function is not defined for these values.
 + Best possible score is 0.0, smaller value is better. Range = [0, +inf)
-+ Link: https://peltarion.com/knowledge-center/documentation/modeling-view/build-an-ai-model/loss-functions/mean-squared-logarithmic-error-(msle)
 
 
 Latex equation code::
@@ -53,7 +60,3 @@ Example to use MSLE metric:
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
 	print(evaluator.MSLE(multi_output="raw_values"))
-
-
-
-

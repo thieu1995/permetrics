@@ -51,4 +51,3 @@ Example to use RE metric:
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
 	print(evaluator.RE())
-

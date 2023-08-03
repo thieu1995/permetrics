@@ -15,7 +15,6 @@ MRE - Mean Relative Error
    :maxdepth: 3
 
 
-
 .. math::
 
 	\text{MRE}(y, \hat{y}) = \frac{1}{N} \sum_{i=0}^{N - 1} \frac{|y_i - \hat{y}_i|}{|y_i|}
@@ -51,6 +50,3 @@ Example to use MRE metric:
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
 	print(evaluator.MRE(multi_output="raw_values"))
-
-
-

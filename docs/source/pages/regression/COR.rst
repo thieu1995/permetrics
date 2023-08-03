@@ -20,14 +20,14 @@ COR - Correlation
 
    \text{COR}(y, \hat{y}) = \frac{ COV(y, \hat{y}) }{ std(y) * std(\hat{y})}
 
+Correlation :cite:`joreskog1978structural` measures the strength of the relationship between the variables and is a scaled measure of covariance. The
+correlation coefficient ranges from -1 to +1, where a value of 1 indicates a perfect positive correlation, a value of -1 indicates a perfect negative
+correlation, and a value of 0 indicates no correlation.
+
+To calculate the correlation coefficient, you divide the covariance of the variables by the product of their standard deviations. This normalization allows
+for comparison between different pairs of variables. The correlation coefficient is dimensionless and does not have any specific units of measurement.
 
 + Best possible value = 1, bigger value is better. Range = [-1, +1)
-
-
-Latex equation code::
-
-	\text{COR}(y, \hat{y}) = \frac{ COV(y, \hat{y}) }{ std(y) * std(\hat{y})}
-
 + Measures the strength of the relationship between variables, is the scaled measure of covariance. It is dimensionless.
 + the correlation coefficient is always a pure value and not measured in any units.
 + https://corporatefinanceinstitute.com/resources/data-science/covariance/
@@ -53,4 +53,3 @@ Example to use COR metric:
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
 	print(evaluator.COR(multi_output="raw_values"))
-

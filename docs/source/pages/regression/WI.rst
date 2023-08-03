@@ -15,16 +15,20 @@ WI - Willmott Index
 .. toctree::
    :maxdepth: 3
 
-
 .. math::
 
 	\text{WI}(y, \hat{y}) = 1 - \frac{ \sum_{i=0}^{N - 1} (\hat{y_i} - y_i)^2 }{ \sum_{i=0}^{N - 1} (|\hat{y_i} - mean(y)| + |y_i - mean(y)|)^2}
 
 
-+ Willmott Index (WI): Best possible score is 1.0, bigger value is better. Range = [0, 1]
-+ Reference evapotranspiration for Londrina, Paraná, Brazil: performance of different estimation methods
-+ https://www.researchgate.net/publication/319699360_Reference_evapotranspiration_for_Londrina_Parana_Brazil_performance_of_different_estimation_methods
+The Willmott Index (WI) :cite:`da2017reference` is a statistical measure used to evaluate the performance of a forecasting model, particularly in the
+context of hydrological or climate-related variables. The WI compares the accuracy of a model to the accuracy of a reference model that simply predicts the
+mean value of the observed variable. Best possible score is 1.0, bigger value is better. Range = [0, 1]
 
+The WI ranges between 0 and 1, with a value of 1 indicating perfect agreement between the predicted and observed values. A value of 0 indicates that the
+predicted values are no better than predicting the mean of the observed values.
+
+The WI is commonly used in hydrology and climate-related fields to evaluate the accuracy of models that predict variables such as precipitation, temperature,
+and evapotranspiration. It is a useful tool for comparing the performance of different models or different methods of estimating a variable.
 
 
 Latex equation code::
@@ -53,5 +57,3 @@ Example to use WI metric:
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
 	print(evaluator.WI(multi_output="raw_values"))
-
-

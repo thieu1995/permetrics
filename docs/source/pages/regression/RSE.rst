@@ -23,7 +23,8 @@ RSE - Residual Standard Error
 + Residual Standard Error (RSE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 + https://www.statology.org/residual-standard-error-r/
 + https://machinelearningmastery.com/degrees-of-freedom-in-machine-learning/
-+  The Residual Standard Error (RSE) is a metric used to evaluate the goodness of fit of a regression model. It measures the average distance between the observed values and the predicted values.
++  The Residual Standard Error (RSE) is a metric used to evaluate the goodness of fit of a regression model. It measures the average distance between the
+observed values and the predicted values.
 
 
 Latex equation code::
@@ -52,5 +53,3 @@ Example to use RSE metric:
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
 	print(evaluator.RSE(multi_output="raw_values"))
-
-

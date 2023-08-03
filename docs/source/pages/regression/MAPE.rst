@@ -19,12 +19,14 @@ MAPE - Mean Absolute Percentage Error
 
 	\text{MRE}(y, \hat{y}) = \frac{100\%}{N} \sum_{i=0}^{N - 1} \frac{|y_i - \hat{y}_i|}{|y_i|}.
 
-+ Good if mape < 20%. Best possible score is 0.0, smaller value is better. Range = [0, +inf)
+The Mean Absolute Percentage Error (MAPE) :cite:`nguyen2020new` is a statistical measure of the accuracy of a forecasting model, commonly used in
+business and economics. The MAPE measures the average percentage difference between the forecasted and actual values, with a lower MAPE indicating better
+forecast accuracy.
 
-
-Latex equation code::
-
-	\text{MRE}(y, \hat{y}) = \frac{100\%}{N} \sum_{i=0}^{N - 1} \frac{|y_i - \hat{y}_i|}{|y_i|}.
+The MAPE is expressed as a percentage, and a commonly used benchmark for a good forecast model is a MAPE of less than 20%. However, the benchmark may vary
+depending on the specific application and industry. The MAPE has a range of [0, +infinity), with a best possible score of 0.0, indicating perfect forecast
+accuracy. A larger MAPE indicates a larger average percentage difference between the forecasted and actual values, with infinite MAPE indicating a complete
+failure of the forecasting model.
 
 
 Example to use MAAPE metric:
@@ -48,5 +50,3 @@ Example to use MAAPE metric:
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
 	print(evaluator.MAPE(multi_output="raw_values"))
-
-

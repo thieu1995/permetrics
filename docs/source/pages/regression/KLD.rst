@@ -15,8 +15,24 @@ KLD - Kullback-Leibler Divergence
    :maxdepth: 3
 
 
+The Kullback-Leibler Divergence (KLD), :cite:`hershey2007approximating` also known as relative entropy, is a statistical measure of how different two probability
+distributions are from each other. It was introduced by Solomon Kullback and Richard Leibler in 1951. The KLD is calculated as the sum of the logarithmic
+differences between the probabilities of each possible outcome, weighted by the probability of the outcome in the reference distribution. The KLD is always
+non-negative, and it is equal to zero if and only if the two distributions are identical. The equation for KLD between two probability distributions P and Q
+is given by:
+
+.. math::
+
+    D_{KL}(P||Q) = \sum_{i} P(i) \log\frac{P(i)}{Q(i)}
+
+where P(i) and Q(i) are the probabilities of the i-th possible outcome in the two distributions, respectively.
+
+The KLD measures the information lost when approximating one probability distribution by another. It is widely used in information theory, machine learning,
+and data science applications, such as clustering, classification, and data compression. The KLD has also found applications in other fields, such as
+physics, economics, and biology, to measure the distance between two probability distributions.
+
 + Best possible score is 0.0 . Range = (-inf, +inf)
-+ Link: https://machinelearningmastery.com/divergence-between-probability-distributions/
++ https://machinelearningmastery.com/divergence-between-probability-distributions/
 
 
 Example to use KLD metric:

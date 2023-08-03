@@ -15,12 +15,13 @@ MedAE - Median Absolute Error
 .. toctree::
    :maxdepth: 3
 
+
 .. math::
 
 	\text{MedAE}(y, \hat{y}) = \text{median}(\mid y_1 - \hat{y}_1 \mid, \ldots, \mid y_n - \hat{y}_n \mid)
 
-The median_absolute_error is particularly interesting because it is robust to outliers. The loss is calculated by taking the median of all absolute
-differences between the target and the prediction.
+The Median Absolute Error (MedAE) :cite:`nguyen2022improved` is particularly interesting because it is robust to outliers. The loss is calculated by taking
+the median of all absolute differences between the target and the prediction.
 
 + Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
@@ -51,4 +52,3 @@ Example to use MedAE metric:
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
 	print(evaluator.ME(multi_output="raw_values"))
-

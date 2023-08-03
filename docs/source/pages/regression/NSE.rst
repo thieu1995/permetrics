@@ -20,9 +20,8 @@ NSE - Nash-Sutcliffe Efficiency
 
 	\text{NSE}(y, \hat{y}) = 1 - \frac{\sum_{i=0}^{N - 1} (y_i - \hat{y_i})^2}{ \sum_{i=0}^{N - 1} (y_i - mean(y))^2}
 
-
-+ Nash-Sutcliffe Efficiency (NSE): Best possible score is 1.0, bigger value is better. Range = (-inf, 1]
-+ Link: https://agrimetsoft.com/calculators/Nash%20Sutcliffe%20model%20Efficiency%20coefficient
+The NSE :cite:`xie2021predicting` is calculated as the ratio of the mean squared error between the observed and simulated streamflow to the variance of the
+observed streamflow. The NSE ranges between -inf and 1, with a value of 1 indicating perfect agreement between the observed and simulated streamflow.
 
 
 Latex equation code::
@@ -51,5 +50,3 @@ Example to use NSE metric:
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
 	print(evaluator.NSE(multi_output="raw_values"))
-
-

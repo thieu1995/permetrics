@@ -22,8 +22,8 @@ A30 - A30 index
 
 
 + Best possible score is 1.0, bigger value is better. Range = [0, 1]
-+ a30-index evaluated metric by showing the number of samples that fit the prediction values with a deviation of ±30% compared to experimental values
-+ I developed this metric based on a10-index
++ a30-index (A30) :cite:`van2023groundwater` evaluated metric by showing the number of samples that fit the prediction values with a deviation of ±30%
+compared to experimental values.
 + In other words, the A30 metric measures the proportion of cases where the absolute difference between the predicted and actual values is less than or equal
 to 30% of the actual value. A higher A30 score indicates better predictive accuracy, as the model is able to make more accurate predictions that are closer
 to the actual values.
@@ -55,6 +55,4 @@ Example to use A30 metric:
 	y_pred = array([[0, 2], [-1, 2], [8, -5]])
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
-	print(evaluator.a30(multi_output="raw_values"))
-
-
+	print(evaluator.A30(multi_output="raw_values"))

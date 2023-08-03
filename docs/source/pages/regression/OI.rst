@@ -20,6 +20,8 @@ OI - Overall Index
 
    \text{OI}(y, \hat{y}) = \frac{1}{2} \biggr[ 1 - \frac{RMSE}{y_{max} - y_{min}} + EC \biggr]
 
+The Overall Index (OI) :cite:`almodfer2022modeling` is a composite measure used to evaluate the accuracy of a forecasting model. It combines the Root Mean
+Squared Error (RMSE) with a measure of the relative error and a correction term.
 
 + Best possible value = 1, bigger value is better. Range = [-1, +1)
 
@@ -28,7 +30,6 @@ Latex equation code::
 
 	\text{OI}(y, \hat{y}) = \frac{1}{2} \biggr[ 1 - \frac{RMSE}{y_{max} - y_{min}} + EC \biggr]
 
-+ https://doi.org/10.1016/j.csite.2022.101797
 
 Example to use COR metric:
 
@@ -51,4 +52,3 @@ Example to use COR metric:
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
 	print(evaluator.OI(multi_output="raw_values"))
-

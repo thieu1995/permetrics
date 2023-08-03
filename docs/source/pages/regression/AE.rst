@@ -49,4 +49,3 @@ Example to use AE metric:
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
 	print(evaluator.AE())
-

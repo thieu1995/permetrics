@@ -21,7 +21,7 @@ MASE - Mean Absolute Scaled Error
 
 + Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 + m = 1 for non-seasonal data, m > 1 for seasonal data
-+ `document`_.
++ https://en.wikipedia.org/wiki/Mean_absolute_scaled_error
 
 
 Latex equation code::
@@ -50,6 +50,3 @@ Example to use MASE metric:
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
 	print(evaluator.MASE(multi_output="raw_values"))
-
-.. _document: https://en.wikipedia.org/wiki/Mean_absolute_scaled_error
-

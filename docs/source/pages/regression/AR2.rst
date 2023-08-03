@@ -58,4 +58,3 @@ Example to use AR2 metric:
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
 	print(evaluator.AR2(multi_output="raw_values"))
-

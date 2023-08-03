@@ -21,14 +21,14 @@ CRM - Coefficient of Residual Mass
    \text{CRM}(y, \hat{y}) = \frac{\sum{\hat{Y}} - \sum{Y}}{\sum{Y}}
 
 
+The CRM :cite:`almodfer2022modeling` is a measure of the accuracy of the model in predicting the values of the dependent variable. A lower value of CRM
+indicates that the model is better at predicting the values of the dependent variable, while a higher value indicates poorer performance. The coefficient of
+residual mass is typically used in environmental engineering and hydrology to measure the accuracy of models used to predict water quality and quantity,
+sediment transport, and erosion.
+
 + Best possible value = 0, smaller value is better. Range = (-inf, +inf)
-
-
-Latex equation code::
-
-	\text{CRM}(y, \hat{y}) = \frac{\sum{\hat{Y}} - \sum{Y}}{\sum{Y}}
-
 + https://doi.org/10.1016/j.csite.2022.101797
+
 
 Example to use CRM metric:
 
@@ -51,4 +51,3 @@ Example to use CRM metric:
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
 	print(evaluator.CRM(multi_output="raw_values"))
-

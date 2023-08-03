@@ -20,16 +20,14 @@ VAF - Variance Accounted For
 	\text{VAF}(y, f_i) = 100\% \times \frac{\sum_{i=1}^{n}(y_i - \bar{y})(f_i - \bar{f})}{\sum_{i=1}^{n}(y_i - \bar{y})^2}
 
 
-
++ Variance Accounted For (VAF) is a metric used to evaluate the performance of a regression model. It measures the proportion of the total variance in the
+actual values that is accounted for by the variance in the predicted values.
 + Variance Accounted For between 2 signals (VAF): Best possible score is 100% (identical signal), bigger value is better. Range = (-inf, 100%]
-+ Link: https://www.dcsc.tudelft.nl/~jwvanwingerden/lti/doc/html/vaf.html
-+ Variance Accounted For (VAF) is a metric used to evaluate the performance of a regression model. It measures the proportion of the total variance in the actual values that is accounted for by the variance in the predicted values.
-
++ https://www.dcsc.tudelft.nl/~jwvanwingerden/lti/doc/html/vaf.html
 
 Latex equation code::
 
 	\text{VAF}(y, f_i) = 100\% \times \frac{\sum_{i=1}^{n}(y_i - \bar{y})(f_i - \bar{f})}{\sum_{i=1}^{n}(y_i - \bar{y})^2}
-
 
 Example to use VAF metric:
 
@@ -52,5 +50,3 @@ Example to use VAF metric:
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
 	print(evaluator.VAF(multi_output="raw_values"))
-
-

@@ -20,12 +20,12 @@ EC - Efficiency Coefficient
 
    \text{EC}(y, \hat{y}) = 1 - \frac{ \sum_{i=1}^n (y_i - \hat{y_i})^2 }{ \sum_{i=1}^n (y_i - mean(Y))^2 }
 
+Efficiency Coefficient (EC) :cite:`joreskog1978structural` is a metric used to evaluate the accuracy of a regression model in predicting continuous values.
 
 + Best possible value = 1, bigger value is better. Range = [-inf, +1]
-+ Efficiency Coefficient (EC) is a metric used to evaluate the accuracy of a regression model in predicting continuous values.
 + The EC ranges from negative infinity to 1, where a value of 1 indicates a perfect match between the model predictions and the observed data, and a value
-of 0 indicates that the model predictions are no better than the benchmark prediction. A negative value indicates that the model predictions are worse than
-the benchmark prediction.
+of 0 indicates that the model predictions are no better than the benchmark prediction.
++ A negative value indicates that the model predictions are worse than the benchmark prediction.
 
 
 
@@ -56,4 +56,3 @@ Example to use EC metric:
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
 	print(evaluator.EC(multi_output="raw_values"))
-

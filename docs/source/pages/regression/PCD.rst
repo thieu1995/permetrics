@@ -52,5 +52,3 @@ Example to use PCD metric:
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
 	print(evaluator.PCD(multi_output="raw_values"))
-
-

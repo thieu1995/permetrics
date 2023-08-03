@@ -16,28 +16,24 @@ COV - Covariance
    :maxdepth: 3
 
 
+Covariance of population
 .. math::
 
    \text{COV}(y, \hat{y}) = \frac{\sum_{i=1}^{N} (y_i - mean(Y)) (\hat{y}_i - mean(\hat{Y}))}{N}
 
 
-+ There is no best value, bigger value is better. Range = [-inf, +inf)
-+ Positive covariance: Indicates that two variables tend to move in the same direction.
-+ Negative covariance: Reveals that two variables tend to move in inverse directions.
-
-
-Latex equation code for covariance of population::
-
-	\text{COV}(y, \hat{y}) = \frac{\sum_{i=1}^{N} (y_i - mean(Y)) (\hat{y}_i - mean(\hat{Y}))}{N}
-
-Latex equation code for covariance of sample::
+Covariance of sample
+.. math::
 
 	\text{COV}(y, \hat{y}) = \frac{\sum_{i=1}^{N} (y_i - mean(Y)) (\hat{y}_i - mean(\hat{Y}))}{N - 1}
 
-+ COV is a measure of the relationship between two random variables.
-+ evaluates how much – to what extent – the variables change together.
-+ does not assess the dependency between variables.
-+ https://corporatefinanceinstitute.com/resources/data-science/covariance/
+
++ There is no best value, bigger value is better. Range = [-inf, +inf)
++ Positive covariance: Indicates that two variables tend to move in the same direction.
++ Negative covariance: Reveals that two variables tend to move in inverse directions.
++ COV is a measure of the relationship between two random variables evaluates how much – to what extent – the variables change together, does not assess the
+dependency between variables. https://corporatefinanceinstitute.com/resources/data-science/covariance/
+
 
 Example to use COV metric:
 
@@ -60,4 +56,3 @@ Example to use COV metric:
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
 	print(evaluator.COV(multi_output="raw_values"))
-

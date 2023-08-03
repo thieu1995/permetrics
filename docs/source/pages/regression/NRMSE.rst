@@ -15,16 +15,11 @@ NRMSE - Normalized Root Mean Square Error
    :maxdepth: 3
 
 
-.. math::
-
-
+The NRMSE :cite:`stephen2014improved` is calculated as the RMSE divided by the range of the observed values, expressed as a percentage. The range of the
+observed values is the difference between the maximum and minimum values of the observed data.
 
 + Normalized Root Mean Square Error (NRMSE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
-+ Link: https://medium.com/microsoftazure/how-to-better-evaluate-the-goodness-of-fit-of-regressions-990dbf1c0091
-
-
-+ Latex equation code:
-
++ https://medium.com/microsoftazure/how-to-better-evaluate-the-goodness-of-fit-of-regressions-990dbf1c0091
 
 
 + Example to use NMRSE metric:
@@ -48,5 +43,3 @@ NRMSE - Normalized Root Mean Square Error
 
 	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
 	print(evaluator.NRMSE(multi_output="raw_values"))
-
-
