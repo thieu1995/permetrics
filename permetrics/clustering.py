@@ -467,7 +467,7 @@ class ClusteringMetric(Evaluator):
             b_values = [np.mean(dm[i, y_pred == label]) for label in np.unique(y_pred) if label != y_pred[i]]
             b = np.min(b_values) if len(b_values) > 0 else 0  # Separation
             silhouette_scores[i] = (b - a) / max(a, b)
-        return np.mean(silhouette_scores)
+        return np.round(np.mean(silhouette_scores), decimal)
 
     def sum_squared_error_index(self, X=None, y_pred=None, decimal=None, **kwarg):
         """
@@ -499,7 +499,43 @@ class ClusteringMetric(Evaluator):
             centroid = centers[y_pred[idx]]  # Get the centroid associated with the data point's label
             distance = np.linalg.norm(point - centroid)  # Calculate the Euclidean distance
             sse += distance ** 2  # Add the squared distance to the SSE
-        return sse
+        return np.round(sse, decimal)
+
+    def duda_hart_index(self, X=None, y_pred=None, decimal=None, **kwarg):
+        """
+        Computes the Duda Index or Duda-Hart index
+        Smaller is better (Best = 0), Range = [0, +inf)
+
+        Args:
+            X (array-like of shape (n_samples, n_features)):
+                A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
+            y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            result (float): The Duda-Hart index
+        """
+        X = self.check_X(X)
+        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
+        # Find the unique cluster labels
+        unique_labels = np.unique(y_pred)
+        # Compute the pairwise distances between data points
+        pairwise_distances = cu.cdist(X, X)
+        # Initialize the numerator and denominator for Duda index calculation
+        intra_cluster_distances = 0
+        inter_cluster_distances = 0
+        # Iterate over each unique cluster label
+        for label in unique_labels:
+            # Find the indices of data points in the current cluster
+            cluster_indices = np.where(y_pred == label)[0]
+            # Compute the average pairwise distance within the current cluster
+            intra_cluster_distances += np.mean(pairwise_distances[np.ix_(cluster_indices, cluster_indices)])
+            # Compute the average pairwise distance to other clusters
+            other_cluster_indices = np.where(y_pred != label)[0]
+            inter_cluster_distances += np.mean(pairwise_distances[np.ix_(cluster_indices, other_cluster_indices)])
+        # Calculate the Duda index
+        result = intra_cluster_distances / inter_cluster_distances
+        return np.round(result, decimal)
 
     def baker_hubert_gamma_index(self, X=None, y_pred=None, decimal=None, **kwargs):
         """
@@ -1180,6 +1216,7 @@ class ClusteringMetric(Evaluator):
     LSRI = log_ss_ratio_index
     SI = silhouette_index
     SSEI = sum_squared_error_index
+    DHI = duda_hart_index
 
     BHGI = baker_hubert_gamma_index
     GPI = g_plus_index
