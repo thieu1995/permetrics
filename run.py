@@ -59,9 +59,9 @@ y_pred = [0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1]
 # print(cm.roc_auc_score(y_true, y_score, average="weighted"))
 
 cm = ClassificationMetric(y_true, y_pred, decimal=5)
-print(cm.gini_index(average=None))
-print(cm.GINI(average="macro"))
-print(cm.gini(average="weighted"))
+print(cm.precision_score(average=None))
+print(cm.PS(average="macro"))
+print(cm.PS(average="weighted"))
 
 
 # generate sample data

@@ -33,8 +33,8 @@
 # ## Get the result of any function you want to
 # print(evaluator.f1_score())
 # print(evaluator.F1S(average="micro"))
-# print(evaluator.f1s(average="macro"))
-# print(evaluator.f1s(average="weighted"))
+# print(evaluator.F1S(average="macro"))
+# print(evaluator.F1S(average="weighted"))
 #
 #
 # ##### Clustering performance
@@ -51,7 +51,7 @@
 # print(internal_evaluator.BRI())
 
 
-__version__ = "1.4.0"
+__version__ = "1.4.1"
 
 from .evaluator import Evaluator
 from .classification import ClassificationMetric

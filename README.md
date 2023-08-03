@@ -4,7 +4,7 @@
 
 ---
 
-[![GitHub release](https://img.shields.io/badge/release-1.4.0-yellow.svg)](https://github.com/thieu1995/permetrics/releases)
+[![GitHub release](https://img.shields.io/badge/release-1.4.1-yellow.svg)](https://github.com/thieu1995/permetrics/releases)
 [![Wheel](https://img.shields.io/pypi/wheel/gensim.svg)](https://pypi.python.org/pypi/permetrics) 
 [![PyPI version](https://badge.fury.io/py/permetrics.svg)](https://badge.fury.io/py/permetrics)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/permetrics.svg)
@@ -48,7 +48,7 @@ field access metrics as fast as possible
 ### Install with pip
 Install the [current PyPI release](https://pypi.python.org/pypi/permetrics):
 ```sh 
-$ pip install permetrics==1.4.0
+$ pip install permetrics==1.4.1
 ```
 
 Or installing from the source code, use:
@@ -560,8 +560,8 @@ print(evaluator.BHI())
     <tr>
         <td>****</td>
         <td>10</td>
-        <td>HL</td>
-        <td>Hamming Loss</td>
+        <td>HS</td>
+        <td>Hamming Score</td>
         <td>Higher is better (Best = 1), Range = [0, 1]</td>
     </tr>
     <tr>
@@ -588,16 +588,23 @@ print(evaluator.BHI())
     <tr>
         <td>****</td>
         <td>14</td>
-        <td>GINI</td>
-        <td>GINI Index</td>
+        <td>ROC-AUC</td>
+        <td>ROC-AUC</td>
         <td>Higher is better (Best = +1), Range = [0, +1]</td>
     </tr>
     <tr>
         <td>****</td>
         <td>15</td>
-        <td>ROC-AUC</td>
-        <td>ROC-AUC</td>
-        <td>Higher is better (Best = +1), Range = [0, +1]</td>
+        <td>LS</td>
+        <td>Lift Score</td>
+        <td>Higher is better (No best value), Range = [0, +inf)</td>
+    </tr>
+    <tr>
+        <td>****</td>
+        <td>16</td>
+        <td>GINI</td>
+        <td>GINI Index</td>
+        <td>Smaller is better (Best = 0), Range = [0, +1]</td>
     </tr>
     <tr>
         <td>****</td>
@@ -616,15 +623,15 @@ print(evaluator.BHI())
     <tr>
         <td>****</td>
         <td>2</td>
-        <td>CHI</td>
-        <td>Calinski Harabasz Index</td>
-        <td>Greater is better (No best value), Range=[0, inf)</td>
+        <td>XBI</td>
+        <td>Xie Beni Index</td>
+        <td>Smaller is better (Best = 0), Range=[0, +inf)</td>
     </tr>
     <tr>
         <td>****</td>
         <td>3</td>
-        <td>XBI</td>
-        <td>Xie Beni Index</td>
+        <td>DBI</td>
+        <td>Davies Bouldin Index</td>
         <td>Smaller is better (Best = 0), Range=[0, +inf)</td>
     </tr>
     <tr>
@@ -632,63 +639,63 @@ print(evaluator.BHI())
         <td>4</td>
         <td>BRI</td>
         <td>Banfeld Raftery Index</td>
-        <td>Greater is better (No best value), Range=[0, inf)</td>
+        <td>Smaller is better (No best value), Range=(-inf, inf)</td>
     </tr>
     <tr>
         <td>****</td>
         <td>5</td>
-        <td>DBI</td>
-        <td>Davies Bouldin Index</td>
-        <td>Smaller is better (Best = 0), Range=[0, +inf)</td>
+        <td>KDI</td>
+        <td>Ksq Detw Index</td>
+        <td>Smaller is better (No best value), Range=(-inf, +inf)</td>
     </tr>
     <tr>
         <td>****</td>
         <td>6</td>
         <td>DRI</td>
         <td>Det Ratio Index</td>
-        <td>Smaller is better (Best = 0), Range=[0, 1]</td>
+        <td>Bigger is better (No best value), Range=[0, +inf)</td>
     </tr>
     <tr>
         <td>****</td>
         <td>7</td>
         <td>DI</td>
         <td>Dunn Index</td>
-        <td>Greater is better (No best value), Range=[0, inf)</td>
+        <td>Bigger is better (No best value), Range=[0, +inf)</td>
     </tr>
     <tr>
         <td>****</td>
         <td>8</td>
-        <td>KDI</td>
-        <td>Ksq Detw Index</td>
-        <td>Smaller is better (Best = 0), Range=[0, 1]</td>
+        <td>CHI</td>
+        <td>Calinski Harabasz Index</td>
+        <td>Bigger is better (No best value), Range=[0, inf)</td>
     </tr>
     <tr>
         <td>****</td>
         <td>9</td>
         <td>LDRI</td>
         <td>Log Det Ratio Index</td>
-        <td>Smaller is better (No best value), Range=(-inf, 0]</td>
+        <td>Bigger is better (No best value), Range=(-inf, +inf)</td>
     </tr>
     <tr>
         <td>****</td>
         <td>10</td>
         <td>LSRI</td>
         <td>Log SS Ratio Index</td>
-        <td>Smaller is better (No best value), Range=(-inf, 0]</td>
+        <td>Bigger is better (No best value), Range=(-inf, +inf)</td>
     </tr>
     <tr>
         <td>****</td>
         <td>11</td>
         <td>SI</td>
         <td>Silhouette Index</td>
-        <td>Higher is better (Best = 1), Range = [-1, +1]</td>
+        <td>Bigger is better (Best = 1), Range = [-1, +1]</td>
     </tr>
     <tr>
         <td>****</td>
         <td>12</td>
         <td>MIS</td>
         <td>Mutual Info Score</td>
-        <td>Higher is better (Best = 1), Range = [0, 1]</td>
+        <td>Higher is better (No best value), Range = [0, +inf)</td>
     </tr>
     <tr>
         <td>****</td>
@@ -765,7 +772,7 @@ print(evaluator.BHI())
         <td>23</td>
         <td>HGS</td>
         <td>Hubert Gamma Score</td>
-        <td>Greater is better (Best = 1), Range=[-1, +1]</td>
+        <td>Higher is better (Best = 1), Range=[-1, +1]</td>
     </tr>
     <tr>
         <td>****</td>
@@ -786,14 +793,14 @@ print(evaluator.BHI())
         <td>26</td>
         <td>MNS</td>
         <td>Mc Nemar Score</td>
-        <td>Smaller is better (Best = 0), Range=[0, 1]</td>
+        <td>Higher is better (No best value), Range=(-inf, +inf)</td>
     </tr>
     <tr>
         <td>****</td>
         <td>27</td>
         <td>PhS</td>
         <td>Phi Score</td>
-        <td>Higher is better (Best = 1), Range = [-1, +1]</td>
+        <td>Higher is better (No best value), Range = (-inf, +inf)</td>
     </tr>
     <tr>
         <td>****</td>
