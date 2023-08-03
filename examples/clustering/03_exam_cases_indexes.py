@@ -20,7 +20,7 @@ temp = [
 ]
 for idx in range(7):
     evaluator = ClusteringMetric(y_pred=temp[idx], X=X, decimal=5)
-    print(evaluator.dunn_index())
+    print(evaluator.hartigan_index())
 
 # print(evaluator.get_metrics_by_list_names(["BHI", "CHI", "XBI", "BRI", "DBI", "DRI", "DI", "KDI", "LDRI", "LSRI", "SI"]))
 
@@ -35,3 +35,9 @@ for idx in range(7):
 # LDRI = log_det_ratio_index
 # LSRI = log_ss_ratio_index
 # SI = silhouette_index
+# SSEI = sum_squared_error_index
+# DHI = duda_hart_index
+# BI = beale_index
+# RSI = r_squared_index
+# DBCVI = density_based_clustering_validation_index
+# HI = hartigan_index

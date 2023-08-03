@@ -21,7 +21,7 @@ temp = [
 ]
 for idx in range(6):
     evaluator = ClusteringMetric(y_true=y_true, y_pred=temp[idx], X=X, decimal=5)
-    print(evaluator.sokal_sneath2_score())
+    print(evaluator.tau_score())
 
 # print(evaluator.get_metrics_by_list_names(["MIS", "NMIS", "RaS", "FMS", "HS", "CS", "VMS", "PrS", "ReS", "FmS",
 #                                            "CDS", "HGS", "JS", "KS", "MNS", "PhS", "RTS", "RRS", "SS1S", "SS2S"]))
@@ -46,3 +46,6 @@ for idx in range(6):
 # RRS = russel_rao_score
 # SS1S = sokal_sneath1_score
 # SS2S = sokal_sneath2_score
+# PuS = purity_score
+# ES = entropy_score
+# TS = tau_score
