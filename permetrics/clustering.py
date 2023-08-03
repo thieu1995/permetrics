@@ -1047,6 +1047,48 @@ class ClusteringMetric(Evaluator):
         cc = (yy + nn) / (yy + nn + 0.5 * (yn + ny))
         return np.round(cc, decimal)
 
+    def purity_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+        """
+        Computes the Purity score
+        Higher is better (Best = 1), Range = [0, 1]
+
+        Purity is a metric used to evaluate the quality of clustering results, particularly in situations where the
+        ground truth labels of the data points are known. It measures the extent to which the clusters produced by
+        a clustering algorithm match the true class labels of the data.
+
+        Here's how Purity is calculated:
+            1) For each cluster, find the majority class label among the data points in that cluster.
+            2) Sum up the sizes of the clusters that belong to the majority class label.
+            3) Divide the sum by the total number of data points.
+
+        Args:
+            y_true (array-like): The true labels for each sample.
+            y_pred (array-like): The predicted cluster labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            result (float): The Purity score
+        """
+        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
+        # Find the number of data points
+        N = len(y_true)
+        # Find the unique class labels in the true labels
+        unique_classes = np.unique(y_true)
+        # Initialize the purity score
+        purity = 0
+        # Iterate over each unique class label
+        for c in unique_classes:
+            # Find the indices of data points with the current class label in the true labels
+            class_indices = np.where(y_true == c)[0]
+            # Find the corresponding predicted labels for these data points
+            class_predictions = y_pred[class_indices]
+            # Count the occurrences of each predicted label
+            class_counts = np.bincount(class_predictions)
+            # Add the size of the majority class to the purity score
+            purity += np.max(class_counts)
+        # Normalize the purity score by dividing by the total number of data points
+        return  np.round(purity/N, decimal)
+
     BHI = ball_hall_index
     CHI = calinski_harabasz_index
     XBI = xie_beni_index
@@ -1082,3 +1124,4 @@ class ClusteringMetric(Evaluator):
     RRS = russel_rao_score
     SS1S = sokal_sneath1_score
     SS2S = sokal_sneath2_score
+    PuS = purity_score
