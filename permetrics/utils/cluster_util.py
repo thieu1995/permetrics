@@ -128,13 +128,16 @@ def get_centroids(X, labels):
 
 
 def compute_contingency_matrix(y_true, y_pred):
-    n_samples = y_true.shape[0]
-    n_clusters_true = len(np.unique(y_true))
-    n_clusters_pred = len(np.unique(y_pred))
-    contingency_matrix = np.zeros((n_clusters_true, n_clusters_pred), dtype=np.int64)
-    for i in range(n_samples):
-        contingency_matrix[y_true[i], y_pred[i]] += 1
-    return contingency_matrix
+    unique_true = np.unique(y_true)
+    unique_pred = np.unique(y_pred)
+    num_true = len(unique_true)
+    num_pred = len(unique_pred)
+    contingency = np.zeros((num_true, num_pred), dtype=np.int64)
+    for i in range(len(y_true)):
+        true_label = np.where(unique_true == y_true[i])[0]
+        pred_label = np.where(unique_pred == y_pred[i])[0]
+        contingency[true_label, pred_label] += 1
+    return contingency
 
 
 def compute_entropy(labels):

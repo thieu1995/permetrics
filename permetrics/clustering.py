@@ -484,7 +484,7 @@ class ClusteringMetric(Evaluator):
 
     def mutual_info_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
-        Computes the mutual information between two clusterings.
+        Computes the Mutual Information score between two clusterings.
 
         Args:
             y_true (array-like): The true labels for each sample.
@@ -492,7 +492,7 @@ class ClusteringMetric(Evaluator):
             decimal (int): The number of fractional parts after the decimal point
 
         Returns:
-            result (float): The mutual information score.
+            result (float): The Mutual Information score
         """
         y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
         contingency_matrix = cu.compute_contingency_matrix(y_true, y_pred)
@@ -504,9 +504,6 @@ class ClusteringMetric(Evaluator):
         # Calculate mutual information
         n_clusters_true = len(np.unique(y_true))
         n_clusters_pred = len(np.unique(y_pred))
-        if n_clusters_true == 1 or n_clusters_pred == 1:
-            # If either of the clusterings has only one cluster, MI is not defined
-            return 0.0
         mi = 0.0
         for idx in range(n_clusters_true):
             for jdx in range(n_clusters_pred):
