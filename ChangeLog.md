@@ -2,6 +2,7 @@
 + Remove all lowercase shortname of all metrics
 + Fix bugs in GINI function belongs to ClassificationMetric
 + Fix bugs in some functions belong to ClusteringMetric
++ Update characteristics of most of the functions (valid ranges and best value)
 + Add metrics to ClusteringMetrics
   + Entropy Score (ES)
   + Purity Score (PuS)
@@ -12,7 +13,7 @@
   + R-Squared Index (RSI)
   + Density-Based Clustering Validation Index (DBCVI)
   + Hartigan Index (HI)
-+ Update characteristics of most of the functions (valid ranges and best value)
++ Add get_support() method in RegressionMetric, ClassificationMetric, and ClusteringMetric
 + Update and add more examples to all classes.
 + Update documents for all metrics.
 

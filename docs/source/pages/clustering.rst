@@ -32,57 +32,57 @@ Clustering Metrics
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
 | 14  |   BI   |                Beale Index                |    Smaller is better (Best = 0), Range = [0, +inf)     |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 15  |  RSI   |              R-squared Index              |      Higher is better (Best=1), Range = (-inf, 1]      |
+| 15  |  RSI   |              R-squared Index              |      Bigger is better (Best=1), Range = (-inf, 1]      |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 16  | DBCVI  | Density-based Clustering Validation Index |        Lower is better (Best=0), Range = [0, 1]        |
+| 16  | DBCVI  | Density-based Clustering Validation Index |       Bigger is better (Best=0), Range = [0, 1]        |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 17  |   HI   |              Hartigan Index               |      Lower is better (best=0), Range = [0, +inf)       |
+| 17  |   HI   |              Hartigan Index               |      Bigger is better (best=0), Range = [0, +inf)      |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 18  |  MIS   |             Mutual Info Score             |  Higher is better (No best value), Range = [0, +inf)   |
+| 18  |  MIS   |             Mutual Info Score             |  Bigger is better (No best value), Range = [0, +inf)   |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 19  |  NMIS  |       Normalized Mutual Info Score        |      Higher is better (Best = 1), Range = [0, 1]       |
+| 19  |  NMIS  |       Normalized Mutual Info Score        |      Bigger is better (Best = 1), Range = [0, 1]       |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 20  |  RaS   |                Rand Score                 |      Higher is better (Best = 1), Range = [0, 1]       |
+| 20  |  RaS   |                Rand Score                 |      Bigger is better (Best = 1), Range = [0, 1]       |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 21  |  FMS   |           Fowlkes Mallows Score           |      Higher is better (Best = 1), Range = [0, 1]       |
+| 21  |  FMS   |           Fowlkes Mallows Score           |      Bigger is better (Best = 1), Range = [0, 1]       |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 22  |   HS   |             Homogeneity Score             |      Higher is better (Best = 1), Range = [0, 1]       |
+| 22  |   HS   |             Homogeneity Score             |      Bigger is better (Best = 1), Range = [0, 1]       |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 23  |   CS   |            Completeness Score             |      Higher is better (Best = 1), Range = [0, 1]       |
+| 23  |   CS   |            Completeness Score             |      Bigger is better (Best = 1), Range = [0, 1]       |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 24  |  VMS   |              V-Measure Score              |      Higher is better (Best = 1), Range = [0, 1]       |
+| 24  |  VMS   |              V-Measure Score              |      Bigger is better (Best = 1), Range = [0, 1]       |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 25  |  PrS   |              Precision Score              |      Higher is better (Best = 1), Range = [0, 1]       |
+| 25  |  PrS   |              Precision Score              |      Bigger is better (Best = 1), Range = [0, 1]       |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 26  |  ReS   |               Recall Score                |      Higher is better (Best = 1), Range = [0, 1]       |
+| 26  |  ReS   |               Recall Score                |      Bigger is better (Best = 1), Range = [0, 1]       |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 27  |  FmS   |              F-Measure Score              |      Higher is better (Best = 1), Range = [0, 1]       |
+| 27  |  FmS   |              F-Measure Score              |      Bigger is better (Best = 1), Range = [0, 1]       |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 28  |  CDS   |          Czekanowski Dice Score           |      Higher is better (Best = 1), Range = [0, 1]       |
+| 28  |  CDS   |          Czekanowski Dice Score           |      Bigger is better (Best = 1), Range = [0, 1]       |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 29  |  HGS   |            Hubert Gamma Score             |      Higher is better (Best = 1), Range=[-1, +1]       |
+| 29  |  HGS   |            Hubert Gamma Score             |      Bigger is better (Best = 1), Range=[-1, +1]       |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 30  |   JS   |               Jaccard Score               |      Higher is better (Best = 1), Range = [0, 1]       |
+| 30  |   JS   |               Jaccard Score               |      Bigger is better (Best = 1), Range = [0, 1]       |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 31  |   KS   |             Kulczynski Score              |      Higher is better (Best = 1), Range = [0, 1]       |
+| 31  |   KS   |             Kulczynski Score              |      Bigger is better (Best = 1), Range = [0, 1]       |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 32  |  MNS   |              Mc Nemar Score               |  Higher is better (No best value), Range=(-inf, +inf)  |
+| 32  |  MNS   |              Mc Nemar Score               |  Bigger is better (No best value), Range=(-inf, +inf)  |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 33  |  PhS   |                 Phi Score                 | Higher is better (No best value), Range = (-inf, +inf) |
+| 33  |  PhS   |                 Phi Score                 | Bigger is better (No best value), Range = (-inf, +inf) |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 34  |  RTS   |           Rogers Tanimoto Score           |      Higher is better (Best = 1), Range = [0, 1]       |
+| 34  |  RTS   |           Rogers Tanimoto Score           |      Bigger is better (Best = 1), Range = [0, 1]       |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 35  |  RRS   |             Russel Rao Score              |      Higher is better (Best = 1), Range = [0, 1]       |
+| 35  |  RRS   |             Russel Rao Score              |      Bigger is better (Best = 1), Range = [0, 1]       |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 36  |  SS1S  |            Sokal Sneath1 Score            |      Higher is better (Best = 1), Range = [0, 1]       |
+| 36  |  SS1S  |            Sokal Sneath1 Score            |      Bigger is better (Best = 1), Range = [0, 1]       |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 37  |  SS2S  |            Sokal Sneath2 Score            |      Higher is better (Best = 1), Range = [0, 1]       |
+| 37  |  SS2S  |            Sokal Sneath2 Score            |      Bigger is better (Best = 1), Range = [0, 1]       |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 38  |  PuS   |               Purity Score                |      Higher is better (Best = 1), Range = [0, 1]       |
+| 38  |  PuS   |               Purity Score                |      Bigger is better (Best = 1), Range = [0, 1]       |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
 | 39  |   ES   |               Entropy Score               |      Smaller is better (Best = 0), Range = [0, 1]      |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 40  |   TS   |                 Tau Score                 |      Higher is better (Best = 1), Range = [-1, 1]      |
+| 40  |   TS   |                 Tau Score                 |      Bigger is better (Best = 1), Range = [-1, 1]      |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
 
 
