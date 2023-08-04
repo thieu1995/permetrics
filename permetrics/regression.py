@@ -30,11 +30,83 @@ class RegressionMetric(Evaluator):
     decimal: int, default = 5
         The number of fractional parts after the decimal point
     """
+
+    SUPPORT = {
+        "EVS": {"type": "max", "range": "(-inf, 1]", "best": "1"},
+        "ME": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "MBE": {"type": "unknown", "range": "(-inf, +inf)", "best": "0"},
+        "MAE": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "MSE": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "RMSE": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "MSLE": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "MedAE": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "MRE": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "MRB": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "MPE": {"type": "unknown", "range": "(-inf, +inf)", "best": "0"},
+        "MAPE": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "SMAPE": {"type": "min", "range": "[0, 1]", "best": "0"},
+        "MAAPE": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "MASE": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "NSE": {"type": "max", "range": "(-inf, 1]", "best": "1"},
+        "NNSE": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "WI": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "R": {"type": "max", "range": "[-1, 1]", "best": "1"},
+        "PCC": {"type": "max", "range": "[-1, 1]", "best": "1"},
+        "AR": {"type": "max", "range": "[-1, 1]", "best": "1"},
+        "APCC": {"type": "max", "range": "[-1, 1]", "best": "1"},
+        "R2S": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "RSQ": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "R2": {"type": "max", "range": "(-inf, 1]", "best": "1"},
+        "COD": {"type": "max", "range": "(-inf, 1]", "best": "1"},
+        "AR2": {"type": "max", "range": "(-inf, 1]", "best": "1"},
+        "ACOD": {"type": "max", "range": "(-inf, 1]", "best": "1"},
+        "CI": {"type": "max", "range": "(-inf, 1]", "best": "1"},
+        "DRV": {"type": "min", "range": "[1, +inf)", "best": "1"},
+        "KGE": {"type": "max", "range": "(-inf, 1]", "best": "1"},
+        "GINI": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "GINI_WIKI": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "PCD": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "CE": {"type": "unknown", "range": "(-inf, 0]", "best": "unknown"},
+        "KLD": {"type": "unknown", "range": "(-inf, +inf)", "best": "0"},
+        "JSD": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "VAF": {"type": "max", "range": "(-inf, 100%)", "best": "100"},
+        "RAE": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "A10": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "A20": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "A30": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "NRMSE": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "RSE": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "RE": {"type": "unknown", "range": "(-inf, +inf)", "best": "0"},
+        "RB": {"type": "unknown", "range": "(-inf, +inf)", "best": "0"},
+        "AE": {"type": "unknown", "range": "(-inf, +inf)", "best": "0"},
+        "SE": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "SLE": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "COV": {"type": "max", "range": "(-inf, +inf)", "best": "no best"},
+        "COR": {"type": "max", "range": "[-1, 1]", "best": "1"},
+        "EC": {"type": "max", "range": "(-inf, 1]", "best": "1"},
+        "OI": {"type": "max", "range": "(-inf, 1]", "best": "1"},
+        "CRM": {"type": "min", "range": "(-inf, +inf)", "best": "0"},
+    }
+
     def __init__(self, y_true=None, y_pred=None, decimal=5, **kwargs):
         super().__init__(y_true, y_pred, decimal, **kwargs)
         if kwargs is None: kwargs = {}
         self.set_keyword_arguments(kwargs)
         self.one_dim = False
+
+    @staticmethod
+    def get_support(name=None, verbose=True):
+        if name == "all":
+            if verbose:
+                for key, value in RegressionMetric.SUPPORT.items():
+                    print(f"Metric {key} : {value}")
+                return RegressionMetric.SUPPORT
+        if name not in list(RegressionMetric.SUPPORT.keys()):
+            raise ValueError(f"RegressionMetric doesn't support metric named: {name}")
+        else:
+            if verbose:
+                print(f"Metric {name}: {RegressionMetric.SUPPORT[name]}")
+            return RegressionMetric.SUPPORT[name]
 
     def get_processed_data(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
@@ -1522,7 +1594,7 @@ class RegressionMetric(Evaluator):
     WI = willmott_index
     R = PCC = pearson_correlation_coefficient
     AR = APCC = absolute_pearson_correlation_coefficient
-    RSQ = R2s = pearson_correlation_coefficient_square
+    RSQ = R2S = pearson_correlation_coefficient_square
     CI = confidence_index
     COD = R2 = coefficient_of_determination
     ACOD = AR2 = adjusted_coefficient_of_determination
