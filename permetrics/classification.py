@@ -40,8 +40,26 @@ class ClassificationMetric(Evaluator):
             Calculate metrics for each label, and find their unweighted mean.  This does not take label imbalance into account.
         ``'weighted'``:
             Calculate metrics for each label, and find their average, weighted by support (the number of true instances for each label).
-
     """
+
+    SUPPORT = {
+        "PS": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "NPV": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "RS": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "AS": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "F1S": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "F2S": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "FBS": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "SS": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "MCC": {"type": "max", "range": "[-1, +1]", "best": "1"},
+        "HS": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "CKS": {"type": "max", "range": "[-1, +1]", "best": "1"},
+        "JSI": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "GMS": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "ROC-AUC": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "LS": {"type": "max", "range": "[0, +inf)", "best": "no best"},
+        "GINI": {"type": "min", "range": "[0, 1]", "best": "0"},
+    }
 
     def __init__(self, y_true=None, y_pred=None, decimal=5, **kwargs):
         super().__init__(y_true, y_pred, decimal, **kwargs)
@@ -50,6 +68,20 @@ class ClassificationMetric(Evaluator):
         self.binary = True
         self.representor = "number"     # "number" or "string"
         self.le = None  # LabelEncoder
+
+    @staticmethod
+    def get_support(name=None, verbose=True):
+        if name == "all":
+            if verbose:
+                for key, value in ClassificationMetric.SUPPORT.items():
+                    print(f"Metric {key} : {value}")
+                return ClassificationMetric.SUPPORT
+        if name not in list(ClassificationMetric.SUPPORT.keys()):
+            raise ValueError(f"ClassificationMetric doesn't support metric named: {name}")
+        else:
+            if verbose:
+                print(f"Metric {name}: {ClassificationMetric.SUPPORT[name]}")
+            return ClassificationMetric.SUPPORT[name]
 
     def get_processed_data(self, y_true=None, y_pred=None, decimal=None):
         """
