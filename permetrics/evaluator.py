@@ -14,6 +14,7 @@ class Evaluator:
     """
 
     EPSILON = 1e-10
+    SUPPORT = {}
 
     def __init__(self, y_true=None, y_pred=None, decimal=5, **kwargs):
         """

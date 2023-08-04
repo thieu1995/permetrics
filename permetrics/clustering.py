@@ -46,6 +46,49 @@ class ClusteringMetric(Evaluator):
         Default = None, then the value will be ``-np.inf``.
     """
 
+    SUPPORT = {
+        "BHI": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "XBI": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "DBI": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "BRI": {"type": "min", "range": "(-inf, +inf)", "best": "no best"},
+        "KDI": {"type": "min", "range": "(-inf, +inf)", "best": "no best"},
+        "DRI": {"type": "max", "range": "[0, +inf)", "best": "no best"},
+        "DI": {"type": "max", "range": "[0, +inf)", "best": "no best"},
+        "CHI": {"type": "max", "range": "[0, +inf)", "best": "no best"},
+        "LDRI": {"type": "max", "range": "(-inf, +inf)", "best": "no best"},
+        "LSRI": {"type": "max", "range": "(-inf, +inf)", "best": "no best"},
+        "SI": {"type": "max", "range": "[-1, +1]", "best": "1"},
+        "SSEI": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "DHI": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "BI": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "RSI": {"type": "max", "range": "(-inf, +1]", "best": "1"},
+        "DBCVI": {"type": "min", "range": "[0, 1]", "best": "0"},
+        "HI": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "MIS": {"type": "max", "range": "[0, +inf)", "best": "no best"},
+        "NMIS": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "RaS": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "FMS": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "HS": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "CS": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "VMS": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "PrS": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "ReS": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "FmS": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "CDS": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "HGS": {"type": "max", "range": "[-1, 1]", "best": "1"},
+        "JS": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "KS": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "MNS": {"type": "max", "range": "(-inf, +inf)", "best": "no best"},
+        "PhS": {"type": "max", "range": "(-inf, +inf)", "best": "no best"},
+        "RTS": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "RRS": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "SS1S": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "SS2S": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "PuS": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "ES": {"type": "min", "range": "[0, 1]", "best": "0"},
+        "TS": {"type": "max", "range": "[-1, +1]", "best": "1"},
+    }
+
     def __init__(self, y_true=None, y_pred=None, X=None, decimal=5,
                  raise_error=False, biggest_value=None, smallest_value=None, **kwargs):
         super().__init__(y_true, y_pred, decimal, **kwargs)
@@ -56,6 +99,20 @@ class ClusteringMetric(Evaluator):
         self.raise_error = raise_error
         self.biggest_value = np.inf if biggest_value is None else biggest_value
         self.smallest_value = -np.inf if smallest_value is None else smallest_value
+
+    @staticmethod
+    def get_support(name=None, verbose=True):
+        if name == "all":
+            if verbose:
+                for key, value in ClusteringMetric.SUPPORT.items():
+                    print(f"Metric {key} : {value}")
+                return ClusteringMetric.SUPPORT
+        if name not in list(ClusteringMetric.SUPPORT.keys()):
+            raise ValueError(f"Permetrics doesn't support metric named: {name}")
+        else:
+            if verbose:
+                print(f"Metric {name}: {ClusteringMetric.SUPPORT[name]}")
+            return ClusteringMetric.SUPPORT[name]
 
     def get_processed_external_data(self, y_true=None, y_pred=None, decimal=None):
         """
@@ -1375,13 +1432,13 @@ class ClusteringMetric(Evaluator):
         return np.round(result, decimal)
 
     BHI = ball_hall_index
-    CHI = calinski_harabasz_index
     XBI = xie_beni_index
-    BRI = banfeld_raftery_index
     DBI = davies_bouldin_index
+    BRI = banfeld_raftery_index
+    KDI = ksq_detw_index
     DRI = det_ratio_index
     DI = dunn_index
-    KDI = ksq_detw_index
+    CHI = calinski_harabasz_index
     LDRI = log_det_ratio_index
     LSRI = log_ss_ratio_index
     SI = silhouette_index
