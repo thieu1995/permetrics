@@ -108,7 +108,7 @@ class ClusteringMetric(Evaluator):
                     print(f"Metric {key} : {value}")
                 return ClusteringMetric.SUPPORT
         if name not in list(ClusteringMetric.SUPPORT.keys()):
-            raise ValueError(f"Permetrics doesn't support metric named: {name}")
+            raise ValueError(f"ClusteringMetric doesn't support metric named: {name}")
         else:
             if verbose:
                 print(f"Metric {name}: {ClusteringMetric.SUPPORT[name]}")
