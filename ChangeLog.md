@@ -1,3 +1,27 @@
+# Version 1.4.2
++ Update logo
++ Fix bug in get_support() function
++ Fix bug rounding number in ClassificationMetric 
+
++ Fix bugs in GINI function belongs to ClassificationMetric
++ Fix bugs in some functions belong to ClusteringMetric
++ Update characteristics of most of the functions (valid ranges and best value)
++ Add metrics to ClusteringMetrics
+  + Entropy Score (ES)
+  + Purity Score (PuS)
+  + Tau Score (TS)
+  + Duda-Hart Index (DHI)
+  + Sum of Squared Error Index (SSEI)
+  + Beale Index (BI)
+  + R-Squared Index (RSI)
+  + Density-Based Clustering Validation Index (DBCVI)
+  + Hartigan Index (HI)
++ Add get_support() method in RegressionMetric, ClassificationMetric, and ClusteringMetric
++ Update and add more examples to all classes.
++ Update documents for all metrics.
+
+---------------------------------------------------------------------
+
 # Version 1.4.1
 + Remove all lowercase shortname of all metrics
 + Fix bugs in GINI function belongs to ClassificationMetric
