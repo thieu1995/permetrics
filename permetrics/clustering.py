@@ -106,7 +106,7 @@ class ClusteringMetric(Evaluator):
             if verbose:
                 for key, value in ClusteringMetric.SUPPORT.items():
                     print(f"Metric {key} : {value}")
-                return ClusteringMetric.SUPPORT
+            return ClusteringMetric.SUPPORT
         if name not in list(ClusteringMetric.SUPPORT.keys()):
             raise ValueError(f"ClusteringMetric doesn't support metric named: {name}")
         else:
@@ -269,7 +269,7 @@ class ClusteringMetric(Evaluator):
         MinSqDist = np.min(cu.pdist(centroids, metric='sqeuclidean'))
         # Computing the XB index:
         xb = (1 / X.shape[0]) * (WGSS / MinSqDist)
-        return xb
+        return np.round(xb, decimal)
 
     def banfeld_raftery_index(self, X=None, y_pred=None, decimal=None, **kwargs):
         """

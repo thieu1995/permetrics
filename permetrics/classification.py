@@ -75,7 +75,7 @@ class ClassificationMetric(Evaluator):
             if verbose:
                 for key, value in ClassificationMetric.SUPPORT.items():
                     print(f"Metric {key} : {value}")
-                return ClassificationMetric.SUPPORT
+            return ClassificationMetric.SUPPORT
         if name not in list(ClassificationMetric.SUPPORT.keys()):
             raise ValueError(f"ClassificationMetric doesn't support metric named: {name}")
         else:
@@ -329,7 +329,7 @@ class ClassificationMetric(Evaluator):
         if average == "micro":
             tp_global = np.sum(np.diag(matrix))
             fp_global = fn_global = np.sum(matrix) - tp_global
-            precision = np.round(tp_global / (tp_global + fp_global), decimal)
+            precision = tp_global / (tp_global + fp_global)
             recall = tp_global / (tp_global + fn_global)
             f1 = (2 * precision * recall) / (precision + recall)
         elif average == "macro":
@@ -337,7 +337,7 @@ class ClassificationMetric(Evaluator):
         elif average == "weighted":
             f1 = np.dot(list_weights, list_f1) / np.sum(list_weights)
         else:
-            f1 = dict([(label, item["f1"]) for label, item in metrics.items()])
+            f1 = dict([(label, np.round(item["f1"], decimal)) for label, item in metrics.items()])
         return f1 if type(f1) == dict else np.round(f1, decimal)
 
     def f2_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None, **kwargs):

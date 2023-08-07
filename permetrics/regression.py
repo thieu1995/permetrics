@@ -100,7 +100,7 @@ class RegressionMetric(Evaluator):
             if verbose:
                 for key, value in RegressionMetric.SUPPORT.items():
                     print(f"Metric {key} : {value}")
-                return RegressionMetric.SUPPORT
+            return RegressionMetric.SUPPORT
         if name not in list(RegressionMetric.SUPPORT.keys()):
             raise ValueError(f"RegressionMetric doesn't support metric named: {name}")
         else:
