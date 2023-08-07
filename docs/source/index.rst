@@ -6,7 +6,7 @@
 Welcome to Permetrics's documentation!
 ======================================
 
-.. image:: https://img.shields.io/badge/release-1.4.1-yellow.svg
+.. image:: https://img.shields.io/badge/release-1.4.2-yellow.svg
    :target: https://github.com/thieu1995/permetrics/releases
 
 .. image:: https://img.shields.io/pypi/wheel/gensim.svg
@@ -59,7 +59,7 @@ field access metrics as fast as possible
 * **Free software:** GNU General Public License (GPL) V3 license
 * **Total metrics**: 103 (47 regression metrics, 16 classification metrics, 40 clustering metrics)
 * **Documentation:** https://permetrics.readthedocs.io/en/latest/
-* **Python versions:** > 3.7.x
+* **Python versions:** >= 3.7.x
 * **Dependencies:** numpy, scipy
 
 
