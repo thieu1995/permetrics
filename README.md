@@ -1,5 +1,9 @@
 
-<p align="center"><img src=".github/assets/logo2.png" alt="PERMETRICS" title="PERMETRICS"/></p>
+<p align="center">
+<img style="max-width:100%;" 
+src="https://thieu1995.github.io/post/2023-08/permetrics-01.png" 
+alt="PERMETRICS"/>
+</p>
 
 
 ---
@@ -64,7 +68,7 @@ pip install git+https://github.com/thieu1995/permetrics
 ```
 
 
-# Usage
+### Usage
 
 After installation, you can import Permetrics as any other Python module:
 
