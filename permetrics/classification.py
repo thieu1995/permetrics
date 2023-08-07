@@ -365,7 +365,7 @@ class ClassificationMetric(Evaluator):
         if average == "micro":
             tp_global = np.sum(np.diag(matrix))
             fp_global = fn_global = np.sum(matrix) - tp_global
-            precision = np.round(tp_global / (tp_global + fp_global), decimal)
+            precision = tp_global / (tp_global + fp_global)
             recall = tp_global / (tp_global + fn_global)
             f2 = (5 * precision * recall) / (4 * precision + recall)
         elif average == "macro":
@@ -373,7 +373,7 @@ class ClassificationMetric(Evaluator):
         elif average == "weighted":
             f2 = np.dot(list_weights, list_f2) / np.sum(list_weights)
         else:
-            f2 = dict([(label, item["f2"]) for label, item in metrics.items()])
+            f2 = dict([(label, np.round(item["f2"], decimal)) for label, item in metrics.items()])
         return f2 if type(f2) == dict else np.round(f2, decimal)
 
     def fbeta_score(self, y_true=None, y_pred=None, beta=1.0, labels=None, average="macro", decimal=None, **kwargs):
@@ -404,7 +404,7 @@ class ClassificationMetric(Evaluator):
         if average == "micro":
             tp_global = np.sum(np.diag(matrix))
             fp_global = fn_global = np.sum(matrix) - tp_global
-            precision = np.round(tp_global / (tp_global + fp_global), decimal)
+            precision = tp_global / (tp_global + fp_global)
             recall = tp_global / (tp_global + fn_global)
             fbeta = ((1 + beta ** 2) * precision * recall) / (beta ** 2 * precision + recall)
         elif average == "macro":
@@ -412,7 +412,7 @@ class ClassificationMetric(Evaluator):
         elif average == "weighted":
             fbeta = np.dot(list_weights, list_fbeta) / np.sum(list_weights)
         else:
-            fbeta = dict([(label, item["fbeta"]) for label, item in metrics.items()])
+            fbeta = dict([(label, np.round(item["fbeta"], decimal)) for label, item in metrics.items()])
         return fbeta if type(fbeta) == dict else np.round(fbeta, decimal)
 
     def matthews_correlation_coefficient(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None, **kwargs):
@@ -446,7 +446,7 @@ class ClassificationMetric(Evaluator):
         elif average == "weighted":
             mcc = np.dot(list_weights, list_mcc) / np.sum(list_weights)
         else:
-            mcc = dict([(label, item["mcc"]) for label, item in metrics.items()])
+            mcc = dict([(label, np.round(item["mcc"], decimal)) for label, item in metrics.items()])
         return mcc if type(mcc) == dict else np.round(mcc, decimal)
 
     def hamming_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None, **kwargs):
