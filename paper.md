@@ -2,13 +2,13 @@
 title: 'PerMetrics: A Framework of Performance Metrics for Machine Learning Models'
 tags:
   - performance metrics
-  - classification 
-  - regression
-  - clustering
+  - classification evaluation
+  - regression measure
+  - clustering criterion
+  - machine learning metrics
 authors:
   - name: Nguyen Van Thieu
     orcid: 0000-0001-9994-8747
-    corresponding: true
     affiliation: 1
 affiliations:
   - name: Faculty of Computer Science, Phenikaa University, Yen Nghia, Ha Dong, Hanoi, 12116, Vietnam.
@@ -17,12 +17,13 @@ date: 08 Aug 2023
 bibliography: paper.bib
 ---
 
+
 # Summary
 
 Performance metrics are pivotal in machine learning field, especially for tasks like regression, classification, and clustering [@saura_using_2021]. They offer quantitative measures to assess the accuracy and efficacy of models, aiding researchers and practitioners in evaluating, contrasting, and enhancing algorithms and models.
 In regression tasks, where continuous predictions are made, metrics like MSE, RMSE, and Coefficient of Determination [@nguyen2018resource; @nguyen2019building] can reveal how well models capture data patterns. In classification tasks, metrics such as accuracy, precision, recall, F1-score, and AUC-ROC [@luque_impact_2019] assess a model's ability to classify instances correctly, detect false results, and gauge overall predictive performance. Clustering tasks aim to discover inherent patterns and structures within unlabeled data by grouping similar instances together. Metrics like Silhouette coefficient, Davies-Bouldin index, and Calinski-Harabasz index [@nainggolan_improved_2019] measure clustering quality, helping evaluate how well algorithms capture data distribution and assign instances to clusters.
-In general, performance metrics serve multiple purposes. They enable researchers to compare different models and algorithms [@ahmed2021comprehensive], identify strengths and weaknesses [@Nguyen2019], and make informed decisions about model selection and parameter tuning [@nguyen2020new]. Moreover, it also plays a crucial role in the iterative process of model development and improvement. By quantifying the model's performance, metrics guide the optimization process [@nguyen2020eo], allowing researchers to fine-tune algorithms [@nguyen2021multi], explore feature engineering techniques, and address issues such as overfitting, underfitting, and bias [@thieu_groundwater_2023].
-This paper introduces a Python framework named PerMetrics (PERformance METRICS), designed to offer comprehensive performance metrics for machine learning models. The library, referred to as permetrics, is open-source and written in Python. It provides a wide number of metrics to enable users to evaluate their models effectively. PerMetrics is hosted on GitHub and is under continuous development and maintenance by the dedicated team. The framework is accompanied by comprehensive documentation, examples, and test cases, facilitating easy comprehension and integration into users' workflows.
+In general, performance metrics serve multiple purposes. They enable researchers to compare different models and algorithms [@ahmed2021comprehensive], identify strengths and weaknesses [@Nguyen2019], and make informed decisions about model selection and parameter tuning [@nguyen2020new]. Moreover, it also plays a crucial role in the iterative process of model development and improvement. By quantifying the model's performance, metrics guide the optimization process [@thieu_groundwater_2023], allowing researchers to fine-tune algorithms, explore feature engineering techniques [@nguyen2021multi], and address issues such as overfitting, underfitting, and bias  [@nguyen2020eo].
+This paper introduces a Python framework named PerMetrics (PERformance METRICS), designed to offer comprehensive performance metrics for machine learning models. The library, packaged as permetrics, is open-source and written in Python. It provides a wide number of metrics to enable users to evaluate their models effectively. PerMetrics is hosted on GitHub and is under continuous development and maintenance by the dedicated team. The framework is accompanied by comprehensive documentation, examples, and test cases, facilitating easy comprehension and integration into users' workflows.
 
 
 # Statement of need
@@ -38,7 +39,5 @@ TorchMetrics [@torchmetrics] is a widely recognized framework for performance me
 Other popular libraries such as TensorFlow [@abadi2016tensorflow], Keras [@chollet2015keras], CatBoost [@prokhorenkova2018catboost], and MxNet [@chen2015mxnet] also contain modules dedicated to metrics. However, the issue with these libraries is that their metric modules are specific to each respective one. It is challenging to combine metric modules from different libraries with each other. If it is possible to combine them, it often requires installing numerous related libraries. Furthermore, the metric modules within each library are tailored to users who are familiar with that specific one, requiring users to learn multiple libraries, syntax structures, and necessary commands associated with each framework to use them in combination. These are significant obstacles when using metrics from such libraries.
 
 All the aforementioned challenges are addressed by our permetrics library. It not only offers a simple and concise syntax and usage but also does not require any knowledge of other major libraries such as TensorFlow, Keras, or PyTorch. Additionally, it can be seamlessly integrated with any computational or machine learning library. In the future, we plan to expand permetrics to include other domains such as text metrics, audio metrics, detection metrics, and image metrics.
-
-Test paper
 
 # References
