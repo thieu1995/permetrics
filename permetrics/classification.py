@@ -359,7 +359,7 @@ class ClassificationMetric(Evaluator):
         matrix, imap, imap_count = calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
         metrics = calculate_single_label_metric(matrix, imap, imap_count)
 
-        list_f2 = np.array([item["f1"] for item in metrics.values()])
+        list_f2 = np.array([item["f2"] for item in metrics.values()])
         list_weights = np.array([item["n_true"] for item in metrics.values()])
 
         if average == "micro":

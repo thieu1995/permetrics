@@ -62,8 +62,8 @@ cm = ClassificationMetric(y_true, y_pred, decimal=5)
 # print(cm.precision_score(average=None))
 # print(cm.PS(average="macro"))
 # print(cm.PS(average="weighted"))
-print(cm.fbeta_score(average=None))
-print(cm.f1_score(average=None))
+print(cm.f2_score(average="macro"))
+print(cm.f1_score(average="macro"))
 
 
 # # generate sample data
