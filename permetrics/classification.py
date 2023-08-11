@@ -301,7 +301,7 @@ class ClassificationMetric(Evaluator):
         elif average == "weighted":
             accuracy = np.dot(list_weights, list_accuracy) / np.sum(list_weights)
         else:
-            accuracy = dict([(label, np.round(item["precision"], decimal)) for label, item in metrics.items()])
+            accuracy = dict([(label, np.round(item["accuracy"], decimal)) for label, item in metrics.items()])
         return accuracy if type(accuracy) == dict else np.round(accuracy, decimal)
 
     def f1_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None, **kwargs):
