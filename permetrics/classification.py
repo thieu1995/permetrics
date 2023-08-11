@@ -468,16 +468,16 @@ class ClassificationMetric(Evaluator):
         matrix, imap, imap_count = calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
         metrics = calculate_single_label_metric(matrix, imap, imap_count)
 
-        list_accuracy = np.array([item["accuracy"] for item in metrics.values()])
+        list_hs = np.array([item["hamming_score"] for item in metrics.values()])
         list_weights = np.array([item["n_true"] for item in metrics.values()])
         list_tp = np.array([item['tp'] for item in metrics.values()])
 
         if average == "micro":
             hl = 1.0 - np.sum(list_tp) / np.sum(list_weights)
         elif average == "macro":
-            hl = np.mean(list_accuracy)
+            hl = np.mean(list_hs)
         elif average == "weighted":
-            hl = np.dot(list_weights, list_accuracy) / np.sum(list_weights)
+            hl = np.dot(list_weights, list_hs) / np.sum(list_weights)
         else:
             hl = dict([(label, np.round(item["hamming_score"], decimal)) for label, item in metrics.items()])
         return hl if type(hl) == dict else np.round(hl, decimal)
