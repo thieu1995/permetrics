@@ -1,4 +1,22 @@
+
+# Version 1.4.3
+
++ Reformat ClassificationMetric, RegressionMetric, and ClusteringMetric
++ Fix bugs in metrics:
+  + ROC-AUC score
+  + F2 score, FBeta score
+  + Hamming Score, Accuracy Score
++ Add metrics to ClassificationMetric:
+  + Brier Score Loss (BSL)
+  + Kullback-Leibler Divergence Loss (KLDL)
+  + Cross-Entropy Loss (CEL)
+  + Hinge Loss (HL)
++ Update docs, examples
+
+---------------------------------------------------------------------
+
 # Version 1.4.2
+
 + Fix bug in get_support() function
 + Fix bug rounding number in ClassificationMetric 
 + Update logo and docs
@@ -6,6 +24,7 @@
 ---------------------------------------------------------------------
 
 # Version 1.4.1
+
 + Remove all lowercase shortname of all metrics
 + Fix bugs in GINI function belongs to ClassificationMetric
 + Fix bugs in some functions belong to ClusteringMetric
