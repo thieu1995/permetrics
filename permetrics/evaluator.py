@@ -6,6 +6,7 @@
 
 import numpy as np
 import copy as cp
+from permetrics.utils import constant as co
 
 
 class Evaluator:
@@ -13,7 +14,7 @@ class Evaluator:
     This is base class for all performance metrics
     """
 
-    EPSILON = 1e-10
+    EPSILON = co.EPSILON
     SUPPORT = {}
 
     def __init__(self, y_true=None, y_pred=None, decimal=5, **kwargs):

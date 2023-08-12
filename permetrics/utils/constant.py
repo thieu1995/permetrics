@@ -8,3 +8,4 @@ import numpy as np
 
 
 SUPPORTED_LIST = (list, tuple, np.ndarray)
+EPSILON = 1e-10

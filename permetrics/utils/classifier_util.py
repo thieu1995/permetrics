@@ -47,22 +47,6 @@ def calculate_confusion_matrix(y_true=None, y_pred=None, labels=None, normalize=
             matrix_normalized = matrix
         matrix_normalized = np.nan_to_num(matrix_normalized)
 
-    # Matrix Normalization
-    # matrix = np.array(matrix)
-    # matrix_normalized = np.zeros_like(matrix).astype(float)
-    # if normalize == "true":
-    #     sigma = np.sum(matrix, axis=1)
-    #     for idx in range(len(unique)):
-    #         matrix_normalized[idx, :] = 0.0 if sigma[idx] == 0 else matrix[idx, :] / sigma[idx]
-    # elif normalize == "pred":
-    #     sigma = np.sum(matrix, axis=0)
-    #     for idx in range(len(unique)):
-    #         matrix_normalized[:, idx] = 0.0 if sigma[idx] == 0 else matrix[:, idx] / sigma[idx]
-    # elif normalize == "all":
-    #     matrix_normalized = matrix / np.sum(matrix)
-    # else:
-    #     matrix_normalized = matrix
-
     # Get values by label
     if labels is None:
         return matrix_normalized, imap, imap_count
@@ -135,10 +119,6 @@ def calculate_single_label_metric(matrix, imap, imap_count, beta=1.0):
             metric["kappa_score"] = np.nan_to_num(kappa_score, nan=0.0, posinf=0.0, neginf=0.0)
             metric["g_mean"] = np.nan_to_num(g_mean, nan=0.0, posinf=0.0, neginf=0.0)
             metrics[label] = metric
-
-        # list_precision = np.nan_to_num([value[0] / (value[0] + value[1]) for value in cm.values()])
-        # list_recall = np.nan_to_num([value[0] / (value[0] + value[3]) for value in cm.values()])
-        # list_weights = np.nan_to_num([value[4] for value in cm.values()])
     return metrics
 
 
