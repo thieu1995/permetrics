@@ -163,14 +163,9 @@ def calculate_class_weights(y_true, y_pred=None, y_score=None):
         y_true_binary[np.arange(len(y_true)), y_true] = 1
         y_score_binary = np.zeros_like(y_score)
         y_score_binary[np.arange(len(y_score)), np.argmax(y_score, axis=1)] = 1
-
-        # Calculate the number of samples in each class
-        class_samples = np.sum(y_true_binary, axis=0)
         # Calculate the number of samples correctly classified in each class
         class_correct = np.sum(np.multiply(y_true_binary, y_score_binary), axis=0)
-        # Calculate the weights for each class
-        class_weights = class_samples / class_correct
-        return class_weights
+        return class_correct
 
 
 def calculate_roc_curve(y_true, y_score):

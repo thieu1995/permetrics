@@ -139,33 +139,34 @@ def format_classification_data(y_true: np.ndarray, y_pred: np.ndarray):
                     binary = len(np.unique(y_true)) == 2
                     return y_true, y_pred, binary, var_type
                 else:
-                    raise TypeError("When y_true and y_pred have the different ndim, y_pred should has numeric type.")
+                    raise TypeError("When y_true and y_pred have the different ndim, y_pred should have numeric type.")
             else:
                 raise ValueError("y_true has ndim > 1 and data type is string. Convert y_true to 1-D vector.")
 
 
 def format_y_score(y_true: np.ndarray, y_score: np.ndarray):
-    binary = True
     if not (isinstance(y_true, co.SUPPORTED_LIST) and isinstance(y_score, co.SUPPORTED_LIST)):
         raise TypeError("y_true and y_score must be lists, tuples or numpy arrays.")
     else:
         y_true, y_score = np.squeeze(np.asarray(y_true)), np.squeeze(np.asarray(y_score))
-        if y_true.ndim == y_score.ndim:
-            if len(np.unique(y_true)) != 2:
-                raise TypeError("y_true should have two classes only or y_score must have shape (n_examples, n_labels)")
+        if y_true.ndim == 1:
+            binary = len(np.unique(y_true)) == 2
+            if not np.issubdtype(y_true.dtype, np.number):
+                le = LabelEncoder()
+                y_true = le.fit_transform(y_true).ravel()
+            if np.issubdtype(y_score.dtype, np.number):
+                return y_true, y_score, binary, "number"
+        elif y_true.ndim == 2:
+            if not np.issubdtype(y_true.dtype, np.number):
+                raise TypeError("The data type of y_true must be number when ndim = 2.")
+            y_true = np.argmax(y_true, axis=1)
+            if y_score.ndim == 2 and np.issubdtype(y_score.dtype, np.number):
+                binary = len(np.unique(y_true)) == 2
+                return y_true, y_score, binary, "number"
             else:
-                if np.issubdtype(y_true.dtype, np.number):
-                    return y_true, y_score, binary, "number"
-                else:
-                    return y_true, y_score, binary, "string"
+                raise TypeError("y_score must have two dimensions and data type is number.")
         else:
-            if len(np.unique(y_true)) <= 2:
-                raise TypeError("y_score must have shape (n_examples, n_labels) in case of multi-classification problem")
-            else:
-                if np.issubdtype(y_true.dtype, np.number):
-                    return y_true, y_score, not binary, "number"
-                else:
-                    return y_true, y_score, not binary, "string"
+            raise ValueError("y_true should have two dimensions only.")
 
 
 def is_consecutive_and_start_zero(vector):

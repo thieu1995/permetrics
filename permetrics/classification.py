@@ -106,6 +106,29 @@ class ClassificationMetric(Evaluator):
                 raise ValueError("y_true or y_pred is None. You need to pass y_true and y_pred to object creation or function called.")
         return y_true, y_pred, binary, representor, decimal
 
+    def get_processed_data2(self, y_true=None, y_pred=None, decimal=None):
+        """
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction scores
+            decimal (int, None): The number of fractional parts after the decimal point
+
+        Returns:
+            y_true_final: y_true used in evaluation process.
+            y_pred_final: y_pred used in evaluation process
+            one_dim: is y_true has 1 dimensions or not
+            decimal: The number of fractional parts after the decimal point
+        """
+        decimal = self.decimal if decimal is None else decimal
+        if (y_true is not None) and (y_pred is not None):
+            y_true, y_pred, binary, representor = du.format_y_score(y_true, y_pred)
+        else:
+            if (self.y_true is not None) and (self.y_pred is not None):
+                y_true, y_pred, binary, representor = du.format_y_score(self.y_true, self.y_pred)
+            else:
+                raise ValueError("y_true or y_pred is None. You need to pass y_true and y_pred to object creation or function called.")
+        return y_true, y_pred, binary, representor, decimal
+
     def confusion_matrix(self, y_true=None, y_pred=None, labels=None, normalize=None, **kwargs):
         """
         Generate confusion matrix and useful information
@@ -646,21 +669,21 @@ class ClassificationMetric(Evaluator):
         result = 1 - (p_positive ** 2 + p_negative ** 2)
         return np.round(result, decimal)
 
-    def roc_auc_score(self, y_true=None, y_score=None, average="macro", decimal=5, **kwargs):
+    def roc_auc_score(self, y_true=None, y_pred=None, average="macro", decimal=5, **kwargs):
         """
         Calculates the ROC-AUC score between y_true and y_score.
         Higher is better (Best = +1), Range = [0, +1]
 
         Args:
             y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
-            y_score (tuple, list, np.ndarray): a list of predicted scores.
+            y_pred (tuple, list, np.ndarray): A LIST OF PREDICTED SCORES (NOT LABELS)
             average (str, None): {'macro', 'weighted'} or None, default="macro"
             decimal (int): The number of fractional parts after the decimal point
 
         Returns:
             float, dict: The AUC score.
         """
-        y_true, y_score, binary, representor = du.format_y_score(y_true, y_score)
+        y_true, y_score, binary, representor, decimal = self.get_processed_data2(y_true, y_pred, decimal)
         if binary:
             tpr, fpr, thresholds = cu.calculate_roc_curve(y_true, y_score)
             # Calculate the area under the curve (AUC) using the trapezoidal rule
