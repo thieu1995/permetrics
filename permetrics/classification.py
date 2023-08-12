@@ -669,6 +669,34 @@ class ClassificationMetric(Evaluator):
         result = 1 - (p_positive ** 2 + p_negative ** 2)
         return np.round(result, decimal)
 
+    def crossentropy_loss(self, y_true=None, y_pred=None, decimal=5, **kwargs):
+        """
+        Calculates the Cross-Entropy loss between y_true and y_pred.
+        Smaller is better (Best = 0), Range = [0, +inf)
+
+        Args:
+            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
+            y_pred (tuple, list, np.ndarray): A LIST OF PREDICTED SCORES (NOT LABELS)
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            float, dict: The Cross-Entropy loss
+        """
+        y_true, y_pred, binary, representor, decimal = self.get_processed_data2(y_true, y_pred, decimal)
+        if binary:
+            y_pred = np.clip(y_pred, self.EPSILON, 1 - self.EPSILON)
+            term_0 = (1 - y_true) * np.log(1 - y_pred)
+            term_1 = y_true * np.log(y_pred)
+            res = -np.mean(term_0 + term_1, axis=0)
+            return np.round(res, decimal)
+        else:
+            # Convert y_true to one-hot encoded array
+            num_classes = len(np.unique(y_true))
+            y_true = np.eye(num_classes)[y_true]
+            y_pred = np.clip(y_pred, self.EPSILON, 1 - self.EPSILON)
+            res = -np.mean(np.sum(y_true * np.log(y_pred), axis=1))
+            return np.round(res, decimal)
+
     def roc_auc_score(self, y_true=None, y_pred=None, average="macro", decimal=5, **kwargs):
         """
         Calculates the ROC-AUC score between y_true and y_score.
@@ -726,4 +754,5 @@ class ClassificationMetric(Evaluator):
     JSI = JSC = jaccard_similarity_coefficient = jaccard_similarity_index
     GMS = g_mean_score
     GINI = gini_index
+    CEL = crossentropy_loss
     ROC = AUC = RAS = roc_auc_score

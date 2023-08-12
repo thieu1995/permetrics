@@ -115,11 +115,11 @@ def format_classification_data(y_true: np.ndarray, y_pred: np.ndarray):
         ## Remove all dimensions of size 1
         y_true, y_pred = np.squeeze(np.asarray(y_true)), np.squeeze(np.asarray(y_pred))
         if y_true.ndim == y_pred.ndim:
-            if np.issubdtype(y_true.dtype, np.number) and y_true.dtype == y_pred.dtype:
+            if np.issubdtype(y_true.dtype, np.number) and np.issubdtype(y_pred.dtype, np.number):
                 var_type = "number"
                 if y_true.ndim > 1:
                     y_true, y_pred = y_true.argmax(axis=1), y_pred.argmax(axis=1)
-            elif np.issubdtype(y_true.dtype, str) and y_true.dtype == y_pred.dtype:
+            elif np.issubdtype(y_true.dtype, str) and np.issubdtype(y_pred.dtype, np.number):
                 var_type = "string"
                 if y_true.ndim > 1:
                     raise ValueError("y_true and y_pred have ndim > 1 need to be a number.")
