@@ -5,8 +5,8 @@
 # --------------------------------------------------%
 
 from permetrics.evaluator import Evaluator
-from permetrics.utils.data_util import *
-from permetrics.utils.classifier_util import *
+from permetrics.utils import data_util as du
+from permetrics.utils import classifier_util as cu
 import numpy as np
 
 
@@ -88,7 +88,6 @@ class ClassificationMetric(Evaluator):
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
-            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred)
             decimal (int, None): The number of fractional parts after the decimal point
 
         Returns:
@@ -99,10 +98,10 @@ class ClassificationMetric(Evaluator):
         """
         decimal = self.decimal if decimal is None else decimal
         if (y_true is not None) and (y_pred is not None):
-            y_true, y_pred, binary, representor = format_classification_data(y_true, y_pred)
+            y_true, y_pred, binary, representor = du.format_classification_data(y_true, y_pred)
         else:
             if (self.y_true is not None) and (self.y_pred is not None):
-                y_true, y_pred, binary, representor = format_classification_data(self.y_true, self.y_pred)
+                y_true, y_pred, binary, representor = du.format_classification_data(self.y_true, self.y_pred)
             else:
                 raise ValueError("y_true or y_pred is None. You need to pass y_true and y_pred to object creation or function called.")
         return y_true, y_pred, binary, representor, decimal
@@ -123,7 +122,7 @@ class ClassificationMetric(Evaluator):
             imap_count (dict): a map between label and number of true label in y_true
         """
         y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal=None)
-        matrix, imap, imap_count = calculate_confusion_matrix(y_true, y_pred, labels, normalize)
+        matrix, imap, imap_count = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize)
         return matrix, imap, imap_count
 
     def precision_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None, **kwargs):
@@ -151,8 +150,8 @@ class ClassificationMetric(Evaluator):
             precision (float, dict): the precision score
         """
         y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        matrix, imap, imap_count = calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
-        metrics = calculate_single_label_metric(matrix, imap, imap_count)
+        matrix, imap, imap_count = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
+        metrics = cu.calculate_single_label_metric(matrix, imap, imap_count)
 
         list_precision = np.array([item["precision"] for item in metrics.values()])
         list_weights = np.array([item["n_true"] for item in metrics.values()])
@@ -185,8 +184,8 @@ class ClassificationMetric(Evaluator):
             npv (float, dict): the negative predictive value
         """
         y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        matrix, imap, imap_count = calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
-        metrics = calculate_single_label_metric(matrix, imap, imap_count)
+        matrix, imap, imap_count = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
+        metrics = cu.calculate_single_label_metric(matrix, imap, imap_count)
 
         list_npv = np.array([item["negative_predictive_value"] for item in metrics.values()])
         list_weights = np.array([item["n_true"] for item in metrics.values()])
@@ -219,8 +218,8 @@ class ClassificationMetric(Evaluator):
             ss (float, dict): the specificity score
         """
         y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        matrix, imap, imap_count = calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
-        metrics = calculate_single_label_metric(matrix, imap, imap_count)
+        matrix, imap, imap_count = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
+        metrics = cu.calculate_single_label_metric(matrix, imap, imap_count)
 
         list_ss = np.array([item["specificity"] for item in metrics.values()])
         list_weights = np.array([item["n_true"] for item in metrics.values()])
@@ -253,8 +252,8 @@ class ClassificationMetric(Evaluator):
             recall (float, dict): the recall score
         """
         y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        matrix, imap, imap_count = calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
-        metrics = calculate_single_label_metric(matrix, imap, imap_count)
+        matrix, imap, imap_count = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
+        metrics = cu.calculate_single_label_metric(matrix, imap, imap_count)
 
         list_recall = np.array([item["recall"] for item in metrics.values()])
         list_weights = np.array([item["n_true"] for item in metrics.values()])
@@ -287,8 +286,8 @@ class ClassificationMetric(Evaluator):
             accuracy (float, dict): the accuracy score
         """
         y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        matrix, imap, imap_count = calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
-        metrics = calculate_single_label_metric(matrix, imap, imap_count)
+        matrix, imap, imap_count = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
+        metrics = cu.calculate_single_label_metric(matrix, imap, imap_count)
 
         list_accuracy = np.array([item["accuracy"] for item in metrics.values()])
         list_weights = np.array([item["n_true"] for item in metrics.values()])
@@ -320,8 +319,8 @@ class ClassificationMetric(Evaluator):
             f1 (float, dict): the f1 score
         """
         y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        matrix, imap, imap_count = calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
-        metrics = calculate_single_label_metric(matrix, imap, imap_count)
+        matrix, imap, imap_count = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
+        metrics = cu.calculate_single_label_metric(matrix, imap, imap_count)
 
         list_f1 = np.array([item["f1"] for item in metrics.values()])
         list_weights = np.array([item["n_true"] for item in metrics.values()])
@@ -356,8 +355,8 @@ class ClassificationMetric(Evaluator):
             f2 (float, dict): the f2 score
         """
         y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        matrix, imap, imap_count = calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
-        metrics = calculate_single_label_metric(matrix, imap, imap_count)
+        matrix, imap, imap_count = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
+        metrics = cu.calculate_single_label_metric(matrix, imap, imap_count)
 
         list_f2 = np.array([item["f2"] for item in metrics.values()])
         list_weights = np.array([item["n_true"] for item in metrics.values()])
@@ -395,8 +394,8 @@ class ClassificationMetric(Evaluator):
             fbeta (float, dict): the fbeta score
         """
         y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        matrix, imap, imap_count = calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
-        metrics = calculate_single_label_metric(matrix, imap, imap_count, beta=beta)
+        matrix, imap, imap_count = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
+        metrics = cu.calculate_single_label_metric(matrix, imap, imap_count, beta=beta)
 
         list_fbeta = np.array([item["fbeta"] for item in metrics.values()])
         list_weights = np.array([item["n_true"] for item in metrics.values()])
@@ -431,8 +430,8 @@ class ClassificationMetric(Evaluator):
             mcc (float, dict): the Matthews correlation coefficient
         """
         y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        matrix, imap, imap_count = calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
-        metrics = calculate_single_label_metric(matrix, imap, imap_count)
+        matrix, imap, imap_count = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
+        metrics = cu.calculate_single_label_metric(matrix, imap, imap_count)
 
         list_mcc = np.array([item["mcc"] for item in metrics.values()])
         list_weights = np.array([item["n_true"] for item in metrics.values()])
@@ -465,8 +464,8 @@ class ClassificationMetric(Evaluator):
             hl (float, dict): the hamming score
         """
         y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        matrix, imap, imap_count = calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
-        metrics = calculate_single_label_metric(matrix, imap, imap_count)
+        matrix, imap, imap_count = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
+        metrics = cu.calculate_single_label_metric(matrix, imap, imap_count)
 
         list_hs = np.array([item["hamming_score"] for item in metrics.values()])
         list_weights = np.array([item["n_true"] for item in metrics.values()])
@@ -498,8 +497,8 @@ class ClassificationMetric(Evaluator):
             ls (float, dict): the lift score
         """
         y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        matrix, imap, imap_count = calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
-        metrics = calculate_single_label_metric(matrix, imap, imap_count)
+        matrix, imap, imap_count = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
+        metrics = cu.calculate_single_label_metric(matrix, imap, imap_count)
 
         list_ls = np.array([item["lift_score"] for item in metrics.values()])
         list_weights = np.array([item["n_true"] for item in metrics.values()])
@@ -532,8 +531,8 @@ class ClassificationMetric(Evaluator):
             cks (float, dict): the Cohen Kappa score
         """
         y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        matrix, imap, imap_count = calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
-        metrics = calculate_single_label_metric(matrix, imap, imap_count)
+        matrix, imap, imap_count = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
+        metrics = cu.calculate_single_label_metric(matrix, imap, imap_count)
 
         list_kp = np.array([item["kappa_score"] for item in metrics.values()])
         list_weights = np.array([item["n_true"] for item in metrics.values()])
@@ -564,8 +563,8 @@ class ClassificationMetric(Evaluator):
             jsi (float, dict): the Jaccard similarity index
         """
         y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        matrix, imap, imap_count = calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
-        metrics = calculate_single_label_metric(matrix, imap, imap_count)
+        matrix, imap, imap_count = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
+        metrics = cu.calculate_single_label_metric(matrix, imap, imap_count)
 
         list_js = np.array([item["jaccard_similarities"] for item in metrics.values()])
         list_weights = np.array([item["n_true"] for item in metrics.values()])
@@ -598,8 +597,8 @@ class ClassificationMetric(Evaluator):
             float, dict: The G-mean score.
         """
         y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        matrix, imap, imap_count = calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
-        metrics = calculate_single_label_metric(matrix, imap, imap_count)
+        matrix, imap, imap_count = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
+        metrics = cu.calculate_single_label_metric(matrix, imap, imap_count)
 
         list_gm = np.array([item["g_mean"] for item in metrics.values()])
         list_weights = np.array([item["n_true"] for item in metrics.values()])
@@ -661,13 +660,13 @@ class ClassificationMetric(Evaluator):
         Returns:
             float, dict: The AUC score.
         """
-        y_true, y_score, binary, representor = format_y_score(y_true, y_score)
+        y_true, y_score, binary, representor = du.format_y_score(y_true, y_score)
         if binary:
-            tpr, fpr, thresholds = calculate_roc_curve(y_true, y_score)
+            tpr, fpr, thresholds = cu.calculate_roc_curve(y_true, y_score)
             # Calculate the area under the curve (AUC) using the trapezoidal rule
             return np.trapz(tpr, fpr)
         else:
-            list_weights = calculate_class_weights(y_true, y_pred=None, y_score=y_score)
+            list_weights = cu.calculate_class_weights(y_true, y_pred=None, y_score=y_score)
             # one-vs-all (rest) approach
             tpr = dict()
             fpr = dict()
@@ -677,7 +676,7 @@ class ClassificationMetric(Evaluator):
             for i in range(n_classes):
                 y_true_i = np.array([1 if y == i else 0 for y in y_true])
                 y_score_i = y_score[:, i]
-                tpr[i], fpr[i], thresholds[i] = calculate_roc_curve(y_true_i, y_score_i)
+                tpr[i], fpr[i], thresholds[i] = cu.calculate_roc_curve(y_true_i, y_score_i)
                 # Calculate the area under the curve (AUC) using the trapezoidal rule
                 auc.append(np.trapz(tpr[i], fpr[i]))
             if average == "macro":
