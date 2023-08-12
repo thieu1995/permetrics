@@ -680,7 +680,7 @@ class ClassificationMetric(Evaluator):
             decimal (int): The number of fractional parts after the decimal point
 
         Returns:
-            float, dict: The Cross-Entropy loss
+            float: The Cross-Entropy loss
         """
         y_true, y_pred, binary, representor, decimal = self.get_processed_data2(y_true, y_pred, decimal)
         if binary:
@@ -708,7 +708,7 @@ class ClassificationMetric(Evaluator):
             decimal (int): The number of fractional parts after the decimal point
 
         Returns:
-            float, dict: The Hinge loss
+            float: The Hinge loss
         """
         y_true, y_pred, binary, representor, decimal = self.get_processed_data2(y_true, y_pred, decimal)
         if binary:
@@ -738,13 +738,12 @@ class ClassificationMetric(Evaluator):
             decimal (int): The number of fractional parts after the decimal point
 
         Returns:
-            float, dict: The Kullback-Leibler divergence loss
+            float: The Kullback-Leibler divergence loss
         """
         y_true, y_pred, binary, representor, decimal = self.get_processed_data2(y_true, y_pred, decimal)
         y_pred = np.clip(y_pred, self.EPSILON, 1 - self.EPSILON)  # Clip predicted probabilities
         if binary:
             y_true = np.clip(y_true, self.EPSILON, 1 - self.EPSILON)  # Clip true labels
-
             res = y_true * np.log(y_true / y_pred) + (1 - y_true) * np.log((1 - y_true) / (1 - y_pred))
             res = np.mean(res)
         else:
@@ -754,6 +753,29 @@ class ClassificationMetric(Evaluator):
             y_true = np.clip(y_true, self.EPSILON, 1 - self.EPSILON)  # Clip true labels
             res = np.sum(y_true * np.log(y_true / y_pred), axis=1)
             res = np.mean(res)
+        return np.round(res, decimal)
+
+    def brier_score_loss(self, y_true=None, y_pred=None, decimal=5, **kwargs):
+        """
+        Calculates the Brier Score Loss between y_true and y_pred.
+        Smaller is better (Best = 0), Range = [0, 1]
+
+        Args:
+            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
+            y_pred (tuple, list, np.ndarray): a list of labels (or predicted scores in case of multi-class)
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            float, dict: The Brier Score Loss
+        """
+        y_true, y_pred, binary, representor, decimal = self.get_processed_data2(y_true, y_pred, decimal)
+        if binary:
+            res = np.mean((y_true - y_pred) ** 2)
+        else:  # Multi-class classification
+            # Convert y_true to one-hot encoded array
+            num_classes = len(np.unique(y_true))
+            y_true = np.eye(num_classes)[y_true]
+            res = np.mean(np.sum((y_true - y_pred) ** 2, axis=1))
         return np.round(res, decimal)
 
     def roc_auc_score(self, y_true=None, y_pred=None, average="macro", decimal=5, **kwargs):
@@ -816,4 +838,5 @@ class ClassificationMetric(Evaluator):
     CEL = crossentropy_loss
     HL = hinge_loss
     KLDL = kullback_leibler_divergence_loss
+    BSL = brier_score_loss
     ROC = AUC = RAS = roc_auc_score
