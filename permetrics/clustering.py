@@ -7,8 +7,9 @@
 #       Github: https://github.com/thieu1995        %
 # --------------------------------------------------%
 
+import numpy as np
 from permetrics.evaluator import Evaluator
-from permetrics.utils.data_util import *
+from permetrics.utils import data_util as du
 from permetrics.utils import cluster_util as cu
 
 
@@ -136,13 +137,13 @@ class ClusteringMetric(Evaluator):
                     # y_true, y_pred, self.le = format_internal_clustering_data(self.y_pred)
                     raise ValueError("You need to pass y_true and y_pred to calculate external clustering metrics.")
                 else:
-                    y_true, y_pred, self.le = format_external_clustering_data(self.y_true, self.y_pred)
+                    y_true, y_pred, self.le = du.format_external_clustering_data(self.y_true, self.y_pred)
         else:   # This is for function called, it will override object of class called
             if y_true is None:
                 # y_true, y_pred, self.le = format_internal_clustering_data(y_pred)
                 raise ValueError("You need to pass y_true and y_pred to calculate external clustering metrics.")
             else:
-                y_true, y_pred, self.le = format_external_clustering_data(y_true, y_pred)
+                y_true, y_pred, self.le = du.format_external_clustering_data(y_true, y_pred)
         return y_true, y_pred, self.le, decimal
 
     def get_processed_internal_data(self, y_pred=None, decimal=None):
@@ -161,9 +162,9 @@ class ClusteringMetric(Evaluator):
             if self.y_pred is None:     # Check for object of class called
                 raise ValueError("You need to pass y_pred to calculate external clustering metrics.")
             else:
-                y_pred, self.le = format_internal_clustering_data(self.y_pred)
+                y_pred, self.le = du.format_internal_clustering_data(self.y_pred)
         else:   # This is for function called, it will override object of class called
-            y_pred, self.le = format_internal_clustering_data(y_pred)
+            y_pred, self.le = du.format_internal_clustering_data(y_pred)
         return y_pred, self.le, decimal
 
     def check_X(self, X):
