@@ -9,8 +9,8 @@ from permetrics import ClassificationMetric, RegressionMetric, ClusteringMetric
 
 
 ## For integer labels or categorical labels
-y_true = [0, 1, 0, 0, 1, 0, 0, 0, 1, 2, 2, 2, 0]
-y_pred = [0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1]
+# y_true = [0, 1, 0, 0, 1, 0, 0, 0, 1, 2, 2, 2, 0]
+# y_pred = [0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1]
 
 # y_true = np.array([0, 1, 0, 0, 1, 0, 0, 0, 1, 2, 2, 2, 0])
 # y_pred = np.array([0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1])
@@ -23,6 +23,18 @@ y_pred = [0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1]
 
 # y_true = [["cat", "ant"], ["cat", "cat"], ["ant", "bird"], ["bird", "bird"]]
 # y_pred = [["ant", "ant"], ["cat", "cat"], ["ant", "cat"], ["bird", "ant"]]
+
+
+# Specify y_true labels
+y_true = np.array([0, 1, 0, 1, 1])
+
+# Specify y_pred probabilities as a 2D array
+y_pred = np.array([[0.2, 0.8],
+                   [0.7, 0.3],
+                   [0.3, 0.7],
+                   [0.8, 0.2],
+                   [0.4, 0.6]])
+
 
 # cm = ClassificationMetric(y_true, y_pred, decimal=5)
 # print(cm.jaccard_similarity_index(average=None))
@@ -62,7 +74,7 @@ cm = ClassificationMetric(y_true, y_pred, decimal=5)
 # print(cm.precision_score(average=None))
 # print(cm.PS(average="macro"))
 # print(cm.PS(average="weighted"))
-print(cm.f2_score(average="macro"))
+print(cm.accuracy_score())
 print(cm.f1_score(average="macro"))
 
 

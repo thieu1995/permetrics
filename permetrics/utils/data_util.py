@@ -7,10 +7,11 @@
 import numpy as np
 import copy as cp
 from permetrics.utils.encoder import LabelEncoder
+import permetrics.utils.constant as co
 
 
 def format_regression_data_type(y_true, y_pred):
-    if isinstance(y_true, (list, tuple, np.ndarray)) and isinstance(y_pred, (list, tuple, np.ndarray)):
+    if isinstance(y_true, co.SUPPORTED_LIST) and isinstance(y_pred, co.SUPPORTED_LIST):
         ## Remove all dimensions of size 1
         y_true, y_pred = np.squeeze(np.asarray(y_true, dtype='float64')), np.squeeze(np.asarray(y_pred, dtype='float64'))
         if y_true.ndim == y_pred.ndim:
@@ -108,33 +109,44 @@ def get_regression_positive_data(y_true, y_pred, one_dim=True, rule_idx=0):
 
 
 def format_classification_data(y_true: np.ndarray, y_pred: np.ndarray):
-    if not (isinstance(y_true, (list, tuple, np.ndarray)) and isinstance(y_pred, (list, tuple, np.ndarray))):
+    if not (isinstance(y_true, co.SUPPORTED_LIST) and isinstance(y_pred, co.SUPPORTED_LIST)):
         raise TypeError("y_true and y_pred must be lists, tuples or numpy arrays.")
     else:
         ## Remove all dimensions of size 1
         y_true, y_pred = np.squeeze(np.asarray(y_true)), np.squeeze(np.asarray(y_pred))
-        if not (y_true.ndim == y_pred.ndim):
-            raise TypeError("y_true and y_pred must have the same number of dimensions.")
-        else:
-            if np.issubdtype(y_true.dtype, np.number):
+        if y_true.ndim == y_pred.ndim:
+            if np.issubdtype(y_true.dtype, np.number) and y_true.dtype == y_pred.dtype:
                 var_type = "number"
                 if y_true.ndim > 1:
                     y_true, y_pred = y_true.argmax(axis=1), y_pred.argmax(axis=1)
-            else:
+            elif np.issubdtype(y_true.dtype, str) and y_true.dtype == y_pred.dtype:
                 var_type = "string"
                 if y_true.ndim > 1:
-                    raise ValueError("y_true and y_pred have n_dim > 1 need to be a number.")
-            unique_true, unique_pred = sorted(np.unique(y_true)), sorted(np.unique(y_pred))
-            if not (len(unique_pred) <= len(unique_true) and np.isin(unique_pred, unique_true).all()):
-                raise ValueError("Existed at least one new label in y_pred.")
+                    raise ValueError("y_true and y_pred have ndim > 1 need to be a number.")
             else:
+                raise TypeError("y_true and y_pred need to have the same type.")
+            unique_true, unique_pred = sorted(np.unique(y_true)), sorted(np.unique(y_pred))
+            if len(unique_pred) <= len(unique_true) and np.isin(unique_pred, unique_true).all():
                 binary = len(unique_true) == 2
+            else:
+                raise ValueError("Existed at least one new label in y_pred.")
             return y_true, y_pred, binary, var_type
+        else:
+            if y_true.ndim == 1 and np.issubdtype(y_true.dtype, np.number):
+                if np.issubdtype(y_pred.dtype, np.number):
+                    y_pred = y_pred.argmax(axis=1)
+                    var_type = "number"
+                    binary = len(np.unique(y_true)) == 2
+                    return y_true, y_pred, binary, var_type
+                else:
+                    raise TypeError("When y_true and y_pred have the different ndim, y_pred should has numeric type.")
+            else:
+                raise ValueError("y_true has ndim > 1 and data type is string. Convert y_true to 1-D vector.")
 
 
 def format_y_score(y_true: np.ndarray, y_score: np.ndarray):
     binary = True
-    if not (isinstance(y_true, (list, tuple, np.ndarray)) and isinstance(y_score, (list, tuple, np.ndarray))):
+    if not (isinstance(y_true, co.SUPPORTED_LIST) and isinstance(y_score, co.SUPPORTED_LIST)):
         raise TypeError("y_true and y_score must be lists, tuples or numpy arrays.")
     else:
         y_true, y_score = np.squeeze(np.asarray(y_true)), np.squeeze(np.asarray(y_score))
@@ -167,7 +179,7 @@ def format_external_clustering_data(y_true: np.ndarray, y_pred: np.ndarray):
     """
     Need both of y_true and y_pred to format
     """
-    if not (isinstance(y_true, (list, tuple, np.ndarray)) and isinstance(y_pred, (list, tuple, np.ndarray))):
+    if not (isinstance(y_true, co.SUPPORTED_LIST) and isinstance(y_pred, co.SUPPORTED_LIST)):
         raise TypeError("To calculate external clustering metrics, y_true and y_pred must be lists, tuples or numpy arrays.")
     else:
         ## Remove all dimensions of size 1
@@ -188,7 +200,7 @@ def format_external_clustering_data(y_true: np.ndarray, y_pred: np.ndarray):
 
 
 def format_internal_clustering_data(labels: np.ndarray):
-    if not (isinstance(labels, (list, tuple, np.ndarray))):
+    if not (isinstance(labels, co.SUPPORTED_LIST)):
         raise TypeError("To calculate internal clustering metrics, labels must be lists, tuples or numpy arrays.")
     else:
         ## Remove all dimensions of size 1
