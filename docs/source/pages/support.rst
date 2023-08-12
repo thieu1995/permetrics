@@ -4,25 +4,24 @@ Citation Request
 
 Please include these citations if you plan to use this library::
 
-	@software{thieu_nguyen_2020_3951205,
-      author       = {Nguyen Van Thieu},
-      title        = {Permetrics: A framework of performance metrics for artificial intelligence models},
-      month        = jul,
-      year         = 2020,
-      publisher    = {Zenodo},
-      doi          = {10.5281/zenodo.3951205},
-      url          = {https://doi.org/10.5281/zenodo.3951205}
-    }
-
-    @article{van2023mealpy,
-	  title={MEALPY: An open-source library for latest meta-heuristic algorithms in Python},
-	  author={Van Thieu, Nguyen and Mirjalili, Seyedali},
-	  journal={Journal of Systems Architecture},
-	  year={2023},
-	  publisher={Elsevier},
-	  doi={10.1016/j.sysarc.2023.102871}
+	@software{nguyen_van_thieu_2023_8220489,
+		author       = {Nguyen Van Thieu},
+		title        = {PerMetrics: A Framework of Performance Metrics for Machine Learning Models},
+		month        = aug,
+		year         = 2023,
+		publisher    = {Zenodo},
+		doi          = {10.5281/zenodo.3951205},
+		url          = {https://github.com/thieu1995/permetrics}
 	}
 
+	@article{van2023mealpy,
+		title={MEALPY: An open-source library for latest meta-heuristic algorithms in Python},
+		author={Van Thieu, Nguyen and Mirjalili, Seyedali},
+		journal={Journal of Systems Architecture},
+		year={2023},
+		publisher={Elsevier},
+		doi={10.1016/j.sysarc.2023.102871}
+	}
 
 If you have an open-ended or a research question, you can contact me via nguyenthieu2102@gmail.com
 

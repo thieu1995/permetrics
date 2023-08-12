@@ -5,7 +5,7 @@ Installation
 
 * Install the `current PyPI release <https://pypi.python.org/pypi/permetrics />`_::
 
-   $ pip install permetrics==1.4.2
+   $ pip install permetrics==1.4.3
 
 
 * Install directly from source code::

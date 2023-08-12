@@ -1,41 +1,51 @@
 Classification Metrics
 ======================
 
+
 +-----+---------+----------------------------------+-----------------------------------------------------+
-| STT | Metric  |         Metric Fullname          |                   Characteristics                   |
+| STT | Metric  | Metric Fullname                  | Characteristics                                     |
 +=====+=========+==================================+=====================================================+
-|  1  |   PS    |         Precision Score          |     Bigger is better (Best = 1), Range = [0, 1]     |
+| 1   | PS      | Precision Score                  | Bigger is better (Best = 1), Range = [0, 1]         |
 +-----+---------+----------------------------------+-----------------------------------------------------+
-|  2  |   NPV   |    Negative Predictive Value     |     Bigger is better (Best = 1), Range = [0, 1]     |
+| 2   | NPV     | Negative Predictive Value        | Bigger is better (Best = 1), Range = [0, 1]         |
 +-----+---------+----------------------------------+-----------------------------------------------------+
-|  3  |   RS    |           Recall Score           |     Bigger is better (Best = 1), Range = [0, 1]     |
+| 3   | RS      | Recall Score                     | Bigger is better (Best = 1), Range = [0, 1]         |
 +-----+---------+----------------------------------+-----------------------------------------------------+
-|  4  |   AS    |          Accuracy Score          |     Bigger is better (Best = 1), Range = [0, 1]     |
+| 4   | AS      | Accuracy Score                   | Bigger is better (Best = 1), Range = [0, 1]         |
 +-----+---------+----------------------------------+-----------------------------------------------------+
-|  5  |   F1S   |             F1 Score             |     Bigger is better (Best = 1), Range = [0, 1]     |
+| 5   | F1S     | F1 Score                         | Bigger is better (Best = 1), Range = [0, 1]         |
 +-----+---------+----------------------------------+-----------------------------------------------------+
-|  6  |   F2S   |             F2 Score             |     Bigger is better (Best = 1), Range = [0, 1]     |
+| 6   | F2S     | F2 Score                         | Bigger is better (Best = 1), Range = [0, 1]         |
 +-----+---------+----------------------------------+-----------------------------------------------------+
-|  7  |   FBS   |           F-Beta Score           |     Bigger is better (Best = 1), Range = [0, 1]     |
+| 7   | FBS     | F-Beta Score                     | Bigger is better (Best = 1), Range = [0, 1]         |
 +-----+---------+----------------------------------+-----------------------------------------------------+
-|  8  |   SS    |        Specificity Score         |     Bigger is better (Best = 1), Range = [0, 1]     |
+| 8   | SS      | Specificity Score                | Bigger is better (Best = 1), Range = [0, 1]         |
 +-----+---------+----------------------------------+-----------------------------------------------------+
-|  9  |   MCC   | Matthews Correlation Coefficient |    Bigger is better (Best = 1), Range = [-1, +1]    |
+| 9   | MCC     | Matthews Correlation Coefficient | Bigger is better (Best = 1), Range = [-1, +1]       |
 +-----+---------+----------------------------------+-----------------------------------------------------+
-| 10  |   HS    |          Hamming Score           |     Bigger is better (Best = 1), Range = [0, 1]     |
+| 10  | HS      | Hamming Score                    | Bigger is better (Best = 1), Range = [0, 1]         |
 +-----+---------+----------------------------------+-----------------------------------------------------+
-| 11  |   CKS   |       Cohen's kappa score        |   Bigger is better (Best = +1), Range = [-1, +1]    |
+| 11  | CKS     | Cohen's kappa score              | Bigger is better (Best = +1), Range = [-1, +1]      |
 +-----+---------+----------------------------------+-----------------------------------------------------+
-| 12  |   JSI   |  Jaccard Similarity Coefficient  |    Bigger is better (Best = +1), Range = [0, +1]    |
+| 12  | JSI     | Jaccard Similarity Coefficient   | Bigger is better (Best = +1), Range = [0, +1]       |
 +-----+---------+----------------------------------+-----------------------------------------------------+
-| 13  |   GMS   |       Geometric Mean Score       |    Bigger is better (Best = +1), Range = [0, +1]    |
+| 13  | GMS     | Geometric Mean Score             | Bigger is better (Best = +1), Range = [0, +1]       |
 +-----+---------+----------------------------------+-----------------------------------------------------+
-| 14  | ROC-AUC |             ROC-AUC              |    Bigger is better (Best = +1), Range = [0, +1]    |
+| 14  | ROC-AUC | ROC-AUC                          | Bigger is better (Best = +1), Range = [0, +1]       |
 +-----+---------+----------------------------------+-----------------------------------------------------+
-| 15  |   LS    |            Lift Score            | Bigger is better (No best value), Range = [0, +inf) |
+| 15  | LS      | Lift Score                       | Bigger is better (No best value), Range = [0, +inf) |
 +-----+---------+----------------------------------+-----------------------------------------------------+
-| 16  |  GINI   |            GINI Index            |    Smaller is better (Best = 0), Range = [0, +1]    |
+| 16  | GINI    | GINI Index                       | Smaller is better (Best = 0), Range = [0, +1]       |
 +-----+---------+----------------------------------+-----------------------------------------------------+
+| 17  | CEL     | Cross Entropy Loss               | Smaller is better (Best = 0), Range=[0, +inf)       |
++-----+---------+----------------------------------+-----------------------------------------------------+
+| 18  | HL      | Hinge Loss                       | Smaller is better (Best = 0), Range=[0, +inf)       |
++-----+---------+----------------------------------+-----------------------------------------------------+
+| 19  | KLDL    | Kullback Leibler Divergence Loss | Smaller is better (Best = 0), Range=[0, +inf)       |
++-----+---------+----------------------------------+-----------------------------------------------------+
+| 20  | BSL     | Brier Score Loss                 | Smaller is better (Best = 0), Range=[0, +1]         |
++-----+---------+----------------------------------+-----------------------------------------------------+
+
 
 
 In extending a binary metric to multiclass or multilabel problems, the data is treated as a collection of binary problems, one for each class.
