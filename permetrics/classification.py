@@ -12,10 +12,8 @@ import numpy as np
 
 class ClassificationMetric(Evaluator):
     """
-    Defines a ClassificationMetric class that hold all classification metrics (for both binary and multiple classification problem)
-
-    + An extension of scikit-learn metrics section, with the addition of many more classification metrics.
-    + https://scikit-learn.org/stable/modules/model_evaluation.html#classification-metrics
+    Defines a ClassificationMetric class that hold all classification metrics
+    (for both binary and multiple classification problem)
 
     Parameters
     ----------
@@ -59,6 +57,10 @@ class ClassificationMetric(Evaluator):
         "ROC-AUC": {"type": "max", "range": "[0, 1]", "best": "1"},
         "LS": {"type": "max", "range": "[0, +inf)", "best": "no best"},
         "GINI": {"type": "min", "range": "[0, 1]", "best": "0"},
+        "CEL": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "HL": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "KLDL": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "BSL": {"type": "min", "range": "[0, 1]", "best": "0"}
     }
 
     def __init__(self, y_true=None, y_pred=None, decimal=5, **kwargs):
