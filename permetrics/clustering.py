@@ -160,7 +160,6 @@ class ClusteringMetric(Evaluator):
             le: label encoder object
             decimal: The number of fractional parts after the decimal point
         """
-        t1 = time.perf_counter()
         decimal = self.decimal if decimal is None else decimal
         if y_pred is None:              # Check for function called
             if self.y_pred is None:     # Check for object of class called
@@ -169,7 +168,6 @@ class ClusteringMetric(Evaluator):
                 y_pred, self.le = du.format_internal_clustering_data(self.y_pred)
         else:   # This is for function called, it will override object of class called
             y_pred, self.le = du.format_internal_clustering_data(y_pred)
-        print("dam", time.perf_counter() - t1)
         return y_pred, self.le, decimal
 
     def check_X(self, X):
@@ -197,15 +195,7 @@ class ClusteringMetric(Evaluator):
         """
         X = self.check_X(X)
         y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        n_clusters = len(np.unique(y_pred))
-        wgss = 0
-        ## For each cluster, find the centroid and then the within-group SSE
-        for k in range(n_clusters):
-            centroid_mask = y_pred == k
-            cluster_k = X[centroid_mask]
-            centroid = np.mean(cluster_k, axis=0)
-            wgss += np.sum((cluster_k - centroid) ** 2)
-        return np.round(wgss / n_clusters, decimal)
+        return cu.calculate_ball_hall_index(X, y_pred, decimal)
 
     def calinski_harabasz_index(self, X=None, y_pred=None, decimal=None, **kwargs):
         """

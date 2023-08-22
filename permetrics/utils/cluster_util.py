@@ -195,3 +195,18 @@ def calculate_sum_squared_error_index(X=None, y_pred=None, decimal=6):
     squared_distances = np.sum((X - centroid_distances) ** 2, axis=1)
     return np.round(np.sum(squared_distances), decimal)
 
+
+def calculate_ball_hall_index(X=None, y_pred=None, decimal=6):
+    n_clusters = len(np.unique(y_pred))
+    wgss = 0
+    ## For each cluster, find the centroid and then the within-group SSE
+    for k in range(n_clusters):
+        centroid_mask = y_pred == k
+        cluster_k = X[centroid_mask]
+        centroid = np.mean(cluster_k, axis=0)
+        wgss += np.sum((cluster_k - centroid) ** 2)
+    return np.round(wgss / n_clusters, decimal)
+
+
+
+
