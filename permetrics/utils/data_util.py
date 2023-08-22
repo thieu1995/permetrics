@@ -171,9 +171,10 @@ def format_y_score(y_true: np.ndarray, y_score: np.ndarray):
             raise ValueError("y_true should have two dimensions only.")
 
 
-def is_consecutive_and_start_zero(vector):
-    if sorted(vector) == list(range(min(vector), max(vector) + 1)):
-        if 0 in vector:
+def is_unique_labels_consecutive_and_start_zero(vector):
+    labels = np.sort(np.unique(vector))
+    if 0 in labels:
+        if np.all(np.diff(labels) == 1):
             return True
     return False
 
@@ -192,7 +193,7 @@ def format_external_clustering_data(y_true: np.ndarray, y_pred: np.ndarray):
         else:
             if y_true.ndim == 1:
                 if np.issubdtype(y_true.dtype, np.number):
-                    if is_consecutive_and_start_zero(y_true):
+                    if is_unique_labels_consecutive_and_start_zero(y_true):
                         return y_true, y_pred, None
                 le = LabelEncoder()
                 y_true = le.fit_transform(y_true)
@@ -202,19 +203,19 @@ def format_external_clustering_data(y_true: np.ndarray, y_pred: np.ndarray):
                 raise TypeError("To calculate clustering metrics, y_true and y_pred must be a 1-D vector.")
 
 
-def format_internal_clustering_data(labels: np.ndarray):
-    if not (isinstance(labels, co.SUPPORTED_LIST)):
-        raise TypeError("To calculate internal clustering metrics, labels must be lists, tuples or numpy arrays.")
+def format_internal_clustering_data(y_pred: np.ndarray):
+    if not (isinstance(y_pred, co.SUPPORTED_LIST)):
+        raise TypeError("To calculate internal clustering metrics, y_pred must be lists, tuples or numpy arrays.")
     else:
         ## Remove all dimensions of size 1
-        labels = np.squeeze(np.asarray(labels))
-        if labels.ndim == 1:
-            if np.issubdtype(labels.dtype, np.number):
-                labels = np.round(labels).astype(int)
-                if is_consecutive_and_start_zero(labels):
-                    return labels, None
+        y_pred = np.squeeze(np.asarray(y_pred))
+        if y_pred.ndim == 1:
+            if np.issubdtype(y_pred.dtype, np.number):
+                y_pred = np.round(y_pred).astype(int)
+                if is_unique_labels_consecutive_and_start_zero(y_pred):
+                    return y_pred, None
             le = LabelEncoder()
-            labels = le.fit_transform(labels)
+            labels = le.fit_transform(y_pred)
             return labels, le
         else:
             raise TypeError("To calculate clustering metrics, labels must be a 1-D vector.")
