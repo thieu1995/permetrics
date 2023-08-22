@@ -46,8 +46,7 @@ def compute_barycenters(X, labels):
     ## Mask mapping each class to its members.
     centroids = np.empty((len(list_clusters), n_features), dtype=np.float64)
     for idx, k in enumerate(list_clusters):
-        centroid_mask = labels == k
-        centroids[idx] = X[centroid_mask].mean(axis=0)
+        centroids[idx] = X[labels == k].mean(axis=0)
     return centroids, np.mean(X, axis=0)
 
 
@@ -188,3 +187,11 @@ def compute_confusion_matrix(y_true, y_pred, normalize=False):
     if normalize:
         return res/np.sum(res)
     return res
+
+
+def calculate_sum_squared_error_index(X=None, y_pred=None, decimal=6):
+    centers, _ = compute_barycenters(X, y_pred)
+    centroid_distances = centers[y_pred]
+    squared_distances = np.sum((X - centroid_distances) ** 2, axis=1)
+    return np.round(np.sum(squared_distances), decimal)
+

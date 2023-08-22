@@ -6,6 +6,7 @@
 #       Email: nguyenthieu2102@gmail.com            %
 #       Github: https://github.com/thieu1995        %
 # --------------------------------------------------%
+import time
 
 import numpy as np
 from permetrics.evaluator import Evaluator
@@ -128,6 +129,7 @@ class ClusteringMetric(Evaluator):
             le: label encoder object
             decimal: The number of fractional parts after the decimal point
         """
+        t1 = time.perf_counter()
         decimal = self.decimal if decimal is None else decimal
         if y_pred is None:              # Check for function called
             if self.y_pred is None:     # Check for object of class called
@@ -144,6 +146,7 @@ class ClusteringMetric(Evaluator):
                 raise ValueError("You need to pass y_true and y_pred to calculate external clustering metrics.")
             else:
                 y_true, y_pred, self.le = du.format_external_clustering_data(y_true, y_pred)
+        print("dam", time.perf_counter() - t1)
         return y_true, y_pred, self.le, decimal
 
     def get_processed_internal_data(self, y_pred=None, decimal=None):
@@ -157,6 +160,7 @@ class ClusteringMetric(Evaluator):
             le: label encoder object
             decimal: The number of fractional parts after the decimal point
         """
+        t1 = time.perf_counter()
         decimal = self.decimal if decimal is None else decimal
         if y_pred is None:              # Check for function called
             if self.y_pred is None:     # Check for object of class called
@@ -165,6 +169,7 @@ class ClusteringMetric(Evaluator):
                 y_pred, self.le = du.format_internal_clustering_data(self.y_pred)
         else:   # This is for function called, it will override object of class called
             y_pred, self.le = du.format_internal_clustering_data(y_pred)
+        print("dam", time.perf_counter() - t1)
         return y_pred, self.le, decimal
 
     def check_X(self, X):
@@ -550,14 +555,7 @@ class ClusteringMetric(Evaluator):
         """
         X = self.check_X(X)
         y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        centers, _ = cu.compute_barycenters(X, y_pred)
-        sse = 0
-        # Iterate over each data point
-        for idx, point in enumerate(X):
-            centroid = centers[y_pred[idx]]  # Get the centroid associated with the data point's label
-            distance = np.linalg.norm(point - centroid)  # Calculate the Euclidean distance
-            sse += distance ** 2  # Add the squared distance to the SSE
-        return np.round(sse, decimal)
+        return cu.calculate_sum_squared_error_index(X, y_pred, decimal)
 
     def duda_hart_index(self, X=None, y_pred=None, decimal=None, **kwarg):
         """

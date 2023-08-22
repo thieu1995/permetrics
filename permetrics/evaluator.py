@@ -26,10 +26,10 @@ class Evaluator:
         """
         if kwargs is None: kwargs = {}
         self.set_keyword_arguments(kwargs)
-        self.y_true_original = cp.deepcopy(y_true)
-        self.y_pred_original = cp.deepcopy(y_pred)
         self.y_true = cp.deepcopy(y_true)
         self.y_pred = cp.deepcopy(y_pred)
+        self.y_true_ = cp.deepcopy(y_true)
+        self.y_pred_ = cp.deepcopy(y_pred)
         self.decimal = decimal
 
     def set_keyword_arguments(self, kwargs):
