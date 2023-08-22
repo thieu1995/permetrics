@@ -219,16 +219,7 @@ class ClusteringMetric(Evaluator):
         """
         X = self.check_X(X)
         y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        n_samples, _ = X.shape
-        n_clusters = len(np.unique(y_pred))
-        if n_clusters == 1:
-            if self.raise_error:
-                raise ValueError("The Calinski-Harabasz index is undefined when y_pred has only 1 cluster.")
-            else:
-                return 0.0
-        numer = cu.compute_BGSS(X, y_pred) * (n_samples - n_clusters)
-        denom = cu.compute_WGSS(X, y_pred) * (n_clusters - 1)
-        return np.round(numer / denom, decimal)
+        return cu.calculate_calinski_harabasz_index(X, y_pred, decimal, self.raise_error, 0.0)
 
     def xie_beni_index(self, X=None, y_pred=None, decimal=None, **kwargs):
         """

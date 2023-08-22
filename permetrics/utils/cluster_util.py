@@ -6,6 +6,7 @@
 #       Email: nguyenthieu2102@gmail.com            %
 #       Github: https://github.com/thieu1995        %
 # --------------------------------------------------%
+import time
 
 import numpy as np
 from scipy.spatial.distance import cdist, pdist, squareform
@@ -71,27 +72,41 @@ def compute_TSS(X):
 
 def compute_WGSS(X, labels):
     """
-    Calculate the pooled within-cluster sum of squares WGSS
+    Calculate the pooled within-cluster sum of squares WGSS or The within-cluster variance
     """
-    clusters_dict, cluster_sizes_dict = compute_clusters(labels)
-    wg = []
-    for label, indices in clusters_dict.items():
-        scatter_mat = compute_WG(X[indices])
-        wg.append(np.trace(scatter_mat))
-    return np.sum(wg)
+    barycenters, overall_barycenter = compute_barycenters(X, labels)
+    n_clusters = len(barycenters)
+    within_var = 0.0
+    for i in range(n_clusters):
+        cluster_mask = labels == i
+        cluster_mean = np.mean(X[cluster_mask], axis=0)
+        within_var += np.sum(np.sum((X[cluster_mask] - cluster_mean) ** 2, axis=1))
+    return within_var
 
 
 def compute_BGSS(X, labels):
     """
-    The between-group dispersion BGSS
+    The between-group dispersion BGSS or between-cluster variance
     """
     barycenters, overall_barycenter = compute_barycenters(X, labels)
-    clusters, cluster_sizes = compute_clusters(labels)
-    dispersion = 0
-    for label, indices in clusters.items():
-        diff = barycenters[label] - overall_barycenter
-        dispersion += cluster_sizes[label] * np.sum(diff**2)
-    return dispersion
+    n_clusters = len(barycenters)
+    # Calculate the overall mean of the data
+    overall_mean = np.mean(X, axis=0)
+
+    # # Calculate between-cluster variance and cluster sizes
+    # cluster_sizes = np.bincount(labels, minlength=n_clusters)
+    # cluster_means = np.array([np.mean(X[labels == i], axis=0) for i in range(n_clusters)])
+    # between_var = np.sum(cluster_sizes * np.sum((cluster_means - overall_mean) ** 2, axis=1))
+    # return between_var
+
+    # Calculate the between-cluster variance
+    between_var = 0.0
+    for i in range(n_clusters):
+        cluster_mask = labels == i
+        cluster_size = np.sum(cluster_mask)
+        cluster_mean = np.mean(X[cluster_mask], axis=0)
+        between_var += cluster_size * np.sum((cluster_mean - overall_mean) ** 2)
+    return between_var
 
 
 def get_min_dist(X, centers):
@@ -208,5 +223,21 @@ def calculate_ball_hall_index(X=None, y_pred=None, decimal=6):
     return np.round(wgss / n_clusters, decimal)
 
 
-
-
+def calculate_calinski_harabasz_index(X=None, y_pred=None, decimal=6, raise_error=True, raise_value=0.0):
+    n_samples, _ = X.shape
+    n_clusters = len(np.unique(y_pred))
+    if n_clusters == 1:
+        if raise_error:
+            raise ValueError("The Calinski-Harabasz index is undefined when y_pred has only 1 cluster.")
+        else:
+            return raise_value
+    overall_mean = np.mean(X, axis=0)
+    # Calculate between-cluster variance and cluster sizes
+    cluster_sizes = np.bincount(y_pred, minlength=n_clusters)
+    cluster_means = np.array([np.mean(X[y_pred == i], axis=0) for i in range(n_clusters)])
+    between_var = np.sum(cluster_sizes * np.sum((cluster_means - overall_mean) ** 2, axis=1))
+    # Calculate within-cluster variance
+    within_var = np.sum((X - cluster_means[y_pred]) ** 2)
+    # Calculate the CH Index
+    res = (between_var / within_var) * ((n_samples - n_clusters) / (n_clusters - 1))
+    return np.round(res, decimal)
