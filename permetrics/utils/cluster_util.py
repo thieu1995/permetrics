@@ -408,3 +408,25 @@ def calculate_duda_hart_index(X=None, y_pred=None, decimal=6, raise_error=True, 
     result = intra_cluster_distances / inter_cluster_distances
     return np.round(result, decimal)
 
+
+def calculate_beale_index(X=None, y_pred=None, decimal=6, raise_error=True, raise_value=np.inf):
+    n_clusters = len(np.unique(y_pred))
+    if n_clusters == 1:
+        if raise_error:
+            raise ValueError("The Beale index is undefined when y_pred has only 1 cluster.")
+        else:
+            return raise_value
+    n_samples, n_features = X.shape
+    centers, _ = compute_barycenters(X, y_pred)
+    sse_within = 0
+    sse_between = 0
+    for k in range(n_clusters):
+        sse_within += np.sum((X[y_pred == k] - centers[k]) ** 2)
+        sse_between += np.sum((centers[k] - np.mean(X, axis=0)) ** 2)
+    df_within = n_samples - n_clusters
+    df_between = n_clusters - 1
+    ms_within = sse_within / df_within
+    ms_between = sse_between / df_between
+    result = ms_within / ms_between
+    return np.round(result, decimal)
+

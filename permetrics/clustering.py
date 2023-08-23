@@ -442,7 +442,7 @@ class ClusteringMetric(Evaluator):
         """
         X = self.check_X(X)
         y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        return cu.calculate_duda_hart_index(X, y_pred, decimal)
+        return cu.calculate_duda_hart_index(X, y_pred, decimal, self.raise_error, self.biggest_value)
 
     def beale_index(self, X=None, y_pred=None, decimal=None, **kwarg):
         """
@@ -460,25 +460,7 @@ class ClusteringMetric(Evaluator):
         """
         X = self.check_X(X)
         y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        n_clusters = len(np.unique(y_pred))
-        if n_clusters == 1:
-            if self.raise_error:
-                raise ValueError("The Duda-Hart index is undefined when y_pred has only 1 cluster.")
-            else:
-                return self.biggest_value
-        n_samples, n_features = X.shape
-        centers, _ = cu.compute_barycenters(X, y_pred)
-        sse_within = 0
-        sse_between = 0
-        for k in range(n_clusters):
-            sse_within += np.sum((X[y_pred == k] - centers[k]) ** 2)
-            sse_between += np.sum((centers[k] - np.mean(X, axis=0)) ** 2)
-        df_within = n_samples - n_clusters
-        df_between = n_clusters - 1
-        ms_within = sse_within / df_within
-        ms_between = sse_between / df_between
-        result = ms_within / ms_between
-        return np.round(result, decimal)
+        return cu.calculate_beale_index(X, y_pred, decimal, self.raise_error, self.biggest_value)
 
     def r_squared_index(self, X=None, y_pred=None, decimal=None, **kwarg):
         """
