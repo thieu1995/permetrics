@@ -8,6 +8,7 @@ import numpy as np
 import time
 from permetrics import ClusteringMetric
 import permetrics.utils.cluster_util as cut
+from scipy.spatial.distance import cdist
 
 np.random.seed(100)
 
@@ -19,11 +20,15 @@ def generate_dataset(num_samples, num_features, num_clusters, cluster_std):
     return data, centroids, labels
 
 
-def calculate_sse(data, centroids, labels):
-    centroid_distances = centroids[labels]
-    squared_distances = np.sum(np.square(data - centroid_distances), axis=1)
-    sse = np.sum(squared_distances)
-    return sse
+def xie_beni_index(data, labels, centroids):
+    num_clusters = len(np.unique(labels))  # Number of clusters
+    wgss = np.sum(np.min(cdist(data, centroids, metric='euclidean'), axis=1) ** 2)
+    list_dist = []
+    for k in range(num_clusters):
+        for k0 in range(k + 1, num_clusters):
+            list_dist.append(np.sum((centroids[k] - centroids[k0]) ** 2))
+    C = (wgss / np.min(list_dist)) / len(data)
+    return C
 
 
 num_samples = 10000000
@@ -33,16 +38,15 @@ cluster_std = 0.5
 
 data, centroids, labels = generate_dataset(num_samples, num_features, num_clusters, cluster_std)
 
-# Calculate SSE using the optimized function
-time01 = time.perf_counter()
-sse = calculate_sse(data, centroids, labels)
-print("Sum of Squared Errors:", sse, time.perf_counter() - time01)
+time03 = time.perf_counter()
+s3 = xie_beni_index(data, labels, centroids)
+print("XBI 1: ", s3, time.perf_counter() - time03)
 
 time02 = time.perf_counter()
 cm = ClusteringMetric(y_true=labels, y_pred=labels, X=data)
-sse02 = cm.sum_squared_error_index()
-print("SSE: ", sse02, time.perf_counter() - time02 )
+res = cm.xie_beni_index()
+print("XBI 2: ", res, time.perf_counter() - time02 )
 
 time03 = time.perf_counter()
-s3 = cut.calculate_sum_squared_error_index(data, labels)
-print("SSE1: ", s3, time.perf_counter() - time03)
+s3 = cut.calculate_xie_beni_index(data, labels)
+print("XBI 3: ", s3, time.perf_counter() - time03)

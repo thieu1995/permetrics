@@ -10,6 +10,8 @@ from permetrics import ClusteringMetric
 import permetrics.utils.cluster_util as cut
 from sklearn.metrics import calinski_harabasz_score as sk_chs
 
+np.random.seed(100)
+
 
 def generate_dataset(num_samples, num_features, num_clusters, cluster_std):
     centroids = np.random.randn(num_clusters, num_features)

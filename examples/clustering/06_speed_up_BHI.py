@@ -9,6 +9,8 @@ import time
 from permetrics import ClusteringMetric
 import permetrics.utils.cluster_util as cut
 
+np.random.seed(100)
+
 
 def generate_dataset(num_samples, num_features, num_clusters, cluster_std):
     centroids = np.random.randn(num_clusters, num_features)
@@ -23,7 +25,6 @@ num_clusters = 5
 cluster_std = 0.5
 
 data, centroids, labels = generate_dataset(num_samples, num_features, num_clusters, cluster_std)
-centroids = cut.get_centroids(data, labels)
 
 time02 = time.perf_counter()
 cm = ClusteringMetric(y_true=labels, y_pred=labels, X=data)
