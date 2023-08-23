@@ -441,6 +441,34 @@ def calculate_r_squared_index(X=None, y_pred=None, decimal=6):
     return np.round(result, decimal)
 
 
+def calculate_density_based_clustering_validation_index(X=None, y_pred=None, decimal=6, raise_error=True, raise_value=1.0):
+    n_clusters = len(np.unique(y_pred))
+    if n_clusters == 1:
+        if raise_error:
+            raise ValueError("The Density-based Clustering Validation Index is 0 when y_pred has only 1 cluster.")
+        else:
+            return raise_value
+    n_samples, n_features = X.shape
+    centroids = np.zeros((n_clusters, n_features))
+    for k in range(n_clusters):
+        centroids[k] = np.mean(X[y_pred == k], axis=0)
+    intra_cluster_distances = cdist(X, centroids, 'euclidean')
+    min_inter_cluster_distances = np.zeros(n_samples)
+    for i in range(n_samples):
+        mask = np.ones(n_samples, dtype=bool)
+        mask[i] = False
+        mask[y_pred == y_pred[i]] = False
+        if np.sum(mask) > 0:
+            min_inter_cluster_distances[i] = np.min(cdist(X[i, :].reshape(1, -1), X[mask, :], 'euclidean'))
+        else:
+            min_inter_cluster_distances[i] = np.inf
+    result = np.mean(intra_cluster_distances / np.maximum(min_inter_cluster_distances.reshape(-1, 1), intra_cluster_distances), axis=0).mean()
+    return np.round(result, decimal)
+
+
+
+
+
 
 
 
