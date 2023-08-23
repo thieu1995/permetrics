@@ -297,22 +297,7 @@ class ClusteringMetric(Evaluator):
         """
         X = self.check_X(X)
         y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        clusters_dict, cluster_sizes_dict = cu.compute_clusters(y_pred)
-        centers, _ = cu.compute_barycenters(X, y_pred)
-        T = cu.compute_WG(X)
-        scatter_matrices = np.zeros((X.shape[1], X.shape[1]))     # shape of (n_features, n_features)
-        for label, indices in clusters_dict.items():
-            # Retrieve data points for the current cluster
-            X_k = X[indices]
-            # Compute within-group scatter matrix for the current cluster
-            scatter_matrices += cu.compute_WG(X_k)
-        t1 = np.linalg.det(scatter_matrices)
-        if t1 == 0:
-            if self.raise_error:
-                raise ValueError("The Det-Ratio index is undefined when determinant of matrix is 0.")
-            else:
-                return self.smallest_value
-        return np.round(np.linalg.det(T) / t1, decimal)
+        return cu.calculate_det_ratio_index(X, y_pred, decimal, self.raise_error, self.smallest_value)
 
     def dunn_index(self, X=None, y_pred=None, decimal=None, **kwargs):
         """

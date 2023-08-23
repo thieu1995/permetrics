@@ -102,15 +102,6 @@ def compute_BGSS(X, labels):
     return between_var
 
 
-def get_min_dist(X, centers):
-    """
-    Get the min distance from samples X to centers
-    """
-    dist = cdist(X, centers, metric='euclidean')
-    min_dist = np.min(dist, axis=1)
-    return min_dist
-
-
 def compute_contingency_matrix(y_true, y_pred):
     unique_true = np.unique(y_true)
     unique_pred = np.unique(y_pred)
@@ -268,4 +259,23 @@ def calculate_davies_bouldin_index(X=None, y_pred=None, decimal=6, raise_error=T
                 list_dist.append(m)
         cc += np.max(list_dist)
     return np.round(cc / n_clusters, decimal)
+
+
+def calculate_det_ratio_index(X=None, y_pred=None, decimal=6, raise_error=True, raise_value=0.0):
+    clusters_dict, cluster_sizes_dict = compute_clusters(y_pred)
+    centers, _ = compute_barycenters(X, y_pred)
+    T = compute_WG(X)
+    scatter_matrices = np.zeros((X.shape[1], X.shape[1]))  # shape of (n_features, n_features)
+    for label, indices in clusters_dict.items():
+        # Retrieve data points for the current cluster
+        X_k = X[indices]
+        # Compute within-group scatter matrix for the current cluster
+        scatter_matrices += compute_WG(X_k)
+    t1 = np.linalg.det(scatter_matrices)
+    if t1 == 0:
+        if raise_error:
+            raise ValueError("The Det-Ratio index is undefined when determinant of matrix is 0.")
+        else:
+            return raise_value
+    return np.round(np.linalg.det(T) / t1, decimal)
 
