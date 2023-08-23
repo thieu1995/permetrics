@@ -430,3 +430,17 @@ def calculate_beale_index(X=None, y_pred=None, decimal=6, raise_error=True, rais
     result = ms_within / ms_between
     return np.round(result, decimal)
 
+
+def calculate_r_squared_index(X=None, y_pred=None, decimal=6):
+    n_clusters = len(np.unique(y_pred))
+    total_var = np.var(X, axis=0).sum()
+    var_within = 0
+    for k in range(n_clusters):
+        var_within += np.var(X[y_pred == k], axis=0).sum()
+    result = (total_var - var_within) / total_var
+    return np.round(result, decimal)
+
+
+
+
+

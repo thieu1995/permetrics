@@ -478,13 +478,7 @@ class ClusteringMetric(Evaluator):
         """
         X = self.check_X(X)
         y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        n_clusters = len(np.unique(y_pred))
-        total_var = np.var(X, axis=0).sum()
-        var_within = 0
-        for k in range(n_clusters):
-            var_within += np.var(X[y_pred == k], axis=0).sum()
-        result = (total_var - var_within) / total_var
-        return np.round(result, decimal)
+        return cu.calculate_r_squared_index(X, y_pred, decimal)
 
     def density_based_clustering_validation_index(self, X=None, y_pred=None, decimal=None, **kwarg):
         """
