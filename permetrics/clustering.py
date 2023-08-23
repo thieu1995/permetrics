@@ -353,26 +353,7 @@ class ClusteringMetric(Evaluator):
         """
         X = self.check_X(X)
         y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        clusters_dict, cluster_sizes_dict = cu.compute_clusters(y_pred)
-        centers, _ = cu.compute_barycenters(X, y_pred)
-        T = cu.compute_WG(X)
-        WG = np.zeros((X.shape[1], X.shape[1]))     # shape of (n_features, n_features)
-        for label, indices in clusters_dict.items():
-            X_k = X[indices]
-            WG += cu.compute_WG(X_k)
-        t2 = np.linalg.det(WG)
-        if t2 == 0:
-            if self.raise_error:
-                raise ValueError("The Log Det Ratio Index is undefined when determinant of matrix WG is 0.")
-            else:
-                return self.smallest_value
-        t1 = np.linalg.det(T) / t2
-        if t1 <= 0:
-            if self.raise_error:
-                raise ValueError("The Log Det Ratio Index is undefined when det(T)/det(WG) <= 0.")
-            else:
-                return self.smallest_value
-        return np.round(X.shape[0] * np.log(t1), decimal)
+        return cu.calculate_log_det_ratio_index(X, y_pred, decimal, self.raise_error, self.smallest_value)
 
     def log_ss_ratio_index(self, X=None, y_pred=None, decimal=None, **kwargs):
         """

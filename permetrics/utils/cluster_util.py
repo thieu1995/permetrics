@@ -325,3 +325,25 @@ def calculate_ksq_detw_index(X=None, y_pred=None, decimal=6, use_normalized=True
     return np.round(res, decimal)
 
 
+def calculate_log_det_ratio_index(X=None, y_pred=None, decimal=6, raise_error=True, raise_value=-np.inf):
+    clusters_dict, cluster_sizes_dict = compute_clusters(y_pred)
+    centers, _ = compute_barycenters(X, y_pred)
+    T = compute_WG(X)
+    WG = np.zeros((X.shape[1], X.shape[1]))  # shape of (n_features, n_features)
+    for label, indices in clusters_dict.items():
+        X_k = X[indices]
+        WG += compute_WG(X_k)
+    t2 = np.linalg.det(WG)
+    if t2 == 0:
+        if raise_error:
+            raise ValueError("The Log Det Ratio Index is undefined when determinant of matrix WG is 0.")
+        else:
+            return raise_value
+    t1 = np.linalg.det(T) / t2
+    if t1 <= 0:
+        if raise_error:
+            raise ValueError("The Log Det Ratio Index is undefined when det(T)/det(WG) <= 0.")
+        else:
+            return raise_value
+    return np.round(X.shape[0] * np.log(t1), decimal)
+
