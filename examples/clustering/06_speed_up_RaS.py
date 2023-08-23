@@ -35,7 +35,7 @@ print("res: ", s3, time.perf_counter() - time03)
 
 time02 = time.perf_counter()
 cm = ClusteringMetric(y_true=y_true, y_pred=y_pred, decimal=8)
-res = cm.rand_score()
+res = cm.RaS()
 print("res: ", res, time.perf_counter() - time02 )
 
 time03 = time.perf_counter()
