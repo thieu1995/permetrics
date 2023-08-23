@@ -619,9 +619,7 @@ class ClusteringMetric(Evaluator):
 
     def rand_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
-        Computes the rand score between two clusterings.
-        It measures the similarity of the two sets of clusters by comparing the number
-        of pairs of samples that are correctly or incorrectly clustered together.
+        Computes the Rand score between two clusterings.
         Higher is better (Best = 1), Range = [0, 1]
 
         Args:
@@ -634,6 +632,22 @@ class ClusteringMetric(Evaluator):
         """
         y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
         return cu.calculate_rand_score(y_true, y_pred, decimal)
+
+    def adjusted_rand_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+        """
+        Computes the Adjusted rand score between two clusterings.
+        Higher is better (Best = 1), Range = [-1, 1]
+
+        Args:
+            y_true (array-like): The true labels for each sample.
+            y_pred (array-like): The predicted cluster labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            result (float): The Adjusted rand score
+        """
+        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
+        return cu.calculate_adjusted_rand_score(y_true, y_pred, decimal)
 
     def fowlkes_mallows_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
@@ -1192,6 +1206,7 @@ class ClusteringMetric(Evaluator):
     MIS = mutual_info_score
     NMIS = normalized_mutual_info_score
     RaS = rand_score
+    ARS = adjusted_rand_score
     FMS = fowlkes_mallows_score
     HS = homogeneity_score
     CS = completeness_score
