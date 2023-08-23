@@ -12,6 +12,7 @@ import numpy as np
 from scipy.spatial.distance import cdist, pdist, squareform
 from scipy.spatial import distance_matrix
 from scipy.stats import entropy as calculate_entropy
+from scipy.sparse import coo_matrix
 
 
 def compute_clusters(labels):
@@ -104,15 +105,10 @@ def compute_BGSS(X, labels):
 
 
 def compute_contingency_matrix(y_true, y_pred):
-    unique_true = np.unique(y_true)
-    unique_pred = np.unique(y_pred)
-    num_true = len(unique_true)
-    num_pred = len(unique_pred)
-    contingency = np.zeros((num_true, num_pred), dtype=np.int64)
-    for i in range(len(y_true)):
-        true_label = np.where(unique_true == y_true[i])[0]
-        pred_label = np.where(unique_pred == y_pred[i])[0]
-        contingency[true_label, pred_label] += 1
+    unique_true, true_inverse = np.unique(y_true, return_inverse=True)
+    unique_pred, pred_inverse = np.unique(y_pred, return_inverse=True)
+    contingency = coo_matrix((np.ones_like(y_true), (true_inverse, pred_inverse)),
+                             shape=(len(unique_true), len(unique_pred)), dtype=np.int64).toarray()
     return contingency
 
 
@@ -486,4 +482,22 @@ def calculate_hartigan_index(X=None, y_pred=None, decimal=6):
 
         hi += sum_distances_within_cluster / sum_distances_to_closest_other_cluster
     return np.round(hi, decimal)
+
+
+def calculate_mutual_info_score(y_true=None, y_pred=None, decimal=6):
+    contingency_matrix = compute_contingency_matrix(y_true, y_pred)
+    # Convert contingency matrix to probability matrix
+    contingency_matrix = contingency_matrix / y_true.shape[0]
+    # Calculate marginal probabilities
+    cluster_probs_true = np.sum(contingency_matrix, axis=1)
+    cluster_probs_pred = np.sum(contingency_matrix, axis=0)
+    # Calculate mutual information
+    n_clusters_true = len(np.unique(y_true))
+    n_clusters_pred = len(np.unique(y_pred))
+    mi = 0.0
+    for idx in range(n_clusters_true):
+        for jdx in range(n_clusters_pred):
+            if contingency_matrix[idx, jdx] > 0.0:
+                mi += contingency_matrix[idx, jdx] * np.log(contingency_matrix[idx, jdx] / (cluster_probs_true[idx] * cluster_probs_pred[jdx]))
+    return np.round(mi, decimal)
 

@@ -129,7 +129,6 @@ class ClusteringMetric(Evaluator):
             le: label encoder object
             decimal: The number of fractional parts after the decimal point
         """
-        t1 = time.perf_counter()
         decimal = self.decimal if decimal is None else decimal
         if y_pred is None:              # Check for function called
             if self.y_pred is None:     # Check for object of class called
@@ -146,7 +145,6 @@ class ClusteringMetric(Evaluator):
                 raise ValueError("You need to pass y_true and y_pred to calculate external clustering metrics.")
             else:
                 y_true, y_pred, self.le = du.format_external_clustering_data(y_true, y_pred)
-        print("dam", time.perf_counter() - t1)
         return y_true, y_pred, self.le, decimal
 
     def get_processed_internal_data(self, y_pred=None, decimal=None):
@@ -599,21 +597,7 @@ class ClusteringMetric(Evaluator):
             result (float): The Mutual Information score
         """
         y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        contingency_matrix = cu.compute_contingency_matrix(y_true, y_pred)
-        # Convert contingency matrix to probability matrix
-        contingency_matrix = contingency_matrix / y_true.shape[0]
-        # Calculate marginal probabilities
-        cluster_probs_true = np.sum(contingency_matrix, axis=1)
-        cluster_probs_pred = np.sum(contingency_matrix, axis=0)
-        # Calculate mutual information
-        n_clusters_true = len(np.unique(y_true))
-        n_clusters_pred = len(np.unique(y_pred))
-        mi = 0.0
-        for idx in range(n_clusters_true):
-            for jdx in range(n_clusters_pred):
-                if contingency_matrix[idx, jdx] > 0.0:
-                    mi += contingency_matrix[idx, jdx] * np.log(contingency_matrix[idx, jdx] / (cluster_probs_true[idx] * cluster_probs_pred[jdx]))
-        return np.round(mi, decimal)
+        return cu.calculate_mutual_info_score(y_true, y_pred, decimal)
 
     def normalized_mutual_info_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
