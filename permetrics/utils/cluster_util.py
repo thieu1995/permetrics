@@ -6,7 +6,6 @@
 #       Email: nguyenthieu2102@gmail.com            %
 #       Github: https://github.com/thieu1995        %
 # --------------------------------------------------%
-import time
 
 import numpy as np
 from scipy.spatial.distance import cdist, pdist, squareform
@@ -18,15 +17,9 @@ def compute_clusters(labels):
     """
     Get the dict of clusters and dict of cluster size
     """
-    dict_clusters = {}
-    for idx, label in enumerate(labels):
-        if label in dict_clusters:
-            dict_clusters[label].append(idx)
-        else:
-            dict_clusters[label] = [idx]
-    dict_cluster_sizes = {}
-    for label, group in dict_clusters.items():
-        dict_cluster_sizes[label] = len(group)
+    unique_labels, label_counts = np.unique(labels, return_counts=True)
+    dict_clusters = {label: np.where(labels == label)[0] for label in unique_labels}
+    dict_cluster_sizes = {label: count for label, count in zip(unique_labels, label_counts)}
     return dict_clusters, dict_cluster_sizes
 
 
@@ -233,4 +226,3 @@ def calculate_xie_beni_index(X=None, y_pred=None, decimal=6, raise_error=True, r
     MinSqDist = np.min(pdist(centroids, metric='sqeuclidean'))
     res = (wgss / X.shape[0]) / MinSqDist
     return np.round(res, decimal)
-
