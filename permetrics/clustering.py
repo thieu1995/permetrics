@@ -382,7 +382,7 @@ class ClusteringMetric(Evaluator):
         wgss = cu.compute_WGSS(X, y_pred)
         return np.round(np.log(bgss/wgss), decimal)
 
-    def silhouette_index(self, X=None, y_pred=None, decimal=None, **kwarg):
+    def silhouette_index(self, X=None, y_pred=None, decimal=None, multi_output=False, **kwarg):
         """
         Computes the Silhouette Index
         Higher is better (Best = 1), Range = [-1, +1]
@@ -392,20 +392,14 @@ class ClusteringMetric(Evaluator):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
             decimal (int): The number of fractional parts after the decimal point
+            multi_output (bool): Returned scores for each cluster, default=False
 
         Returns:
             result (float): The Silhouette Index
         """
         X = self.check_X(X)
         y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        dm = cu.distance_matrix(X, X)
-        silhouette_scores = np.zeros(X.shape[0])
-        for i in range(X.shape[0]):
-            a = np.mean(dm[i, y_pred == y_pred[i]])  # Cohesion
-            b_values = [np.mean(dm[i, y_pred == label]) for label in np.unique(y_pred) if label != y_pred[i]]
-            b = np.min(b_values) if len(b_values) > 0 else 0  # Separation
-            silhouette_scores[i] = (b - a) / max(a, b)
-        return np.round(np.mean(silhouette_scores), decimal)
+        return cu.calculate_silhouette_index(X, y_pred, decimal, multi_output)
 
     def sum_squared_error_index(self, X=None, y_pred=None, decimal=None, **kwarg):
         """

@@ -347,3 +347,37 @@ def calculate_log_det_ratio_index(X=None, y_pred=None, decimal=6, raise_error=Tr
             return raise_value
     return np.round(X.shape[0] * np.log(t1), decimal)
 
+
+def calculate_silhouette_index_slow(X=None, y_pred=None, decimal=6):
+    dm = distance_matrix(X, X)
+    res = np.zeros(X.shape[0])
+    for i in range(X.shape[0]):
+        a = np.mean(dm[i, y_pred == y_pred[i]])  # Cohesion
+        b_values = [np.mean(dm[i, y_pred == label]) for label in np.unique(y_pred) if label != y_pred[i]]
+        b = np.min(b_values) if len(b_values) > 0 else 0  # Separation
+        res[i] = (b - a) / max(a, b)
+    return np.round(np.mean(res), decimal)
+
+
+def calculate_silhouette_index(X=None, y_pred=None, decimal=6, multi_output=False):
+    unique_clusters = np.unique(y_pred)
+    num_clusters = len(unique_clusters)
+    num_points = len(X)
+    # Precompute pairwise distances
+    pairwise_distances_matrix = cdist(X, X)
+    a_values = np.zeros(num_points)
+    b_values = np.zeros(num_points)
+    for i in range(num_clusters):
+        mask_i = y_pred == unique_clusters[i]
+        mask_i_indices = np.where(mask_i)[0]
+        a_values_i = np.sum(pairwise_distances_matrix[mask_i_indices][:, mask_i_indices], axis=1) / np.sum(mask_i)
+        a_values[mask_i_indices] = a_values_i
+        b_values_i = np.min([
+            np.sum(pairwise_distances_matrix[mask_i_indices][:, y_pred == unique_clusters[j]], axis=1) / np.sum(y_pred == unique_clusters[j])
+            for j in range(num_clusters) if j != i], axis=0)
+        b_values[mask_i_indices] = b_values_i
+    results = (b_values - a_values) / np.maximum(a_values, b_values)
+    if multi_output:
+        return np.round(results, decimal)
+    return np.round(np.mean(results), decimal)
+
