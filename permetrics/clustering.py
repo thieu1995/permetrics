@@ -652,7 +652,6 @@ class ClusteringMetric(Evaluator):
     def fowlkes_mallows_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Fowlkes-Mallows score between two clusterings.
-        It assesses the similarity between two clustering results by comparing them to a ground truth or reference clustering (if available).
         Higher is better (Best = 1), Range = [0, 1]
 
         Args:
@@ -664,22 +663,7 @@ class ClusteringMetric(Evaluator):
             result (float): The Fowlkes-Mallows score
         """
         y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        n_samples = len(y_true)
-        TP = 0
-        FP = 0
-        FN = 0
-        for idx in range(n_samples):
-            for jdx in range(idx + 1, n_samples):
-                a = y_true[idx] == y_true[jdx]
-                b = y_pred[idx] == y_pred[jdx]
-                if a and b:
-                    TP += 1
-                elif a and not b:
-                    FN += 1
-                elif not a and b:
-                    FP += 1
-        fm = TP / np.sqrt((TP + FP) * (TP + FN))
-        return np.round(fm, decimal)
+        return cu.calculate_fowlkes_mallows_score(y_true, y_pred, decimal, self.raise_error, 0.0)
 
     def homogeneity_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """

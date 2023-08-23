@@ -564,3 +564,19 @@ def calculate_adjusted_rand_score(y_true=None, y_pred=None, decimal=6):
     res = 2.0 * (tp * tn - fn * fp) / ((tp + fn) * (fn + tn) + (tp + fp) * (fp + tn))
     return np.round(res, decimal)
 
+
+def calculate_fowlkes_mallows_score(y_true=None, y_pred=None, decimal=6, raise_error=True, raise_value=0.0):
+    (n_samples,) = y_true.shape
+    c = compute_contingency_matrix(y_true, y_pred)
+    c = c.astype(np.int64, copy=False)
+    tk = np.dot(c.ravel(), c.ravel()) - n_samples
+    pk = np.sum(np.asarray(c.sum(axis=0)).ravel() ** 2) - n_samples
+    qk = np.sum(np.asarray(c.sum(axis=1)).ravel() ** 2) - n_samples
+    if pk == 0.0 or qk == 0.0:
+        if raise_error:
+            raise ValueError("The Fowlkes Mallows Score is undefined when pk = 0 or qk = 0.")
+        else:
+            return raise_value
+    res = np.sqrt(tk / pk) * np.sqrt(tk / qk)
+    return np.round(res, decimal)
+
