@@ -523,3 +523,22 @@ def calculate_normalized_mutual_info_score(y_true=None, y_pred=None, decimal=6, 
     nmi = mi / denominator
     return np.round(nmi, decimal)
 
+
+def calculate_rand_score(y_true=None, y_pred=None, decimal=6):
+    n_samples = np.int64(y_true.shape[0])
+    contingency = compute_contingency_matrix(y_true, y_pred)
+    n_c = np.ravel(contingency.sum(axis=1))
+    n_k = np.ravel(contingency.sum(axis=0))
+    sum_squares = (contingency**2).sum()
+    C = np.empty((2, 2), dtype=np.int64)
+    C[1, 1] = sum_squares - n_samples
+    C[0, 1] = contingency.dot(n_k).sum() - sum_squares
+    C[1, 0] = contingency.transpose().dot(n_c).sum() - sum_squares
+    C[0, 0] = n_samples**2 - C[0, 1] - C[1, 0] - sum_squares
+    numerator = C.diagonal().sum()
+    denominator = C.sum()
+    if numerator == denominator or denominator == 0:
+        # Special limit cases: no clustering since the data is not split; or trivial clustering where each
+        # document is assigned a unique cluster. These are perfect matches hence return 1.0.
+        return 1.0
+    return np.round(numerator / denominator, decimal)

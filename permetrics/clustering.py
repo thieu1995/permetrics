@@ -633,20 +633,7 @@ class ClusteringMetric(Evaluator):
             result (float): The rand score.
         """
         y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        n_samples = len(y_true)
-        n_pairs = n_samples * (n_samples - 1) / 2
-        a = 0  # Number of pairs that are in the same cluster in both true and predicted labels
-        b = 0  # Number of pairs that are in different clusters in both true and predicted labels
-        for idx in range(n_samples):
-            for jdx in range(idx + 1, n_samples):
-                same_cluster_true = y_true[idx] == y_true[jdx]
-                same_cluster_pred = y_pred[idx] == y_pred[jdx]
-                if same_cluster_true and same_cluster_pred:
-                    a += 1
-                elif not same_cluster_true and not same_cluster_pred:
-                    b += 1
-        ri = (a + b) / n_pairs
-        return np.round(ri, decimal)
+        return cu.calculate_rand_score(y_true, y_pred, decimal)
 
     def fowlkes_mallows_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
