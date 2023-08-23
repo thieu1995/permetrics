@@ -614,25 +614,8 @@ class ClusteringMetric(Evaluator):
         Returns:
             result (float): The normalized mutual information score.
         """
-        mi = self.mutual_info_score(y_true, y_pred, decimal, **kwargs)
-        if mi == 0.:
-            return 0
         y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        n_samples = y_true.shape[0]
-        n_clusters_true = len(np.unique(y_true))
-        n_clusters_pred = len(np.unique(y_pred))
-        if n_clusters_true == 1 or n_clusters_pred == 1:
-            # If either of the clusterings has only one cluster, MI is not defined
-            return 0.0
-        # Calculate entropy of true and predicted clusterings
-        entropy_true = -np.sum((np.bincount(y_true) / n_samples) * np.log(np.bincount(y_true) / n_samples))
-        entropy_pred = -np.sum((np.bincount(y_pred) / n_samples) * np.log(np.bincount(y_pred) / n_samples))
-        # Calculate normalized mutual information
-        denominator = (entropy_true + entropy_pred) / 2.0
-        if denominator == 0:
-            return 1.0  # Perfect agreement when both entropies are 0 (all samples in one cluster)
-        nmi = mi / denominator
-        return np.round(nmi, decimal)
+        return cu.calculate_normalized_mutual_info_score(y_true, y_pred, decimal, self.raise_error, 0.0)
 
     def rand_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """

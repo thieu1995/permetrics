@@ -441,7 +441,7 @@ def calculate_density_based_clustering_validation_index(X=None, y_pred=None, dec
     n_clusters = len(np.unique(y_pred))
     if n_clusters == 1:
         if raise_error:
-            raise ValueError("The Density-based Clustering Validation Index is 0 when y_pred has only 1 cluster.")
+            raise ValueError("The Density-based Clustering Validation Index is undefined when y_pred has only 1 cluster.")
         else:
             return raise_value
     n_samples, n_features = X.shape
@@ -500,4 +500,26 @@ def calculate_mutual_info_score(y_true=None, y_pred=None, decimal=6):
             if contingency_matrix[idx, jdx] > 0.0:
                 mi += contingency_matrix[idx, jdx] * np.log(contingency_matrix[idx, jdx] / (cluster_probs_true[idx] * cluster_probs_pred[jdx]))
     return np.round(mi, decimal)
+
+
+def calculate_normalized_mutual_info_score(y_true=None, y_pred=None, decimal=6, raise_error=True, raise_value=0.0):
+    mi = calculate_mutual_info_score(y_true, y_pred)
+    n_samples = y_true.shape[0]
+    n_clusters_true = len(np.unique(y_true))
+    n_clusters_pred = len(np.unique(y_pred))
+    if n_clusters_true == 1 or n_clusters_pred == 1 or mi == 0:
+        # If either of the clusterings has only one cluster, MI is not defined
+        if raise_error:
+            raise ValueError("The Normalized Mutual Info Score is undefined when MIS = 0 or y_true, y_pred has only 1 cluster.")
+        else:
+            return raise_value
+    # Calculate entropy of true and predicted clusterings
+    entropy_true = -np.sum((np.bincount(y_true) / n_samples) * np.log(np.bincount(y_true) / n_samples))
+    entropy_pred = -np.sum((np.bincount(y_pred) / n_samples) * np.log(np.bincount(y_pred) / n_samples))
+    # Calculate normalized mutual information
+    denominator = (entropy_true + entropy_pred) / 2.0
+    if denominator == 0:
+        return 1.0  # Perfect agreement when both entropies are 0 (all samples in one cluster)
+    nmi = mi / denominator
+    return np.round(nmi, decimal)
 
