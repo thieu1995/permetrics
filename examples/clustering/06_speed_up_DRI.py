@@ -29,8 +29,8 @@ data, centroids, labels = generate_dataset(num_samples, num_features, num_cluste
 time02 = time.perf_counter()
 cm = ClusteringMetric(y_true=labels, y_pred=labels, X=data)
 res = cm.det_ratio_index()
-print("BHI: ", res, time.perf_counter() - time02 )
+print("res: ", res, time.perf_counter() - time02 )
 
 time03 = time.perf_counter()
 s3 = cut.calculate_det_ratio_index(data, labels)
-print("BHI: ", s3, time.perf_counter() - time03)
+print("res: ", s3, time.perf_counter() - time03)
