@@ -318,7 +318,7 @@ class ClusteringMetric(Evaluator):
         y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
         return cu.calculate_dunn_index(X, y_pred, decimal, use_modified, self.raise_error, 0.0)
 
-    def ksq_detw_index(self, X=None, y_pred=None, decimal=None, **kwargs):
+    def ksq_detw_index(self, X=None, y_pred=None, decimal=None, use_normalized=True, **kwargs):
         """
         Computes the Ksq-DetW Index
         Smaller is better (No best value), Range=(-inf, +inf)
@@ -328,20 +328,14 @@ class ClusteringMetric(Evaluator):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
             decimal (int): The number of fractional parts after the decimal point
+            use_normalized (bool): We normalize the scatter matrix before calculate the Det to reduce the value, default=True
 
         Returns:
             result (float): The Ksq-DetW Index
         """
         X = self.check_X(X)
         y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        clusters_dict, cluster_sizes_dict = cu.compute_clusters(y_pred)
-        centers, _ = cu.compute_barycenters(X, y_pred)
-        scatter_matrices = np.zeros((X.shape[1], X.shape[1]))     # shape of (n_features, n_features)
-        for label, indices in clusters_dict.items():
-            X_k = X[indices]
-            scatter_matrices += cu.compute_WG(X_k)
-        cc = len(clusters_dict)**2 * np.linalg.det(scatter_matrices)
-        return np.round(cc, decimal)
+        return cu.calculate_ksq_detw_index(X, y_pred, decimal, use_normalized)
 
     def log_det_ratio_index(self, X=None, y_pred=None, decimal=None, **kwargs):
         """

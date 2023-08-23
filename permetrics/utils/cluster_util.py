@@ -312,3 +312,16 @@ def calculate_dunn_index(X=None, y_pred=None, decimal=6, use_modified=True, rais
         dmax = max(dmax, dk)
     return np.round(dmin / dmax, decimal)
 
+
+def calculate_ksq_detw_index(X=None, y_pred=None, decimal=6, use_normalized=True):
+    centers, _ = compute_barycenters(X, y_pred)
+    scatter_matrices = np.zeros((X.shape[1], X.shape[1]))  # shape of (n_features, n_features)
+    for kdx in range(len(centers)):
+        X_k = X[y_pred == kdx]
+        scatter_matrices += compute_WG(X_k)
+    if use_normalized:
+        scatter_matrices = (scatter_matrices - np.min(scatter_matrices)) / (np.max(scatter_matrices) - np.min(scatter_matrices))
+    res = len(centers) ** 2 * np.linalg.det(scatter_matrices)
+    return np.round(res, decimal)
+
+
