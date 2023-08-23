@@ -29,8 +29,8 @@ data, centroids, labels = generate_dataset(num_samples, num_features, num_cluste
 time02 = time.perf_counter()
 cm = ClusteringMetric(y_true=labels, y_pred=labels, X=data)
 sse02 = cm.ksq_detw_index()
-print("BRI 2: ", sse02, time.perf_counter() - time02 )
+print("res 2: ", sse02, time.perf_counter() - time02 )
 
 time03 = time.perf_counter()
 s3 = cut.calculate_ksq_detw_index(data, labels)
-print("BRI 3: ", s3, time.perf_counter() - time03)
+print("res 3: ", s3, time.perf_counter() - time03)
