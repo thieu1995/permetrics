@@ -279,29 +279,7 @@ class ClusteringMetric(Evaluator):
         """
         X = self.check_X(X)
         y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        clusters_dict, cluster_sizes_dict = cu.compute_clusters(y_pred)
-        centers, _ = cu.compute_barycenters(X, y_pred)
-        n_clusters = len(clusters_dict)
-        if n_clusters == 1:
-            if self.raise_error:
-                raise ValueError("The Davies-Bouldin index is undefined when y_pred has only 1 cluster.")
-            else:
-                return self.biggest_value
-        # Calculate delta for each cluster
-        delta = {}
-        for k in range(n_clusters):
-            X_k = X[clusters_dict[k]]
-            delta[k] = np.mean(np.linalg.norm(X_k - centers[k], axis=1))
-        # Calculate the Davies-Bouldin index
-        cc = 0.0
-        for kdx in range(n_clusters):
-            list_dist = []
-            for jdx in range(n_clusters):
-                if jdx != kdx:
-                    m = (delta[kdx] + delta[jdx]) / np.linalg.norm(centers[kdx] - centers[jdx])
-                    list_dist.append(m)
-            cc += np.max(list_dist)
-        return np.round(cc/n_clusters, decimal)
+        return cu.calculate_davies_bouldin_index(X, y_pred, decimal, self.raise_error, self.biggest_value)
 
     def det_ratio_index(self, X=None, y_pred=None, decimal=None, **kwargs):
         """
