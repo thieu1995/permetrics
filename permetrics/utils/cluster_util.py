@@ -118,30 +118,6 @@ def get_min_dist(X, centers):
     return min_dist
 
 
-def get_centroids(X, labels):
-    """
-    Calculates the centroids from the data given, for each class.
-
-    Args:
-        X (pd.DataFrame, np.ndarray): The original data that was clustered
-        labels (list, np.ndarray): The predicted cluster assignment values
-
-    Returns:
-        centroids (np.ndarray): The centroids given the input data and labels
-    """
-    n_samples, n_features = X.shape
-    n_classes = len(np.unique(labels))
-    # * Mask mapping each class to its members.
-    centroids = np.empty((n_classes, n_features), dtype=np.float64)
-    # * Number of clusters in each class.
-    nk = np.zeros(n_classes)
-    for k in range(n_classes):
-        centroid_mask = labels == k
-        nk[k] = np.sum(centroid_mask)
-        centroids[k] = X[centroid_mask].mean(axis=0)
-    return centroids
-
-
 def compute_contingency_matrix(y_true, y_pred):
     unique_true = np.unique(y_true)
     unique_pred = np.unique(y_pred)
@@ -241,3 +217,20 @@ def calculate_calinski_harabasz_index(X=None, y_pred=None, decimal=6, raise_erro
     # Calculate the CH Index
     res = (between_var / within_var) * ((n_samples - n_clusters) / (n_clusters - 1))
     return np.round(res, decimal)
+
+
+def calculate_xie_beni_index(X=None, y_pred=None, decimal=6, raise_error=True, raise_value=0.0):
+    n_clusters = len(np.unique(y_pred))
+    if n_clusters == 1:
+        if raise_error:
+            raise ValueError("The Xie-Beni index is undefined when y_pred has only 1 cluster.")
+        else:
+            return raise_value
+    # Get the centroids
+    centroids, _ = compute_barycenters(X, y_pred)
+    wgss = np.sum(np.min(cdist(X, centroids, metric='euclidean'), axis=1) ** 2)
+    # Computing the minimum squared distance to the centroids:
+    MinSqDist = np.min(pdist(centroids, metric='sqeuclidean'))
+    res = (wgss / X.shape[0]) / MinSqDist
+    return np.round(res, decimal)
+

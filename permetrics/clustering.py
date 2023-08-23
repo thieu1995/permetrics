@@ -242,21 +242,7 @@ class ClusteringMetric(Evaluator):
         """
         X = self.check_X(X)
         y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        n_clusters = len(np.unique(y_pred))
-        if n_clusters == 1:
-            if self.raise_error:
-                raise ValueError("The Xie-Beni index is undefined when y_pred has only 1 cluster.")
-            else:
-                return self.biggest_value
-        # Get the centroids
-        centroids = cu.get_centroids(X, y_pred)
-        euc_distance_to_centroids = cu.get_min_dist(X, centroids)
-        WGSS = np.sum(euc_distance_to_centroids**2)
-        # Computing the minimum squared distance to the centroids:
-        MinSqDist = np.min(cu.pdist(centroids, metric='sqeuclidean'))
-        # Computing the XB index:
-        xb = (1 / X.shape[0]) * (WGSS / MinSqDist)
-        return np.round(xb, decimal)
+        return cu.calculate_xie_beni_index(X, y_pred, decimal, self.raise_error, self.biggest_value)
 
     def banfeld_raftery_index(self, X=None, y_pred=None, decimal=None, **kwargs):
         """
