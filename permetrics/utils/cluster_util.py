@@ -381,3 +381,30 @@ def calculate_silhouette_index(X=None, y_pred=None, decimal=6, multi_output=Fals
         return np.round(results, decimal)
     return np.round(np.mean(results), decimal)
 
+
+def calculate_duda_hart_index(X=None, y_pred=None, decimal=6, raise_error=True, raise_value=np.inf):
+    # Find the unique cluster labels
+    unique_labels = np.unique(y_pred)
+    if len(unique_labels) == 1:
+        if raise_error:
+            raise ValueError("The Duda-Hart index is undefined when y_pred has only 1 cluster.")
+        else:
+            return raise_value
+    # Compute the pairwise distances between data points
+    pairwise_distances = cdist(X, X)
+    # Initialize the numerator and denominator for Duda index calculation
+    intra_cluster_distances = 0
+    inter_cluster_distances = 0
+    # Iterate over each unique cluster label
+    for label in unique_labels:
+        # Find the indices of data points in the current cluster
+        cluster_indices = np.where(y_pred == label)[0]
+        # Compute the average pairwise distance within the current cluster
+        intra_cluster_distances += np.mean(pairwise_distances[np.ix_(cluster_indices, cluster_indices)])
+        # Compute the average pairwise distance to other clusters
+        other_cluster_indices = np.where(y_pred != label)[0]
+        inter_cluster_distances += np.mean(pairwise_distances[np.ix_(cluster_indices, other_cluster_indices)])
+    # Calculate the Duda index
+    result = intra_cluster_distances / inter_cluster_distances
+    return np.round(result, decimal)
+
