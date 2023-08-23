@@ -261,14 +261,7 @@ class ClusteringMetric(Evaluator):
         """
         X = self.check_X(X)
         y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        clusters_dict, cluster_sizes_dict = cu.compute_clusters(y_pred)
-        cc = 0.0
-        for k in clusters_dict.keys():
-            X_k = X[clusters_dict[k]]
-            cluster_dispersion = np.trace(cu.compute_WG(X_k)) / cluster_sizes_dict[k]
-            if cluster_sizes_dict[k] > 1:
-                cc += cluster_sizes_dict[k] * np.log(cluster_dispersion)
-        return np.round(cc, decimal)
+        return cu.calculate_banfeld_raftery_index(X, y_pred, decimal, self.raise_error, self.biggest_value)
 
     def davies_bouldin_index(self, X=None, y_pred=None, decimal=None, **kwargs):
         """

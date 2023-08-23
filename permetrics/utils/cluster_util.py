@@ -212,7 +212,7 @@ def calculate_calinski_harabasz_index(X=None, y_pred=None, decimal=6, raise_erro
     return np.round(res, decimal)
 
 
-def calculate_xie_beni_index(X=None, y_pred=None, decimal=6, raise_error=True, raise_value=0.0):
+def calculate_xie_beni_index(X=None, y_pred=None, decimal=6, raise_error=True, raise_value=np.inf):
     n_clusters = len(np.unique(y_pred))
     if n_clusters == 1:
         if raise_error:
@@ -226,3 +226,20 @@ def calculate_xie_beni_index(X=None, y_pred=None, decimal=6, raise_error=True, r
     MinSqDist = np.min(pdist(centroids, metric='sqeuclidean'))
     res = (wgss / X.shape[0]) / MinSqDist
     return np.round(res, decimal)
+
+
+def calculate_banfeld_raftery_index(X=None, y_pred=None, decimal=6, raise_error=True, raise_value=np.inf):
+    clusters_dict, cluster_sizes_dict = compute_clusters(y_pred)
+    cc = 0.0
+    for k in clusters_dict.keys():
+        X_k = X[clusters_dict[k]]
+        cluster_dispersion = np.trace(compute_WG(X_k)) / cluster_sizes_dict[k]
+        if cluster_sizes_dict[k] == 1:
+            if raise_error:
+                raise ValueError("The Banfeld-Raftery index is undefined when at least 1 cluster has only 1 sample.")
+            else:
+                return raise_value
+        if cluster_sizes_dict[k] > 1:
+            cc += cluster_sizes_dict[k] * np.log(cluster_dispersion)
+    return np.round(cc, decimal)
+
