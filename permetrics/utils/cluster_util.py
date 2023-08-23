@@ -466,9 +466,24 @@ def calculate_density_based_clustering_validation_index(X=None, y_pred=None, dec
     return np.round(result, decimal)
 
 
+def calculate_hartigan_index(X=None, y_pred=None, decimal=6):
+    centroids, _ = compute_barycenters(X, y_pred)
+    num_clusters = len(np.unique(y_pred))
+    hi = 0.0
+    for idx in range(num_clusters):
+        cluster_data = X[y_pred == idx]
+        cluster_centroid = centroids[idx]
 
+        distances_within_cluster = cdist(cluster_data, [cluster_centroid], metric='euclidean') ** 2
+        sum_distances_within_cluster = np.sum(distances_within_cluster)
 
+        other_centroids = np.delete(centroids, idx, axis=0)
+        closest_other_centroid_index = np.argmin(np.linalg.norm(cluster_centroid - other_centroids, axis=1))
+        closest_other_centroid = other_centroids[closest_other_centroid_index]
 
+        distances_to_closest_other_cluster = cdist(cluster_data, [closest_other_centroid], metric='euclidean') ** 2
+        sum_distances_to_closest_other_cluster = np.sum(distances_to_closest_other_cluster)
 
-
+        hi += sum_distances_within_cluster / sum_distances_to_closest_other_cluster
+    return np.round(hi, decimal)
 

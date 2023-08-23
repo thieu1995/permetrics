@@ -498,7 +498,7 @@ class ClusteringMetric(Evaluator):
         y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
         return cu.calculate_density_based_clustering_validation_index(X, y_pred, decimal, self.raise_error, 1.0)
 
-    def hartigan_index(self, X=None, y_pred=None, decimal=None, n_epochs=10, **kwarg):
+    def hartigan_index(self, X=None, y_pred=None, decimal=None, **kwarg):
         """
         Computes the Hartigan index for a clustering solution.
         Lower is better (best=0), Range = [0, +inf)
@@ -508,30 +508,13 @@ class ClusteringMetric(Evaluator):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
             decimal (int): The number of fractional parts after the decimal point
-            n_epochs (int): Number of iterations to repeat the random clustering process.
 
         Returns:
             result (float): The Hartigan index
         """
         X = self.check_X(X)
         y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        centers, _ = cu.compute_barycenters(X, y_pred)
-        n_clusters = len(centers)
-        wcss = 0.0
-        for k in range(n_clusters):
-            cluster_points = X[y_pred == k]
-            wcss += np.sum(np.square(cluster_points - centers[k]))
-        expected_wcss = 0.0
-        for _ in range(n_epochs):
-            random_centroids = np.random.permutation(X)[:n_clusters]
-            random_wcss = 0.0
-            for k in range(0, n_clusters):
-                cluster_points = X[y_pred == k]
-                random_wcss += np.sum(np.square(cluster_points - random_centroids[k]))
-            expected_wcss += random_wcss / n_clusters
-        expected_wcss /= n_epochs
-        result = wcss / expected_wcss
-        return np.round(result, decimal)
+        return cu.calculate_hartigan_index(X, y_pred, decimal)
 
     def baker_hubert_gamma_index(self, X=None, y_pred=None, decimal=None, **kwargs):
         """
