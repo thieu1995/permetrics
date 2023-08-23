@@ -299,7 +299,7 @@ class ClusteringMetric(Evaluator):
         y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
         return cu.calculate_det_ratio_index(X, y_pred, decimal, self.raise_error, self.smallest_value)
 
-    def dunn_index(self, X=None, y_pred=None, decimal=None, **kwargs):
+    def dunn_index(self, X=None, y_pred=None, decimal=None, use_modified=True, **kwargs):
         """
         Computes the Dunn Index
         Bigger is better (No best value), Range=[0, +inf)
@@ -309,37 +309,14 @@ class ClusteringMetric(Evaluator):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
             decimal (int): The number of fractional parts after the decimal point
+            use_modified (bool): The modified version we proposed to speed up the computational time for this metric, default=True
 
         Returns:
             result (float): The Dunn Index
         """
         X = self.check_X(X)
         y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        clusters_dict, cluster_sizes_dict = cu.compute_clusters(y_pred)
-        n_clusters = len(clusters_dict)
-        if n_clusters == 1:
-            if self.raise_error:
-                raise ValueError("The Davies-Bouldin index is undefined when y_pred has only 1 cluster.")
-            else:
-                return 0.0
-        # Calculate dmin
-        dmin = np.inf
-        for kdx in range(n_clusters-1):
-            for k0 in range(kdx + 1, n_clusters):
-                t1 = X[clusters_dict[kdx]]
-                t2 = X[clusters_dict[k0]]
-                dkk = cu.cdist(t1, t2, metric='euclidean')
-                dmin = min(dmin, np.min(dkk))
-        # Calculate dmax
-        dmax = 0.0
-        for kdx in range(n_clusters):
-            max_d_cluster = 0.0
-            for idx in range(len(clusters_dict[kdx])-1):
-                for jdx in range(idx + 1, len(clusters_dict[kdx])):
-                    dk = np.linalg.norm(X[clusters_dict[kdx]][idx] - X[clusters_dict[kdx]][jdx])
-                    max_d_cluster = max(max_d_cluster, dk)
-            dmax = max(dmax, max_d_cluster)
-        return np.round(dmin/dmax, decimal)
+        return cu.calculate_dunn_index(X, y_pred, decimal, use_modified, self.raise_error, 0.0)
 
     def ksq_detw_index(self, X=None, y_pred=None, decimal=None, **kwargs):
         """

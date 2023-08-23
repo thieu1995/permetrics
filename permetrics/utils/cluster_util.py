@@ -6,6 +6,7 @@
 #       Email: nguyenthieu2102@gmail.com            %
 #       Github: https://github.com/thieu1995        %
 # --------------------------------------------------%
+import time
 
 import numpy as np
 from scipy.spatial.distance import cdist, pdist, squareform
@@ -278,4 +279,36 @@ def calculate_det_ratio_index(X=None, y_pred=None, decimal=6, raise_error=True, 
         else:
             return raise_value
     return np.round(np.linalg.det(T) / t1, decimal)
+
+
+def calculate_dunn_index(X=None, y_pred=None, decimal=6, use_modified=True, raise_error=True, raise_value=0.0):
+    centers, _ = compute_barycenters(X, y_pred)
+    n_clusters = len(centers)
+    if n_clusters == 1:
+        if raise_error:
+            raise ValueError("The Dunn index is undefined when y_pred has only 1 cluster.")
+        else:
+            return raise_value
+    # Calculate dmin
+    dmin = np.inf
+    if use_modified:
+        for k0 in range(n_clusters - 1):
+            for k1 in range(k0 + 1, n_clusters):
+                points = X[y_pred == k1]
+                dkk = np.min(cdist(points, centers[k0].reshape(1, -1), metric='euclidean'))
+                dmin = min(dmin, np.min(dkk))
+    else:
+        for kdx in range(n_clusters - 1):
+            for k0 in range(kdx + 1, n_clusters):
+                points1 = X[y_pred == kdx]
+                points2 = X[y_pred == k0]
+                dkk = cdist(points1, points2, metric='euclidean')
+                dmin = min(dmin, np.min(dkk))
+    # Calculate dmax
+    dmax = 0.0
+    for kdx in range(n_clusters):
+        points = X[y_pred == kdx]
+        dk = np.max(pdist(points, metric="euclidean"))
+        dmax = max(dmax, dk)
+    return np.round(dmin / dmax, decimal)
 
