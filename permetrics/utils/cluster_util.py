@@ -658,4 +658,8 @@ def calculate_phi_score(y_true=None, y_pred=None, decimal=6, raise_error=True, r
     return np.round(numerator / denominator, decimal)
 
 
+def calculate_rogers_tanimoto_score(y_true=None, y_pred=None, decimal=6):
+    yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred)
+    cc = (yy + nn) / (yy + nn + 2 * (yn + ny))
+    return np.round(cc, decimal)
 

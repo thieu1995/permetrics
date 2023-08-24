@@ -929,10 +929,7 @@ class ClusteringMetric(Evaluator):
             result (float): The Rogers-Tanimoto score
         """
         y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        cm = cu.compute_confusion_matrix(y_true, y_pred)
-        yy, yn, ny, nn = cm
-        cc = (yy + nn) / (yy + nn + 2 * (yn + ny))
-        return np.round(cc, decimal)
+        return cu.calculate_rogers_tanimoto_score(y_true, y_pred, decimal)
 
     def russel_rao_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
