@@ -676,3 +676,8 @@ def calculate_sokal_sneath1_score(y_true=None, y_pred=None, decimal=6):
     return np.round(cc, decimal)
 
 
+def calculate_sokal_sneath2_score(y_true=None, y_pred=None, decimal=6):
+    yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
+    cc = (yy + nn) / (yy + nn + 0.5 * (yn + ny))
+    return np.round(cc, decimal)
+

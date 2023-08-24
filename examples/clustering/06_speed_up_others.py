@@ -108,13 +108,22 @@ data, y_true, y_pred, centers = generate_dataset(num_samples, num_features, num_
 # print("res: ", s3, time.perf_counter() - time03)
 
 
+# time02 = time.perf_counter()
+# cm = ClusteringMetric(y_true=y_true, y_pred=y_pred, decimal=10)
+# res = cm.sokal_sneath1_score()
+# print("res: ", res, time.perf_counter() - time02 )
+#
+# time03 = time.perf_counter()
+# s3 = cut.calculate_sokal_sneath1_score(y_true, y_pred, decimal=10)
+# print("res: ", s3, time.perf_counter() - time03)
+
+
 time02 = time.perf_counter()
 cm = ClusteringMetric(y_true=y_true, y_pred=y_pred, decimal=10)
-res = cm.sokal_sneath1_score()
+res = cm.sokal_sneath2_score()
 print("res: ", res, time.perf_counter() - time02 )
 
 time03 = time.perf_counter()
-s3 = cut.calculate_sokal_sneath1_score(y_true, y_pred, decimal=10)
+s3 = cut.calculate_sokal_sneath2_score(y_true, y_pred, decimal=10)
 print("res: ", s3, time.perf_counter() - time03)
-
 
