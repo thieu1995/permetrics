@@ -886,9 +886,7 @@ class ClusteringMetric(Evaluator):
             result (float): The Mc Nemar score
         """
         y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        cm = cu.compute_confusion_matrix(y_true, y_pred)
-        yy, yn, ny, nn = cm
-        return np.round((nn - ny) / np.sqrt(nn + ny), decimal)
+        return cu.calculate_mc_nemar_score(y_true, y_pred, decimal)
 
     def phi_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """

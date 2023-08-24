@@ -630,12 +630,18 @@ def calculate_hubert_gamma_score(y_true=None, y_pred=None, decimal=6, raise_erro
 
 
 def calculate_jaccard_score(y_true=None, y_pred=None, decimal=6):
-    yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred)
+    yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
     return np.round(yy / (yy + yn + ny), decimal)
 
 
 def calculate_kulczynski_score(y_true=None, y_pred=None, decimal=6):
-    yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred)
+    yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
     res = 0.5 * ((yy / (yy + ny)) + (yy / (yy + yn)))
     return np.round(res, decimal)
+
+
+def calculate_mc_nemar_score(y_true=None, y_pred=None, decimal=6):
+    yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
+    return np.round((nn - ny) / np.sqrt(nn + ny), decimal)
+
 
