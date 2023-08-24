@@ -683,8 +683,7 @@ class ClusteringMetric(Evaluator):
             result (float): The Homogeneity Score
         """
         y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        cc = cu.compute_homogeneity(y_true, y_pred)
-        return np.round(cc, decimal)
+        return cu.calculate_homogeneity_score(y_true, y_pred, decimal)
 
     def completeness_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """

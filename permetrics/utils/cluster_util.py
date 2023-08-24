@@ -112,32 +112,6 @@ def compute_contingency_matrix(y_true, y_pred):
     return contingency
 
 
-def compute_entropy(labels):
-    _, counts = np.unique(labels, return_counts=True)
-    probabilities = counts / len(labels)
-    return -np.sum(probabilities * np.log2(probabilities))
-
-
-def compute_conditional_entropy(y_true, y_pred):
-    unique_labels_pred = np.unique(y_true)
-    entropy_sum = 0
-    for label in unique_labels_pred:
-        mask = y_pred == label
-        cluster_labels_true = y_true[mask]
-        cluster_entropy = compute_entropy(cluster_labels_true)
-        entropy_sum += len(cluster_labels_true) / len(y_true) * cluster_entropy
-    return entropy_sum
-
-
-def compute_homogeneity(y_true, y_pred):
-    h_labels_true = compute_entropy(y_true)
-    h_labels_true_given_pred = compute_conditional_entropy(y_true, y_pred)
-    if h_labels_true == 0:
-        return 1
-    else:
-        return 1 - h_labels_true_given_pred / h_labels_true
-
-
 def compute_confusion_matrix(y_true, y_pred, normalize=False):
     """
     Computes the confusion matrix for a clustering problem given the true labels and the predicted labels.
@@ -579,4 +553,34 @@ def calculate_fowlkes_mallows_score(y_true=None, y_pred=None, decimal=6, raise_e
             return raise_value
     res = np.sqrt(tk / pk) * np.sqrt(tk / qk)
     return np.round(res, decimal)
+
+
+def compute_entropy(labels):
+    _, counts = np.unique(labels, return_counts=True)
+    probabilities = counts / len(labels)
+    return -np.sum(probabilities * np.log2(probabilities))
+
+
+def compute_conditional_entropy(y_true, y_pred):
+    unique_labels_pred = np.unique(y_true)
+    entropy_sum = 0
+    for label in unique_labels_pred:
+        mask = y_pred == label
+        cluster_labels_true = y_true[mask]
+        cluster_entropy = compute_entropy(cluster_labels_true)
+        entropy_sum += len(cluster_labels_true) / len(y_true) * cluster_entropy
+    return entropy_sum
+
+
+def calculate_homogeneity_score(y_true=None, y_pred=None, decimal=6):
+    h_labels_true = compute_entropy(y_true)
+    h_labels_true_given_pred = compute_conditional_entropy(y_true, y_pred)
+    if h_labels_true == 0:
+        res = 1.
+    else:
+        res = 1. - h_labels_true_given_pred / h_labels_true
+    return np.round(res, decimal)
+
+
+
 
