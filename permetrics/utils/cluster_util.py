@@ -645,3 +645,17 @@ def calculate_mc_nemar_score(y_true=None, y_pred=None, decimal=6):
     return np.round((nn - ny) / np.sqrt(nn + ny), decimal)
 
 
+def calculate_phi_score(y_true=None, y_pred=None, decimal=6, raise_error=True, raise_value=-np.inf):
+    n_clusters = len(np.unique(y_pred))
+    if n_clusters == 1:
+        if raise_error:
+            raise ValueError("The Phi score is undefined when y_pred has only 1 cluster.")
+        else:
+            return raise_value
+    yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
+    numerator = yy * nn - yn * ny
+    denominator = (yy + yn) * (yy + ny) * (yn + nn) * (ny + nn)
+    return np.round(numerator / denominator, decimal)
+
+
+

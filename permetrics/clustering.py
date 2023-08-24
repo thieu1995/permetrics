@@ -907,16 +907,7 @@ class ClusteringMetric(Evaluator):
             result (float): The Phi score
         """
         y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        n_clusters = len(np.unique(y_pred))
-        if n_clusters == 1:
-            if self.raise_error:
-                raise ValueError("The Phi score is undefined when y_pred has only 1 cluster.")
-            else:
-                return self.smallest_value
-        yy, yn, ny, nn = cu.compute_confusion_matrix(y_true, y_pred, normalize=True)
-        numerator = yy * nn - yn * ny
-        denominator = (yy + yn) * (yy + ny) * (yn + nn) * (ny + nn)
-        return np.round(numerator / denominator, decimal)
+        return cu.calculate_phi_score(y_true, y_pred, decimal, self.raise_error, self.smallest_value)
 
     def rogers_tanimoto_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
