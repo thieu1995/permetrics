@@ -582,5 +582,11 @@ def calculate_homogeneity_score(y_true=None, y_pred=None, decimal=6):
     return np.round(res, decimal)
 
 
+def calculate_completeness_score(y_true=None, y_pred=None, decimal=6):
+    return calculate_homogeneity_score(y_pred, y_true, decimal)
+
+
+
+
 
 
