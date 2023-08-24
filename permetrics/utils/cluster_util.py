@@ -612,7 +612,7 @@ def calculate_f_measure_score(y_true=None, y_pred=None, decimal=6):
 
 
 def calculate_czekanowski_dice_score(y_true=None, y_pred=None, decimal=6):
-    yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred)
+    yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
     return np.round(2 * yy / (2 * yy + yn + ny), decimal)
 
 
@@ -659,13 +659,20 @@ def calculate_phi_score(y_true=None, y_pred=None, decimal=6, raise_error=True, r
 
 
 def calculate_rogers_tanimoto_score(y_true=None, y_pred=None, decimal=6):
-    yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred)
+    yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
     cc = (yy + nn) / (yy + nn + 2 * (yn + ny))
     return np.round(cc, decimal)
 
 
 def calculate_russel_rao_score(y_true=None, y_pred=None, decimal=6):
-    yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred)
+    yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
     NT = yy + yn + ny + nn
     return np.round(yy / NT, decimal)
+
+
+def calculate_sokal_sneath1_score(y_true=None, y_pred=None, decimal=6):
+    yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
+    cc = yy / (yy + 2 * (yn + ny))
+    return np.round(cc, decimal)
+
 
