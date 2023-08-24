@@ -842,9 +842,7 @@ class ClusteringMetric(Evaluator):
             result (float): The Jaccard score
         """
         y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        cm = cu.compute_confusion_matrix(y_true, y_pred)
-        yy, yn, ny, nn = cm
-        return np.round(yy / (yy + yn + ny), decimal)
+        return cu.calculate_jaccard_score(y_true, y_pred, decimal)
 
     def kulczynski_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
