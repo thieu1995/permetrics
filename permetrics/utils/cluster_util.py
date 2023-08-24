@@ -598,3 +598,10 @@ def calculate_precision_score(y_true=None, y_pred=None, decimal=6):
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
     return np.round(yy / (yy + ny), decimal)
 
+
+def calculate_recall_score(y_true=None, y_pred=None, decimal=6):
+    yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
+    return np.round(yy / (yy + yn), decimal)
+
+
+
