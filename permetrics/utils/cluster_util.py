@@ -611,4 +611,11 @@ def calculate_f_measure_score(y_true=None, y_pred=None, decimal=6):
     return np.round(2 * p * r / (p + r), decimal)
 
 
+def calculate_czekanowski_dice_score(y_true=None, y_pred=None, decimal=6):
+    yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred)
+    return np.round(2 * yy / (2 * yy + yn + ny), decimal)
+
+
+
+
 

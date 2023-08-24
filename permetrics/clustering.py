@@ -799,9 +799,7 @@ class ClusteringMetric(Evaluator):
             result (float): The Czekanowski-Dice score
         """
         y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        cm = cu.compute_confusion_matrix(y_true, y_pred)
-        yy, yn, ny, nn = cm
-        return np.round(2 * yy / (2 * yy + yn + ny), decimal)
+        return cu.calculate_czekanowski_dice_score(y_true, y_pred, decimal)
 
     def hubert_gamma_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
