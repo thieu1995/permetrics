@@ -862,10 +862,7 @@ class ClusteringMetric(Evaluator):
             result (float): The Kulczynski score
         """
         y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        cm = cu.compute_confusion_matrix(y_true, y_pred)
-        yy, yn, ny, nn = cm
-        cc = 0.5 * ((yy / (yy + ny)) + (yy / (yy + yn)))
-        return np.round(cc, decimal)
+        return cu.calculate_kulczynski_score(y_true, y_pred, decimal)
 
     def mc_nemar_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """

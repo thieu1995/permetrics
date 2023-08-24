@@ -633,3 +633,9 @@ def calculate_jaccard_score(y_true=None, y_pred=None, decimal=6):
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred)
     return np.round(yy / (yy + yn + ny), decimal)
 
+
+def calculate_kulczynski_score(y_true=None, y_pred=None, decimal=6):
+    yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred)
+    res = 0.5 * ((yy / (yy + ny)) + (yy / (yy + yn)))
+    return np.round(res, decimal)
+
