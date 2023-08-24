@@ -1043,27 +1043,7 @@ class ClusteringMetric(Evaluator):
             result (float): The Entropy score
         """
         y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        # Find the number of data points
-        N = len(y_true)
-        # Find the unique class labels in the true labels
-        unique_classes = np.unique(y_true)
-        result = 0
-        # Iterate over each unique class label
-        for c in unique_classes:
-            # Find the indices of data points with the current class label in the true labels
-            class_indices = np.where(y_true == c)[0]
-            # Find the corresponding predicted labels for these data points
-            class_predictions = y_pred[class_indices]
-            # Count the occurrences of each predicted label
-            class_counts = np.bincount(class_predictions)
-            # Normalize the class counts by dividing by the total number of data points in the cluster
-            class_distribution = class_counts / len(class_predictions)
-            # Compute the entropy of the cluster
-            cluster_entropy = cu.calculate_entropy(class_distribution, base=2)
-            # Weight the entropy by the relative size of the cluster
-            cluster_size = len(class_indices)
-            result += (cluster_size / N) * cluster_entropy
-        return np.round(result, decimal)
+        return cu.calculate_entropy_score(y_true, y_pred, decimal)
 
     def tau_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
