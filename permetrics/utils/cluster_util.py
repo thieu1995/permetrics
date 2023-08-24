@@ -681,3 +681,29 @@ def calculate_sokal_sneath2_score(y_true=None, y_pred=None, decimal=6):
     cc = (yy + nn) / (yy + nn + 0.5 * (yn + ny))
     return np.round(cc, decimal)
 
+
+def calculate_purity_score(y_true=None, y_pred=None, decimal=6):
+    # Find the number of data points
+    N = len(y_true)
+    # Find the unique class labels in the true labels
+    unique_classes = np.unique(y_true)
+    # Initialize the purity score
+    purity = 0
+    # Iterate over each unique class label
+    for c in unique_classes:
+        # Find the indices of data points with the current class label in the true labels
+        class_indices = np.where(y_true == c)[0]
+        # Find the corresponding predicted labels for these data points
+        class_predictions = y_pred[class_indices]
+        # Count the occurrences of each predicted label
+        class_counts = np.bincount(class_predictions)
+        # Add the size of the majority class to the purity score
+        purity += np.max(class_counts)
+    # Normalize the purity score by dividing by the total number of data points
+    return np.round(purity / N, decimal)
+
+
+
+
+
+
