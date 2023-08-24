@@ -819,17 +819,7 @@ class ClusteringMetric(Evaluator):
             result (float): The Hubert Gamma score
         """
         y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        n_clusters = len(np.unique(y_pred))
-        if n_clusters == 1:
-            if self.raise_error:
-                raise ValueError("The Hubert Gamma score is undefined when y_pred has only 1 cluster.")
-            else:
-                return -1.0
-        cm = cu.compute_confusion_matrix(y_true, y_pred, normalize=True)
-        yy, yn, ny, nn = cm
-        NT = np.sum(cm)
-        cc = (NT*yy - (yy+yn)*(yy+ny)) / np.sqrt((yy+yn)*(yy+ny)*(nn+yn)*(nn+ny))
-        return np.round(cc, decimal)
+        return cu.calculate_hubert_gamma_score(y_true, y_pred, decimal, self.raise_error, -1.0)
 
     def jaccard_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """

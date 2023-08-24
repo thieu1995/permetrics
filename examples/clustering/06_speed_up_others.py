@@ -28,11 +28,22 @@ cluster_std = 0.5
 data, y_true, y_pred, centers = generate_dataset(num_samples, num_features, num_clusters)
 
 
+# time02 = time.perf_counter()
+# cm = ClusteringMetric(y_true=y_true, y_pred=y_pred, decimal=10)
+# res = cm.czekanowski_dice_score()
+# print("res: ", res, time.perf_counter() - time02 )
+#
+# time03 = time.perf_counter()
+# s3 = cut.calculate_czekanowski_dice_score(y_true, y_pred, decimal=10)
+# print("res: ", s3, time.perf_counter() - time03)
+
+
 time02 = time.perf_counter()
 cm = ClusteringMetric(y_true=y_true, y_pred=y_pred, decimal=10)
-res = cm.czekanowski_dice_score()
+res = cm.hubert_gamma_score()
 print("res: ", res, time.perf_counter() - time02 )
 
 time03 = time.perf_counter()
-s3 = cut.calculate_czekanowski_dice_score(y_true, y_pred, decimal=10)
+s3 = cut.calculate_hubert_gamma_score(y_true, y_pred, decimal=10)
 print("res: ", s3, time.perf_counter() - time03)
+

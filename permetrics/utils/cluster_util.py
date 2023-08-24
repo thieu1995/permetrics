@@ -616,6 +616,16 @@ def calculate_czekanowski_dice_score(y_true=None, y_pred=None, decimal=6):
     return np.round(2 * yy / (2 * yy + yn + ny), decimal)
 
 
-
+def calculate_hubert_gamma_score(y_true=None, y_pred=None, decimal=6, raise_error=True, raise_value=-1.0):
+    n_clusters = len(np.unique(y_pred))
+    if n_clusters == 1:
+        if raise_error:
+            raise ValueError("The Hubert Gamma score is undefined when y_pred has only 1 cluster.")
+        else:
+            return raise_value
+    yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
+    NT = yy + yn + ny + nn
+    res = (NT*yy - (yy+yn)*(yy+ny)) / np.sqrt((yy+yn)*(yy+ny)*(nn+yn)*(nn+ny))
+    return np.round(res, decimal)
 
 
