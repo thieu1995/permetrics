@@ -13,6 +13,7 @@ from scipy.spatial.distance import cdist, pdist, squareform
 from scipy.spatial import distance_matrix
 from scipy.stats import entropy as calculate_entropy
 from scipy.sparse import coo_matrix
+from scipy.special import comb
 
 
 def compute_clusters(labels):
@@ -118,20 +119,17 @@ def compute_confusion_matrix(y_true, y_pred, normalize=False):
     http://cran.nexr.com/web/packages/clusterCrit/vignettes/clusterCrit.pdf
     """
     n = len(y_true)
-    yy, yn, ny, nn = 0, 0, 0, 0
-    for i in range(n):
-        for j in range(i+1, n):
-            if y_true[i] == y_true[j] and y_pred[i] == y_pred[j]:
-                yy += 1
-            elif y_true[i] == y_true[j] and y_pred[i] != y_pred[j]:
-                yn += 1
-            elif y_true[i] != y_true[j] and y_pred[i] == y_pred[j]:
-                ny += 1
-            else:
-                nn += 1
-    res = np.array([yy, yn, ny, nn])
+    yy = yn = ny = nn = 0.
+    for i in range(n - 1):
+        y_true_diff = y_true[i + 1:] == y_true[i]
+        y_pred_diff = y_pred[i + 1:] == y_pred[i]
+        yy += np.sum(y_true_diff & y_pred_diff)
+        yn += np.sum(y_true_diff & ~y_pred_diff)
+        ny += np.sum(~y_true_diff & y_pred_diff)
+        nn += np.sum(~y_true_diff & ~y_pred_diff)
+    res = np.array([yy, yn, ny, nn], dtype=np.int64)
     if normalize:
-        return res/np.sum(res)
+        return res / np.sum(res)
     return res
 
 
@@ -596,8 +594,7 @@ def calculate_v_measure_score(y_true=None, y_pred=None, decimal=6):
     return np.round(res, decimal)
 
 
-
-
-
-
+def calculate_precision_score(y_true=None, y_pred=None, decimal=6):
+    yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
+    return np.round(yy / (yy + ny), decimal)
 
