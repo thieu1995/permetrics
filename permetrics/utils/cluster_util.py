@@ -586,6 +586,17 @@ def calculate_completeness_score(y_true=None, y_pred=None, decimal=6):
     return calculate_homogeneity_score(y_pred, y_true, decimal)
 
 
+def calculate_v_measure_score(y_true=None, y_pred=None, decimal=6):
+    h = calculate_homogeneity_score(y_true, y_pred, decimal)
+    c = calculate_completeness_score(y_true, y_pred, decimal)
+    if h + c == 0:
+        res = 0
+    else:
+        res = 2 * (h * c) / (h + c)
+    return np.round(res, decimal)
+
+
+
 
 
 

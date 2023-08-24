@@ -721,13 +721,7 @@ class ClusteringMetric(Evaluator):
             result (float): The V measure score
         """
         y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        h = cu.compute_homogeneity(y_true, y_pred)
-        c = cu.compute_homogeneity(y_pred, y_true)
-        if h + c == 0:
-            cc = 0
-        else:
-            cc = 2 * (h * c) / (h + c)
-        return np.round(cc, decimal)
+        return cu.calculate_v_measure_score(y_true, y_pred, decimal)
 
     def precision_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
