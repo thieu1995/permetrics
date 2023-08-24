@@ -762,8 +762,7 @@ class ClusteringMetric(Evaluator):
             result (float): The Recall score
         """
         y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        yy, yn, ny, nn = cu.compute_confusion_matrix(y_true, y_pred)
-        return np.round(yy / (yy + yn), decimal)
+        return cu.calculate_recall_score(y_true, y_pred, decimal)
 
     def f_measure_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
@@ -784,10 +783,7 @@ class ClusteringMetric(Evaluator):
             result (float): The F-Measure score
         """
         y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        yy, yn, ny, nn = cu.compute_confusion_matrix(y_true, y_pred)
-        p = yy / (yy + ny)
-        r = yy / (yy + yn)
-        return np.round(2 * p * r / (p + r), decimal)
+        return cu.calculate_f_measure_score(y_true, y_pred, decimal)
 
     def czekanowski_dice_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """

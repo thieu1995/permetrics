@@ -604,4 +604,11 @@ def calculate_recall_score(y_true=None, y_pred=None, decimal=6):
     return np.round(yy / (yy + yn), decimal)
 
 
+def calculate_f_measure_score(y_true=None, y_pred=None, decimal=6):
+    yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
+    p = yy / (yy + ny)
+    r = yy / (yy + yn)
+    return np.round(2 * p * r / (p + r), decimal)
+
+
 
