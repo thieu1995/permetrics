@@ -663,3 +663,9 @@ def calculate_rogers_tanimoto_score(y_true=None, y_pred=None, decimal=6):
     cc = (yy + nn) / (yy + nn + 2 * (yn + ny))
     return np.round(cc, decimal)
 
+
+def calculate_russel_rao_score(y_true=None, y_pred=None, decimal=6):
+    yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred)
+    NT = yy + yn + ny + nn
+    return np.round(yy / NT, decimal)
+

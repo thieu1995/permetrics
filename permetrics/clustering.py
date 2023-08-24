@@ -949,10 +949,7 @@ class ClusteringMetric(Evaluator):
             result (float): The Russel-Rao score
         """
         y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        cm = cu.compute_confusion_matrix(y_true, y_pred)
-        yy, yn, ny, nn = cm
-        NT = np.sum(cm)
-        return np.round(yy / NT, decimal)
+        return cu.calculate_russel_rao_score(y_true, y_pred, decimal)
 
     def sokal_sneath1_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
