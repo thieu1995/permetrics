@@ -742,8 +742,7 @@ class ClusteringMetric(Evaluator):
             result (float): The Precision score
         """
         y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        yy, yn, ny, nn = cu.compute_confusion_matrix(y_true, y_pred)
-        return np.round(yy / (yy + ny), decimal)
+        return cu.calculate_precision_score(y_true, y_pred, decimal)
 
     def recall_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
