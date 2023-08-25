@@ -12,6 +12,7 @@ from scipy.spatial.distance import cdist, pdist, squareform
 from scipy.spatial import distance_matrix
 from scipy.stats import entropy as calculate_entropy
 from scipy.sparse import coo_matrix
+from collections import Counter
 
 
 def compute_clusters(labels):
@@ -589,7 +590,7 @@ def calculate_homogeneity_score(y_true=None, y_pred=None, decimal=6):
     h_labels_true = compute_entropy(y_true)
     h_labels_true_given_pred = compute_conditional_entropy(y_true, y_pred)
     if h_labels_true == 0:
-        res = 1.
+        res = 1.0
     else:
         res = 1. - h_labels_true_given_pred / h_labels_true
     return np.round(res, decimal)
@@ -711,6 +712,7 @@ def calculate_purity_score(y_true=None, y_pred=None, decimal=6):
         # Find the corresponding predicted labels for these data points
         class_predictions = y_pred[class_indices]
         # Count the occurrences of each predicted label
+        class_predictions = np.round(class_predictions).astype(int)
         class_counts = np.bincount(class_predictions)
         # Add the size of the majority class to the purity score
         purity += np.max(class_counts)
@@ -730,6 +732,7 @@ def calculate_entropy_score(y_true=None, y_pred=None, decimal=6):
         class_indices = np.where(y_true == c)[0]
         # Find the corresponding predicted labels for these data points
         class_predictions = y_pred[class_indices]
+        class_predictions = np.round(class_predictions).astype(int)
         # Count the occurrences of each predicted label
         class_counts = np.bincount(class_predictions)
         # Normalize the class counts by dividing by the total number of data points in the cluster

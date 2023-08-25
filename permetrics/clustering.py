@@ -47,34 +47,6 @@ class ClusteringMetric(Evaluator):
         Default = None, then the value will be ``-np.inf``.
     """
 
-    # MIS = mutual_info_score
-    # NMIS = normalized_mutual_info_score
-    # RaS = rand_score
-    # ARS = adjusted_rand_score
-    # FMS = fowlkes_mallows_score
-    # HS = homogeneity_score
-    # CS = completeness_score
-    # VMS = v_measure_score
-    # PrS = precision_score
-    # ReS = recall_score
-    # FmS = f_measure_score
-    # CDS = czekanowski_dice_score
-    # HGS = hubert_gamma_score
-    # JS = jaccard_score
-    # KS = kulczynski_score
-    # MNS = mc_nemar_score
-    # PhS = phi_score
-    # RTS = rogers_tanimoto_score
-    # RRS = russel_rao_score
-    # SS1S = sokal_sneath1_score
-    # SS2S = sokal_sneath2_score
-    # PuS = purity_score
-    # ES = entropy_score
-    # TS = tau_score
-    # GAS = gamma_score
-    # GPS = gplus_score
-
-
     SUPPORT = {
         "BHI": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "XBI": {"type": "min", "range": "[0, +inf)", "best": "0"},
@@ -94,10 +66,10 @@ class ClusteringMetric(Evaluator):
         "RSI": {"type": "max", "range": "(-inf, +1]", "best": "1"},
         "DBCVI": {"type": "min", "range": "[0, 1]", "best": "0"},
         "HI": {"type": "min", "range": "[0, +inf)", "best": "0"},
-
         "MIS": {"type": "max", "range": "[0, +inf)", "best": "no best"},
         "NMIS": {"type": "max", "range": "[0, 1]", "best": "1"},
         "RaS": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "ARS": {"type": "max", "range": "[-1, 1]", "best": "1"},
         "FMS": {"type": "max", "range": "[0, 1]", "best": "1"},
         "HS": {"type": "max", "range": "[0, 1]", "best": "1"},
         "CS": {"type": "max", "range": "[0, 1]", "best": "1"},
@@ -116,9 +88,10 @@ class ClusteringMetric(Evaluator):
         "SS1S": {"type": "max", "range": "[0, 1]", "best": "1"},
         "SS2S": {"type": "max", "range": "[0, 1]", "best": "1"},
         "PuS": {"type": "max", "range": "[0, 1]", "best": "1"},
-        "ES": {"type": "min", "range": "[0, 1]", "best": "0"},
-        "TS": {"type": "max", "range": "[-1, +1]", "best": "1"},
-
+        "ES": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "TS": {"type": "max", "range": "[-inf, +inf]", "best": "no best"},
+        "GAS": {"type": "max", "range": "[-1, 1]", "best": "1"},
+        "GPS": {"type": "min", "range": "[0, 1]", "best": "0"},
     }
 
     def __init__(self, y_true=None, y_pred=None, X=None, decimal=5,
@@ -349,7 +322,7 @@ class ClusteringMetric(Evaluator):
     def ksq_detw_index(self, X=None, y_pred=None, decimal=None, use_normalized=True, **kwargs):
         """
         Computes the Ksq-DetW Index
-        Higher is better (No best value), Range=(-inf, +inf)
+        Bigger is better (No best value), Range=(-inf, +inf)
 
         Args:
             X (array-like of shape (n_samples, n_features)):
@@ -413,7 +386,7 @@ class ClusteringMetric(Evaluator):
     def silhouette_index(self, X=None, y_pred=None, decimal=None, multi_output=False, **kwarg):
         """
         Computes the Silhouette Index
-        Higher is better (Best = 1), Range = [-1, +1]
+        Bigger is better (Best = 1), Range = [-1, +1]
 
         Args:
             X (array-like of shape (n_samples, n_features)):
@@ -513,7 +486,7 @@ class ClusteringMetric(Evaluator):
     def r_squared_index(self, X=None, y_pred=None, decimal=None, **kwarg):
         """
         Computes the R-squared index
-        Higher is better (Best=1), Range = (-inf, 1]
+        Bigger is better (Best=1), Range = (-inf, 1]
 
         Args:
             X (array-like of shape (n_samples, n_features)):
@@ -531,7 +504,7 @@ class ClusteringMetric(Evaluator):
     def density_based_clustering_validation_index(self, X=None, y_pred=None, decimal=None, **kwarg):
         """
         Computes the Density-based Clustering Validation Index
-        Lower is better (Best=0), Range = [0, 1]
+        Smaller is better (Best=0), Range = [0, 1]
 
         Args:
             X (array-like of shape (n_samples, n_features)):
@@ -549,7 +522,7 @@ class ClusteringMetric(Evaluator):
     def hartigan_index(self, X=None, y_pred=None, decimal=None, **kwarg):
         """
         Computes the Hartigan index for a clustering solution.
-        Lower is better (best=0), Range = [0, +inf)
+        Smaller is better (best=0), Range = [0, +inf)
 
         Args:
             X (array-like of shape (n_samples, n_features)):
@@ -567,7 +540,7 @@ class ClusteringMetric(Evaluator):
     def mutual_info_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Mutual Information score between two clusterings.
-        Higher is better (No best value), Range = [0, +inf)
+        Bigger is better (No best value), Range = [0, +inf)
 
         Args:
             y_true (array-like): The true labels for each sample.
@@ -585,7 +558,7 @@ class ClusteringMetric(Evaluator):
         Computes the normalized mutual information between two clusterings.
         It is a variation of the mutual information score that normalizes the result to take values between 0 and 1.
         It is defined as the mutual information divided by the average entropy of the true and predicted clusterings.
-        Higher is better (Best = 1), Range = [0, 1]
+        Bigger is better (Best = 1), Range = [0, 1]
 
         Args:
             y_true (array-like): The true labels for each sample.
@@ -601,7 +574,7 @@ class ClusteringMetric(Evaluator):
     def rand_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Rand score between two clusterings.
-        Higher is better (Best = 1), Range = [0, 1]
+        Bigger is better (Best = 1), Range = [0, 1]
 
         Args:
             y_true (array-like): The true labels for each sample.
@@ -617,7 +590,7 @@ class ClusteringMetric(Evaluator):
     def adjusted_rand_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Adjusted rand score between two clusterings.
-        Higher is better (Best = 1), Range = [-1, 1]
+        Bigger is better (Best = 1), Range = [-1, 1]
 
         Args:
             y_true (array-like): The true labels for each sample.
@@ -633,7 +606,7 @@ class ClusteringMetric(Evaluator):
     def fowlkes_mallows_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Fowlkes-Mallows score between two clusterings.
-        Higher is better (Best = 1), Range = [0, 1]
+        Bigger is better (Best = 1), Range = [0, 1]
 
         Args:
             y_true (array-like): The true labels for each sample.
@@ -649,7 +622,7 @@ class ClusteringMetric(Evaluator):
     def homogeneity_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Homogeneity Score between two clusterings.
-        Higher is better (Best = 1), Range = [0, 1]
+        Bigger is better (Best = 1), Range = [0, 1]
 
         It measures the extent to which each cluster contains only data points that belong to a single class or category.
         In other words, homogeneity assesses whether all the data points in a cluster are members of the same true class or label.
@@ -669,7 +642,7 @@ class ClusteringMetric(Evaluator):
     def completeness_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the completeness score between two clusterings.
-        Higher is better (Best = 1), Range = [0, 1]
+        Bigger is better (Best = 1), Range = [0, 1]
 
         It measures the ratio of samples that are correctly assigned to the same cluster to the total number of samples in the data.
 
@@ -687,7 +660,7 @@ class ClusteringMetric(Evaluator):
     def v_measure_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the V measure score between two clusterings.
-        Higher is better (Best = 1), Range = [0, 1]
+        Bigger is better (Best = 1), Range = [0, 1]
 
         It is a combination of two other metrics: homogeneity and completeness. Homogeneity measures whether all the
         data points in a given cluster belong to the same class. Completeness measures whether all the data points of a certain
@@ -707,7 +680,7 @@ class ClusteringMetric(Evaluator):
     def precision_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Precision score between two clusterings.
-        Higher is better (Best = 1), Range = [0, 1]. It is different than precision score in classification metrics
+        Bigger is better (Best = 1), Range = [0, 1]. It is different than precision score in classification metrics
 
         It measures the proportion of points that are correctly grouped together in P2, given that
         they are grouped together in P1. It is calculated as the ratio of yy (the number of points that are correctly
@@ -728,7 +701,7 @@ class ClusteringMetric(Evaluator):
     def recall_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Recall score between two clusterings.
-        Higher is better (Best = 1), Range = [0, 1]
+        Bigger is better (Best = 1), Range = [0, 1]
 
         It measures the proportion of points that are correctly grouped together in P2, given that they are grouped
         together in P1. It is calculated as the ratio of yy to the sum of yy and yn (the number of points that
@@ -748,7 +721,7 @@ class ClusteringMetric(Evaluator):
     def f_measure_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the F-Measure score between two clusterings.
-        Higher is better (Best = 1), Range = [0, 1]
+        Bigger is better (Best = 1), Range = [0, 1]
 
         It is the harmonic mean of the precision and recall coefficients, given by the formula F = 2PR / (P + R). It provides a
         single score that summarizes both precision and recall. The Fa-measure is a weighted version of the F-measure that
@@ -769,7 +742,7 @@ class ClusteringMetric(Evaluator):
     def czekanowski_dice_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the  Czekanowski-Dice score between two clusterings.
-        It is the harmonic mean of the precision and recall coefficients. Higher is better (Best = 1), Range = [0, 1]
+        It is the harmonic mean of the precision and recall coefficients. Bigger is better (Best = 1), Range = [0, 1]
 
         Args:
             y_true (array-like): The true labels for each sample.
@@ -785,7 +758,7 @@ class ClusteringMetric(Evaluator):
     def hubert_gamma_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Hubert Gamma score between two clusterings.
-        Higher is better (Best = 1), Range=[-1, +1]
+        Bigger is better (Best = 1), Range=[-1, +1]
 
         The Hubert Gamma index ranges from -1 to 1, where a value of 1 indicates perfect agreement between the two partitions
         being compared, a value of 0 indicates no association between the partitions, and a value of -1 indicates
@@ -805,7 +778,7 @@ class ClusteringMetric(Evaluator):
     def jaccard_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Jaccard score between two clusterings.
-        Higher is better (Best = 1), Range = [0, 1]
+        Bigger is better (Best = 1), Range = [0, 1]
 
         It ranges from 0 to 1, where a value of 1 indicates perfect agreement between the two partitions being compared.
         A value of 0 indicates complete disagreement between the two partitions.
@@ -828,7 +801,7 @@ class ClusteringMetric(Evaluator):
     def kulczynski_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Kulczynski score between two clusterings.
-        Higher is better (Best = 1), Range = [0, 1]
+        Bigger is better (Best = 1), Range = [0, 1]
 
         It is the arithmetic mean of the precision and recall coefficients, which means that it takes into account both precision and recall.
         The Kulczynski index ranges from 0 to 1, where a value of 1 indicates perfect agreement between the two partitions
@@ -848,7 +821,7 @@ class ClusteringMetric(Evaluator):
     def mc_nemar_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Mc Nemar score between two clusterings.
-        Higher is better (No best value), Range=(-inf, +inf)
+        Bigger is better (No best value), Range=(-inf, +inf)
 
         It is an adaptation of the non-parametric McNemar test for the comparison of frequencies between two paired samples.
         The McNemar index ranges from -inf to inf, where a bigger value indicates perfect agreement between the two partitions
@@ -872,7 +845,7 @@ class ClusteringMetric(Evaluator):
     def phi_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Phi score between two clusterings.
-        Higher is better (No best value), Range = (-inf, +inf)
+        Bigger is better (No best value), Range = (-inf, +inf)
 
         It is a classical measure of the correlation between two dichotomous variables, and it can be used to measure the
         similarity between two partitions. The Phi index ranges from -inf to +inf, where a bigger value indicates perfect agreement
@@ -893,7 +866,7 @@ class ClusteringMetric(Evaluator):
     def rogers_tanimoto_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Rogers-Tanimoto score between two clusterings.
-        Higher is better (Best = 1), Range = [0, 1]
+        Bigger is better (Best = 1), Range = [0, 1]
 
         It measures the similarity between two partitions by computing the proportion of pairs of samples that are either
         in the same cluster in both partitions or in different clusters in both partitions, with an adjustment for the
@@ -915,7 +888,7 @@ class ClusteringMetric(Evaluator):
     def russel_rao_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Russel-Rao score between two clusterings.
-        Higher is better (Best = 1), Range = [0, 1]
+        Bigger is better (Best = 1), Range = [0, 1]
 
         It measures the proportion of concordances between the two partitions by computing the proportion of pairs of samples
         that are in the same cluster in both partitions. The Russel-Rao index ranges from 0 to 1, where a value of 1 indicates
@@ -935,7 +908,7 @@ class ClusteringMetric(Evaluator):
     def sokal_sneath1_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Sokal-Sneath 1 score between two clusterings.
-        Higher is better (Best = 1), Range = [0, 1]
+        Bigger is better (Best = 1), Range = [0, 1]
 
         It measures the similarity between two partitions by computing the proportion of pairs of samples that are in the same cluster
         in both partitions, with an adjustment for the number of pairs of samples that are in different clusters in one partition
@@ -956,7 +929,7 @@ class ClusteringMetric(Evaluator):
     def sokal_sneath2_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Sokal-Sneath 2 score between two clusterings.
-        Higher is better (Best = 1), Range = [0, 1]
+        Bigger is better (Best = 1), Range = [0, 1]
 
         It measures the similarity between two partitions by computing the proportion of pairs of samples that are in the same cluster
         in both partitions, with an adjustment for the number of pairs of samples that are in different clusters in one partition
@@ -977,7 +950,7 @@ class ClusteringMetric(Evaluator):
     def purity_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Purity score
-        Higher is better (Best = 1), Range = [0, 1]
+        Bigger is better (Best = 1), Range = [0, 1]
 
         Purity is a metric used to evaluate the quality of clustering results, particularly in situations where the
         ground truth labels of the data points are known. It measures the extent to which the clusters produced by
@@ -1002,7 +975,7 @@ class ClusteringMetric(Evaluator):
     def entropy_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Entropy score
-        Smaller is better (Best = 0), Range = [0, 1]
+        Smaller is better (Best = 0), Range = [0, +inf)
 
         Entropy is a metric used to evaluate the quality of clustering results, particularly when the ground truth labels of the
         data points are known. It measures the amount of uncertainty or disorder within the clusters produced by a clustering algorithm.
@@ -1029,7 +1002,7 @@ class ClusteringMetric(Evaluator):
     def tau_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Tau Score between two clustering solutions.
-        Higher is better (No best value), Range = (-inf, +inf)
+        Bigger is better (No best value), Range = (-inf, +inf)
 
         Ref: Cluster Validation for Mixed-Type Data (Rabea Aschenbruck and Gero Szepannek)
 
@@ -1047,7 +1020,7 @@ class ClusteringMetric(Evaluator):
     def gamma_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Gamma Score between two clustering solutions.
-        Higher is better (Best = 1), Range = [-1, 1]
+        Bigger is better (Best = 1), Range = [-1, 1]
 
         Ref: Cluster Validation for Mixed-Type Data (Rabea Aschenbruck and Gero Szepannek)
 
