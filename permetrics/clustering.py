@@ -553,36 +553,6 @@ class ClusteringMetric(Evaluator):
         gamma_index = (s_plus - s_minus) / denominator if denominator != 0 else 0.0
         return np.round(gamma_index, decimal)
 
-    def g_plus_index(self, X=None, y_pred=None, decimal=None, **kwargs):
-        """
-        Computes the G plus index
-        TODO: Calculate based on O(N^2) of samples --> Very slow
-
-        Args:
-            X (array-like of shape (n_samples, n_features)):
-                A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
-            y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
-            decimal (int): The number of fractional parts after the decimal point
-
-        Returns:
-            result (float): The G plus index
-        """
-        X = self.check_X(X)
-        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        num_samples, num_features = X.shape
-        n_pairs = (num_samples * (num_samples - 1)) // 2
-        distances = np.zeros(n_pairs)
-        binary_vector = np.zeros(n_pairs)
-        num_discordant_pairs = 0
-        for idx in range(0, n_pairs-1):
-            for jdx in range(idx+1, n_pairs):
-                if binary_vector[idx] == 0 and binary_vector[jdx] == 1:
-                    # For each within-cluster distance (B = 0), check if it is greater than between-cluster distances (B = 1).
-                    num_discordant_pairs += int(distances[idx] > distances[jdx])
-        # Calculate the G plus index
-        g_p = 2 * num_discordant_pairs / (n_pairs * (n_pairs - 1))
-        return np.round(g_p, decimal)
-
     def mutual_info_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Mutual Information score between two clusterings.
@@ -1048,10 +1018,9 @@ class ClusteringMetric(Evaluator):
     def tau_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
         Computes the Tau Score between two clustering solutions.
-        Higher is better (Best = 1), Range = [-1, 1]
+        Higher is better (No best value), Range = (-inf, +inf)
 
-        The Tau score, also known as the Tau coefficient, is a measure of agreement or similarity between two clustering solutions.
-        It is commonly used to compare the similarity of two different clusterings or to evaluate the stability of a clustering algorithm.
+        Ref: Cluster Validation for Mixed-Type Data (Rabea Aschenbruck and Gero Szepannek)
 
         Args:
             y_true (array-like): The true labels for each sample.
@@ -1062,19 +1031,43 @@ class ClusteringMetric(Evaluator):
             result (float): The Tau Score
         """
         y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        n = len(y_true)
-        concordant_pairs = 0
-        discordant_pairs = 0
-        for idx in range(n):
-            for jdx in range(idx + 1, n):
-                if y_true[idx] == y_true[jdx] and y_pred[idx] == y_pred[jdx]:
-                    concordant_pairs += 1
-                elif y_true[idx] != y_true[jdx] and y_pred[idx] != y_pred[jdx]:
-                    concordant_pairs += 1
-                else:
-                    discordant_pairs += 1
-        result = (concordant_pairs - discordant_pairs) / (concordant_pairs + discordant_pairs)
-        return np.round(result, decimal)
+        return cu.calculate_tau_score(y_true, y_pred, decimal)
+
+    def gamma_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+        """
+        Computes the Gamma Score between two clustering solutions.
+        Higher is better (Best = 1), Range = [-1, 1]
+
+        Ref: Cluster Validation for Mixed-Type Data (Rabea Aschenbruck and Gero Szepannek)
+
+        Args:
+            y_true (array-like): The true labels for each sample.
+            y_pred (array-like): The predicted cluster labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            result (float): The Gamma Score
+        """
+        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
+        return cu.calculate_gamma_score(y_true, y_pred, decimal)
+
+    def gplus_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+        """
+        Computes the Gplus Score between two clustering solutions.
+        Smaller is better (Best = 0), Range = [0, 1]
+
+        Ref: Cluster Validation for Mixed-Type Data (Rabea Aschenbruck and Gero Szepannek)
+
+        Args:
+            y_true (array-like): The true labels for each sample.
+            y_pred (array-like): The predicted cluster labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            result (float): The Gplus Score
+        """
+        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
+        return cu.calculate_gplus_score(y_true, y_pred, decimal)
 
     BHI = ball_hall_index
     XBI = xie_beni_index
@@ -1095,7 +1088,6 @@ class ClusteringMetric(Evaluator):
     HI = hartigan_index
 
     BHGI = baker_hubert_gamma_index
-    GPI = g_plus_index
 
     MIS = mutual_info_score
     NMIS = normalized_mutual_info_score
@@ -1121,3 +1113,5 @@ class ClusteringMetric(Evaluator):
     PuS = purity_score
     ES = entropy_score
     TS = tau_score
+    GAS = gamma_score
+    GPS = gplus_score

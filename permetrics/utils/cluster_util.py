@@ -6,7 +6,6 @@
 #       Email: nguyenthieu2102@gmail.com            %
 #       Github: https://github.com/thieu1995        %
 # --------------------------------------------------%
-import time
 
 import numpy as np
 from scipy.spatial.distance import cdist, pdist, squareform
@@ -726,5 +725,42 @@ def calculate_entropy_score(y_true=None, y_pred=None, decimal=6):
     return np.round(result, decimal)
 
 
+def compute_nd_splus_sminus_t(y_true=None, y_pred=None):
+    """concordant_discordant"""
+    n_samples = len(y_true)
+    nd = n_samples * (n_samples - 1) / 2
+    s_plus = 0.  # Number of concordant comparisons
+    t = 0.  # Number of comparisons of two pairs of objects with same cluster labels
+    for idx in range(n_samples - 1):
+        t += np.sum((y_true[idx] == y_true[idx + 1:]) & (y_pred[idx] == y_pred[idx + 1:]))
+        s_plus += np.sum((y_true[idx] == y_true[idx + 1:]) & (y_pred[idx] == y_pred[idx + 1:]))
+        s_plus += np.sum((y_true[idx] != y_true[idx + 1:]) & (y_pred[idx] != y_pred[idx + 1:]))
+    s_minus = nd - s_plus       # Number of discordant comparisons
+    return nd, s_plus, s_minus, t
 
 
+def calculate_tau_score(y_true=None, y_pred=None, decimal=6):
+    """
+    Cluster Validation for Mixed-Type Data: Paper
+    """
+    nd, s_plus, s_minus, t = compute_nd_splus_sminus_t(y_true, y_pred)
+    res = (s_plus - s_minus) / np.sqrt((nd - t) * nd)
+    return np.round(res, decimal)
+
+
+def calculate_gamma_score(y_true=None, y_pred=None, decimal=6):
+    """
+    Cluster Validation for Mixed-Type Data: Paper
+    """
+    nd, s_plus, s_minus, t = compute_nd_splus_sminus_t(y_true, y_pred)
+    res = (s_plus - s_minus) / (s_plus + s_minus)
+    return np.round(res, decimal)
+
+
+def calculate_gplus_score(y_true=None, y_pred=None, decimal=6):
+    """
+    Cluster Validation for Mixed-Type Data: Paper
+    """
+    nd, s_plus, s_minus, t = compute_nd_splus_sminus_t(y_true, y_pred)
+    res = s_minus / nd
+    return np.round(res, decimal)
