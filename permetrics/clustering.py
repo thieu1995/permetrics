@@ -1,4 +1,4 @@
-# !/usr/bin/env python
+#!/usr/bin/env python
 # Created by "Matt Q." at 23:05, 27/10/2022 --------%
 #       Github: https://github.com/N3uralN3twork    %
 #                                                   %
@@ -6,7 +6,6 @@
 #       Email: nguyenthieu2102@gmail.com            %
 #       Github: https://github.com/thieu1995        %
 # --------------------------------------------------%
-import time
 
 import numpy as np
 from permetrics.evaluator import Evaluator
@@ -48,12 +47,40 @@ class ClusteringMetric(Evaluator):
         Default = None, then the value will be ``-np.inf``.
     """
 
+    # MIS = mutual_info_score
+    # NMIS = normalized_mutual_info_score
+    # RaS = rand_score
+    # ARS = adjusted_rand_score
+    # FMS = fowlkes_mallows_score
+    # HS = homogeneity_score
+    # CS = completeness_score
+    # VMS = v_measure_score
+    # PrS = precision_score
+    # ReS = recall_score
+    # FmS = f_measure_score
+    # CDS = czekanowski_dice_score
+    # HGS = hubert_gamma_score
+    # JS = jaccard_score
+    # KS = kulczynski_score
+    # MNS = mc_nemar_score
+    # PhS = phi_score
+    # RTS = rogers_tanimoto_score
+    # RRS = russel_rao_score
+    # SS1S = sokal_sneath1_score
+    # SS2S = sokal_sneath2_score
+    # PuS = purity_score
+    # ES = entropy_score
+    # TS = tau_score
+    # GAS = gamma_score
+    # GPS = gplus_score
+
+
     SUPPORT = {
         "BHI": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "XBI": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "DBI": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "BRI": {"type": "min", "range": "(-inf, +inf)", "best": "no best"},
-        "KDI": {"type": "min", "range": "(-inf, +inf)", "best": "no best"},
+        "KDI": {"type": "max", "range": "(-inf, +inf)", "best": "no best"},
         "DRI": {"type": "max", "range": "[0, +inf)", "best": "no best"},
         "DI": {"type": "max", "range": "[0, +inf)", "best": "no best"},
         "CHI": {"type": "max", "range": "[0, +inf)", "best": "no best"},
@@ -61,11 +88,13 @@ class ClusteringMetric(Evaluator):
         "LSRI": {"type": "max", "range": "(-inf, +inf)", "best": "no best"},
         "SI": {"type": "max", "range": "[-1, +1]", "best": "1"},
         "SSEI": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "MSEI": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "DHI": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "BI": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "RSI": {"type": "max", "range": "(-inf, +1]", "best": "1"},
         "DBCVI": {"type": "min", "range": "[0, 1]", "best": "0"},
         "HI": {"type": "min", "range": "[0, +inf)", "best": "0"},
+
         "MIS": {"type": "max", "range": "[0, +inf)", "best": "no best"},
         "NMIS": {"type": "max", "range": "[0, 1]", "best": "1"},
         "RaS": {"type": "max", "range": "[0, 1]", "best": "1"},
@@ -89,6 +118,7 @@ class ClusteringMetric(Evaluator):
         "PuS": {"type": "max", "range": "[0, 1]", "best": "1"},
         "ES": {"type": "min", "range": "[0, 1]", "best": "0"},
         "TS": {"type": "max", "range": "[-1, +1]", "best": "1"},
+
     }
 
     def __init__(self, y_true=None, y_pred=None, X=None, decimal=5,
@@ -319,7 +349,7 @@ class ClusteringMetric(Evaluator):
     def ksq_detw_index(self, X=None, y_pred=None, decimal=None, use_normalized=True, **kwargs):
         """
         Computes the Ksq-DetW Index
-        Smaller is better (No best value), Range=(-inf, +inf)
+        Higher is better (No best value), Range=(-inf, +inf)
 
         Args:
             X (array-like of shape (n_samples, n_features)):
@@ -397,14 +427,14 @@ class ClusteringMetric(Evaluator):
         """
         X = self.check_X(X)
         y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        return cu.calculate_silhouette_index(X, y_pred, decimal, multi_output)
+        return cu.calculate_silhouette_index(X, y_pred, decimal, multi_output, self.raise_error, -1.0)
 
     def sum_squared_error_index(self, X=None, y_pred=None, decimal=None, **kwarg):
         """
         Computes the Sum of Squared Error Index
         Smaller is better (Best = 0), Range = [0, +inf)
 
-        SSE measures the sum of squared distances between each data point and its corresponding centroid or cluster center.
+        SSEI measures the sum of squared distances between each data point and its corresponding centroid or cluster center.
         It quantifies the compactness of the clusters. Here's how you can calculate the SSE in a clustering problem:
 
             1) Assign each data point to its nearest centroid or cluster center based on some distance metric (e.g., Euclidean distance).
@@ -423,6 +453,26 @@ class ClusteringMetric(Evaluator):
         X = self.check_X(X)
         y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
         return cu.calculate_sum_squared_error_index(X, y_pred, decimal)
+
+    def mean_squared_error_index(self, X=None, y_pred=None, decimal=None, **kwarg):
+        """
+        Computes the Mean Squared Error Index
+        Smaller is better (Best = 0), Range = [0, +inf)
+
+        MSEI measures the mean of squared distances between each data point and its corresponding centroid or cluster center.
+
+        Args:
+            X (array-like of shape (n_samples, n_features)):
+                A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
+            y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
+            decimal (int): The number of fractional parts after the decimal point
+
+        Returns:
+            result (float): The Mean Squared Error Index
+        """
+        X = self.check_X(X)
+        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
+        return cu.calculate_mean_squared_error_index(X, y_pred, decimal)
 
     def duda_hart_index(self, X=None, y_pred=None, decimal=None, **kwarg):
         """
@@ -512,46 +562,7 @@ class ClusteringMetric(Evaluator):
         """
         X = self.check_X(X)
         y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        return cu.calculate_hartigan_index(X, y_pred, decimal)
-
-    def baker_hubert_gamma_index(self, X=None, y_pred=None, decimal=None, **kwargs):
-        """
-        Computes the Baker-Hubert Gamma index
-        TODO: Calculate based on O(N^2) of samples --> Very slow
-
-        Args:
-            X (array-like of shape (n_samples, n_features)):
-                A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
-            y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
-            decimal (int): The number of fractional parts after the decimal point
-
-        Returns:
-            result (float): The Baker-Hubert Gamma index
-        """
-        X = self.check_X(X)
-        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        num_samples, num_features = X.shape
-        n_pairs = (num_samples * (num_samples - 1)) // 2
-        distances = np.zeros(n_pairs)
-        binary_vector = np.zeros(n_pairs)
-        index = 0
-        for idx in range(num_samples-1):
-            for jdx in range(idx + 1, num_samples):
-                distances[index] = np.linalg.norm(X[idx] - X[jdx])
-                binary_vector[index] = 0 if y_pred[idx] == y_pred[jdx] else 1
-                index += 1
-        s_plus = 0
-        s_minus = 0
-        for idx in range(0, n_pairs-1):
-            for jdx in range(idx+1, n_pairs):
-                if binary_vector[idx] == 0 and binary_vector[jdx] == 1:
-                    # For each within-cluster distance (B = 0), compare with between-cluster distances (B = 1).
-                    s_plus += np.sum(distances[idx] < distances[jdx])
-                    s_minus += np.sum(distances[idx] > distances[jdx])
-        # Calculate the Gamma index
-        denominator = s_plus + s_minus
-        gamma_index = (s_plus - s_minus) / denominator if denominator != 0 else 0.0
-        return np.round(gamma_index, decimal)
+        return cu.calculate_hartigan_index(X, y_pred, decimal, self.raise_error, self.biggest_value)
 
     def mutual_info_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
@@ -1081,13 +1092,12 @@ class ClusteringMetric(Evaluator):
     LSRI = log_ss_ratio_index
     SI = silhouette_index
     SSEI = sum_squared_error_index
+    MSEI = mean_squared_error_index
     DHI = duda_hart_index
     BI = beale_index
     RSI = r_squared_index
     DBCVI = density_based_clustering_validation_index
     HI = hartigan_index
-
-    BHGI = baker_hubert_gamma_index
 
     MIS = mutual_info_score
     NMIS = normalized_mutual_info_score

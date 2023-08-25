@@ -1,4 +1,4 @@
-# !/usr/bin/env python
+#!/usr/bin/env python
 # Created by "Matt Q." at 23:05, 27/10/2022 --------%
 #       Github: https://github.com/N3uralN3twork    %
 #                                                   %
@@ -136,6 +136,13 @@ def calculate_sum_squared_error_index(X=None, y_pred=None, decimal=6):
     centroid_distances = centers[y_pred]
     squared_distances = np.sum((X - centroid_distances) ** 2, axis=1)
     return np.round(np.sum(squared_distances), decimal)
+
+
+def calculate_mean_squared_error_index(X=None, y_pred=None, decimal=6):
+    centers, _ = compute_barycenters(X, y_pred)
+    centroid_distances = centers[y_pred]
+    squared_distances = np.sum((X - centroid_distances) ** 2, axis=1)
+    return np.round(np.mean(squared_distances), decimal)
 
 
 def calculate_ball_hall_index(X=None, y_pred=None, decimal=6):
@@ -325,8 +332,13 @@ def calculate_silhouette_index_slow(X=None, y_pred=None, decimal=6):
     return np.round(np.mean(res), decimal)
 
 
-def calculate_silhouette_index(X=None, y_pred=None, decimal=6, multi_output=False):
+def calculate_silhouette_index(X=None, y_pred=None, decimal=6, multi_output=False, raise_error=True, raise_value=-1.0):
     unique_clusters = np.unique(y_pred)
+    if len(unique_clusters) == 1:
+        if raise_error:
+            raise ValueError("The Silhouette Index is undefined when y_pred has only 1 cluster.")
+        else:
+            return raise_value
     num_clusters = len(unique_clusters)
     num_points = len(X)
     # Precompute pairwise distances
@@ -432,9 +444,14 @@ def calculate_density_based_clustering_validation_index(X=None, y_pred=None, dec
     return np.round(result, decimal)
 
 
-def calculate_hartigan_index(X=None, y_pred=None, decimal=6):
+def calculate_hartigan_index(X=None, y_pred=None, decimal=6, raise_error=True, raise_value=np.inf):
     centroids, _ = compute_barycenters(X, y_pred)
     num_clusters = len(np.unique(y_pred))
+    if num_clusters == 1:
+        if raise_error:
+            raise ValueError("The Hartigan Index is undefined when y_pred has only 1 cluster.")
+        else:
+            return raise_value
     hi = 0.0
     for idx in range(num_clusters):
         cluster_data = X[y_pred == idx]
