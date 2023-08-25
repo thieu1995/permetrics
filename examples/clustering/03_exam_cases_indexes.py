@@ -22,20 +22,22 @@ for idx in range(7):
     evaluator = ClusteringMetric(y_pred=temp[idx], X=X, decimal=5)
     print(evaluator.hartigan_index())
 
-# print(evaluator.get_metrics_by_list_names(["BHI", "CHI", "XBI", "BRI", "DBI", "DRI", "DI", "KDI", "LDRI", "LSRI", "SI"]))
+# print(evaluator.get_metrics_by_list_names(["BHI", "XBI", "DBI", "BRI", "KDI", "DRI", "DI", "CHI",
+#                                           "LDRI", "LSRI", "SI", "SSEI", "MSEI", "DHI", "BI", "RSI", "DBCVI", "HI"]))
 
 # BHI = ball_hall_index
-# CHI = calinski_harabasz_index
 # XBI = xie_beni_index
-# BRI = banfeld_raftery_index
 # DBI = davies_bouldin_index
+# BRI = banfeld_raftery_index
+# KDI = ksq_detw_index
 # DRI = det_ratio_index
 # DI = dunn_index
-# KDI = ksq_detw_index
+# CHI = calinski_harabasz_index
 # LDRI = log_det_ratio_index
 # LSRI = log_ss_ratio_index
 # SI = silhouette_index
 # SSEI = sum_squared_error_index
+# MSEI = mean_squared_error_index
 # DHI = duda_hart_index
 # BI = beale_index
 # RSI = r_squared_index

@@ -14,21 +14,25 @@ X, y_true = make_blobs(n_samples=300, centers=4, cluster_std=0.60, random_state=
 y_pred_rand = []
 for idx in range(0, len(y_true)):
     y_pred_rand.append(np.random.choice(list(set(range(0, 4)) - {idx})))
+
 temp = [
     y_true.copy(), y_pred_rand,
     np.random.randint(0, 2, 300), np.random.randint(0, 6, 300),
     np.zeros((300,)), np.ones((300,)),
+    9*np.ones((300))
 ]
-for idx in range(6):
+for idx in range(7):
     evaluator = ClusteringMetric(y_true=y_true, y_pred=temp[idx], X=X, decimal=5)
-    print(evaluator.tau_score())
+    print(evaluator.gplus_score())
 
 # print(evaluator.get_metrics_by_list_names(["MIS", "NMIS", "RaS", "FMS", "HS", "CS", "VMS", "PrS", "ReS", "FmS",
-#                                            "CDS", "HGS", "JS", "KS", "MNS", "PhS", "RTS", "RRS", "SS1S", "SS2S"]))
+#                                            "CDS", "HGS", "JS", "KS", "MNS", "PhS", "RTS", "RRS", "SS1S", "SS2S",
+#                                            "PuS", "ES", "TS", "GAS", "GPS"]))
 
 # MIS = mutual_info_score
 # NMIS = normalized_mutual_info_score
 # RaS = rand_score
+# ARS = adjusted_rand_score
 # FMS = fowlkes_mallows_score
 # HS = homogeneity_score
 # CS = completeness_score
@@ -49,3 +53,5 @@ for idx in range(6):
 # PuS = purity_score
 # ES = entropy_score
 # TS = tau_score
+# GAS = gamma_score
+# GPS = gplus_score
