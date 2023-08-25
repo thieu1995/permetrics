@@ -89,7 +89,7 @@ class ClusteringMetric(Evaluator):
         "SS2S": {"type": "max", "range": "[0, 1]", "best": "1"},
         "PuS": {"type": "max", "range": "[0, 1]", "best": "1"},
         "ES": {"type": "min", "range": "[0, +inf)", "best": "0"},
-        "TS": {"type": "max", "range": "[-inf, +inf]", "best": "no best"},
+        "TS": {"type": "max", "range": "(-inf, +inf)", "best": "no best"},
         "GAS": {"type": "max", "range": "[-1, 1]", "best": "1"},
         "GPS": {"type": "min", "range": "[0, 1]", "best": "0"},
     }
