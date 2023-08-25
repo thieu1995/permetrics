@@ -8,7 +8,7 @@ alt="PERMETRICS"/>
 
 ---
 
-[![GitHub release](https://img.shields.io/badge/release-1.4.3-yellow.svg)](https://github.com/thieu1995/permetrics/releases)
+[![GitHub release](https://img.shields.io/badge/release-1.5.0-yellow.svg)](https://github.com/thieu1995/permetrics/releases)
 [![Wheel](https://img.shields.io/pypi/wheel/gensim.svg)](https://pypi.python.org/pypi/permetrics) 
 [![PyPI version](https://badge.fury.io/py/permetrics.svg)](https://badge.fury.io/py/permetrics)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/permetrics.svg)
@@ -30,7 +30,7 @@ performance metrics for problems such as regression, classification, clustering,
 field access metrics as fast as possible
 
 * **Free software:** GNU General Public License (GPL) V3 license
-* **Total metrics**: 107 (47 regression metrics, 20 classification metrics, 40 clustering metrics)
+* **Total metrics**: 111 (47 regression metrics, 20 classification metrics, 44 clustering metrics)
 * **Documentation:** https://permetrics.readthedocs.io/en/latest/
 * **Python versions:** >= 3.7.x
 * **Dependencies:** numpy, scipy
@@ -52,7 +52,7 @@ field access metrics as fast as possible
 ### Install with pip
 Install the [current PyPI release](https://pypi.python.org/pypi/permetrics):
 ```sh 
-$ pip install permetrics==1.4.3
+$ pip install permetrics==1.5.0
 ```
 
 Or installing from the source code, use:
