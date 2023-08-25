@@ -1,3 +1,15 @@
+# Version 1.5.0
+
++ Add metrics to ClusteringMetric class:
+  + Mean Squared Error Index (MSEI)
+  + Adjusted Rand Score (ARS)
+  + Gamma Score (GAS)
+  + Gplus Score (GPS)
++ Speed up all metrics in ClusteringMetric by transferring the computation to cluster_util module.
++ Add speed up examples for clustering metrics (10x-100x faster than previous version) 
++ Update documents, ChangeLog, Readme
+
+---------------------------------------------------------------------
 
 # Version 1.4.3
 
