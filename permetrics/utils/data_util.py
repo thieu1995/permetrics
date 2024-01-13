@@ -121,7 +121,7 @@ def format_classification_data(y_true: np.ndarray, y_pred: np.ndarray):
                     y_true, y_pred = y_true.argmax(axis=1), y_pred.argmax(axis=1)
                 else:
                     y_true, y_pred = np.round(y_true).astype(int), np.round(y_pred).astype(int)
-            elif np.issubdtype(y_true.dtype, str) and np.issubdtype(y_pred.dtype, np.number):
+            elif np.issubdtype(y_true.dtype, str) and np.issubdtype(y_pred.dtype, str):
                 var_type = "string"
                 if y_true.ndim > 1:
                     raise ValueError("y_true and y_pred have ndim > 1 need to be a number.")
