@@ -110,7 +110,7 @@ result01 = evaluator.RMSE(multi_output="raw_values")
 result02 = evaluator.MAE(multi_output="raw_values")
 ```
 
-The more complicated cases in the folder: [/examples]. You can also read the [documentation](https://permetrics.readthedocs.io/) 
+The more complicated cases in the folder: [examples](/examples). You can also read the [documentation](https://permetrics.readthedocs.io/) 
 for more detailed installation instructions, explanations, and examples.
 
 
@@ -128,7 +128,7 @@ for more detailed installation instructions, explanations, and examples.
 
 # Contributing
 
-If you wish to contribute to the development of LIBSsa, please check for the guidelines in the 
+If you wish to contribute to the development of Permetrics, please check for the guidelines in the 
 [CONTRIBUTING.md](/CONTRIBUTING.md) file.
 
 
@@ -138,7 +138,7 @@ If you wish to contribute to the development of LIBSsa, please check for the gui
 * [Official document](https://permetrics.readthedocs.io/)
 * [Download releases](https://pypi.org/project/permetrics/) 
 * [Issue tracker](https://github.com/thieu1995/permetrics/issues) 
-* [Notable changes log](https://github.com/thieu1995/permetrics/blob/master/ChangeLog.md) 
+* [Notable changes log](/ChangeLog.md)
 * [Official discussion group](https://t.me/+fRVCJGuGJg1mNDg1) 
 
 ---
