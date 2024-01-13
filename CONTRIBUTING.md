@@ -55,7 +55,7 @@ Here are some ways to contribute:
 
 ## Pull Requests
 
-Pull requests are the best way to propose changes to the codebase. We actively welcome your pull requests:
+[Pull requests](/pulls) are the best way to propose changes to the codebase. We actively welcome your pull requests:
 
 1. Fork the repo and create your branch from `main`.
 2. If you've added code that should be tested, add tests.
@@ -65,7 +65,9 @@ Pull requests are the best way to propose changes to the codebase. We actively w
 
 ## Issue Tracking
 
-We use GitHub issues to track public bugs and requests. Please ensure your description is clear and has sufficient instructions to be able to reproduce the issue.
+We use [GitHub issues](/issues) to track public bugs and requests. Please ensure your description is clear and has 
+sufficient 
+instructions to be able to reproduce the issue.
 
 ## Any questions?
 
