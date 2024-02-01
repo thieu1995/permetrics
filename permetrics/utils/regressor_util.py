@@ -7,11 +7,8 @@
 import numpy as np
 
 
-def calculate_nse(y_true, y_pred, one_dim):
-    if one_dim:
-        return 1 - np.sum((y_true - y_pred) ** 2) / np.sum((y_true - np.mean(y_true)) ** 2)
-    else:
-        return 1 - np.sum((y_true - y_pred) ** 2, axis=0) / np.sum((y_true - np.mean(y_true, axis=0)) ** 2, axis=0)
+def calculate_nse(y_true, y_pred):
+    return 1 - np.sum((y_true - y_pred) ** 2, axis=0) / np.sum((y_true - np.mean(y_true, axis=0)) ** 2, axis=0)
 
 
 def calculate_pcc(y_true, y_pred, one_dim):
