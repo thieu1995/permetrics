@@ -10,35 +10,20 @@ from permetrics.utils.encoder import LabelEncoder
 import permetrics.utils.constant as co
 
 
-def format_regression_data_type(y_true, y_pred):
+def format_regression_data_type(y_true: np.ndarray, y_pred: np.ndarray):
     if isinstance(y_true, co.SUPPORTED_LIST) and isinstance(y_pred, co.SUPPORTED_LIST):
         ## Remove all dimensions of size 1
         y_true, y_pred = np.squeeze(np.asarray(y_true, dtype='float64')), np.squeeze(np.asarray(y_pred, dtype='float64'))
         if y_true.ndim == y_pred.ndim:
-            return y_true, y_pred
+            if y_true.ndim == 1:
+                return y_true.reshape(-1, 1), y_pred.reshape(-1, 1), 1      # n_outputs
+            if y_true.ndim > 2:
+                raise ValueError("y_true and y_pred must be 1D or 2D arrays.")
+            return y_true, y_pred, y_true.shape[1]      # n_outputs
         else:
             raise ValueError("y_true and y_pred must have the same number of dimensions.")
     else:
         raise TypeError("y_true and y_pred must be lists, tuples or numpy arrays.")
-
-
-def format_regression_data(y_true: np.ndarray, y_pred: np.ndarray):
-    if y_true.ndim == y_pred.ndim == 1:
-        ## Remove all Nan in y_pred
-        y_true = y_true[~np.isnan(y_pred)]
-        y_pred = y_pred[~np.isnan(y_pred)]
-        ## Remove all Inf in y_pred
-        y_true = y_true[np.isfinite(y_pred)]
-        y_pred = y_pred[np.isfinite(y_pred)]
-        return y_true, y_pred, True
-    elif y_true.ndim == y_pred.ndim > 1:
-        ## Remove all row with Nan in y_pred
-        y_true = y_true[~np.isnan(y_pred).any(axis=1)]
-        y_pred = y_pred[~np.isnan(y_pred).any(axis=1)]
-        ## Remove all row with Inf in y_pred
-        y_true = y_true[np.isfinite(y_pred).all(axis=1)]
-        y_pred = y_pred[np.isfinite(y_pred).all(axis=1)]
-        return y_true, y_pred, False
 
 
 def get_regression_non_zero_data(y_true, y_pred, one_dim=True, rule_idx=0):
