@@ -438,33 +438,29 @@ class RegressionMetric(Evaluator):
         result = 1. / (2. - nse)
         return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def willmott_index(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
+    def willmott_index(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0.0, **kwargs):
         """
         Willmott Index (WI): Best possible score is 1.0, bigger value is better. Range = [0, 1]
 
         Notes
         ~~~~~
-        + Reference evapotranspiration for Londrina, Paraná, Brazil: performance of different estimation methods
-        + https://www.researchgate.net/publication/319699360_Reference_evapotranspiration_for_Londrina_Parana_Brazil_performance_of_different_estimation_methods
+            + Reference evapotranspiration for Londrina, Paraná, Brazil: performance of different estimation methods
+            + https://www.researchgate.net/publication/319699360_Reference_evapotranspiration_for_Londrina_Parana_Brazil_performance_of_different_estimation_methods
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
             multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+            force_finite (bool): When result is not finite, it can be NaN or Inf.
+                Their result will be replaced by `finite_value` (Optional, default = True)
+            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
 
         Returns:
             result (float, int, np.ndarray): WI metric for single column or multiple columns
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
-        if positive:
-            y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        wi = ru.calculate_wi(y_true, y_pred, one_dim)
-        return np.round(wi, decimal) if one_dim else self.get_multi_output_result(wi, multi_output, decimal)
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+        result = ru.calculate_wi(y_true, y_pred)
+        return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
     def coefficient_of_determination(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
         """
