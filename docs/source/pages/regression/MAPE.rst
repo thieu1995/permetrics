@@ -17,7 +17,7 @@ MAPE - Mean Absolute Percentage Error
 
 .. math::
 
-	\text{MRE}(y, \hat{y}) = \frac{100\%}{N} \sum_{i=0}^{N - 1} \frac{|y_i - \hat{y}_i|}{|y_i|}.
+	\text{MAPE}(y, \hat{y}) = \frac{100\%}{N} \sum_{i=0}^{N - 1} \frac{|y_i - \hat{y}_i|}{|y_i|}
 
 The Mean Absolute Percentage Error (MAPE) :cite:`nguyen2020new` is a statistical measure of the accuracy of a forecasting model, commonly used in
 business and economics. The MAPE measures the average percentage difference between the forecasted and actual values, with a lower MAPE indicating better
@@ -28,8 +28,9 @@ depending on the specific application and industry. The MAPE has a range of [0, 
 accuracy. A larger MAPE indicates a larger average percentage difference between the forecasted and actual values, with infinite MAPE indicating a complete
 failure of the forecasting model.
 
++ `Link equation <https://ibf.org/knowledge/glossary/mape-mean-absolute-percentage-error-174>`_
 
-Example to use MAAPE metric:
+Example to use MAPE metric:
 
 .. code-block:: python
 	:emphasize-lines: 8-9,15-16
@@ -41,12 +42,12 @@ Example to use MAAPE metric:
 	y_true = array([3, -0.5, 2, 7])
 	y_pred = array([2.5, 0.0, 2, 8])
 
-	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+	evaluator = RegressionMetric(y_true, y_pred)
 	print(evaluator.mean_absolute_percentage_error())
 
 	## For > 1-D array
 	y_true = array([[0.5, 1], [-1, 1], [7, -6]])
 	y_pred = array([[0, 2], [-1, 2], [8, -5]])
 
-	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+	evaluator = RegressionMetric(y_true, y_pred)
 	print(evaluator.MAPE(multi_output="raw_values"))
