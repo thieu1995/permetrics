@@ -17,12 +17,11 @@ class Evaluator:
     EPSILON = co.EPSILON
     SUPPORT = {}
 
-    def __init__(self, y_true=None, y_pred=None, decimal=5, **kwargs):
+    def __init__(self, y_true=None, y_pred=None, **kwargs):
         """
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
-            decimal (int): The number of fractional parts after the decimal point
         """
         if kwargs is None: kwargs = {}
         self.set_keyword_arguments(kwargs)
@@ -30,36 +29,41 @@ class Evaluator:
         self.y_pred = cp.deepcopy(y_pred)
         self.y_true_ = cp.deepcopy(y_true)
         self.y_pred_ = cp.deepcopy(y_pred)
-        self.decimal = decimal
 
     def set_keyword_arguments(self, kwargs):
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-    def get_processed_data(self, y_true=None, y_pred=None, decimal=None):
+    def get_processed_data(self, y_true=None, y_pred=None):
         pass
 
-    def get_multi_output_result(self, result=None, multi_output=None, decimal=None):
+    def get_output_result(self, result=None, n_out=None, multi_output=None, force_finite=None, finite_value=None):
         """
-        Get multiple output results based on selected parameter
+        Get final output result based on selected parameter
 
         Args:
             result: The raw result from metric
-            multi_output: "raw_values" - return multi-output, [weights] - return single output based on weights, else - return mean result
-            decimal (int): The number of fractional parts after the decimal point
+            n_out: The number of column in y_true or y_pred
+            multi_output: `raw_values` - return multi-output, `weights` - return single output based on weights, else - return mean result
+            force_finite: Make result as finite number
+            finite_value: The value that used to replace the infinite value or NaN value.
 
         Returns:
-            final_result: Multiple outputs results based on selected parameter
+            final_result: Final output results based on selected parameter
         """
+        if force_finite:
+            result[np.isnan(result) | np.isinf(result)] = finite_value
+        if n_out == 1:
+            return result.flatten()[0]
         if isinstance(multi_output, (tuple, list, set, np.ndarray)):
-            weights = np.array(multi_output)
-            if self.y_true.shape[1] != len(weights):
+            weights = np.asarray(multi_output, dtype=float)
+            if n_out != len(weights):
                 raise ValueError("Multi-output weights must have the same length with y_true or y_pred!")
-            return np.round(np.dot(result, multi_output), decimal)
+            return np.dot(result, multi_output)
         elif multi_output == "raw_values":  # Default: raw_values
-            return np.round(result, decimal)
+            return result
         else:
-            return np.round(np.mean(result), decimal)
+            return np.mean(result)
 
     def get_metric_by_name(self, metric_name=str, paras=None) -> dict:
         """
@@ -102,7 +106,7 @@ class Evaluator:
                     results[metric_name] = obj(**list_paras[idx])
         return results
 
-    def get_metrics_by_dict(self, metrics_dict:dict) -> dict:
+    def get_metrics_by_dict(self, metrics_dict: dict) -> dict:
         """
         Get results of list metrics by its name and parameters wrapped by dictionary
 
@@ -121,5 +125,5 @@ class Evaluator:
             if paras_dict is None:
                 results[metric_name] = obj()
             else:
-                results[metric_name] = obj(**paras_dict)     # Unpacking a dictionary and passing it to function
+                results[metric_name] = obj(**paras_dict)  # Unpacking a dictionary and passing it to function
         return results
