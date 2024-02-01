@@ -376,10 +376,9 @@ class RegressionMetric(Evaluator):
         result = np.mean(np.arctan(np.abs((y_true - y_pred) / y_true)), axis=0)
         return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def mean_absolute_scaled_error(self, y_true=None, y_pred=None, m=1, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
+    def mean_absolute_scaled_error(self, y_true=None, y_pred=None, m=1, multi_output="raw_values", force_finite=True, finite_value=1.0, **kwargs):
         """
         Mean Absolute Scaled Error (MASE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
-
         Link: https://en.wikipedia.org/wiki/Mean_absolute_scaled_error
 
         Args:
@@ -387,23 +386,16 @@ class RegressionMetric(Evaluator):
             y_pred (tuple, list, np.ndarray): The prediction values
             m (int): m = 1 for non-seasonal data, m > 1 for seasonal data
             multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+            force_finite (bool): When result is not finite, it can be NaN or Inf.
+                Their result will be replaced by `finite_value` (Optional, default = True)
+            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
 
         Returns:
             result (float, int, np.ndarray): MASE metric for single column or multiple columns
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
-        if positive:
-            y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        if one_dim:
-            return np.round(np.mean(np.abs(y_true - y_pred)) / np.mean(np.abs(y_true[m:] - y_true[:-m])), decimal)
-        else:
-            result = np.mean(np.abs(y_true - y_pred), axis=0) / np.mean(np.abs(y_true[m:] - y_true[:-m]), axis=0)
-            return self.get_multi_output_result(result, multi_output, decimal)
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+        result = np.mean(np.abs(y_true - y_pred), axis=0) / np.mean(np.abs(y_true[m:] - y_true[:-m]), axis=0)
+        return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
     def nash_sutcliffe_efficiency(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
         """
