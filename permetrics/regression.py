@@ -14,10 +14,10 @@ class RegressionMetric(Evaluator):
     """
     Defines a RegressionMetric class that hold all regression metrics (for both regression and time-series problems)
 
-    + An extension of scikit-learn metrics section, with the addition of many more regression metrics.
-    + https://scikit-learn.org/stable/modules/model_evaluation.html#classification-metrics
-    + Some methods in scikit-learn can't generate the multi-output metrics, we re-implement all of them and allow multi-output metrics
-    + Therefore, we support calculate the multi-output metrics for all methods
+        + An extension of scikit-learn metrics section, with the addition of many more regression metrics.
+        + https://scikit-learn.org/stable/modules/model_evaluation.html#classification-metrics
+        + Some methods in scikit-learn can't generate the multi-output metrics, we re-implement all of them and allow multi-output metrics
+        + Therefore, we support calculate the multi-output metrics for all methods
 
     Parameters
     ----------
@@ -26,9 +26,6 @@ class RegressionMetric(Evaluator):
 
     y_pred: tuple, list, np.ndarray, default = None
         The prediction values.
-
-    decimal: int, default = 5
-        The number of fractional parts after the decimal point
     """
 
     SUPPORT = {
@@ -88,11 +85,10 @@ class RegressionMetric(Evaluator):
         "CRM": {"type": "min", "range": "(-inf, +inf)", "best": "0"},
     }
 
-    def __init__(self, y_true=None, y_pred=None, decimal=5, **kwargs):
-        super().__init__(y_true, y_pred, decimal, **kwargs)
+    def __init__(self, y_true=None, y_pred=None, **kwargs):
+        super().__init__(y_true, y_pred, **kwargs)
         if kwargs is None: kwargs = {}
         self.set_keyword_arguments(kwargs)
-        self.one_dim = False
 
     @staticmethod
     def get_support(name=None, verbose=True):
@@ -108,33 +104,27 @@ class RegressionMetric(Evaluator):
                 print(f"Metric {name}: {RegressionMetric.SUPPORT[name]}")
             return RegressionMetric.SUPPORT[name]
 
-    def get_processed_data(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+    def get_processed_data(self, y_true=None, y_pred=None, **kwargs):
         """
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
-            clean (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred)
-            decimal (int): The number of fractional parts after the decimal point
 
         Returns:
             y_true_final: y_true used in evaluation process.
             y_pred_final: y_pred used in evaluation process
-            one_dim: is y_true has 1 dimensions or not
-            decimal: The number of fractional parts after the decimal point
+            n_out: Number of outputs
         """
-        decimal = self.decimal if decimal is None else decimal
         if (y_true is not None) and (y_pred is not None):
-            y_true, y_pred = du.format_regression_data_type(y_true, y_pred)
-            y_true, y_pred, one_dim = du.format_regression_data(y_true, y_pred)
+            y_true, y_pred, n_out = du.format_regression_data_type(y_true, y_pred)
         else:
             if (self.y_true is not None) and (self.y_pred is not None):
-                y_true, y_pred = du.format_regression_data_type(self.y_true, self.y_pred)
-                y_true, y_pred, one_dim = du.format_regression_data(y_true, y_pred)
+                y_true, y_pred, n_out = du.format_regression_data_type(self.y_true, self.y_pred)
             else:
                 raise ValueError("y_true or y_pred is None. You need to pass y_true and y_pred to object creation or function called.")
-        return y_true, y_pred, one_dim, decimal
+        return y_true, y_pred, n_out
 
-    def explained_variance_score(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
+    def explained_variance_score(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0.0, **kwargs):
         """
         Explained Variance Score (EVS). Best possible score is 1.0, greater value is better. Range = (-inf, 1.0]
 
@@ -142,23 +132,16 @@ class RegressionMetric(Evaluator):
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
             multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in denominator (Optional, default = False)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+            force_finite (bool): When result is not finite, it can be NaN or Inf.
+                Their result will be replaced by `finite_value` (Optional, default = True)
+            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
 
         Returns:
             result (float, int, np.ndarray): EVS metric for single column or multiple columns
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
-        if positive:
-            y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        if one_dim:
-            return np.round(1 - np.var(y_true - y_pred) / np.var(y_true), decimal)
-        else:
-            result = 1 - np.var(y_true - y_pred, axis=0) / np.var(y_true, axis=0)
-            return self.get_multi_output_result(result, multi_output, decimal)
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+        result = 1 - np.var(y_true - y_pred, axis=0) / np.var(y_true, axis=0)
+        return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
     def max_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
         """
