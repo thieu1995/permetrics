@@ -20,6 +20,10 @@ MBE - Mean Bias Error
 
 	\text{MBE}(y, \hat{y}) = \frac{1}{n} \sum_{i=1}^{n}(f_i - y_i)
 
+Latex equation code::
+
+	\text{MBE}(y, \hat{y}) = \frac{1}{n} \sum_{i=1}^{n}(f_i - y_i)
+
 
 The Mean Bias Error (MBE) :cite:`kato2016prediction` is a statistical measure used to assess the bias of a forecasting model. The MBE measures the average
 difference between the forecasted and actual values, without considering their direction.
@@ -36,11 +40,6 @@ It is important to note that the MBE is sensitive to outliers and may not be app
 cases, other measures, such as the Median Bias Error (MBE), may be more appropriate.
 
 
-Latex equation code::
-
-	\text{MBE}(y, \hat{y}) = \frac{1}{n} \sum_{i=1}^{n}(f_i - y_i)
-
-
 Example to use MBE metric:
 
 .. code-block:: python
@@ -53,12 +52,12 @@ Example to use MBE metric:
 	y_true = array([3, -0.5, 2, 7])
 	y_pred = array([2.5, 0.0, 2, 8])
 
-	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+	evaluator = RegressionMetric(y_true, y_pred)
 	print(evaluator.mean_bias_error())
 
 	## For > 1-D array
 	y_true = array([[0.5, 1], [-1, 1], [7, -6]])
 	y_pred = array([[0, 2], [-1, 2], [8, -5]])
 
-	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+	evaluator = RegressionMetric(y_true, y_pred)
 	print(evaluator.MBE(multi_output="raw_values"))
