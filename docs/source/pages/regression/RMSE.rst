@@ -20,6 +20,11 @@ RMSE - Root Mean Square Error
 
 	\text{RMSE}(y, \hat{y}) = \sqrt{\frac{\sum_{i=0}^{N - 1} (y_i - \hat{y}_i)^2}{N}}
 
+Latex equation code::
+
+	\text{RMSE}(y, \hat{y}) = \sqrt{\frac{\sum_{i=0}^{N - 1} (y_i - \hat{y}_i)^2}{N}}
+
+
 Root Mean Square Error (RMSE) :cite:`nguyen2019building` is a statistical measure that is often used to evaluate the accuracy of a forecasting model, such as a
 regression model or a time series model. It measures the difference between the predicted values and the actual values in the units of the response variable.
 
@@ -35,11 +40,6 @@ used in conjunction with other measures, such as the Mean Absolute Error (MAE) a
 evaluation of the model's performance.
 
 
-Latex equation code::
-
-	\text{RMSE}(y, \hat{y}) = \sqrt{\frac{\sum_{i=0}^{N - 1} (y_i - \hat{y}_i)^2}{N}}
-
-
 Example to use RMSE metric:
 
 .. code-block:: python
@@ -52,12 +52,12 @@ Example to use RMSE metric:
 	y_true = array([3, -0.5, 2, 7])
 	y_pred = array([2.5, 0.0, 2, 8])
 
-	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+	evaluator = RegressionMetric(y_true, y_pred)
 	print(evaluator.root_mean_squared_error())
 
 	## For > 1-D array
 	y_true = array([[0.5, 1], [-1, 1], [7, -6]])
 	y_pred = array([[0, 2], [-1, 2], [8, -5]])
 
-	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+	evaluator = RegressionMetric(y_true, y_pred)
 	print(evaluator.RMSE(multi_output="raw_values"))
