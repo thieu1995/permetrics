@@ -19,6 +19,10 @@ SMAPE - Symmetric Mean Absolute Percentage Error
 
 	\text{SMAPE}(y, \hat{y}) = \frac{100\%}{N} \sum_{i=0}^{N - 1} \frac{ 2*|y_i - \hat{y}_i|}{|y| + |\hat{y}|}
 
+Latex equation code::
+
+	\text{SMAPE}(y, \hat{y}) = \frac{100\%}{N} \sum_{i=0}^{N - 1} \frac{ 2*|y_i - \hat{y}_i|}{|y| + |\hat{y}|}
+
 
 Symmetric Mean Absolute Percentage Error (SMAPE) :cite:`thieu2019efficient`, which is an accuracy measure commonly used in forecasting and time series
 analysis.
@@ -30,10 +34,7 @@ The resulting score ranges between 0 and 1, where a score of 0 indicates a perfe
 no match at all. A smaller value of SMAPE is better, and it is often multiplied by 100% to obtain the percentage error. Best possible score is 0.0, smaller
 value is better. Range = [0, 1].
 
-
-Latex equation code::
-
-	\text{SMAPE}(y, \hat{y}) = \frac{100\%}{N} \sum_{i=0}^{N - 1} \frac{ 2*|y_i - \hat{y}_i|}{|y| + |\hat{y}|}
++ `Link to equation <https://en.wikipedia.org/wiki/Symmetric_mean_absolute_percentage_error>`_
 
 
 Example to use SMAPE metric:
@@ -48,12 +49,12 @@ Example to use SMAPE metric:
 	y_true = array([3, -0.5, 2, 7])
 	y_pred = array([2.5, 0.0, 2, 8])
 
-	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+	evaluator = RegressionMetric(y_true, y_pred)
 	print(evaluator.symmetric_mean_absolute_percentage_error())
 
 	## For > 1-D array
 	y_true = array([[0.5, 1], [-1, 1], [7, -6]])
 	y_pred = array([[0, 2], [-1, 2], [8, -5]])
 
-	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+	evaluator = RegressionMetric(y_true, y_pred)
 	print(evaluator.SMAPE(multi_output="raw_values"))

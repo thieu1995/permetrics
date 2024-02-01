@@ -335,8 +335,7 @@ class RegressionMetric(Evaluator):
         result = np.mean(np.abs(y_true - y_pred) / np.abs(y_true), axis=0)
         return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def symmetric_mean_absolute_percentage_error(self, y_true=None, y_pred=None, multi_output="raw_values",
-                                                 decimal=None, non_zero=False, positive=False, **kwargs):
+    def symmetric_mean_absolute_percentage_error(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=1.0, **kwargs):
         """
         Symmetric Mean Absolute Percentage Error (SMAPE): Best possible score is 0.0, smaller value is better. Range = [0, 1]
         If you want percentage then multiply with 100%
@@ -347,23 +346,16 @@ class RegressionMetric(Evaluator):
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
             multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+            force_finite (bool): When result is not finite, it can be NaN or Inf.
+                Their result will be replaced by `finite_value` (Optional, default = True)
+            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
 
         Returns:
             result (float, int, np.ndarray): SMAPE metric for single column or multiple columns
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
-        if positive:
-            y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        if one_dim:
-            return np.round(np.mean(np.abs(y_pred - y_true) / (np.abs(y_true) + np.abs(y_pred))), decimal)
-        else:
-            result = np.mean(np.abs(y_pred - y_true) / (np.abs(y_true) + np.abs(y_pred)), axis=0)
-            return self.get_multi_output_result(result, multi_output, decimal)
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+        result = np.mean(np.abs(y_pred - y_true) / (np.abs(y_true) + np.abs(y_pred)), axis=0)
+        return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
     def mean_arctangent_absolute_percentage_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None,
                                                   non_zero=False, positive=False, **kwargs):
