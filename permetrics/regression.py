@@ -462,7 +462,7 @@ class RegressionMetric(Evaluator):
         result = ru.calculate_wi(y_true, y_pred)
         return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def coefficient_of_determination(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
+    def coefficient_of_determination(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0.0, **kwargs):
         """
         Coefficient of Determination (COD/R2): Best possible score is 1.0, bigger value is better. Range = (-inf, 1]
 
@@ -476,26 +476,19 @@ class RegressionMetric(Evaluator):
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
             multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+            force_finite (bool): When result is not finite, it can be NaN or Inf.
+                Their result will be replaced by `finite_value` (Optional, default = True)
+            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
 
         Returns:
             result (float, int, np.ndarray): R2 metric for single column or multiple columns
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
-        if positive:
-            y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        if one_dim:
-            return np.round(1 - np.sum((y_true - y_pred) ** 2) / np.sum((y_true - np.mean(y_true)) ** 2), decimal)
-        else:
-            result = 1 - np.sum((y_true - y_pred) ** 2, axis=0) / np.sum((y_true - np.mean(y_true, axis=0)) ** 2, axis=0)
-            return self.get_multi_output_result(result, multi_output, decimal)
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+        result = 1 - np.sum((y_true - y_pred) ** 2, axis=0) / np.sum((y_true - np.mean(y_true, axis=0)) ** 2, axis=0)
+        return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def adjusted_coefficient_of_determination(self, y_true=None, y_pred=None, X_shape=None, multi_output="raw_values", decimal=None,
-                                              non_zero=False, positive=False, **kwargs):
+    def adjusted_coefficient_of_determination(self, y_true=None, y_pred=None, X_shape=None,
+                                              multi_output="raw_values", force_finite=True, finite_value=0.0, **kwargs):
         """
         Adjusted Coefficient of Determination (ACOD/AR2): Best possible score is 1.0, bigger value is better. Range = (-inf, 1]
 
@@ -510,32 +503,25 @@ class RegressionMetric(Evaluator):
             y_pred (tuple, list, np.ndarray): The prediction values
             X_shape (tuple, list, np.ndarray): The shape of X_train dataset
             multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+            force_finite (bool): When result is not finite, it can be NaN or Inf.
+                Their result will be replaced by `finite_value` (Optional, default = True)
+            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
 
         Returns:
             result (float, int, np.ndarray): AR2 metric for single column or multiple columns
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
-        if positive:
-            y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
         if X_shape is None:
             raise ValueError("You need to pass the shape of X_train dataset to calculate Adjusted R2.")
         if len(X_shape) != 2 or X_shape[0] < 4 or X_shape[1] < 1:
             raise ValueError("You need to pass the real shape of X_train dataset to calculate Adjusted R2.")
         dft = X_shape[0] - 1.0
         dfe = X_shape[0] - X_shape[1] - 1.0
-        df_final = dft/dfe
-        if one_dim:
-            return np.round(1 - df_final * np.sum((y_true - y_pred) ** 2) / np.sum((y_true - np.mean(y_true)) ** 2), decimal)
-        else:
-            result = 1 - df_final * np.sum((y_true - y_pred) ** 2, axis=0) / np.sum((y_true - np.mean(y_true, axis=0)) ** 2, axis=0)
-            return self.get_multi_output_result(result, multi_output, decimal)
+        df_final = dft / dfe
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+        result = 1 - df_final * np.sum((y_true - y_pred) ** 2, axis=0) / np.sum((y_true - np.mean(y_true, axis=0)) ** 2, axis=0)
+        return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def pearson_correlation_coefficient(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
+    def pearson_correlation_coefficient(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=-1.0, **kwargs):
         """
         Pearson’s Correlation Coefficient (PCC or R): Best possible score is 1.0, bigger value is better. Range = [-1, 1]
         Notes
@@ -548,23 +534,18 @@ class RegressionMetric(Evaluator):
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
             multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+            force_finite (bool): When result is not finite, it can be NaN or Inf.
+                Their result will be replaced by `finite_value` (Optional, default = True)
+            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
 
         Returns:
             result (float, int, np.ndarray): R metric for single column or multiple columns
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
-        if positive:
-            y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        pcc = ru.calculate_pcc(y_true, y_pred, one_dim)
-        return np.round(pcc, decimal) if one_dim else self.get_multi_output_result(pcc, multi_output, decimal)
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+        result = ru.calculate_pcc(y_true, y_pred)
+        return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def absolute_pearson_correlation_coefficient(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None,
-                                                 non_zero=False, positive=False, **kwargs):
+    def absolute_pearson_correlation_coefficient(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
         """
         Absolute Pearson’s Correlation Coefficient (APCC or AR): Best possible score is 1.0, bigger value is better. Range = [0, 1]
 
@@ -572,25 +553,20 @@ class RegressionMetric(Evaluator):
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
             multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+            force_finite (bool): When result is not finite, it can be NaN or Inf.
+                Their result will be replaced by `finite_value` (Optional, default = True)
+            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
 
         Returns:
             result (float, int, np.ndarray): AR metric for single column or multiple columns
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
-        if positive:
-            y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        pcc = ru.calculate_absolute_pcc(y_true, y_pred, one_dim)
-        return np.round(pcc, decimal) if one_dim else self.get_multi_output_result(pcc, multi_output, decimal)
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+        result = ru.calculate_absolute_pcc(y_true, y_pred)
+        return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def pearson_correlation_coefficient_square(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None,
-                                               non_zero=False, positive=False, **kwargs):
+    def pearson_correlation_coefficient_square(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
         """
-        (Pearson’s Correlation Index)^2 = R^2 = R2s (R square): Best possible score is 1.0, bigger value is better. Range = [0, 1]
+        (Pearson’s Correlation Index)^2 = R^2 = R2S = RSQ (R square): Best possible score is 1.0, bigger value is better. Range = [0, 1]
         Notes
         ~~~~~
             + Do not misunderstand between R2s and R2 (Coefficient of Determination), they are different
@@ -603,84 +579,70 @@ class RegressionMetric(Evaluator):
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
             multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+            force_finite (bool): When result is not finite, it can be NaN or Inf.
+                Their result will be replaced by `finite_value` (Optional, default = True)
+            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
 
         Returns:
             result (float, int, np.ndarray): R2s metric for single column or multiple columns
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
-        if positive:
-            y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        pcc = ru.calculate_pcc(y_true, y_pred, one_dim)
-        return np.round(pcc**2, decimal) if one_dim else self.get_multi_output_result(pcc**2, multi_output, decimal)
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+        result = ru.calculate_pcc(y_true, y_pred)**2
+        return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def confidence_index(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
+    def confidence_index(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
         """
         Confidence Index (or Performance Index): CI (PI): Best possible score is 1.0, bigger value is better. Range = (-inf, 1]
 
         Notes
         ~~~~~
-        - Reference evapotranspiration for Londrina, Paraná, Brazil: performance of different estimation methods
-        - > 0.85,          Excellent
-        - 0.76-0.85,       Very good
-        - 0.66-0.75,       Good
-        - 0.61-0.65,       Satisfactory
-        - 0.51-0.60,       Poor
-        - 0.41-0.50,       Bad
-        - < 0.40,          Very bad
+            - Reference evapotranspiration for Londrina, Paraná, Brazil: performance of different estimation methods
+            - > 0.85,          Excellent
+            - 0.76-0.85,       Very good
+            - 0.66-0.75,       Good
+            - 0.61-0.65,       Satisfactory
+            - 0.51-0.60,       Poor
+            - 0.41-0.50,       Bad
+            - < 0.40,          Very bad
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
             multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+            force_finite (bool): When result is not finite, it can be NaN or Inf.
+                Their result will be replaced by `finite_value` (Optional, default = True)
+            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
 
         Returns:
             result (float, int, np.ndarray): CI (PI) metric for single column or multiple columns
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
-        if positive:
-            y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        r = ru.calculate_pcc(y_true, y_pred, one_dim)
-        d = ru.calculate_wi(y_true, y_pred, one_dim)
-        return np.round(r*d, decimal) if one_dim else self.get_multi_output_result(r*d, multi_output, decimal)
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+        r = ru.calculate_pcc(y_true, y_pred)
+        d = ru.calculate_wi(y_true, y_pred)
+        result = r*d
+        return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def deviation_of_runoff_volume(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
+    def deviation_of_runoff_volume(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=10., **kwargs):
         """
-        Deviation of Runoff Volume (DRV): Best possible score is 1.0, smaller value is better. Range = [1, +inf)
+        Deviation of Runoff Volume (DRV): Best possible score is 1.0, smaller value is better. Range = [0, +inf)
         Link: https://rstudio-pubs-static.s3.amazonaws.com/433152_56d00c1e29724829bad5fc4fd8c8ebff.html
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
             multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+            force_finite (bool): When result is not finite, it can be NaN or Inf.
+                Their result will be replaced by `finite_value` (Optional, default = True)
+            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
 
         Returns:
             result (float, int, np.ndarray): DRV metric for single column or multiple columns
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
-        if positive:
-            y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        if one_dim:
-            return np.round(np.sum(y_pred) / np.sum(y_true), decimal)
-        else:
-            result = np.sum(y_pred, axis=0) / np.sum(y_true, axis=0)
-            return self.get_multi_output_result(result, multi_output, decimal)
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+        result = np.sum(y_pred, axis=0) / np.sum(y_true, axis=0)
+        return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def kling_gupta_efficiency(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
+    def kling_gupta_efficiency(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
         """
         Kling-Gupta Efficiency (KGE): Best possible score is 1, bigger value is better. Range = (-inf, 1]
         Link: https://rstudio-pubs-static.s3.amazonaws.com/433152_56d00c1e29724829bad5fc4fd8c8ebff.html
@@ -689,35 +651,24 @@ class RegressionMetric(Evaluator):
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
             multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+            force_finite (bool): When result is not finite, it can be NaN or Inf.
+                Their result will be replaced by `finite_value` (Optional, default = True)
+            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
 
         Returns:
             result (float, int, np.ndarray): KGE metric for single column or multiple columns
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
-        if positive:
-            y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        if one_dim:
-            m1, m2 = np.mean(y_true), np.mean(y_pred)
-            r = np.sum((y_true - m1) * (y_pred - m2)) / (np.sqrt(np.sum((y_true - m1) ** 2)) * np.sqrt(np.sum((y_pred - m2) ** 2)))
-            beta = m2 / m1
-            gamma = (np.std(y_pred) / m2) / (np.std(y_true) / m1)
-            return np.round(1 - np.sqrt((r - 1) ** 2 + (beta - 1) ** 2 + (gamma - 1) ** 2), decimal)
-        else:
-            m1, m2 = np.mean(y_true, axis=0), np.mean(y_pred, axis=0)
-            num_r = np.sum((y_true - m1) * (y_pred - m2), axis=0)
-            den_r = np.sqrt(np.sum((y_true - m1) ** 2, axis=0)) * np.sqrt(np.sum((y_pred - m2) ** 2, axis=0))
-            r = num_r / den_r
-            beta = m2 / m1
-            gamma = (np.std(y_pred, axis=0) / m2) / (np.std(y_true, axis=0) / m1)
-            result = 1 - np.sqrt((r - 1) ** 2 + (beta - 1) ** 2 + (gamma - 1) ** 2)
-            return self.get_multi_output_result(result, multi_output, decimal)
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+        m1, m2 = np.mean(y_true, axis=0), np.mean(y_pred, axis=0)
+        num_r = np.sum((y_true - m1) * (y_pred - m2), axis=0)
+        den_r = np.sqrt(np.sum((y_true - m1) ** 2, axis=0)) * np.sqrt(np.sum((y_pred - m2) ** 2, axis=0))
+        r = num_r / den_r
+        beta = m2 / m1
+        gamma = (np.std(y_pred, axis=0) / m2) / (np.std(y_true, axis=0) / m1)
+        result = 1. - np.sqrt((r - 1.) ** 2 + (beta - 1.) ** 2 + (gamma - 1.) ** 2)
+        return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def prediction_of_change_in_direction(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
+    def prediction_of_change_in_direction(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
         """
         Prediction of Change in Direction (PCD): Best possible score is 1.0, bigger value is better. Range = [0, 1]
 
@@ -725,31 +676,22 @@ class RegressionMetric(Evaluator):
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
             multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+            force_finite (bool): When result is not finite, it can be NaN or Inf.
+                Their result will be replaced by `finite_value` (Optional, default = True)
+            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
 
         Returns:
             result (float, int, np.ndarray): PCD metric for single column or multiple columns
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
-        if positive:
-            y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        if one_dim:
-            d = np.diff(y_true)
-            dp = np.diff(y_pred)
-            return np.round(np.mean(np.sign(d) == np.sign(dp)), decimal)
-        else:
-            d = np.diff(y_true, axis=0)
-            dp = np.diff(y_pred, axis=0)
-            result = np.mean(np.sign(d) == np.sign(dp), axis=0)
-            return self.get_multi_output_result(result, multi_output, decimal)
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+        d = np.diff(y_true, axis=0)
+        dp = np.diff(y_pred, axis=0)
+        result = np.mean(np.sign(d) == np.sign(dp), axis=0)
+        return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def cross_entropy(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=True, **kwargs):
+    def cross_entropy(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=-1., **kwargs):
         """
-        Cross Entropy (CE) or Entropy (E): Range = (-inf, 0]. Can't give comment about this one
+        Cross Entropy (CE): Range = (-inf, 0]. Can't give any comment about this one
 
         Notes
         ~~~~~
@@ -760,24 +702,18 @@ class RegressionMetric(Evaluator):
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
             multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = True)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = True)
+            force_finite (bool): When result is not finite, it can be NaN or Inf.
+                Their result will be replaced by `finite_value` (Optional, default = True)
+            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
 
         Returns:
             result (float, int, np.ndarray): CE metric for single column or multiple columns
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 1)
-        else:
-            y_pred[y_pred == 0] = self.EPSILON
-        if positive:
-            y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        entropy = ru.calculate_entropy(y_true, y_pred, one_dim)
-        return np.round(entropy, decimal) if one_dim else self.get_multi_output_result(entropy, multi_output, decimal)
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+        result = ru.calculate_entropy(y_true, y_pred)
+        return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def kullback_leibler_divergence(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, **kwargs):
+    def kullback_leibler_divergence(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=-1., **kwargs):
         """
         Kullback-Leibler Divergence (KLD): Best possible score is 0.0 . Range = (-inf, +inf)
         Link: https://machinelearningmastery.com/divergence-between-probability-distributions/
@@ -786,26 +722,18 @@ class RegressionMetric(Evaluator):
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
             multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = True)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = True)
+            force_finite (bool): When result is not finite, it can be NaN or Inf.
+                Their result will be replaced by `finite_value` (Optional, default = True)
+            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
 
         Returns:
             result (float, int, np.ndarray): KLD metric (bits) for single column or multiple columns
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 1)
-        else:
-            y_pred[y_pred == 0] = self.EPSILON
-        y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        if one_dim:
-            return np.round(np.sum(y_true * np.log2(y_true / y_pred)), decimal)
-        else:
-            score = np.sum(y_true * np.log2(y_true / y_pred), axis=0)
-            return self.get_multi_output_result(score, multi_output, decimal)
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+        result = np.sum(y_true * np.log2(y_true / y_pred), axis=0)
+        return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def jensen_shannon_divergence(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=True, **kwargs):
+    def jensen_shannon_divergence(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=1., **kwargs):
         """
         Jensen-Shannon Divergence (JSD): Best possible score is 0.0 (identical), smaller value is better . Range = [0, +inf)
         Link: https://machinelearningmastery.com/divergence-between-probability-distributions/
@@ -814,57 +742,39 @@ class RegressionMetric(Evaluator):
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
             multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = True)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = True)
+            force_finite (bool): When result is not finite, it can be NaN or Inf.
+                Their result will be replaced by `finite_value` (Optional, default = True)
+            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
 
         Returns:
             result (float, int, np.ndarray): JSD metric (bits) for single column or multiple columns
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
-        if positive:
-            y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        if one_dim:
-            m = 0.5 * (y_true + y_pred)
-            score = 0.5 * np.sum(y_true * np.log2(y_true / m)) + 0.5 * np.sum(y_pred * np.log2(y_pred / m))
-            return np.round(score, decimal)
-        else:
-            m = 0.5 * (y_true + y_pred)
-            score = 0.5 * np.sum(y_true * np.log2(y_true / m), axis=0) + 0.5 * np.sum(y_pred * np.log2(y_pred / m), axis=0)
-            return self.get_multi_output_result(score, multi_output, decimal)
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+        m = 0.5 * (y_true + y_pred)
+        result = 0.5 * np.sum(y_true * np.log2(y_true / m), axis=0) + 0.5 * np.sum(y_pred * np.log2(y_pred / m), axis=0)
+        return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def variance_accounted_for(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
+    def variance_accounted_for(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
         """
         Variance Accounted For between 2 signals (VAF): Best possible score is 100% (identical signal), bigger value is better. Range = (-inf, 100%]
-
         Link: https://www.dcsc.tudelft.nl/~jwvanwingerden/lti/doc/html/vaf.html
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
             multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+            force_finite (bool): When result is not finite, it can be NaN or Inf.
+                Their result will be replaced by `finite_value` (Optional, default = True)
+            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
 
         Returns:
             result (float, int, np.ndarray): VAF metric for single column or multiple columns
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 0)
-        if positive:
-            y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+        result = (1 - np.var(y_true - y_pred, axis=0) / np.var(y_true, axis=0)) * 100
+        return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-        if one_dim:
-            return np.round((1 - np.var(y_true - y_pred) / np.var(y_true)) * 100, decimal)
-        else:
-            result = (1 - np.var(y_true - y_pred, axis=0) / np.var(y_true, axis=0)) * 100
-            return self.get_multi_output_result(result, multi_output, decimal)
-
-    def relative_absolute_error(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
+    def relative_absolute_error(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
         """
         Relative Absolute Error (RAE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
@@ -877,28 +787,20 @@ class RegressionMetric(Evaluator):
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
             multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+            force_finite (bool): When result is not finite, it can be NaN or Inf.
+                Their result will be replaced by `finite_value` (Optional, default = True)
+            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
 
         Returns:
             result (float, int, np.ndarray): RAE metric for single column or multiple columns
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
-        if positive:
-            y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        if one_dim:
-            numerator = np.power(np.sum((y_pred - y_true)**2), 1/2)
-            denominator = np.power(np.sum(y_true**2), 1/2)
-            return np.round(numerator/denominator, decimal)
-        else:
-            numerator = np.power(np.sum((y_pred - y_true) ** 2, axis=0), 1 / 2)
-            denominator = np.power(np.sum(y_true ** 2, axis=0), 1 / 2)
-            return self.get_multi_output_result(numerator/denominator, multi_output, decimal)
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+        numerator = np.power(np.sum((y_pred - y_true) ** 2, axis=0), 1 / 2.)
+        denominator = np.power(np.sum(y_true ** 2, axis=0), 1 / 2.)
+        result = numerator/denominator
+        return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def a10_index(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=False, **kwargs):
+    def a10_index(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
         """
         A10 index (A10): Best possible score is 1.0, bigger value is better. Range = [0, 1]
 
@@ -912,31 +814,20 @@ class RegressionMetric(Evaluator):
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
             multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = True)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+            force_finite (bool): When result is not finite, it can be NaN or Inf.
+                Their result will be replaced by `finite_value` (Optional, default = True)
+            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
 
         Returns:
             result (float, int, np.ndarray): A10 metric for single column or multiple columns
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 1)
-        else:
-            y_pred[y_pred == 0] = self.EPSILON
-        if positive:
-            y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+        div = y_true / y_pred
+        div = np.where(np.logical_and(div >= 0.9, div <= 1.1), 1, 0)
+        result = np.mean(div, axis=0)
+        return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-        if one_dim:
-            div = y_true / y_pred
-            div = np.where(np.logical_and(div >= 0.9, div <= 1.1), 1, 0)
-            return np.round(np.mean(div), decimal)
-        else:
-            div = y_true / y_pred
-            div = np.where(np.logical_and(div >= 0.9, div <= 1.1), 1, 0)
-            return self.get_multi_output_result(np.mean(div, axis=0), multi_output, decimal)
-
-    def a20_index(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=False, **kwargs):
+    def a20_index(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
         """
         A20 index (A20): Best possible score is 1.0, bigger value is better. Range = [0, 1]
 
@@ -949,30 +840,20 @@ class RegressionMetric(Evaluator):
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
             multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = True)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+            force_finite (bool): When result is not finite, it can be NaN or Inf.
+                Their result will be replaced by `finite_value` (Optional, default = True)
+            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
 
         Returns:
             result (float, int, np.ndarray): A20 metric for single column or multiple columns
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 1)
-        else:
-            y_pred[y_pred == 0] = self.EPSILON
-        if positive:
-            y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        if one_dim:
-            div = y_true / y_pred
-            div = np.where(np.logical_and(div >= 0.8, div <= 1.2), 1, 0)
-            return np.round(np.mean(div), decimal)
-        else:
-            div = y_true / y_pred
-            div = np.where(np.logical_and(div >= 0.8, div <= 1.2), 1, 0)
-            return self.get_multi_output_result(np.mean(div, axis=0), multi_output, decimal)
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+        div = y_true / y_pred
+        div = np.where(np.logical_and(div >= 0.8, div <= 1.2), 1, 0)
+        result = np.mean(div, axis=0)
+        return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def a30_index(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=True, positive=False, **kwargs):
+    def a30_index(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
         """
         A30 index (A30): Best possible score is 1.0, bigger value is better. Range = [0, 1]
 
@@ -982,31 +863,20 @@ class RegressionMetric(Evaluator):
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
             multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = True)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+            force_finite (bool): When result is not finite, it can be NaN or Inf.
+                Their result will be replaced by `finite_value` (Optional, default = True)
+            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
 
         Returns:
             result (float, int, np.ndarray): A30 metric for single column or multiple columns
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 1)
-        else:
-            y_pred[y_pred == 0] = self.EPSILON
-        if positive:
-            y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        if one_dim:
-            div = y_true / y_pred
-            div = np.where(np.logical_and(div >= 0.7, div <= 1.3), 1, 0)
-            return np.round(np.mean(div), decimal)
-        else:
-            div = y_true / y_pred
-            div = np.where(np.logical_and(div >= 0.7, div <= 1.3), 1, 0)
-            return self.get_multi_output_result(np.mean(div, axis=0), multi_output, decimal)
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+        div = y_true / y_pred
+        div = np.where(np.logical_and(div >= 0.7, div <= 1.3), 1, 0)
+        result = np.mean(div, axis=0)
+        return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def normalized_root_mean_square_error(self, y_true=None, y_pred=None, model=0, multi_output="raw_values", decimal=None,
-                                          non_zero=False, positive=False, **kwargs):
+    def normalized_root_mean_square_error(self, y_true=None, y_pred=None, model=0, multi_output="raw_values", force_finite=True, finite_value=1., **kwargs):
         """
         Normalized Root Mean Square Error (NRMSE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
@@ -1017,43 +887,26 @@ class RegressionMetric(Evaluator):
             y_pred (tuple, list, np.ndarray): The prediction values
             model (int): Normalize RMSE by different ways, (Optional, default = 0, valid values = [0, 1, 2, 3]
             multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+            force_finite (bool): When result is not finite, it can be NaN or Inf.
+                Their result will be replaced by `finite_value` (Optional, default = True)
+            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
 
         Returns:
             result (float, int, np.ndarray): NRMSE metric for single column or multiple columns
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
-        if positive:
-            y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        if one_dim:
-            rmse = np.sqrt(np.mean((y_pred - y_true) ** 2))
-            if model == 1:
-                result = rmse / np.mean(y_pred)
-            elif model == 2:
-                result = rmse / (np.max(y_true) - np.min(y_true))
-            elif model == 3:
-                result = np.sqrt(np.sum(np.log((y_pred + 1) / (y_true + 1)) ** 2) / len(y_true))
-            else:
-                result = rmse / y_pred.std()
-            return np.round(result, decimal)
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+        rmse = np.sqrt(np.sum((y_pred - y_true) ** 2, axis=0) / len(y_true))
+        if model == 1:
+            result = rmse / np.mean(y_pred, axis=0)
+        elif model == 2:
+            result = rmse / (np.max(y_true, axis=0) - np.min(y_true, axis=0))
+        elif model == 3:
+            result = np.sqrt(np.sum(np.log((y_pred + 1) / (y_true + 1)) ** 2, axis=0) / len(y_true))
         else:
-            rmse = np.sqrt(np.sum((y_pred - y_true) ** 2, axis=0) / len(y_true))
-            if model == 1:
-                result = rmse / np.mean(y_pred, axis=0)
-            elif model == 2:
-                result = rmse / (np.max(y_true, axis=0) - np.min(y_true, axis=0))
-            elif model == 3:
-                result = np.sqrt(np.sum(np.log((y_pred + 1) / (y_true + 1)) ** 2, axis=0) / len(y_true))
-            else:
-                result = rmse / y_pred.std(axis=0)
-            return self.get_multi_output_result(result, multi_output, decimal)
+            result = rmse / y_pred.std(axis=0)
+        return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def residual_standard_error(self, y_true=None, y_pred=None, n_paras=None, multi_output="raw_values", decimal=None,
-                                non_zero=False, positive=False, **kwargs):
+    def residual_standard_error(self, y_true=None, y_pred=None, n_paras=None, multi_output="raw_values", force_finite=True, finite_value=1., **kwargs):
         """
         Residual Standard Error (RSE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
@@ -1066,31 +919,20 @@ class RegressionMetric(Evaluator):
             y_pred (tuple, list, np.ndarray): The prediction values
             n_paras (int): The number of model's parameters
             multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+            force_finite (bool): When result is not finite, it can be NaN or Inf.
+                Their result will be replaced by `finite_value` (Optional, default = True)
+            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
 
         Returns:
             result (float, int, np.ndarray): RSE metric for single column or multiple columns
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if n_paras is None:
-            n_paras = len(y_true) / 2
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 1)
-        if positive:
-            y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        if one_dim:
-            ss_residuals = np.sum((y_true - y_pred)**2)
-            df_residuals = len(y_true) - n_paras - 1
-            return np.round(np.sqrt(ss_residuals / df_residuals), decimal)
-        else:
-            ss_residuals = np.sum((y_true - y_pred) ** 2, axis=0)
-            df_residuals = len(y_true) - n_paras - 1
-            score = np.sqrt(ss_residuals / df_residuals)
-            return self.get_multi_output_result(score, multi_output, decimal)
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+        ss_residuals = np.sum((y_true - y_pred) ** 2, axis=0)
+        df_residuals = len(y_true) - n_paras - 1
+        result = np.sqrt(ss_residuals / df_residuals)
+        return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def covariance(self, y_true=None, y_pred=None, sample=False, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
+    def covariance(self, y_true=None, y_pred=None, sample=False, multi_output="raw_values", force_finite=True, finite_value=-10., **kwargs):
         """
         Covariance (COV): There is no best value, bigger value is better. Range = [-inf, +inf)
             + is a measure of the relationship between two random variables
@@ -1107,29 +949,21 @@ class RegressionMetric(Evaluator):
             y_pred (tuple, list, np.ndarray): The prediction values
             sample (bool): sample covariance or population covariance. See the website above for more details
             multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+            force_finite (bool): When result is not finite, it can be NaN or Inf.
+                Their result will be replaced by `finite_value` (Optional, default = True)
+            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
 
         Returns:
             result (float, int, np.ndarray): COV metric for single column or multiple columns
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
         denominator = len(y_true) - 1 if sample else len(y_true)
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 1)
-        if positive:
-            y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        if one_dim:
-            s1 = y_true - np.mean(y_true)
-            s2 = y_pred - np.mean(y_pred)
-            return np.round(np.dot(s1, s2) / denominator, decimal)
-        else:
-            s1 = y_true - np.mean(y_true, axis=0)
-            s2 = y_pred - np.mean(y_pred, axis=0)
-            return self.get_multi_output_result(np.sum(s1 * s2, axis=0) / denominator, multi_output, decimal)
+        s1 = y_true - np.mean(y_true, axis=0)
+        s2 = y_pred - np.mean(y_pred, axis=0)
+        result = np.sum(s1 * s2, axis=0) / denominator
+        return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def correlation(self, y_true=None, y_pred=None, sample=False, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
+    def correlation(self, y_true=None, y_pred=None, sample=False, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
         """
         Correlation (COR): Best possible value = 1, bigger value is better. Range = [-1, +1]
             + measures the strength of the relationship between variables
@@ -1144,31 +978,23 @@ class RegressionMetric(Evaluator):
             y_pred (tuple, list, np.ndarray): The prediction values
             sample (bool): sample covariance or population covariance. See the website above for more details
             multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+            force_finite (bool): When result is not finite, it can be NaN or Inf.
+                Their result will be replaced by `finite_value` (Optional, default = True)
+            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
 
         Returns:
             result (float, int, np.ndarray): COR metric for single column or multiple columns
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
         denominator = len(y_true) - 1 if sample else len(y_true)
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 1)
-        if positive:
-            y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        if one_dim:
-            s1 = y_true - np.mean(y_true)
-            s2 = y_pred - np.mean(y_pred)
-            return np.round((np.dot(s1, s2) / denominator) / (np.std(y_true) * np.std(y_pred)), decimal)
-        else:
-            s1 = y_true - np.mean(y_true, axis=0)
-            s2 = y_pred - np.mean(y_pred, axis=0)
-            cov = np.sum(s1 * s2, axis=0) / denominator
-            den = np.std(y_true, axis=0) * np.std(y_pred, axis=0)
-            return self.get_multi_output_result(cov / den, multi_output, decimal)
+        s1 = y_true - np.mean(y_true, axis=0)
+        s2 = y_pred - np.mean(y_pred, axis=0)
+        cov = np.sum(s1 * s2, axis=0) / denominator
+        den = np.std(y_true, axis=0) * np.std(y_pred, axis=0)
+        result = cov / den
+        return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def efficiency_coefficient(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
+    def efficiency_coefficient(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
         """
         Efficiency Coefficient (EC): Best possible value = 1, bigger value is better. Range = [-inf, +1]
 
@@ -1179,22 +1005,18 @@ class RegressionMetric(Evaluator):
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
             multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+            force_finite (bool): When result is not finite, it can be NaN or Inf.
+                Their result will be replaced by `finite_value` (Optional, default = True)
+            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
 
         Returns:
             result (float, int, np.ndarray): EC metric for single column or multiple columns
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 1)
-        if positive:
-            y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        score = ru.calculate_ec(y_true, y_pred, one_dim)
-        return np.round(score, decimal) if one_dim else self.get_multi_output_result(score, multi_output, decimal)
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+        result = ru.calculate_ec(y_true, y_pred)
+        return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def overall_index(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
+    def overall_index(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
         """
         Overall Index (OI): Best possible value = 1, bigger value is better. Range = [-inf, +1]
 
@@ -1205,28 +1027,20 @@ class RegressionMetric(Evaluator):
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
             multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+            force_finite (bool): When result is not finite, it can be NaN or Inf.
+                Their result will be replaced by `finite_value` (Optional, default = True)
+            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
 
         Returns:
             result (float, int, np.ndarray): OI metric for single column or multiple columns
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 1)
-        if positive:
-            y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        ec = ru.calculate_ec(y_true, y_pred, one_dim)
-        rmse = np.sqrt(ru.calculate_mse(y_true, y_pred, one_dim))
-        if one_dim:
-            score = (1 - rmse / (np.max(y_true) - np.min(y_true)) + ec) / 2.0
-            return np.round(score, decimal)
-        else:
-            score = (1 - rmse / (np.max(y_true, axis=0) - np.min(y_true, axis=0)) + ec) / 2.0
-            return self.get_multi_output_result(score, multi_output, decimal)
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+        ec = ru.calculate_ec(y_true, y_pred)
+        rmse = np.sqrt(ru.calculate_mse(y_true, y_pred))
+        result = (1 - rmse / (np.max(y_true, axis=0) - np.min(y_true, axis=0)) + ec) / 2.0
+        return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def coefficient_of_residual_mass(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
+    def coefficient_of_residual_mass(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=-1.0, **kwargs):
         """
         Coefficient of Residual Mass (CRM): Best possible value = 0.0, smaller value is better. Range = [-inf, +inf]
 
@@ -1237,27 +1051,20 @@ class RegressionMetric(Evaluator):
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
             multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+            force_finite (bool): When result is not finite, it can be NaN or Inf.
+                Their result will be replaced by `finite_value` (Optional, default = True)
+            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
 
         Returns:
             result (float, int, np.ndarray): CRM metric for single column or multiple columns
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 1)
-        if positive:
-            y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        if one_dim:
-            return np.round((np.sum(y_pred) - np.sum(y_true)) / np.sum(y_true), decimal)
-        else:
-            score = (np.sum(y_pred, axis=0) - np.sum(y_true, axis=0)) / np.sum(y_true, axis=0)
-            return self.get_multi_output_result(score, multi_output, decimal)
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+        result = (np.sum(y_pred, axis=0) - np.sum(y_true, axis=0)) / np.sum(y_true, axis=0)
+        return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def gini_coefficient(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
+    def gini_coefficient(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
         """
-        Gini coefficient (Gini): Best possible score is 1, bigger value is better. Range = [0, 1]
+        Gini coefficient (GINI): Best possible score is 1, bigger value is better. Range = [0, 1]
 
         Notes
         ~~~~~
@@ -1268,46 +1075,30 @@ class RegressionMetric(Evaluator):
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
             multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+            force_finite (bool): When result is not finite, it can be NaN or Inf.
+                Their result will be replaced by `finite_value` (Optional, default = True)
+            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
 
         Returns:
             result (float, int, np.ndarray): Gini metric for single column or multiple columns
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
-        if positive:
-            y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        if one_dim:
-            idx_sort = np.argsort(-y_pred)
-            population_delta = 1.0 / len(y_true)
-            accumulated_population_percentage_sum, accumulated_loss_percentage_sum, score = 0, 0, 0
-            total_losses = np.sum(y_true)
-            for i in range(0, len(y_true)):
-                accumulated_loss_percentage_sum += y_true[idx_sort[i]] / total_losses
-                accumulated_population_percentage_sum += population_delta
-                score += accumulated_loss_percentage_sum - accumulated_population_percentage_sum
-            score = score / len(y_true)
-            return np.round(score, decimal)
-        else:
-            col = y_true.shape[1]
-            idx_sort = np.argsort(-y_pred, axis=0)
-            population_delta = 1.0 / len(y_true)
-            accumulated_population_percentage_sum, accumulated_loss_percentage_sum, score = np.zeros(col), np.zeros(col), np.zeros(col)
-            total_losses = np.sum(y_true, axis=0)
-            for i in range(0, col):
-                for j in range(0, len(y_true)):
-                    accumulated_loss_percentage_sum[i] += y_true[idx_sort[j, i], i] / total_losses[i]
-                    accumulated_population_percentage_sum[i] += population_delta
-                    score[i] += accumulated_loss_percentage_sum[i] - accumulated_population_percentage_sum[i]
-            result = score / len(y_true)
-            return self.get_multi_output_result(result, multi_output, decimal)
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+        col = y_true.shape[1]
+        idx_sort = np.argsort(-y_pred, axis=0)
+        population_delta = 1.0 / len(y_true)
+        accumulated_population_percentage_sum, accumulated_loss_percentage_sum, score = np.zeros(col), np.zeros(col), np.zeros(col)
+        total_losses = np.sum(y_true, axis=0)
+        for i in range(0, col):
+            for j in range(0, len(y_true)):
+                accumulated_loss_percentage_sum[i] += y_true[idx_sort[j, i], i] / total_losses[i]
+                accumulated_population_percentage_sum[i] += population_delta
+                score[i] += accumulated_loss_percentage_sum[i] - accumulated_population_percentage_sum[i]
+        result = score / len(y_true)
+        return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def gini_coefficient_wiki(self, y_true=None, y_pred=None, multi_output="raw_values", decimal=None, non_zero=False, positive=False, **kwargs):
+    def gini_coefficient_wiki(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
         """
-        Gini coefficient (Gini): Best possible score is 1, bigger value is better. Range = [0, 1]
+        Gini coefficient (GINI_WIKI): Best possible score is 1, bigger value is better. Range = [0, 1]
 
         Notes
         ~~~~~
@@ -1321,132 +1112,84 @@ class RegressionMetric(Evaluator):
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
             multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
+            force_finite (bool): When result is not finite, it can be NaN or Inf.
+                Their result will be replaced by `finite_value` (Optional, default = True)
+            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
 
         Returns:
             result (float, int, np.ndarray): Gini metric for single column or multiple columns
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
-        if positive:
-            y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        if one_dim:
-            y = np.concatenate((y_true, y_pred), axis=0)
-            score = 0
-            for i in range(0, len(y)):
-                score += np.sum(np.abs(y[i] - y))
-            score = score / (2 * len(y) * np.sum(y))
-            return np.round(score, decimal)
-        else:
-            y = np.concatenate((y_true, y_pred), axis=0)
-            col = y.shape[1]
-            d = len(y)
-            score = np.zeros(col)
-            for k in range(0, col):
-                for i in range(0, d):
-                    for j in range(0, d):
-                        score[k] += np.abs(y[i, k] - y[j, k])
-            result = score / (2 * len(y) ** 2 * np.mean(y, axis=0))
-            return self.get_multi_output_result(result, multi_output, decimal)
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+        y = np.concatenate((y_true, y_pred), axis=0)
+        col = y.shape[1]
+        d = len(y)
+        score = np.zeros(col)
+        for k in range(0, col):
+            for i in range(0, d):
+                for j in range(0, d):
+                    score[k] += np.abs(y[i, k] - y[j, k])
+        result = score / (2 * len(y) ** 2 * np.mean(y, axis=0))
+        return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def single_relative_error(self, y_true=None, y_pred=None, decimal=None, non_zero=True, positive=False, **kwargs):
+    def single_relative_error(self, y_true=None, y_pred=None, **kwargs):
         """
         Relative Error (RE): Best possible score is 0.0, smaller value is better. Range = (-inf, +inf)
-
         Note: Computes the relative error between two numbers, or for element between a pair of list, tuple or numpy arrays.
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = True)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
 
         Returns:
             result (np.ndarray): RE metric
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 0)
-        else:
-            y_true[y_true == 0] = self.EPSILON
-        if positive:
-            y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        return np.round(y_pred / y_true - 1, decimal)
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+        return y_pred / y_true - 1
 
-    def single_absolute_error(self, y_true=None, y_pred=None, decimal=None, non_zero=False, positive=False, **kwargs):
+    def single_absolute_error(self, y_true=None, y_pred=None, **kwargs):
         """
         Absolute Error (AE): Best possible score is 0.0, smaller value is better. Range = (-inf, +inf)
-
         Note: Computes the absolute error between two numbers, or for element between a pair of list, tuple or numpy arrays.
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
 
         Returns:
             result (np.ndarray): AE metric
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
-        if positive:
-            y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        return np.round(np.abs(y_true) - np.abs(y_pred), decimal)
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+        return np.abs(y_true) - np.abs(y_pred)
 
-    def single_squared_error(self, y_true=None, y_pred=None, decimal=None, non_zero=False, positive=False, **kwargs):
+    def single_squared_error(self, y_true=None, y_pred=None, **kwargs):
         """
         Squared Error (SE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
-
         Note: Computes the squared error between two numbers, or for element between a pair of list, tuple or numpy arrays.
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = False)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = False)
 
         Returns:
             result (np.ndarray): SE metric
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 2)
-        if positive:
-            y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        return np.round((y_true - y_pred) ** 2, decimal)
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+        return (y_true - y_pred) ** 2
 
-    def single_squared_log_error(self, y_true=None, y_pred=None, decimal=None, non_zero=True, positive=True, **kwargs):
+    def single_squared_log_error(self, y_true=None, y_pred=None, **kwargs):
         """
         Squared Log Error (SLE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
-
         Note: Computes the squared log error between two numbers, or for element between a pair of list, tuple or numpy arrays.
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
-            decimal (int): The number of fractional parts after the decimal point (Optional, default = 5)
-            non_zero (bool): Remove all rows contain 0 value in y_pred (some methods have denominator is y_pred) (Optional, default = True)
-            positive (bool): Calculate metric based on positive values only or not (Optional, default = True)
 
         Returns:
             result (np.ndarray): SLE metric
         """
-        y_true, y_pred, one_dim, decimal = self.get_processed_data(y_true, y_pred, decimal)
-        if non_zero:
-            y_true, y_pred = du.get_regression_non_zero_data(y_true, y_pred, one_dim, 1)
-        else:
-            y_pred[y_pred == 0] = self.EPSILON
-        if positive:
-            y_true, y_pred = du.get_regression_positive_data(y_true, y_pred, one_dim, 2)
-        return np.round((np.log(y_true) - np.log(y_pred)) ** 2, decimal)
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+        return (np.log(y_true) - np.log(y_pred)) ** 2
 
     EVS = explained_variance_score
     ME = max_error
