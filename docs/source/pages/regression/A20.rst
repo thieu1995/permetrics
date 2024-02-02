@@ -19,6 +19,9 @@ A20 - A20 index
 
 	\text{A20}(y, \hat{y}) = \text{A10}(y, \hat{y}) = \frac{1}{n}\sum_{i=1}^{n} \left\{\begin{array}{ll} 1, & \textrm{if } \frac{|\hat{y}_i - y_i|}{y_i} \leq 0.2\\ 0, & \textrm{otherwise} \end{array}\right.
 
+Latex equation code::
+
+	\text{A20}(y, \hat{y}) = \frac{1}{n}\sum_{i=1}^{n} \left\{\begin{array}{ll} 1, & \textrm{if } \frac{|\hat{y}_i - y_i|}{y_i} \leq 0.2\\ 0, & \textrm{otherwise} \end{array}\right.
 
 
 + a20-index (A20) :cite:`van2023groundwater` evaluated metric by showing the number of samples that fit the prediction values with a deviation of ±20%
@@ -27,12 +30,6 @@ compared to experimental values.
 to 20% of the actual value. A higher A20 score indicates better predictive accuracy, as the model is able to make more accurate predictions that are closer
 to the actual values.
 + Best possible score is 1.0, bigger value is better. Range = [0, 1]
-
-
-Latex equation code::
-
-	\text{A20}(y, \hat{y}) = \frac{1}{n}\sum_{i=1}^{n} \left\{\begin{array}{ll} 1, & \textrm{if } \frac{|\hat{y}_i - y_i|}{y_i} \leq 0.2\\ 0, & \textrm{otherwise} \end{array}\right.
-
 
 
 Example to use A20 metric:
@@ -47,12 +44,12 @@ Example to use A20 metric:
 	y_true = array([3, -0.5, 2, 7])
 	y_pred = array([2.5, 0.0, 2, 8])
 
-	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+	evaluator = RegressionMetric(y_true, y_pred)
 	print(evaluator.a20_index())
 
 	## For > 1-D array
 	y_true = array([[0.5, 1], [-1, 1], [7, -6]])
 	y_pred = array([[0, 2], [-1, 2], [8, -5]])
 
-	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+	evaluator = RegressionMetric(y_true, y_pred)
 	print(evaluator.A20(multi_output="raw_values"))

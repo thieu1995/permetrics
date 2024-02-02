@@ -19,7 +19,7 @@ EVS - Explained Variance Score
 
     EVS = 1 - \frac{Var\{ y_{true} - y_{pred} \}}{Var \{ y_{true} \} }
 
-`Reference equation: <https://www.oreilly.com/library/view/mastering-python-for/9781789346466/d1ac368a-6890-45eb-b39c-2fa97d23d640.xhtml>`_
++ `Link to equation <https://www.oreilly.com/library/view/mastering-python-for/9781789346466/d1ac368a-6890-45eb-b39c-2fa97d23d640.xhtml>`_
 
 The given math formula defines the explained variance score (EVS) :cite:`nguyen2020eo`, which is a metric used in regression analysis to evaluate the
 performance of a model. The formula computes the ratio of the variance of the difference between the true values y_true and the predicted values y_pred to

@@ -21,22 +21,21 @@ R2 - Coefficient of Determination
 
 where :math:`\bar{y} = \frac{1}{N} \sum_{i=1}^{N} y_i` and :math:`\sum_{i=1}^{N} (y_i - \hat{y}_i)^2 = \sum_{i=1}^{N} \epsilon_i^2`
 
+Latex equation code::
+
+	R2(y, \hat{y}) = 1 - \frac{\sum_{i=1}^{N} (y_i - \hat{y}_i)^2}{\sum_{i=1}^{N} (y_i - \bar{y})^2}
+
 
 + Coefficient of Determination (COD/R2) :cite:`nguyen2021nqsv`: Best possible score is 1.0, bigger value is better. Range = (-inf, 1]
-+ https://scikit-learn.org/stable/modules/model_evaluation.html#r2-score
++ `Link to equation <https://scikit-learn.org/stable/modules/model_evaluation.html#r2-score>`_
 + Scikit-learn and other websites denoted COD as R^2 (or R squared), it leads to the misunderstanding of R^2 in which R is Pearson’s Correlation Coefficient.
 + We should denote it as COD or R2 only.
-
 
 + It represents the proportion of variance (of y) that has been explained by the independent variables in the model. It provides an indication of goodness of
 fit and therefore a measure of how well unseen samples are likely to be predicted by the model, through the proportion of explained variance.
 + As such variance is dataset dependent, R2 may not be meaningfully comparable across different datasets.
 + Best possible score is 1.0 and it can be negative (because the model can be arbitrarily worse). A constant model that always predicts the expected value of
 y, disregarding the input features, would get a R2 score of 0.0.
-
-Latex equation code::
-
-	R2(y, \hat{y}) = 1 - \frac{\sum_{i=1}^{N} (y_i - \hat{y}_i)^2}{\sum_{i=1}^{N} (y_i - \bar{y})^2}
 
 
 Example to use R2 metric:
@@ -51,12 +50,12 @@ Example to use R2 metric:
 	y_true = array([3, -0.5, 2, 7])
 	y_pred = array([2.5, 0.0, 2, 8])
 
-	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+	evaluator = RegressionMetric(y_true, y_pred)
 	print(evaluator.coefficient_of_determination())
 
 	## For > 1-D array
 	y_true = array([[0.5, 1], [-1, 1], [7, -6]])
 	y_pred = array([[0, 2], [-1, 2], [8, -5]])
 
-	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+	evaluator = RegressionMetric(y_true, y_pred)
 	print(evaluator.R2(multi_output="raw_values"))

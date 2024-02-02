@@ -41,7 +41,7 @@ been widely used in hydrology and water resources engineering to evaluate the pe
 recharge, and water quality parameters.
 
 + Best possible score is 1, bigger value is better. Range = (-inf, 1]
-+ https://rstudio-pubs-static.s3.amazonaws.com/433152_56d00c1e29724829bad5fc4fd8c8ebff.html
++ `Link to equation <https://rstudio-pubs-static.s3.amazonaws.com/433152_56d00c1e29724829bad5fc4fd8c8ebff.html>`_
 
 
 Example to use KGE metric:
@@ -56,12 +56,12 @@ Example to use KGE metric:
 	y_true = array([3, -0.5, 2, 7])
 	y_pred = array([2.5, 0.0, 2, 8])
 
-	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+	evaluator = RegressionMetric(y_true, y_pred)
 	print(evaluator.kling_gupta_efficiency())
 
 	## For > 1-D array
 	y_true = array([[0.5, 1], [-1, 1], [7, -6]])
 	y_pred = array([[0, 2], [-1, 2], [8, -5]])
 
-	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+	evaluator = RegressionMetric(y_true, y_pred)
 	print(evaluator.KGE(multi_output="raw_values"))

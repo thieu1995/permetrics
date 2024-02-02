@@ -27,8 +27,8 @@ The MAPE is expressed as a percentage, and a commonly used benchmark for a good 
 depending on the specific application and industry. The MAPE has a range of [0, +infinity), with a best possible score of 0.0, indicating perfect forecast
 accuracy. A larger MAPE indicates a larger average percentage difference between the forecasted and actual values, with infinite MAPE indicating a complete
 failure of the forecasting model.
-
 + `Link equation <https://ibf.org/knowledge/glossary/mape-mean-absolute-percentage-error-174>`_
+
 
 Example to use MAPE metric:
 

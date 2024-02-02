@@ -27,8 +27,8 @@ Latex equation code::
 
 The NSE :cite:`xie2021predicting` is calculated as the ratio of the mean squared error between the observed and simulated streamflow to the variance of the
 observed streamflow. The NSE ranges between -inf and 1, with a value of 1 indicating perfect agreement between the observed and simulated streamflow.
-
 + `Link to equation <https://agrimetsoft.com/calculators/Nash%20Sutcliffe%20model%20Efficiency%20coefficient>`_
+
 
 Example to use NSE metric:
 

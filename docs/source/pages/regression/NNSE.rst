@@ -32,7 +32,7 @@ commonly used in hydrology and water resources engineering to evaluate the perfo
 performance of different models.
 
 + Normalize Nash-Sutcliffe Efficiency (NNSE): Best possible score is 1.0, greater value is better. Range = [0, 1]
-+ `Link text <https://agrimetsoft.com/calculators/Nash%20Sutcliffe%20model%20Efficiency%20coefficient>`_
++ `Link to equation <https://agrimetsoft.com/calculators/Nash%20Sutcliffe%20model%20Efficiency%20coefficient>`_
 
 
 Example to use NNSE metric:
