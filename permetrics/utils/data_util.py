@@ -109,9 +109,9 @@ def format_classification_data(y_true: np.ndarray, y_pred: np.ndarray):
             elif np.issubdtype(y_true.dtype, str) and np.issubdtype(y_pred.dtype, str):
                 var_type = "string"
                 if y_true.ndim > 1:
-                    raise ValueError("y_true and y_pred have ndim > 1 need to be a number.")
+                    raise ValueError("y_true and y_pred with ndim > 1 need to have data type as number.")
             else:
-                raise TypeError("y_true and y_pred need to have the same type.")
+                raise TypeError(f"y_true and y_pred need to have the same data type. {y_true.dtype} != {y_pred.dtype}")
             unique_true, unique_pred = sorted(np.unique(y_true)), sorted(np.unique(y_pred))
             if len(unique_pred) <= len(unique_true) and np.isin(unique_pred, unique_true).all():
                 binary = len(unique_true) == 2
@@ -126,9 +126,9 @@ def format_classification_data(y_true: np.ndarray, y_pred: np.ndarray):
                     binary = len(np.unique(y_true)) == 2
                     return y_true, y_pred, binary, var_type
                 else:
-                    raise TypeError("When y_true and y_pred have the different ndim, y_pred should have numeric type.")
+                    raise TypeError("y_true and y_pred have the different ndim, data type of y_pred should be numeric.")
             else:
-                raise ValueError("y_true has ndim > 1 and data type is string. Convert y_true to 1-D vector.")
+                raise ValueError("y_true has ndim > 1 and data type is string. You need to convert y_true to 1-D vector.")
 
 
 def format_y_score(y_true: np.ndarray, y_score: np.ndarray):

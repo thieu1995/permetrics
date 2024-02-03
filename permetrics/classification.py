@@ -63,8 +63,8 @@ class ClassificationMetric(Evaluator):
         "BSL": {"type": "min", "range": "[0, 1]", "best": "0"}
     }
 
-    def __init__(self, y_true=None, y_pred=None, decimal=5, **kwargs):
-        super().__init__(y_true, y_pred, decimal, **kwargs)
+    def __init__(self, y_true=None, y_pred=None, **kwargs):
+        super().__init__(y_true, y_pred, **kwargs)
         if kwargs is None: kwargs = {}
         self.set_keyword_arguments(kwargs)
         self.binary = True
@@ -85,20 +85,17 @@ class ClassificationMetric(Evaluator):
                 print(f"Metric {name}: {ClassificationMetric.SUPPORT[name]}")
             return ClassificationMetric.SUPPORT[name]
 
-    def get_processed_data(self, y_true=None, y_pred=None, decimal=None):
+    def get_processed_data(self, y_true=None, y_pred=None):
         """
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
-            decimal (int, None): The number of fractional parts after the decimal point
 
         Returns:
             y_true_final: y_true used in evaluation process.
             y_pred_final: y_pred used in evaluation process
             one_dim: is y_true has 1 dimensions or not
-            decimal: The number of fractional parts after the decimal point
         """
-        decimal = self.decimal if decimal is None else decimal
         if (y_true is not None) and (y_pred is not None):
             y_true, y_pred, binary, representor = du.format_classification_data(y_true, y_pred)
         else:
@@ -106,22 +103,19 @@ class ClassificationMetric(Evaluator):
                 y_true, y_pred, binary, representor = du.format_classification_data(self.y_true, self.y_pred)
             else:
                 raise ValueError("y_true or y_pred is None. You need to pass y_true and y_pred to object creation or function called.")
-        return y_true, y_pred, binary, representor, decimal
+        return y_true, y_pred, binary, representor
 
-    def get_processed_data2(self, y_true=None, y_pred=None, decimal=None):
+    def get_processed_data2(self, y_true=None, y_pred=None):
         """
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction scores
-            decimal (int, None): The number of fractional parts after the decimal point
 
         Returns:
             y_true_final: y_true used in evaluation process.
             y_pred_final: y_pred used in evaluation process
             one_dim: is y_true has 1 dimensions or not
-            decimal: The number of fractional parts after the decimal point
         """
-        decimal = self.decimal if decimal is None else decimal
         if (y_true is not None) and (y_pred is not None):
             y_true, y_pred, binary, representor = du.format_y_score(y_true, y_pred)
         else:
@@ -129,7 +123,7 @@ class ClassificationMetric(Evaluator):
                 y_true, y_pred, binary, representor = du.format_y_score(self.y_true, self.y_pred)
             else:
                 raise ValueError("y_true or y_pred is None. You need to pass y_true and y_pred to object creation or function called.")
-        return y_true, y_pred, binary, representor, decimal
+        return y_true, y_pred, binary, representor
 
     def confusion_matrix(self, y_true=None, y_pred=None, labels=None, normalize=None, **kwargs):
         """
@@ -146,11 +140,11 @@ class ClassificationMetric(Evaluator):
             imap (dict): a map between label and index of confusion matrix
             imap_count (dict): a map between label and number of true label in y_true
         """
-        y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal=None)
+        y_true, y_pred, binary, representor = self.get_processed_data(y_true, y_pred)
         matrix, imap, imap_count = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize)
         return matrix, imap, imap_count
 
-    def precision_score(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None, **kwargs):
+    def precision_score(self, y_true=None, y_pred=None, labels=None, average="macro", **kwargs):
         """
         Generate precision score for multiple classification problem
         Higher is better (Best = 1), Range = [0, 1]
@@ -169,12 +163,10 @@ class ClassificationMetric(Evaluator):
                 ``'weighted'``:
                     Calculate metrics for each label, and find their average, weighted by support (the number of true instances for each label).
 
-            decimal (int): The number of fractional parts after the decimal point
-
         Returns:
             precision (float, dict): the precision score
         """
-        y_true, y_pred, binary, representor, decimal = self.get_processed_data(y_true, y_pred, decimal)
+        y_true, y_pred, binary, representor = self.get_processed_data(y_true, y_pred)
         matrix, imap, imap_count = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
         metrics = cu.calculate_single_label_metric(matrix, imap, imap_count)
 
@@ -184,14 +176,14 @@ class ClassificationMetric(Evaluator):
         if average == "micro":
             tp_global = np.sum(np.diag(matrix))
             fp_global = fn_global = np.sum(matrix) - tp_global
-            precision = np.round(tp_global / (tp_global + fp_global), decimal)
+            result = tp_global / (tp_global + fp_global)
         elif average == "macro":
-            precision = np.mean(list_precision)
+            result = np.mean(list_precision)
         elif average == "weighted":
-            precision = np.dot(list_weights, list_precision) / np.sum(list_weights)
+            result = np.dot(list_weights, list_precision) / np.sum(list_weights)
         else:
-            precision = dict([(label, np.round(item["precision"], decimal)) for label, item in metrics.items()])
-        return precision if type(precision) == dict else np.round(precision, decimal)
+            result = dict([(label, item["precision"]) for label, item in metrics.items()])
+        return result
 
     def negative_predictive_value(self, y_true=None, y_pred=None, labels=None, average="macro", decimal=None, **kwargs):
         """
