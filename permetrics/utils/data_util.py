@@ -99,6 +99,13 @@ def format_classification_data(y_true: np.ndarray, y_pred: np.ndarray):
     else:
         ## Remove all dimensions of size 1
         y_true, y_pred = np.squeeze(np.asarray(y_true)), np.squeeze(np.asarray(y_pred))
+        if np.issubdtype(y_true.dtype, np.number):
+            if np.isnan(y_true).any() or np.isinf(y_true).any():
+                raise ValueError(f"Invalid y_true. It contains NaN or Inf value.")
+        if np.issubdtype(y_pred.dtype, np.number):
+            if np.isnan(y_pred).any() or np.isinf(y_pred).any():
+                raise ValueError(f"Invalid y_pred. It contains NaN or Inf value.")
+
         if y_true.ndim == y_pred.ndim:
             if np.issubdtype(y_true.dtype, np.number) and np.issubdtype(y_pred.dtype, np.number):
                 var_type = "number"
@@ -116,17 +123,26 @@ def format_classification_data(y_true: np.ndarray, y_pred: np.ndarray):
             if len(unique_pred) <= len(unique_true) and np.isin(unique_pred, unique_true).all():
                 binary = len(unique_true) == 2
             else:
-                raise ValueError("Existed at least one new label in y_pred.")
+                raise ValueError(f"Invalid y_pred, existed at least one new label in y_pred.")
             return y_true, y_pred, binary, var_type
         else:
-            if y_true.ndim == 1 and np.issubdtype(y_true.dtype, np.number):
-                if np.issubdtype(y_pred.dtype, np.number):
-                    y_pred = y_pred.argmax(axis=1)
-                    var_type = "number"
-                    binary = len(np.unique(y_true)) == 2
-                    return y_true, y_pred, binary, var_type
+            if np.issubdtype(y_true.dtype, np.number):
+                if y_true.ndim == 1:
+                    if np.issubdtype(y_pred.dtype, np.number):
+                        y_pred = y_pred.argmax(axis=1)
+                        var_type = "number"
+                        binary = len(np.unique(y_true)) == 2
+                        return y_true, y_pred, binary, var_type
+                    else:
+                        raise TypeError("Invalid y_pred, it should have data type as numeric.")
                 else:
-                    raise TypeError("y_true and y_pred have the different ndim, data type of y_pred should be numeric.")
+                    y_true = y_true.argmax(axis=1)
+                    if np.issubdtype(y_pred.dtype, np.number):
+                        var_type = "number"
+                        binary = len(np.unique(y_true)) == 2
+                        return y_true, y_pred, binary, var_type
+                    else:
+                        raise TypeError("Invalid y_pred, it should have data type as numeric.")
             else:
                 raise ValueError("y_true has ndim > 1 and data type is string. You need to convert y_true to 1-D vector.")
 
