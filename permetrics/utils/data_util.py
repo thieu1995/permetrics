@@ -136,24 +136,34 @@ def format_y_score(y_true: np.ndarray, y_score: np.ndarray):
         raise TypeError("y_true and y_score must be lists, tuples or numpy arrays.")
     else:
         y_true, y_score = np.squeeze(np.asarray(y_true)), np.squeeze(np.asarray(y_score))
-        if y_true.ndim == 1:
-            binary = len(np.unique(y_true)) == 2
-            if not np.issubdtype(y_true.dtype, np.number):
-                le = LabelEncoder()
-                y_true = le.fit_transform(y_true).ravel()
-            if np.issubdtype(y_score.dtype, np.number):
-                return y_true, y_score, binary, "number"
-        elif y_true.ndim == 2:
-            if not np.issubdtype(y_true.dtype, np.number):
-                raise TypeError("The data type of y_true must be number when ndim = 2.")
-            y_true = np.argmax(y_true, axis=1)
-            if y_score.ndim == 2 and np.issubdtype(y_score.dtype, np.number):
-                binary = len(np.unique(y_true)) == 2
-                return y_true, y_score, binary, "number"
+        if y_true.ndim > 1:
+            if np.issubdtype(y_true.dtype, np.number):
+                y_true = y_true.argmax(axis=1)
             else:
-                raise TypeError("y_score must have two dimensions and data type is number.")
+                raise TypeError(f"Invalid y_true. Its data type should be number and its shape is 1D vector")
+        var_type = "string" if np.issubdtype(y_true.dtype, str) else "number"
+        binary = len(np.unique(y_true)) == 2
+        le = LabelEncoder()
+        y_true = le.fit_transform(y_true).ravel()
+
+        if np.issubdtype(y_score.dtype, str) and y_score.ndim == 1:
+            y_score = le.transform(y_score).ravel()
+            y_score = np.eye(np.unique(y_true).size)[y_score]
+            return y_true, y_score, binary, var_type
+        elif np.issubdtype(y_score.dtype, np.number):
+            if y_score.ndim == 1:
+                y_score = le.transform(y_score).ravel()
+                y_score = np.eye(np.unique(y_true).size)[y_score]
+                return y_true, y_score, binary, var_type
+            elif y_score.ndim == 2:
+                if len(np.unique(y_true)) == y_score.shape[1]:
+                    return y_true, y_score, binary, var_type
+                else:
+                    raise TypeError(f"Invalid y_score. It should has the number of columns = {len(np.unique(y_true))}")
+            else:
+                raise TypeError(f"Invalid y_score. It should has shape of 1 or 2 dimensions")
         else:
-            raise ValueError("y_true should have two dimensions only.")
+            raise TypeError(f"Invalid y_true and y_score. Y_true data type should be number and y_score data type should be 1-hot matrix.")
 
 
 def is_unique_labels_consecutive_and_start_zero(vector):
