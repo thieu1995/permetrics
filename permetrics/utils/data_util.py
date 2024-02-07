@@ -136,6 +136,13 @@ def format_y_score(y_true: np.ndarray, y_score: np.ndarray):
         raise TypeError("y_true and y_score must be lists, tuples or numpy arrays.")
     else:
         y_true, y_score = np.squeeze(np.asarray(y_true)), np.squeeze(np.asarray(y_score))
+        if np.issubdtype(y_true.dtype, np.number):
+            if np.isnan(y_true).any() or np.isinf(y_true).any():
+                raise ValueError(f"Invalid y_true. It contains NaN or Inf value.")
+        if np.issubdtype(y_score.dtype, np.number):
+            if np.isnan(y_score).any() or np.isinf(y_score).any():
+                raise ValueError(f"Invalid y_score. It contains NaN or Inf value.")
+
         if y_true.ndim > 1:
             if np.issubdtype(y_true.dtype, np.number):
                 y_true = y_true.argmax(axis=1)
