@@ -627,7 +627,6 @@ class ClassificationMetric(Evaluator):
         Args:
             y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
             y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
-            average (str, None): {'macro', 'weighted'} or None, default="macro"
 
         Returns:
             float, dict: The Gini index
