@@ -132,21 +132,21 @@ def compute_confusion_matrix(y_true, y_pred, normalize=False):
     return res
 
 
-def calculate_sum_squared_error_index(X=None, y_pred=None, decimal=6):
+def calculate_sum_squared_error_index(X=None, y_pred=None):
     centers, _ = compute_barycenters(X, y_pred)
     centroid_distances = centers[y_pred]
     squared_distances = np.sum((X - centroid_distances) ** 2, axis=1)
-    return np.round(np.sum(squared_distances), decimal)
+    return np.sum(squared_distances)
 
 
-def calculate_mean_squared_error_index(X=None, y_pred=None, decimal=6):
+def calculate_mean_squared_error_index(X=None, y_pred=None):
     centers, _ = compute_barycenters(X, y_pred)
     centroid_distances = centers[y_pred]
     squared_distances = np.sum((X - centroid_distances) ** 2, axis=1)
-    return np.round(np.mean(squared_distances), decimal)
+    return np.mean(squared_distances)
 
 
-def calculate_ball_hall_index(X=None, y_pred=None, decimal=6):
+def calculate_ball_hall_index(X=None, y_pred=None):
     n_clusters = len(np.unique(y_pred))
     wgss = 0
     ## For each cluster, find the centroid and then the within-group SSE
@@ -155,17 +155,27 @@ def calculate_ball_hall_index(X=None, y_pred=None, decimal=6):
         cluster_k = X[centroid_mask]
         centroid = np.mean(cluster_k, axis=0)
         wgss += np.sum((cluster_k - centroid) ** 2)
-    return np.round(wgss / n_clusters, decimal)
+    return wgss / n_clusters
 
 
-def calculate_calinski_harabasz_index(X=None, y_pred=None, decimal=6, raise_error=True, raise_value=0.0):
+def calculate_calinski_harabasz_index(X=None, y_pred=None, force_finite=True, finite_value=0.0):
+    """
+    Args:
+        X: The X matrix features
+        y_pred: The predicted results
+        force_finite: Make result as finite number
+        finite_value: The value that used to replace the infinite value or NaN value.
+
+    Returns:
+        The Calinski Harabasz Index
+    """
     n_samples, _ = X.shape
     n_clusters = len(np.unique(y_pred))
     if n_clusters == 1:
-        if raise_error:
-            raise ValueError("The Calinski-Harabasz index is undefined when y_pred has only 1 cluster.")
+        if force_finite:
+            return finite_value
         else:
-            return raise_value
+            raise ValueError("The Calinski-Harabasz index is undefined when y_pred has only 1 cluster.")
     overall_mean = np.mean(X, axis=0)
     # Calculate between-cluster variance and cluster sizes
     cluster_sizes = np.bincount(y_pred, minlength=n_clusters)
@@ -175,50 +185,50 @@ def calculate_calinski_harabasz_index(X=None, y_pred=None, decimal=6, raise_erro
     within_var = np.sum((X - cluster_means[y_pred]) ** 2)
     # Calculate the CH Index
     res = (between_var / within_var) * ((n_samples - n_clusters) / (n_clusters - 1))
-    return np.round(res, decimal)
+    return res
 
 
-def calculate_xie_beni_index(X=None, y_pred=None, decimal=6, raise_error=True, raise_value=np.inf):
+def calculate_xie_beni_index(X=None, y_pred=None, force_finite=True, finite_value=1e10):
     n_clusters = len(np.unique(y_pred))
     if n_clusters == 1:
-        if raise_error:
-            raise ValueError("The Xie-Beni index is undefined when y_pred has only 1 cluster.")
+        if force_finite:
+            return finite_value
         else:
-            return raise_value
+            raise ValueError("The Xie-Beni index is undefined when y_pred has only 1 cluster.")
     # Get the centroids
     centroids, _ = compute_barycenters(X, y_pred)
     wgss = np.sum(np.min(cdist(X, centroids, metric='euclidean'), axis=1) ** 2)
     # Computing the minimum squared distance to the centroids:
     MinSqDist = np.min(pdist(centroids, metric='sqeuclidean'))
     res = (wgss / X.shape[0]) / MinSqDist
-    return np.round(res, decimal)
+    return res
 
 
-def calculate_banfeld_raftery_index(X=None, y_pred=None, decimal=6, raise_error=True, raise_value=np.inf):
+def calculate_banfeld_raftery_index(X=None, y_pred=None, force_finite=True, finite_value=1e10):
     clusters_dict, cluster_sizes_dict = compute_clusters(y_pred)
-    cc = 0.0
+    res = 0.0
     for k in clusters_dict.keys():
         X_k = X[clusters_dict[k]]
         cluster_dispersion = np.trace(compute_WG(X_k)) / cluster_sizes_dict[k]
         if cluster_sizes_dict[k] == 1:
-            if raise_error:
-                raise ValueError("The Banfeld-Raftery index is undefined when at least 1 cluster has only 1 sample.")
+            if force_finite:
+                return finite_value
             else:
-                return raise_value
+                raise ValueError("The Banfeld-Raftery index is undefined when at least 1 cluster has only 1 sample.")
         if cluster_sizes_dict[k] > 1:
-            cc += cluster_sizes_dict[k] * np.log(cluster_dispersion)
-    return np.round(cc, decimal)
+            res += cluster_sizes_dict[k] * np.log(cluster_dispersion)
+    return res
 
 
-def calculate_davies_bouldin_index(X=None, y_pred=None, decimal=6, raise_error=True, raise_value=np.inf):
+def calculate_davies_bouldin_index(X=None, y_pred=None, force_finite=True, finite_value=1e10):
     clusters_dict, cluster_sizes_dict = compute_clusters(y_pred)
     centers, _ = compute_barycenters(X, y_pred)
     n_clusters = len(clusters_dict)
     if n_clusters == 1:
-        if raise_error:
-            raise ValueError("The Davies-Bouldin index is undefined when y_pred has only 1 cluster.")
+        if force_finite:
+            return finite_value
         else:
-            return raise_value
+            raise ValueError("The Davies-Bouldin index is undefined when y_pred has only 1 cluster.")
     # Calculate delta for each cluster
     delta = {}
     for k in range(n_clusters):
@@ -233,10 +243,10 @@ def calculate_davies_bouldin_index(X=None, y_pred=None, decimal=6, raise_error=T
                 m = (delta[kdx] + delta[jdx]) / np.linalg.norm(centers[kdx] - centers[jdx])
                 list_dist.append(m)
         cc += np.max(list_dist)
-    return np.round(cc / n_clusters, decimal)
+    return cc / n_clusters
 
 
-def calculate_det_ratio_index(X=None, y_pred=None, decimal=6, raise_error=True, raise_value=0.0):
+def calculate_det_ratio_index(X=None, y_pred=None, force_finite=True, finite_value=-1e10):
     clusters_dict, cluster_sizes_dict = compute_clusters(y_pred)
     centers, _ = compute_barycenters(X, y_pred)
     T = compute_WG(X)
@@ -248,21 +258,21 @@ def calculate_det_ratio_index(X=None, y_pred=None, decimal=6, raise_error=True, 
         scatter_matrices += compute_WG(X_k)
     t1 = np.linalg.det(scatter_matrices)
     if t1 == 0:
-        if raise_error:
-            raise ValueError("The Det-Ratio index is undefined when determinant of matrix is 0.")
+        if force_finite:
+            return finite_value
         else:
-            return raise_value
-    return np.round(np.linalg.det(T) / t1, decimal)
+            raise ValueError("The Det-Ratio index is undefined when determinant of matrix is 0.")
+    return np.linalg.det(T) / t1
 
 
-def calculate_dunn_index(X=None, y_pred=None, decimal=6, use_modified=True, raise_error=True, raise_value=0.0):
+def calculate_dunn_index(X=None, y_pred=None, use_modified=True, force_finite=True, finite_value=0.):
     centers, _ = compute_barycenters(X, y_pred)
     n_clusters = len(centers)
     if n_clusters == 1:
-        if raise_error:
-            raise ValueError("The Dunn index is undefined when y_pred has only 1 cluster.")
+        if force_finite:
+            return finite_value
         else:
-            return raise_value
+            raise ValueError("The Dunn index is undefined when y_pred has only 1 cluster.")
     # Calculate dmin
     dmin = np.inf
     if use_modified:
@@ -284,10 +294,10 @@ def calculate_dunn_index(X=None, y_pred=None, decimal=6, use_modified=True, rais
         points = X[y_pred == kdx]
         dk = np.max(pdist(points, metric="euclidean"))
         dmax = max(dmax, dk)
-    return np.round(dmin / dmax, decimal)
+    return dmin / dmax
 
 
-def calculate_ksq_detw_index(X=None, y_pred=None, decimal=6, use_normalized=True):
+def calculate_ksq_detw_index(X=None, y_pred=None, use_normalized=True):
     centers, _ = compute_barycenters(X, y_pred)
     scatter_matrices = np.zeros((X.shape[1], X.shape[1]))  # shape of (n_features, n_features)
     for kdx in range(len(centers)):
@@ -296,10 +306,10 @@ def calculate_ksq_detw_index(X=None, y_pred=None, decimal=6, use_normalized=True
     if use_normalized:
         scatter_matrices = (scatter_matrices - np.min(scatter_matrices)) / (np.max(scatter_matrices) - np.min(scatter_matrices))
     res = len(centers) ** 2 * np.linalg.det(scatter_matrices)
-    return np.round(res, decimal)
+    return res
 
 
-def calculate_log_det_ratio_index(X=None, y_pred=None, decimal=6, raise_error=True, raise_value=-np.inf):
+def calculate_log_det_ratio_index(X=None, y_pred=None, force_finite=True, finite_value=-1e10):
     clusters_dict, cluster_sizes_dict = compute_clusters(y_pred)
     centers, _ = compute_barycenters(X, y_pred)
     T = compute_WG(X)
@@ -309,20 +319,20 @@ def calculate_log_det_ratio_index(X=None, y_pred=None, decimal=6, raise_error=Tr
         WG += compute_WG(X_k)
     t2 = np.linalg.det(WG)
     if t2 == 0:
-        if raise_error:
-            raise ValueError("The Log Det Ratio Index is undefined when determinant of matrix WG is 0.")
+        if force_finite:
+            return finite_value
         else:
-            return raise_value
+            raise ValueError("The Log Det Ratio Index is undefined when determinant of matrix WG is 0.")
     t1 = np.linalg.det(T) / t2
     if t1 <= 0:
-        if raise_error:
-            raise ValueError("The Log Det Ratio Index is undefined when det(T)/det(WG) <= 0.")
+        if force_finite:
+            return finite_value
         else:
-            return raise_value
-    return np.round(X.shape[0] * np.log(t1), decimal)
+            raise ValueError("The Log Det Ratio Index is undefined when det(T)/det(WG) <= 0.")
+    return X.shape[0] * np.log(t1)
 
 
-def calculate_silhouette_index_slow(X=None, y_pred=None, decimal=6):
+def calculate_silhouette_index_slow(X=None, y_pred=None):
     dm = distance_matrix(X, X)
     res = np.zeros(X.shape[0])
     for i in range(X.shape[0]):
@@ -330,16 +340,16 @@ def calculate_silhouette_index_slow(X=None, y_pred=None, decimal=6):
         b_values = [np.mean(dm[i, y_pred == label]) for label in np.unique(y_pred) if label != y_pred[i]]
         b = np.min(b_values) if len(b_values) > 0 else 0  # Separation
         res[i] = (b - a) / max(a, b)
-    return np.round(np.mean(res), decimal)
+    return np.mean(res)
 
 
-def calculate_silhouette_index(X=None, y_pred=None, decimal=6, multi_output=False, raise_error=True, raise_value=-1.0):
+def calculate_silhouette_index(X=None, y_pred=None, multi_output=False, force_finite=True, finite_value=-1.):
     unique_clusters = np.unique(y_pred)
     if len(unique_clusters) == 1:
-        if raise_error:
-            raise ValueError("The Silhouette Index is undefined when y_pred has only 1 cluster.")
+        if force_finite:
+            return finite_value
         else:
-            return raise_value
+            raise ValueError("The Silhouette Index is undefined when y_pred has only 1 cluster.")
     num_clusters = len(unique_clusters)
     num_points = len(X)
     # Precompute pairwise distances
@@ -357,18 +367,18 @@ def calculate_silhouette_index(X=None, y_pred=None, decimal=6, multi_output=Fals
         b_values[mask_i_indices] = b_values_i
     results = (b_values - a_values) / np.maximum(a_values, b_values)
     if multi_output:
-        return np.round(results, decimal)
-    return np.round(np.mean(results), decimal)
+        return results
+    return np.mean(results)
 
 
-def calculate_duda_hart_index(X=None, y_pred=None, decimal=6, raise_error=True, raise_value=np.inf):
+def calculate_duda_hart_index(X=None, y_pred=None, force_finite=True, finite_value=1e10):
     # Find the unique cluster labels
     unique_labels = np.unique(y_pred)
     if len(unique_labels) == 1:
-        if raise_error:
-            raise ValueError("The Duda-Hart index is undefined when y_pred has only 1 cluster.")
+        if force_finite:
+            return finite_value
         else:
-            return raise_value
+            raise ValueError("The Duda-Hart index is undefined when y_pred has only 1 cluster.")
     # Compute the pairwise distances between data points
     pairwise_distances = cdist(X, X)
     # Initialize the numerator and denominator for Duda index calculation
@@ -385,16 +395,16 @@ def calculate_duda_hart_index(X=None, y_pred=None, decimal=6, raise_error=True, 
         inter_cluster_distances += np.mean(pairwise_distances[np.ix_(cluster_indices, other_cluster_indices)])
     # Calculate the Duda index
     result = intra_cluster_distances / inter_cluster_distances
-    return np.round(result, decimal)
+    return result
 
 
-def calculate_beale_index(X=None, y_pred=None, decimal=6, raise_error=True, raise_value=np.inf):
+def calculate_beale_index(X=None, y_pred=None, force_finite=True, finite_value=1e10):
     n_clusters = len(np.unique(y_pred))
     if n_clusters == 1:
-        if raise_error:
-            raise ValueError("The Beale index is undefined when y_pred has only 1 cluster.")
+        if force_finite:
+            return finite_value
         else:
-            return raise_value
+            raise ValueError("The Beale index is undefined when y_pred has only 1 cluster.")
     n_samples, n_features = X.shape
     centers, _ = compute_barycenters(X, y_pred)
     sse_within = 0
@@ -407,26 +417,26 @@ def calculate_beale_index(X=None, y_pred=None, decimal=6, raise_error=True, rais
     ms_within = sse_within / df_within
     ms_between = sse_between / df_between
     result = ms_within / ms_between
-    return np.round(result, decimal)
+    return result
 
 
-def calculate_r_squared_index(X=None, y_pred=None, decimal=6):
+def calculate_r_squared_index(X=None, y_pred=None):
     n_clusters = len(np.unique(y_pred))
     total_var = np.var(X, axis=0).sum()
     var_within = 0
     for k in range(n_clusters):
         var_within += np.var(X[y_pred == k], axis=0).sum()
     result = (total_var - var_within) / total_var
-    return np.round(result, decimal)
+    return result
 
 
-def calculate_density_based_clustering_validation_index(X=None, y_pred=None, decimal=6, raise_error=True, raise_value=1.0):
+def calculate_density_based_clustering_validation_index(X=None, y_pred=None, force_finite=True, finite_value=1.):
     n_clusters = len(np.unique(y_pred))
     if n_clusters == 1:
-        if raise_error:
-            raise ValueError("The Density-based Clustering Validation Index is undefined when y_pred has only 1 cluster.")
+        if force_finite:
+            return finite_value
         else:
-            return raise_value
+            raise ValueError("The Density-based Clustering Validation Index is undefined when y_pred has only 1 cluster.")
     n_samples, n_features = X.shape
     centroids = np.zeros((n_clusters, n_features))
     for k in range(n_clusters):
@@ -442,17 +452,17 @@ def calculate_density_based_clustering_validation_index(X=None, y_pred=None, dec
         else:
             min_inter_cluster_distances[i] = np.inf
     result = np.mean(intra_cluster_distances / np.maximum(min_inter_cluster_distances.reshape(-1, 1), intra_cluster_distances), axis=0).mean()
-    return np.round(result, decimal)
+    return result
 
 
-def calculate_hartigan_index(X=None, y_pred=None, decimal=6, raise_error=True, raise_value=np.inf):
+def calculate_hartigan_index(X=None, y_pred=None, force_finite=True, finite_value=1e10):
     centroids, _ = compute_barycenters(X, y_pred)
     num_clusters = len(np.unique(y_pred))
     if num_clusters == 1:
-        if raise_error:
-            raise ValueError("The Hartigan Index is undefined when y_pred has only 1 cluster.")
+        if force_finite:
+            return finite_value
         else:
-            return raise_value
+            raise ValueError("The Hartigan Index is undefined when y_pred has only 1 cluster.")
     hi = 0.0
     for idx in range(num_clusters):
         cluster_data = X[y_pred == idx]
@@ -469,7 +479,7 @@ def calculate_hartigan_index(X=None, y_pred=None, decimal=6, raise_error=True, r
         sum_distances_to_closest_other_cluster = np.sum(distances_to_closest_other_cluster)
 
         hi += sum_distances_within_cluster / sum_distances_to_closest_other_cluster
-    return np.round(hi, decimal)
+    return hi
 
 
 def calculate_mutual_info_score(y_true=None, y_pred=None, decimal=6):

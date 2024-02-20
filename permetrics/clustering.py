@@ -31,11 +31,8 @@ class ClusteringMetric(Evaluator):
     X: tuple, list, np.ndarray, default = None
         The features of datasets. This is for calculating internal metrics
 
-    decimal: int, default = 5
-        The number of fractional parts after the decimal point
-
     raise_error: bool, default = False
-        Some metrics can't be calculate when some problems occur, show it will raise error as usual.
+        Some metrics can't be calculated when some problems occur, show it will raise error as usual.
         We can return the biggest value or smallest value depend on metric instead of raising error.
 
     biggest_value: float, default = None
@@ -94,16 +91,14 @@ class ClusteringMetric(Evaluator):
         "GPS": {"type": "min", "range": "[0, 1]", "best": "0"},
     }
 
-    def __init__(self, y_true=None, y_pred=None, X=None, decimal=5,
-                 raise_error=False, biggest_value=None, smallest_value=None, **kwargs):
-        super().__init__(y_true, y_pred, decimal, **kwargs)
+    def __init__(self, y_true=None, y_pred=None, X=None, force_finite=True, finite_value=None, **kwargs):
+        super().__init__(y_true, y_pred, **kwargs)
         if kwargs is None: kwargs = {}
         self.set_keyword_arguments(kwargs)
         self.X = X
         self.le = None
-        self.raise_error = raise_error
-        self.biggest_value = np.inf if biggest_value is None else biggest_value
-        self.smallest_value = -np.inf if smallest_value is None else smallest_value
+        self.force_finite = force_finite
+        self.finite_value = finite_value
 
     @staticmethod
     def get_support(name=None, verbose=True):
@@ -150,26 +145,29 @@ class ClusteringMetric(Evaluator):
                 y_true, y_pred, self.le = du.format_external_clustering_data(y_true, y_pred)
         return y_true, y_pred, self.le, decimal
 
-    def get_processed_internal_data(self, y_pred=None, decimal=None):
+    def get_processed_internal_data(self, y_pred=None, force_finite=None, finite_value=None):
         """
         Args:
             y_pred (tuple, list, np.ndarray): The prediction values
-            decimal (int, None): The number of fractional parts after the decimal point
+            force_finite (bool): Make result as finite number
+            finite_value (float): The value that used to replace the infinite value or NaN value.
 
         Returns:
             y_pred_final: y_pred used in evaluation process
             le: label encoder object
-            decimal: The number of fractional parts after the decimal point
+            force_finite
+            finite_value
         """
-        decimal = self.decimal if decimal is None else decimal
+        force_finite = self.force_finite if force_finite is None else force_finite
+        finite_value = self.finite_value if finite_value is None else finite_value
         if y_pred is None:              # Check for function called
-            if self.y_pred is None:     # Check for object of class called
+            if self.y_pred is None:     # Check for instance called
                 raise ValueError("You need to pass y_pred to calculate external clustering metrics.")
             else:
                 y_pred, self.le = du.format_internal_clustering_data(self.y_pred)
         else:   # This is for function called, it will override object of class called
             y_pred, self.le = du.format_internal_clustering_data(y_pred)
-        return y_pred, self.le, decimal
+        return y_pred, self.le, force_finite, finite_value
 
     def check_X(self, X):
         if X is None:
@@ -179,7 +177,7 @@ class ClusteringMetric(Evaluator):
                 return self.X
         return X
 
-    def ball_hall_index(self, X=None, y_pred=None, decimal=None, **kwargs):
+    def ball_hall_index(self, X=None, y_pred=None, **kwargs):
         """
         The Ball-Hall Index (1995) is the mean of the mean dispersion across all clusters.
         The **largest difference** between successive clustering levels indicates the optimal number of clusters.
@@ -189,16 +187,15 @@ class ClusteringMetric(Evaluator):
             X (array-like of shape (n_samples, n_features)):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
-            decimal (int): The number of fractional parts after the decimal point
 
         Returns:
             result (float): The Ball-Hall index
         """
         X = self.check_X(X)
-        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        return cu.calculate_ball_hall_index(X, y_pred, decimal)
+        y_pred, _, _, _ = self.get_processed_internal_data(y_pred)
+        return cu.calculate_ball_hall_index(X, y_pred)
 
-    def calinski_harabasz_index(self, X=None, y_pred=None, decimal=None, **kwargs):
+    def calinski_harabasz_index(self, X=None, y_pred=None, force_finite=True, finite_value=0., **kwargs):
         """
         Compute the Calinski and Harabasz (1974) index. It is also known as the Variance Ratio Criterion.
         The score is defined as ratio between the within-cluster dispersion and the between-cluster dispersion.
@@ -213,16 +210,17 @@ class ClusteringMetric(Evaluator):
             X (array-like of shape (n_samples, n_features)):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
-            decimal (int): The number of fractional parts after the decimal point
+            force_finite (bool): Make result as finite number
+            finite_value (float): The value that used to replace the infinite value or NaN value.
 
         Returns:
             result (float): The resulting Calinski-Harabasz index.
         """
         X = self.check_X(X)
-        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        return cu.calculate_calinski_harabasz_index(X, y_pred, decimal, self.raise_error, 0.0)
+        y_pred, _, force_finite, finite_value = self.get_processed_internal_data(y_pred, force_finite, finite_value)
+        return cu.calculate_calinski_harabasz_index(X, y_pred, force_finite, force_finite)
 
-    def xie_beni_index(self, X=None, y_pred=None, decimal=None, **kwargs):
+    def xie_beni_index(self, X=None, y_pred=None, force_finite=True, finite_value=1e10, **kwargs):
         """
         Computes the Xie-Beni index.
         Smaller is better (Best = 0), Range=[0, +inf)
@@ -236,16 +234,17 @@ class ClusteringMetric(Evaluator):
             X (array-like of shape (n_samples, n_features)):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
-            decimal (int): The number of fractional parts after the decimal point
+            force_finite (bool): Make result as finite number
+            finite_value (float): The value that used to replace the infinite value or NaN value.
 
         Returns:
             result (float): The Xie-Beni index
         """
         X = self.check_X(X)
-        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        return cu.calculate_xie_beni_index(X, y_pred, decimal, self.raise_error, self.biggest_value)
+        y_pred, _, force_finite, finite_value = self.get_processed_internal_data(y_pred, force_finite, finite_value)
+        return cu.calculate_xie_beni_index(X, y_pred, force_finite, finite_value)
 
-    def banfeld_raftery_index(self, X=None, y_pred=None, decimal=None, **kwargs):
+    def banfeld_raftery_index(self, X=None, y_pred=None, force_finite=True, finite_value=1e10, **kwargs):
         """
         Computes the Banfeld-Raftery Index.
         Smaller is better (No best value), Range=(-inf, inf)
@@ -255,16 +254,17 @@ class ClusteringMetric(Evaluator):
             X (array-like of shape (n_samples, n_features)):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
-            decimal (int): The number of fractional parts after the decimal point
+            force_finite (bool): Make result as finite number
+            finite_value (float): The value that used to replace the infinite value or NaN value.
 
         Returns:
             result (float): The Banfeld-Raftery Index
         """
         X = self.check_X(X)
-        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        return cu.calculate_banfeld_raftery_index(X, y_pred, decimal, self.raise_error, self.biggest_value)
+        y_pred, _, force_finite, finite_value = self.get_processed_internal_data(y_pred, force_finite, finite_value)
+        return cu.calculate_banfeld_raftery_index(X, y_pred, force_finite, finite_value)
 
-    def davies_bouldin_index(self, X=None, y_pred=None, decimal=None, **kwargs):
+    def davies_bouldin_index(self, X=None, y_pred=None, force_finite=True, finite_value=1e10, **kwargs):
         """
         Computes the Davies-Bouldin index
         Smaller is better (Best = 0), Range=[0, +inf)
@@ -273,16 +273,17 @@ class ClusteringMetric(Evaluator):
             X (array-like of shape (n_samples, n_features)):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
-            decimal (int): The number of fractional parts after the decimal point
+            force_finite (bool): Make result as finite number
+            finite_value (float): The value that used to replace the infinite value or NaN value.
 
         Returns:
             result (float): The Davies-Bouldin index
         """
         X = self.check_X(X)
-        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        return cu.calculate_davies_bouldin_index(X, y_pred, decimal, self.raise_error, self.biggest_value)
+        y_pred, _, force_finite, finite_value = self.get_processed_internal_data(y_pred, force_finite, finite_value)
+        return cu.calculate_davies_bouldin_index(X, y_pred, force_finite, finite_value)
 
-    def det_ratio_index(self, X=None, y_pred=None, decimal=None, **kwargs):
+    def det_ratio_index(self, X=None, y_pred=None, force_finite=True, finite_value=0., **kwargs):
         """
         Computes the Det-Ratio index
         Bigger is better (No best value), Range=[0, +inf)
@@ -291,16 +292,17 @@ class ClusteringMetric(Evaluator):
             X (array-like of shape (n_samples, n_features)):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
-            decimal (int): The number of fractional parts after the decimal point
+            force_finite (bool): Make result as finite number
+            finite_value (float): The value that used to replace the infinite value or NaN value.
 
         Returns:
             result (float): The Det-Ratio index
         """
         X = self.check_X(X)
-        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        return cu.calculate_det_ratio_index(X, y_pred, decimal, self.raise_error, self.smallest_value)
+        y_pred, _, force_finite, finite_value = self.get_processed_internal_data(y_pred, force_finite, finite_value)
+        return cu.calculate_det_ratio_index(X, y_pred, force_finite, finite_value)
 
-    def dunn_index(self, X=None, y_pred=None, decimal=None, use_modified=True, **kwargs):
+    def dunn_index(self, X=None, y_pred=None, use_modified=True, force_finite=True, finite_value=0., **kwargs):
         """
         Computes the Dunn Index
         Bigger is better (No best value), Range=[0, +inf)
@@ -309,17 +311,18 @@ class ClusteringMetric(Evaluator):
             X (array-like of shape (n_samples, n_features)):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
-            decimal (int): The number of fractional parts after the decimal point
             use_modified (bool): The modified version we proposed to speed up the computational time for this metric, default=True
+            force_finite (bool): Make result as finite number
+            finite_value (float): The value that used to replace the infinite value or NaN value.
 
         Returns:
             result (float): The Dunn Index
         """
         X = self.check_X(X)
-        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        return cu.calculate_dunn_index(X, y_pred, decimal, use_modified, self.raise_error, 0.0)
+        y_pred, _, force_finite, finite_value = self.get_processed_internal_data(y_pred, force_finite, finite_value)
+        return cu.calculate_dunn_index(X, y_pred, use_modified, force_finite, finite_value)
 
-    def ksq_detw_index(self, X=None, y_pred=None, decimal=None, use_normalized=True, **kwargs):
+    def ksq_detw_index(self, X=None, y_pred=None, use_normalized=True, **kwargs):
         """
         Computes the Ksq-DetW Index
         Bigger is better (No best value), Range=(-inf, +inf)
@@ -335,10 +338,10 @@ class ClusteringMetric(Evaluator):
             result (float): The Ksq-DetW Index
         """
         X = self.check_X(X)
-        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        return cu.calculate_ksq_detw_index(X, y_pred, decimal, use_normalized)
+        y_pred, _, _, _ = self.get_processed_internal_data(y_pred)
+        return cu.calculate_ksq_detw_index(X, y_pred, use_normalized)
 
-    def log_det_ratio_index(self, X=None, y_pred=None, decimal=None, **kwargs):
+    def log_det_ratio_index(self, X=None, y_pred=None, force_finite=True, finite_value=-1e10, **kwargs):
         """
         Computes the Log Det Ratio Index
         Bigger is better (No best value), Range=(-inf, +inf)
@@ -347,16 +350,17 @@ class ClusteringMetric(Evaluator):
             X (array-like of shape (n_samples, n_features)):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
-            decimal (int): The number of fractional parts after the decimal point
+            force_finite (bool): Make result as finite number
+            finite_value (float): The value that used to replace the infinite value or NaN value.
 
         Returns:
             result (float): The Log Det Ratio Index
         """
         X = self.check_X(X)
-        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        return cu.calculate_log_det_ratio_index(X, y_pred, decimal, self.raise_error, self.smallest_value)
+        y_pred, _, force_finite, finite_value = self.get_processed_internal_data(y_pred, force_finite, finite_value)
+        return cu.calculate_log_det_ratio_index(X, y_pred, force_finite, finite_value)
 
-    def log_ss_ratio_index(self, X=None, y_pred=None, decimal=None, **kwargs):
+    def log_ss_ratio_index(self, X=None, y_pred=None, force_finite=True, finite_value=-1e10, **kwargs):
         """
         Computes the Log SS Ratio Index
         Bigger is better (No best value), Range=(-inf, +inf)
@@ -365,25 +369,26 @@ class ClusteringMetric(Evaluator):
             X (array-like of shape (n_samples, n_features)):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
-            decimal (int): The number of fractional parts after the decimal point
+            force_finite (bool): Make result as finite number
+            finite_value (float): The value that used to replace the infinite value or NaN value.
 
         Returns:
             result (float): The Log SS Ratio Index
         """
         X = self.check_X(X)
-        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
+        y_pred, _, force_finite, finite_value = self.get_processed_internal_data(y_pred, force_finite, finite_value)
         n_clusters = len(np.unique(y_pred))
         if n_clusters == 1:
-            if self.raise_error:
-                raise ValueError("The Log SS Ratio Index is undefined when y_pred has only 1 cluster.")
+            if self.force_finite:
+                return self.finite_value
             else:
-                return self.smallest_value
+                raise ValueError("The Log SS Ratio Index is undefined when y_pred has only 1 cluster.")
         centers, _ = cu.compute_barycenters(X, y_pred)
         bgss = cu.compute_BGSS(X, y_pred)
         wgss = cu.compute_WGSS(X, y_pred)
-        return np.round(np.log(bgss/wgss), decimal)
+        return np.log(bgss/wgss)
 
-    def silhouette_index(self, X=None, y_pred=None, decimal=None, multi_output=False, **kwarg):
+    def silhouette_index(self, X=None, y_pred=None, multi_output=False, force_finite=True, finite_value=-1., **kwargs):
         """
         Computes the Silhouette Index
         Bigger is better (Best = 1), Range = [-1, +1]
@@ -392,17 +397,18 @@ class ClusteringMetric(Evaluator):
             X (array-like of shape (n_samples, n_features)):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
-            decimal (int): The number of fractional parts after the decimal point
             multi_output (bool): Returned scores for each cluster, default=False
+            force_finite (bool): Make result as finite number
+            finite_value (float): The value that used to replace the infinite value or NaN value.
 
         Returns:
             result (float): The Silhouette Index
         """
         X = self.check_X(X)
-        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        return cu.calculate_silhouette_index(X, y_pred, decimal, multi_output, self.raise_error, -1.0)
+        y_pred, _, force_finite, finite_value = self.get_processed_internal_data(y_pred, force_finite, finite_value)
+        return cu.calculate_silhouette_index(X, y_pred, multi_output, force_finite, finite_value)
 
-    def sum_squared_error_index(self, X=None, y_pred=None, decimal=None, **kwarg):
+    def sum_squared_error_index(self, X=None, y_pred=None, **kwarg):
         """
         Computes the Sum of Squared Error Index
         Smaller is better (Best = 0), Range = [0, +inf)
@@ -418,16 +424,15 @@ class ClusteringMetric(Evaluator):
             X (array-like of shape (n_samples, n_features)):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
-            decimal (int): The number of fractional parts after the decimal point
 
         Returns:
             result (float): The Sum of Squared Error Index
         """
         X = self.check_X(X)
-        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        return cu.calculate_sum_squared_error_index(X, y_pred, decimal)
+        y_pred, _, _, _ = self.get_processed_internal_data(y_pred)
+        return cu.calculate_sum_squared_error_index(X, y_pred)
 
-    def mean_squared_error_index(self, X=None, y_pred=None, decimal=None, **kwarg):
+    def mean_squared_error_index(self, X=None, y_pred=None, **kwarg):
         """
         Computes the Mean Squared Error Index
         Smaller is better (Best = 0), Range = [0, +inf)
@@ -438,16 +443,15 @@ class ClusteringMetric(Evaluator):
             X (array-like of shape (n_samples, n_features)):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
-            decimal (int): The number of fractional parts after the decimal point
 
         Returns:
             result (float): The Mean Squared Error Index
         """
         X = self.check_X(X)
-        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        return cu.calculate_mean_squared_error_index(X, y_pred, decimal)
+        y_pred, _, _, _ = self.get_processed_internal_data(y_pred)
+        return cu.calculate_mean_squared_error_index(X, y_pred)
 
-    def duda_hart_index(self, X=None, y_pred=None, decimal=None, **kwarg):
+    def duda_hart_index(self, X=None, y_pred=None, force_finite=True, finite_value=1e10, **kwargs):
         """
         Computes the Duda Index or Duda-Hart index
         Smaller is better (Best = 0), Range = [0, +inf)
@@ -456,16 +460,17 @@ class ClusteringMetric(Evaluator):
             X (array-like of shape (n_samples, n_features)):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
-            decimal (int): The number of fractional parts after the decimal point
+            force_finite (bool): Make result as finite number
+            finite_value (float): The value that used to replace the infinite value or NaN value.
 
         Returns:
             result (float): The Duda-Hart index
         """
         X = self.check_X(X)
-        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        return cu.calculate_duda_hart_index(X, y_pred, decimal, self.raise_error, self.biggest_value)
+        y_pred, _, force_finite, finite_value = self.get_processed_internal_data(y_pred, force_finite, finite_value)
+        return cu.calculate_duda_hart_index(X, y_pred, force_finite, finite_value)
 
-    def beale_index(self, X=None, y_pred=None, decimal=None, **kwarg):
+    def beale_index(self, X=None, y_pred=None, force_finite=True, finite_value=1e10, **kwarg):
         """
         Computes the Beale Index
         Smaller is better (Best=0), Range = [0, +inf)
@@ -474,16 +479,17 @@ class ClusteringMetric(Evaluator):
             X (array-like of shape (n_samples, n_features)):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
-            decimal (int): The number of fractional parts after the decimal point
+            force_finite (bool): Make result as finite number
+            finite_value (float): The value that used to replace the infinite value or NaN value.
 
         Returns:
             result (float): The Beale Index
         """
         X = self.check_X(X)
-        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        return cu.calculate_beale_index(X, y_pred, decimal, self.raise_error, self.biggest_value)
+        y_pred, _, force_finite, finite_value = self.get_processed_internal_data(y_pred, force_finite, finite_value)
+        return cu.calculate_beale_index(X, y_pred, force_finite, finite_value)
 
-    def r_squared_index(self, X=None, y_pred=None, decimal=None, **kwarg):
+    def r_squared_index(self, X=None, y_pred=None, **kwarg):
         """
         Computes the R-squared index
         Bigger is better (Best=1), Range = (-inf, 1]
@@ -492,16 +498,15 @@ class ClusteringMetric(Evaluator):
             X (array-like of shape (n_samples, n_features)):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
-            decimal (int): The number of fractional parts after the decimal point
 
         Returns:
             result (float): The R-squared index
         """
         X = self.check_X(X)
-        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        return cu.calculate_r_squared_index(X, y_pred, decimal)
+        y_pred, _, _, _ = self.get_processed_internal_data(y_pred)
+        return cu.calculate_r_squared_index(X, y_pred)
 
-    def density_based_clustering_validation_index(self, X=None, y_pred=None, decimal=None, **kwarg):
+    def density_based_clustering_validation_index(self, X=None, y_pred=None, force_finite=True, finite_value=1., **kwarg):
         """
         Computes the Density-based Clustering Validation Index
         Smaller is better (Best=0), Range = [0, 1]
@@ -510,16 +515,17 @@ class ClusteringMetric(Evaluator):
             X (array-like of shape (n_samples, n_features)):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
-            decimal (int): The number of fractional parts after the decimal point
+            force_finite (bool): Make result as finite number
+            finite_value (float): The value that used to replace the infinite value or NaN value.
 
         Returns:
             result (float): The Density-based Clustering Validation Index
         """
         X = self.check_X(X)
-        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        return cu.calculate_density_based_clustering_validation_index(X, y_pred, decimal, self.raise_error, 1.0)
+        y_pred, _, force_finite, finite_value = self.get_processed_internal_data(y_pred, force_finite, finite_value)
+        return cu.calculate_density_based_clustering_validation_index(X, y_pred, force_finite, finite_value)
 
-    def hartigan_index(self, X=None, y_pred=None, decimal=None, **kwarg):
+    def hartigan_index(self, X=None, y_pred=None, force_finite=True, finite_value=1e10, **kwarg):
         """
         Computes the Hartigan index for a clustering solution.
         Smaller is better (best=0), Range = [0, +inf)
@@ -528,14 +534,15 @@ class ClusteringMetric(Evaluator):
             X (array-like of shape (n_samples, n_features)):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
-            decimal (int): The number of fractional parts after the decimal point
+            force_finite (bool): Make result as finite number
+            finite_value (float): The value that used to replace the infinite value or NaN value.
 
         Returns:
             result (float): The Hartigan index
         """
         X = self.check_X(X)
-        y_pred, _, decimal = self.get_processed_internal_data(y_pred, decimal)
-        return cu.calculate_hartigan_index(X, y_pred, decimal, self.raise_error, self.biggest_value)
+        y_pred, _, force_finite, finite_value = self.get_processed_internal_data(y_pred, force_finite, finite_value)
+        return cu.calculate_hartigan_index(X, y_pred, force_finite, finite_value)
 
     def mutual_info_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """
