@@ -31,17 +31,11 @@ class ClusteringMetric(Evaluator):
     X: tuple, list, np.ndarray, default = None
         The features of datasets. This is for calculating internal metrics
 
-    raise_error: bool, default = False
-        Some metrics can't be calculated when some problems occur, show it will raise error as usual.
-        We can return the biggest value or smallest value depend on metric instead of raising error.
+    force_finite: bool, default = True
+        When result is not finite, it can be NaN or Inf. Their result will be replaced by `finite_value`
 
-    biggest_value: float, default = None
-        The biggest value will be returned for metric that has min characteristic and ``raise_error=True``
-        Default = None, then the value will be ``np.inf``.
-
-    smallest_value: float, default = None
-        The smallest value will be returned for metric that has max characteristic and ``raise_error=True``
-        Default = None, then the value will be ``-np.inf``.
+    finite_value: float, default = None
+        The value that used to replace the infinite value or NaN value.
     """
 
     SUPPORT = {
@@ -114,20 +108,23 @@ class ClusteringMetric(Evaluator):
                 print(f"Metric {name}: {ClusteringMetric.SUPPORT[name]}")
             return ClusteringMetric.SUPPORT[name]
 
-    def get_processed_external_data(self, y_true=None, y_pred=None, decimal=None):
+    def get_processed_external_data(self, y_true=None, y_pred=None, force_finite=None, finite_value=None):
         """
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
-            decimal (int, None): The number of fractional parts after the decimal point
+            force_finite (bool): Force the result as finite number
+            finite_value (float): The finite number
 
         Returns:
             y_true_final: y_true used in evaluation process.
             y_pred_final: y_pred used in evaluation process
             le: label encoder object
-            decimal: The number of fractional parts after the decimal point
+            force_finite: Force the result as finite number
+            finite_value: The finite number
         """
-        decimal = self.decimal if decimal is None else decimal
+        force_finite = self.force_finite if force_finite is None else force_finite
+        finite_value = self.finite_value if finite_value is None else finite_value
         if y_pred is None:              # Check for function called
             if self.y_pred is None:     # Check for object of class called
                 raise ValueError("You need to pass y_true and y_pred to calculate external clustering metrics.")
@@ -143,7 +140,7 @@ class ClusteringMetric(Evaluator):
                 raise ValueError("You need to pass y_true and y_pred to calculate external clustering metrics.")
             else:
                 y_true, y_pred, self.le = du.format_external_clustering_data(y_true, y_pred)
-        return y_true, y_pred, self.le, decimal
+        return y_true, y_pred, self.le, force_finite, finite_value
 
     def get_processed_internal_data(self, y_pred=None, force_finite=None, finite_value=None):
         """
@@ -544,7 +541,7 @@ class ClusteringMetric(Evaluator):
         y_pred, _, force_finite, finite_value = self.get_processed_internal_data(y_pred, force_finite, finite_value)
         return cu.calculate_hartigan_index(X, y_pred, force_finite, finite_value)
 
-    def mutual_info_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+    def mutual_info_score(self, y_true=None, y_pred=None, **kwargs):
         """
         Computes the Mutual Information score between two clusterings.
         Bigger is better (No best value), Range = [0, +inf)
@@ -552,15 +549,14 @@ class ClusteringMetric(Evaluator):
         Args:
             y_true (array-like): The true labels for each sample.
             y_pred (array-like): The predicted cluster labels for each sample.
-            decimal (int): The number of fractional parts after the decimal point
 
         Returns:
             result (float): The Mutual Information score
         """
-        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        return cu.calculate_mutual_info_score(y_true, y_pred, decimal)
+        y_true, y_pred, _, _, _ = self.get_processed_external_data(y_true, y_pred)
+        return cu.calculate_mutual_info_score(y_true, y_pred)
 
-    def normalized_mutual_info_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+    def normalized_mutual_info_score(self, y_true=None, y_pred=None, force_finite=True, finite_value=0., **kwargs):
         """
         Computes the normalized mutual information between two clusterings.
         It is a variation of the mutual information score that normalizes the result to take values between 0 and 1.
@@ -570,15 +566,16 @@ class ClusteringMetric(Evaluator):
         Args:
             y_true (array-like): The true labels for each sample.
             y_pred (array-like): The predicted cluster labels for each sample.
-            decimal (int): The number of fractional parts after the decimal point
+            force_finite (bool): Make result as finite number
+            finite_value (float): The value that used to replace the infinite value or NaN value.
 
         Returns:
             result (float): The normalized mutual information score.
         """
-        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        return cu.calculate_normalized_mutual_info_score(y_true, y_pred, decimal, self.raise_error, 0.0)
+        y_true, y_pred, _, force_finite, finite_value = self.get_processed_external_data(y_true, y_pred, force_finite, finite_value)
+        return cu.calculate_normalized_mutual_info_score(y_true, y_pred, force_finite, finite_value)
 
-    def rand_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+    def rand_score(self, y_true=None, y_pred=None, **kwargs):
         """
         Computes the Rand score between two clusterings.
         Bigger is better (Best = 1), Range = [0, 1]
@@ -586,15 +583,14 @@ class ClusteringMetric(Evaluator):
         Args:
             y_true (array-like): The true labels for each sample.
             y_pred (array-like): The predicted cluster labels for each sample.
-            decimal (int): The number of fractional parts after the decimal point
 
         Returns:
             result (float): The rand score.
         """
-        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        return cu.calculate_rand_score(y_true, y_pred, decimal)
+        y_true, y_pred, _, _, _ = self.get_processed_external_data(y_true, y_pred)
+        return cu.calculate_rand_score(y_true, y_pred)
 
-    def adjusted_rand_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+    def adjusted_rand_score(self, y_true=None, y_pred=None, **kwargs):
         """
         Computes the Adjusted rand score between two clusterings.
         Bigger is better (Best = 1), Range = [-1, 1]
@@ -602,15 +598,14 @@ class ClusteringMetric(Evaluator):
         Args:
             y_true (array-like): The true labels for each sample.
             y_pred (array-like): The predicted cluster labels for each sample.
-            decimal (int): The number of fractional parts after the decimal point
 
         Returns:
             result (float): The Adjusted rand score
         """
-        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        return cu.calculate_adjusted_rand_score(y_true, y_pred, decimal)
+        y_true, y_pred, _, _, _ = self.get_processed_external_data(y_true, y_pred)
+        return cu.calculate_adjusted_rand_score(y_true, y_pred)
 
-    def fowlkes_mallows_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+    def fowlkes_mallows_score(self, y_true=None, y_pred=None, force_finite=True, finite_value=0., **kwargs):
         """
         Computes the Fowlkes-Mallows score between two clusterings.
         Bigger is better (Best = 1), Range = [0, 1]
@@ -618,15 +613,16 @@ class ClusteringMetric(Evaluator):
         Args:
             y_true (array-like): The true labels for each sample.
             y_pred (array-like): The predicted cluster labels for each sample.
-            decimal (int): The number of fractional parts after the decimal point
+            force_finite (bool): Make result as finite number
+            finite_value (float): The value that used to replace the infinite value or NaN value.
 
         Returns:
             result (float): The Fowlkes-Mallows score
         """
-        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        return cu.calculate_fowlkes_mallows_score(y_true, y_pred, decimal, self.raise_error, 0.0)
+        y_true, y_pred, _, force_finite, finite_value = self.get_processed_external_data(y_true, y_pred, force_finite, finite_value)
+        return cu.calculate_fowlkes_mallows_score(y_true, y_pred, force_finite, finite_value)
 
-    def homogeneity_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+    def homogeneity_score(self, y_true=None, y_pred=None, **kwargs):
         """
         Computes the Homogeneity Score between two clusterings.
         Bigger is better (Best = 1), Range = [0, 1]
@@ -638,15 +634,14 @@ class ClusteringMetric(Evaluator):
         Args:
             y_true (array-like): The true labels for each sample.
             y_pred (array-like): The predicted cluster labels for each sample.
-            decimal (int): The number of fractional parts after the decimal point
 
         Returns:
             result (float): The Homogeneity Score
         """
-        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        return cu.calculate_homogeneity_score(y_true, y_pred, decimal)
+        y_true, y_pred, _, _, _ = self.get_processed_external_data(y_true, y_pred)
+        return cu.calculate_homogeneity_score(y_true, y_pred)
 
-    def completeness_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+    def completeness_score(self, y_true=None, y_pred=None, **kwargs):
         """
         Computes the completeness score between two clusterings.
         Bigger is better (Best = 1), Range = [0, 1]
@@ -656,15 +651,14 @@ class ClusteringMetric(Evaluator):
         Args:
             y_true (array-like): The true labels for each sample.
             y_pred (array-like): The predicted cluster labels for each sample.
-            decimal (int): The number of fractional parts after the decimal point
 
         Returns:
             result (float): The completeness score.
         """
-        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        return cu.calculate_completeness_score(y_true, y_pred, decimal)
+        y_true, y_pred, _, _, _ = self.get_processed_external_data(y_true, y_pred)
+        return cu.calculate_completeness_score(y_true, y_pred)
 
-    def v_measure_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+    def v_measure_score(self, y_true=None, y_pred=None, **kwargs):
         """
         Computes the V measure score between two clusterings.
         Bigger is better (Best = 1), Range = [0, 1]
@@ -676,15 +670,14 @@ class ClusteringMetric(Evaluator):
         Args:
             y_true (array-like): The true labels for each sample.
             y_pred (array-like): The predicted cluster labels for each sample.
-            decimal (int): The number of fractional parts after the decimal point
 
         Returns:
             result (float): The V measure score
         """
-        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        return cu.calculate_v_measure_score(y_true, y_pred, decimal)
+        y_true, y_pred, _, _, _ = self.get_processed_external_data(y_true, y_pred)
+        return cu.calculate_v_measure_score(y_true, y_pred)
 
-    def precision_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+    def precision_score(self, y_true=None, y_pred=None, **kwargs):
         """
         Computes the Precision score between two clusterings.
         Bigger is better (Best = 1), Range = [0, 1]. It is different than precision score in classification metrics
@@ -697,15 +690,14 @@ class ClusteringMetric(Evaluator):
         Args:
             y_true (array-like): The true labels for each sample.
             y_pred (array-like): The predicted cluster labels for each sample.
-            decimal (int): The number of fractional parts after the decimal point
 
         Returns:
             result (float): The Precision score
         """
-        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        return cu.calculate_precision_score(y_true, y_pred, decimal)
+        y_true, y_pred, _, _, _ = self.get_processed_external_data(y_true, y_pred)
+        return cu.calculate_precision_score(y_true, y_pred)
 
-    def recall_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+    def recall_score(self, y_true=None, y_pred=None, **kwargs):
         """
         Computes the Recall score between two clusterings.
         Bigger is better (Best = 1), Range = [0, 1]
@@ -717,15 +709,14 @@ class ClusteringMetric(Evaluator):
         Args:
             y_true (array-like): The true labels for each sample.
             y_pred (array-like): The predicted cluster labels for each sample.
-            decimal (int): The number of fractional parts after the decimal point
 
         Returns:
             result (float): The Recall score
         """
-        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        return cu.calculate_recall_score(y_true, y_pred, decimal)
+        y_true, y_pred, _, _, _ = self.get_processed_external_data(y_true, y_pred)
+        return cu.calculate_recall_score(y_true, y_pred)
 
-    def f_measure_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+    def f_measure_score(self, y_true=None, y_pred=None, **kwargs):
         """
         Computes the F-Measure score between two clusterings.
         Bigger is better (Best = 1), Range = [0, 1]
@@ -738,15 +729,14 @@ class ClusteringMetric(Evaluator):
         Args:
             y_true (array-like): The true labels for each sample.
             y_pred (array-like): The predicted cluster labels for each sample.
-            decimal (int): The number of fractional parts after the decimal point
 
         Returns:
             result (float): The F-Measure score
         """
-        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        return cu.calculate_f_measure_score(y_true, y_pred, decimal)
+        y_true, y_pred, _, _, _ = self.get_processed_external_data(y_true, y_pred)
+        return cu.calculate_f_measure_score(y_true, y_pred)
 
-    def czekanowski_dice_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
+    def czekanowski_dice_score(self, y_true=None, y_pred=None, **kwargs):
         """
         Computes the  Czekanowski-Dice score between two clusterings.
         It is the harmonic mean of the precision and recall coefficients. Bigger is better (Best = 1), Range = [0, 1]
@@ -754,13 +744,12 @@ class ClusteringMetric(Evaluator):
         Args:
             y_true (array-like): The true labels for each sample.
             y_pred (array-like): The predicted cluster labels for each sample.
-            decimal (int): The number of fractional parts after the decimal point
 
         Returns:
             result (float): The Czekanowski-Dice score
         """
-        y_true, y_pred, _, decimal = self.get_processed_external_data(y_true, y_pred, decimal)
-        return cu.calculate_czekanowski_dice_score(y_true, y_pred, decimal)
+        y_true, y_pred, _, _, _ = self.get_processed_external_data(y_true, y_pred)
+        return cu.calculate_czekanowski_dice_score(y_true, y_pred)
 
     def hubert_gamma_score(self, y_true=None, y_pred=None, decimal=None, **kwargs):
         """

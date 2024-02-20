@@ -482,7 +482,7 @@ def calculate_hartigan_index(X=None, y_pred=None, force_finite=True, finite_valu
     return hi
 
 
-def calculate_mutual_info_score(y_true=None, y_pred=None, decimal=6):
+def calculate_mutual_info_score(y_true=None, y_pred=None):
     contingency_matrix = compute_contingency_matrix(y_true, y_pred)
     # Convert contingency matrix to probability matrix
     contingency_matrix = contingency_matrix / y_true.shape[0]
@@ -497,20 +497,20 @@ def calculate_mutual_info_score(y_true=None, y_pred=None, decimal=6):
         for jdx in range(n_clusters_pred):
             if contingency_matrix[idx, jdx] > 0.0:
                 mi += contingency_matrix[idx, jdx] * np.log(contingency_matrix[idx, jdx] / (cluster_probs_true[idx] * cluster_probs_pred[jdx]))
-    return np.round(mi, decimal)
+    return mi
 
 
-def calculate_normalized_mutual_info_score(y_true=None, y_pred=None, decimal=6, raise_error=True, raise_value=0.0):
+def calculate_normalized_mutual_info_score(y_true=None, y_pred=None, force_finite=True, finite_value=0.0):
     mi = calculate_mutual_info_score(y_true, y_pred)
     n_samples = y_true.shape[0]
     n_clusters_true = len(np.unique(y_true))
     n_clusters_pred = len(np.unique(y_pred))
     if n_clusters_true == 1 or n_clusters_pred == 1 or mi == 0:
         # If either of the clusterings has only one cluster, MI is not defined
-        if raise_error:
-            raise ValueError("The Normalized Mutual Info Score is undefined when MIS = 0 or y_true, y_pred has only 1 cluster.")
+        if force_finite:
+            return finite_value
         else:
-            return raise_value
+            raise ValueError("The Normalized Mutual Info Score is undefined when MIS = 0 or y_true, y_pred has only 1 cluster.")
     # Calculate entropy of true and predicted clusterings
     entropy_true = -np.sum((np.bincount(y_true) / n_samples) * np.log(np.bincount(y_true) / n_samples))
     entropy_pred = -np.sum((np.bincount(y_pred) / n_samples) * np.log(np.bincount(y_pred) / n_samples))
@@ -519,10 +519,10 @@ def calculate_normalized_mutual_info_score(y_true=None, y_pred=None, decimal=6, 
     if denominator == 0:
         return 1.0  # Perfect agreement when both entropies are 0 (all samples in one cluster)
     nmi = mi / denominator
-    return np.round(nmi, decimal)
+    return nmi
 
 
-def calculate_rand_score(y_true=None, y_pred=None, decimal=6):
+def calculate_rand_score(y_true=None, y_pred=None):
     n_samples = np.int64(y_true.shape[0])
     contingency = compute_contingency_matrix(y_true, y_pred)
     n_c = np.ravel(contingency.sum(axis=1))
@@ -539,10 +539,10 @@ def calculate_rand_score(y_true=None, y_pred=None, decimal=6):
         # Special limit cases: no clustering since the data is not split; or trivial clustering where each
         # document is assigned a unique cluster. These are perfect matches hence return 1.0.
         return 1.0
-    return np.round(numerator / denominator, decimal)
+    return numerator / denominator
 
 
-def calculate_adjusted_rand_score(y_true=None, y_pred=None, decimal=6):
+def calculate_adjusted_rand_score(y_true=None, y_pred=None):
     n_samples = np.int64(y_true.shape[0])
     contingency = compute_contingency_matrix(y_true, y_pred)
     n_c = np.ravel(contingency.sum(axis=1))
@@ -560,10 +560,10 @@ def calculate_adjusted_rand_score(y_true=None, y_pred=None, decimal=6):
     if fn == 0 and fp == 0:
         return 1.0
     res = 2.0 * (tp * tn - fn * fp) / ((tp + fn) * (fn + tn) + (tp + fp) * (fp + tn))
-    return np.round(res, decimal)
+    return res
 
 
-def calculate_fowlkes_mallows_score(y_true=None, y_pred=None, decimal=6, raise_error=True, raise_value=0.0):
+def calculate_fowlkes_mallows_score(y_true=None, y_pred=None, force_finite=True, finite_value=0.0):
     (n_samples,) = y_true.shape
     c = compute_contingency_matrix(y_true, y_pred)
     c = c.astype(np.int64, copy=False)
@@ -571,12 +571,12 @@ def calculate_fowlkes_mallows_score(y_true=None, y_pred=None, decimal=6, raise_e
     pk = np.sum(np.asarray(c.sum(axis=0)).ravel() ** 2) - n_samples
     qk = np.sum(np.asarray(c.sum(axis=1)).ravel() ** 2) - n_samples
     if pk == 0.0 or qk == 0.0:
-        if raise_error:
-            raise ValueError("The Fowlkes Mallows Score is undefined when pk = 0 or qk = 0.")
+        if force_finite:
+            return finite_value
         else:
-            return raise_value
+            raise ValueError("The Fowlkes Mallows Score is undefined when pk = 0 or qk = 0.")
     res = np.sqrt(tk / pk) * np.sqrt(tk / qk)
-    return np.round(res, decimal)
+    return res
 
 
 def compute_entropy(labels):
@@ -596,50 +596,50 @@ def compute_conditional_entropy(y_true, y_pred):
     return entropy_sum
 
 
-def calculate_homogeneity_score(y_true=None, y_pred=None, decimal=6):
+def calculate_homogeneity_score(y_true=None, y_pred=None):
     h_labels_true = compute_entropy(y_true)
     h_labels_true_given_pred = compute_conditional_entropy(y_true, y_pred)
     if h_labels_true == 0:
         res = 1.0
     else:
         res = 1. - h_labels_true_given_pred / h_labels_true
-    return np.round(res, decimal)
+    return res
 
 
-def calculate_completeness_score(y_true=None, y_pred=None, decimal=6):
-    return calculate_homogeneity_score(y_pred, y_true, decimal)
+def calculate_completeness_score(y_true=None, y_pred=None):
+    return calculate_homogeneity_score(y_pred, y_true)
 
 
-def calculate_v_measure_score(y_true=None, y_pred=None, decimal=6):
-    h = calculate_homogeneity_score(y_true, y_pred, decimal)
-    c = calculate_completeness_score(y_true, y_pred, decimal)
+def calculate_v_measure_score(y_true=None, y_pred=None):
+    h = calculate_homogeneity_score(y_true, y_pred)
+    c = calculate_completeness_score(y_true, y_pred)
     if h + c == 0:
         res = 0
     else:
         res = 2 * (h * c) / (h + c)
-    return np.round(res, decimal)
+    return res
 
 
-def calculate_precision_score(y_true=None, y_pred=None, decimal=6):
+def calculate_precision_score(y_true=None, y_pred=None):
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
-    return np.round(yy / (yy + ny), decimal)
+    return yy / (yy + ny)
 
 
-def calculate_recall_score(y_true=None, y_pred=None, decimal=6):
+def calculate_recall_score(y_true=None, y_pred=None):
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
-    return np.round(yy / (yy + yn), decimal)
+    return yy / (yy + yn)
 
 
-def calculate_f_measure_score(y_true=None, y_pred=None, decimal=6):
+def calculate_f_measure_score(y_true=None, y_pred=None):
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
     p = yy / (yy + ny)
     r = yy / (yy + yn)
-    return np.round(2 * p * r / (p + r), decimal)
+    return 2 * p * r / (p + r)
 
 
-def calculate_czekanowski_dice_score(y_true=None, y_pred=None, decimal=6):
+def calculate_czekanowski_dice_score(y_true=None, y_pred=None):
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
-    return np.round(2 * yy / (2 * yy + yn + ny), decimal)
+    return 2 * yy / (2 * yy + yn + ny)
 
 
 def calculate_hubert_gamma_score(y_true=None, y_pred=None, decimal=6, raise_error=True, raise_value=-1.0):
