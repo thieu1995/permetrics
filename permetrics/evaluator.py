@@ -5,7 +5,6 @@
 # --------------------------------------------------%
 
 import numpy as np
-import copy as cp
 from permetrics.utils import constant as co
 
 
@@ -25,10 +24,8 @@ class Evaluator:
         """
         if kwargs is None: kwargs = {}
         self.set_keyword_arguments(kwargs)
-        self.y_true = cp.deepcopy(y_true)
-        self.y_pred = cp.deepcopy(y_pred)
-        self.y_true_ = cp.deepcopy(y_true)
-        self.y_pred_ = cp.deepcopy(y_pred)
+        self.y_true = y_true
+        self.y_pred = y_pred
 
     def set_keyword_arguments(self, kwargs):
         for key, value in kwargs.items():
