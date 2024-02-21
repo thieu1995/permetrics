@@ -23,9 +23,6 @@ class ClassificationMetric(Evaluator):
     y_pred: tuple, list, np.ndarray, default = None
         The prediction values.
 
-    decimal: int, default = 5
-        The number of fractional parts after the decimal point
-
     labels: tuple, list, np.ndarray, default = None
         List of labels to index the matrix. This may be used to reorder or select a subset of labels.
 

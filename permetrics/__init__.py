@@ -15,7 +15,7 @@
 # y_true = np.array([3, -0.5, 2, 7, 5, 6])
 # y_pred = np.array([2.5, 0.0, 2, 8, 5, 6])
 #
-# evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+# evaluator = RegressionMetric(y_true, y_pred)
 #
 # ## Get the result of any function you want to
 # rmse = evaluator.RMSE()
@@ -28,7 +28,7 @@
 # y_true = ["cat", "ant", "cat", "cat", "ant", "bird", "bird", "bird"]
 # y_pred = ["ant", "ant", "cat", "cat", "ant", "cat", "bird", "ant"]
 #
-# evaluator = ClassificationMetric(y_true, y_pred, decimal=5)
+# evaluator = ClassificationMetric(y_true, y_pred)
 #
 # ## Get the result of any function you want to
 # print(evaluator.f1_score())
@@ -42,11 +42,11 @@
 # y_true = np.random.randint(0, 4, size=300)
 # y_pred = np.random.randint(0, 4, size=300)
 #
-# external_evaluator = ClusteringMetric(y_true=y_true, y_pred=y_pred, decimal=5)
+# external_evaluator = ClusteringMetric(y_true=y_true, y_pred=y_pred)
 # print(external_evaluator.mutual_info_score())
 # print(external_evaluator.MIS())
 #
-# internal_evaluator = ClusteringMetric(y_pred=y_pred, X=X, decimal=5)
+# internal_evaluator = ClusteringMetric(y_pred=y_pred, X=X)
 # print(internal_evaluator.banfeld_raftery_index())
 # print(internal_evaluator.BRI())
 

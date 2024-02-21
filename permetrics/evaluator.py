@@ -84,7 +84,7 @@ class Evaluator:
 
         Args:
             list_metric_names (list): e.g, ["RMSE", "MAE", "MAPE"]
-            list_paras (list): e.g, [ {"decimal": 5, None}, {"decimal": 4, "multi_output": "raw_values"}, {"decimal":6, "multi_output": [2, 3]} ]
+            list_paras (list): e.g, [ {"multi_output": "raw_values"}, {"multi_output": "raw_values"}, {"multi_output": [2, 3]} ]
 
         Returns:
             results (dict): e.g, { "RMSE": 0.25, "MAE": [0.3, 0.6], "MAPE": 0.15 }
@@ -108,7 +108,10 @@ class Evaluator:
         Get results of list metrics by its name and parameters wrapped by dictionary
 
         For example:
-            {"RMSE": { "multi_output": multi_output, "decimal": 4 }, "MAE": { "non_zero": True, "multi_output": multi_output, "decimal": 6}}
+            {
+                "RMSE": {"multi_output": multi_output},
+                "MAE": {"multi_output": multi_output}
+            }
 
         Args:
             metrics_dict (dict): key is metric name and value is dict of parameters
