@@ -642,73 +642,73 @@ def calculate_czekanowski_dice_score(y_true=None, y_pred=None):
     return 2 * yy / (2 * yy + yn + ny)
 
 
-def calculate_hubert_gamma_score(y_true=None, y_pred=None, decimal=6, raise_error=True, raise_value=-1.0):
+def calculate_hubert_gamma_score(y_true=None, y_pred=None, force_finite=True, finite_value=-1.0):
     n_clusters = len(np.unique(y_pred))
     if n_clusters == 1:
-        if raise_error:
-            raise ValueError("The Hubert Gamma score is undefined when y_pred has only 1 cluster.")
+        if force_finite:
+            return finite_value
         else:
-            return raise_value
+            raise ValueError("The Hubert Gamma score is undefined when y_pred has only 1 cluster.")
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
     NT = yy + yn + ny + nn
     res = (NT*yy - (yy+yn)*(yy+ny)) / np.sqrt((yy+yn)*(yy+ny)*(nn+yn)*(nn+ny))
-    return np.round(res, decimal)
+    return res
 
 
-def calculate_jaccard_score(y_true=None, y_pred=None, decimal=6):
+def calculate_jaccard_score(y_true=None, y_pred=None):
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
-    return np.round(yy / (yy + yn + ny), decimal)
+    return yy / (yy + yn + ny)
 
 
-def calculate_kulczynski_score(y_true=None, y_pred=None, decimal=6):
+def calculate_kulczynski_score(y_true=None, y_pred=None):
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
     res = 0.5 * ((yy / (yy + ny)) + (yy / (yy + yn)))
-    return np.round(res, decimal)
+    return res
 
 
-def calculate_mc_nemar_score(y_true=None, y_pred=None, decimal=6):
+def calculate_mc_nemar_score(y_true=None, y_pred=None):
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
-    return np.round((nn - ny) / np.sqrt(nn + ny), decimal)
+    return (nn - ny) / np.sqrt(nn + ny)
 
 
-def calculate_phi_score(y_true=None, y_pred=None, decimal=6, raise_error=True, raise_value=-np.inf):
+def calculate_phi_score(y_true=None, y_pred=None, force_finite=True, finite_value=-1e10):
     n_clusters = len(np.unique(y_pred))
     if n_clusters == 1:
-        if raise_error:
-            raise ValueError("The Phi score is undefined when y_pred has only 1 cluster.")
+        if force_finite:
+            return finite_value
         else:
-            return raise_value
+            raise ValueError("The Phi score is undefined when y_pred has only 1 cluster.")
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
     numerator = yy * nn - yn * ny
     denominator = (yy + yn) * (yy + ny) * (yn + nn) * (ny + nn)
-    return np.round(numerator / denominator, decimal)
+    return numerator / denominator
 
 
-def calculate_rogers_tanimoto_score(y_true=None, y_pred=None, decimal=6):
+def calculate_rogers_tanimoto_score(y_true=None, y_pred=None):
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
     cc = (yy + nn) / (yy + nn + 2 * (yn + ny))
-    return np.round(cc, decimal)
+    return cc
 
 
-def calculate_russel_rao_score(y_true=None, y_pred=None, decimal=6):
+def calculate_russel_rao_score(y_true=None, y_pred=None):
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
     NT = yy + yn + ny + nn
-    return np.round(yy / NT, decimal)
+    return yy / NT
 
 
-def calculate_sokal_sneath1_score(y_true=None, y_pred=None, decimal=6):
+def calculate_sokal_sneath1_score(y_true=None, y_pred=None):
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
     cc = yy / (yy + 2 * (yn + ny))
-    return np.round(cc, decimal)
+    return cc
 
 
-def calculate_sokal_sneath2_score(y_true=None, y_pred=None, decimal=6):
+def calculate_sokal_sneath2_score(y_true=None, y_pred=None):
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
     cc = (yy + nn) / (yy + nn + 0.5 * (yn + ny))
-    return np.round(cc, decimal)
+    return cc
 
 
-def calculate_purity_score(y_true=None, y_pred=None, decimal=6):
+def calculate_purity_score(y_true=None, y_pred=None):
     # Find the number of data points
     N = len(y_true)
     # Find the unique class labels in the true labels
@@ -727,10 +727,10 @@ def calculate_purity_score(y_true=None, y_pred=None, decimal=6):
         # Add the size of the majority class to the purity score
         purity += np.max(class_counts)
     # Normalize the purity score by dividing by the total number of data points
-    return np.round(purity / N, decimal)
+    return purity / N
 
 
-def calculate_entropy_score(y_true=None, y_pred=None, decimal=6):
+def calculate_entropy_score(y_true=None, y_pred=None):
     # Find the number of data points
     N = len(y_true)
     # Find the unique class labels in the true labels
@@ -752,7 +752,7 @@ def calculate_entropy_score(y_true=None, y_pred=None, decimal=6):
         # Weight the entropy by the relative size of the cluster
         cluster_size = len(class_indices)
         result += (cluster_size / N) * cluster_entropy
-    return np.round(result, decimal)
+    return result
 
 
 def compute_nd_splus_sminus_t(y_true=None, y_pred=None):
@@ -769,28 +769,28 @@ def compute_nd_splus_sminus_t(y_true=None, y_pred=None):
     return nd, s_plus, s_minus, t
 
 
-def calculate_tau_score(y_true=None, y_pred=None, decimal=6):
+def calculate_tau_score(y_true=None, y_pred=None):
     """
     Cluster Validation for Mixed-Type Data: Paper
     """
     nd, s_plus, s_minus, t = compute_nd_splus_sminus_t(y_true, y_pred)
     res = (s_plus - s_minus) / np.sqrt((nd - t) * nd)
-    return np.round(res, decimal)
+    return res
 
 
-def calculate_gamma_score(y_true=None, y_pred=None, decimal=6):
+def calculate_gamma_score(y_true=None, y_pred=None):
     """
     Cluster Validation for Mixed-Type Data: Paper
     """
     nd, s_plus, s_minus, t = compute_nd_splus_sminus_t(y_true, y_pred)
     res = (s_plus - s_minus) / (s_plus + s_minus)
-    return np.round(res, decimal)
+    return res
 
 
-def calculate_gplus_score(y_true=None, y_pred=None, decimal=6):
+def calculate_gplus_score(y_true=None, y_pred=None):
     """
     Cluster Validation for Mixed-Type Data: Paper
     """
     nd, s_plus, s_minus, t = compute_nd_splus_sminus_t(y_true, y_pred)
     res = s_minus / nd
-    return np.round(res, decimal)
+    return res
