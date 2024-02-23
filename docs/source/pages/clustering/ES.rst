@@ -43,7 +43,7 @@ Example:
 	y_true = np.array([0, 0, 1, 1, 1, 2, 2, 1])
 	y_pred = np.array([0, 0, 1, 1, 2, 2, 2, 2])
 
-	cm = ClusteringMetric(y_true=y_true, y_pred=y_pred, decimal = 5)
+	cm = ClusteringMetric(y_true=y_true, y_pred=y_pred)
 
 	print(cm.entropy_score())
 	print(cm.ES())

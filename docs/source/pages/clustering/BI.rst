@@ -46,7 +46,7 @@ Example:
 	data = np.array([[1, 2], [3, 4], [5, 6], [7, 8], [9, 10]])
 	y_pred = np.array([0, 0, 1, 1, 1])
 
-	cm = ClusteringMetric(X=data, y_pred=y_pred, decimal = 5)
+	cm = ClusteringMetric(X=data, y_pred=y_pred)
 
 	print(cm.beale_index())
 	print(cm.BI())
