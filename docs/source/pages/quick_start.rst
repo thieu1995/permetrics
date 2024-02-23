@@ -33,12 +33,13 @@ Let's go through some examples.
 Examples
 ========
 
-.. include:: examples/functional_style.rst
-.. include:: examples/oop_style.rst
-.. include:: examples/multiple_metrics.rst
-.. include:: examples/multiple_outputs_multiple_metrics.rst
+There are several ways you can use a performance metrics in this library. However, the most used are these two ways: functional-based and object-oriented
+based programming. We will go through detail of how to use 3 main type of metrics (regression, classification, and clustering) with these two methods.
 
-For more usage examples please look at [examples](/examples) folder.
+
+.. include:: examples/regression.rst
+.. include:: examples/classification.rst
+.. include:: examples/clustering.rst
 
 
 .. toctree::
