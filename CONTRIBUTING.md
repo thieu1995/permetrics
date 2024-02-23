@@ -52,6 +52,23 @@ Here are some ways to contribute:
 - Review code submissions
 - Test the application and report issues
 
+However, before contributing, make sure that the unit tests pass and that new functionality is covered by unit tests. 
+The unit tests can be run using `pytest`. Change working directory to permetrics and then use:
+
+```python
+# Test features
+python -m pytest tests/test_features
+
+# Test comparisons
+python -m pytest tests/test_comparisons
+```
+
+Or you can test all files by:
+
+```python
+python -m pytest
+```
+
 
 ## Pull Requests
 

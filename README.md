@@ -128,8 +128,9 @@ for more detailed installation instructions, explanations, and examples.
 
 # Contributing
 
-If you wish to contribute to the development of Permetrics, please check for the guidelines in the 
-[CONTRIBUTING.md](/CONTRIBUTING.md) file.
+There are lots of ways how you can contribute to Permetrics's development, and you are welcome to join in! For example, 
+you can report problems or make feature requests on the [issues](/issues) pages. To facilitate contributions, 
+please check for the guidelines in the [CONTRIBUTING.md](/CONTRIBUTING.md) file.
 
 
 # Official channels 
