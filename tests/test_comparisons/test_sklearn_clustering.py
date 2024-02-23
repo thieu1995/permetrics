@@ -5,12 +5,13 @@
 # --------------------------------------------------%
 
 import numpy as np
-from permetrics import ClusteringMetric
+import pytest
 from sklearn.metrics import mutual_info_score, normalized_mutual_info_score, \
     adjusted_rand_score, rand_score, \
     completeness_score, homogeneity_score, v_measure_score, \
     fowlkes_mallows_score, calinski_harabasz_score, davies_bouldin_score
-import pytest
+
+from permetrics import ClusteringMetric
 
 np.random.seed(42)
 

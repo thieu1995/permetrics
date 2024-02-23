@@ -5,8 +5,9 @@
 # --------------------------------------------------%
 
 import numpy as np
-from permetrics import ClassificationMetric
 import pytest
+
+from permetrics import ClassificationMetric
 
 
 @pytest.fixture(scope="module")  # scope: Call only 1 time at the beginning

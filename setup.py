@@ -70,7 +70,7 @@ setup(
     ],
     install_requires=["numpy>=1.15.1", "scipy>=1.7.1"],
     extras_require={
-        "dev": ["pytest>=7.0", "pytest-cov==4.0.0", "flake8>=4.0.1"],
+        "dev": ["pytest>=7.0", "pytest-cov==4.0.0", "flake8>=4.0.1", "scikit-learn>=1.0.1"],
     },
     python_requires='>=3.7',
 )

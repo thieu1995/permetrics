@@ -5,8 +5,9 @@
 # --------------------------------------------------%
 
 import numpy as np
-from permetrics import RegressionMetric
 import pytest
+
+from permetrics import RegressionMetric
 
 
 @pytest.fixture(scope="module")  # scope: Call only 1 time at the beginning
@@ -510,10 +511,10 @@ def test_NRMSE(data):
 def test_RSE(data):
     rm1, rm2 = data[0], data[1]
     # 1D
-    res = rm1.RSE(n_paras=5)                            # 5 data samples
+    res = rm1.RSE(n_paras=5)  # 5 data samples
     assert isinstance(res, (float))
     # ND
-    res = rm2.RSE(n_paras=6, multi_output=None)         # 6 data samples
+    res = rm2.RSE(n_paras=6, multi_output=None)  # 6 data samples
     assert isinstance(res, (float))
     res = rm2.RSE(n_paras=6, multi_output="raw_values")
     assert isinstance(res, (list, tuple, np.ndarray))
