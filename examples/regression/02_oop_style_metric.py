@@ -18,7 +18,7 @@ from permetrics.regression import RegressionMetric
 y_true = np.array([3, -0.5, 2, 7, 5, 6])
 y_pred = np.array([2.5, 0.0, 2, 8, 5, 6])
 
-evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+evaluator = RegressionMetric(y_true, y_pred)
 
 ## Get the result of any function you want to
 

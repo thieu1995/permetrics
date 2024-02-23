@@ -16,7 +16,7 @@ from sklearn.datasets import make_blobs
 X, y_true = make_blobs(n_samples=300, centers=4, cluster_std=0.60, random_state=0)
 y_pred = np.random.randint(0, 4, size=300)
 
-evaluator = ClusteringMetric(y_true=y_true, y_pred=y_pred, X=X, decimal=5)
+evaluator = ClusteringMetric(y_true=y_true, y_pred=y_pred, X=X)
 
 ## Call specific function inside object, each function has 2 names (fullname and short name)
 ##    + Internal metrics: Need X and y_pred and has suffix as index

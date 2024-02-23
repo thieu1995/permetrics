@@ -18,7 +18,7 @@ from permetrics.classification import ClassificationMetric
 y_true = [0, 1, 0, 0, 1, 0]
 y_pred = [0, 1, 0, 0, 0, 1]
 
-evaluator = ClassificationMetric(y_true, y_pred, decimal=5)
+evaluator = ClassificationMetric(y_true, y_pred)
 
 ## Get the result of any function you want to
 

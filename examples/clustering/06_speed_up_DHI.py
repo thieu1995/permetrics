@@ -19,7 +19,7 @@ def generate_dataset(num_samples, num_features, num_clusters, cluster_std):
     return data, centroids, labels
 
 
-def calculate_duda_hart_index(X=None, y_pred=None, decimal=6, raise_error=True, raise_value=np.inf):
+def calculate_duda_hart_index(X=None, y_pred=None, raise_error=True, raise_value=np.inf):
     # Find the unique cluster labels
     unique_labels = np.unique(y_pred)
     if len(unique_labels) == 1:
@@ -47,10 +47,10 @@ def calculate_duda_hart_index(X=None, y_pred=None, decimal=6, raise_error=True, 
 
     # Calculate the Duda index
     result = intra_cluster_distances / inter_cluster_distances
-    return np.round(result, decimal)
+    return result
 
 
-def calculate_duda_hart_index(X=None, y_pred=None, decimal=6, raise_error=True, raise_value=np.inf):
+def calculate_duda_hart_index(X=None, y_pred=None, raise_error=True, raise_value=np.inf):
     # Find the unique cluster labels
     unique_labels = np.unique(y_pred)
     if len(unique_labels) == 1:
@@ -81,7 +81,7 @@ def calculate_duda_hart_index(X=None, y_pred=None, decimal=6, raise_error=True, 
 
     # Calculate the Duda index
     result = intra_cluster_distances / inter_cluster_distances
-    return np.round(result, decimal)
+    return result
 
 
 num_samples = 5000

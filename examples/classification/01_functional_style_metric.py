@@ -21,7 +21,7 @@ evaluator = ClassificationMetric()
 
 ## 3.1 Call specific function inside object, each function has 2 names like below
 
-ps1 = evaluator.precision_score(y_true, y_pred, decimal=5)
+ps1 = evaluator.precision_score(y_true, y_pred)
 ps2 = evaluator.PS(y_true, y_pred)
 print(f"Precision: {ps1}, {ps2}")
 

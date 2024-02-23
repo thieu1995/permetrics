@@ -29,101 +29,101 @@ data, y_true, y_pred, centers = generate_dataset(num_samples, num_features, num_
 
 
 # time02 = time.perf_counter()
-# cm = ClusteringMetric(y_true=y_true, y_pred=y_pred, decimal=10)
+# cm = ClusteringMetric(y_true=y_true, y_pred=y_pred)
 # res = cm.czekanowski_dice_score()
 # print("res: ", res, time.perf_counter() - time02 )
 #
 # time03 = time.perf_counter()
-# s3 = cut.calculate_czekanowski_dice_score(y_true, y_pred, decimal=10)
+# s3 = cut.calculate_czekanowski_dice_score(y_true, y_pred)
 # print("res: ", s3, time.perf_counter() - time03)
 
 
 # time02 = time.perf_counter()
-# cm = ClusteringMetric(y_true=y_true, y_pred=y_pred, decimal=10)
+# cm = ClusteringMetric(y_true=y_true, y_pred=y_pred)
 # res = cm.hubert_gamma_score()
 # print("res: ", res, time.perf_counter() - time02 )
 #
 # time03 = time.perf_counter()
-# s3 = cut.calculate_hubert_gamma_score(y_true, y_pred, decimal=10)
+# s3 = cut.calculate_hubert_gamma_score(y_true, y_pred)
 # print("res: ", s3, time.perf_counter() - time03)
 
 
 # time02 = time.perf_counter()
-# cm = ClusteringMetric(y_true=y_true, y_pred=y_pred, decimal=10)
+# cm = ClusteringMetric(y_true=y_true, y_pred=y_pred)
 # res = cm.jaccard_score()
 # print("res: ", res, time.perf_counter() - time02 )
 #
 # time03 = time.perf_counter()
-# s3 = cut.calculate_jaccard_score(y_true, y_pred, decimal=10)
+# s3 = cut.calculate_jaccard_score(y_true, y_pred)
 # print("res: ", s3, time.perf_counter() - time03)
 
 
 # time02 = time.perf_counter()
-# cm = ClusteringMetric(y_true=y_true, y_pred=y_pred, decimal=10)
+# cm = ClusteringMetric(y_true=y_true, y_pred=y_pred)
 # res = cm.kulczynski_score()
 # print("res: ", res, time.perf_counter() - time02 )
 #
 # time03 = time.perf_counter()
-# s3 = cut.calculate_kulczynski_score(y_true, y_pred, decimal=10)
+# s3 = cut.calculate_kulczynski_score(y_true, y_pred)
 # print("res: ", s3, time.perf_counter() - time03)
 
 
 # time02 = time.perf_counter()
-# cm = ClusteringMetric(y_true=y_true, y_pred=y_pred, decimal=10)
+# cm = ClusteringMetric(y_true=y_true, y_pred=y_pred)
 # res = cm.mc_nemar_score()
 # print("res: ", res, time.perf_counter() - time02 )
 #
 # time03 = time.perf_counter()
-# s3 = cut.calculate_mc_nemar_score(y_true, y_pred, decimal=10)
+# s3 = cut.calculate_mc_nemar_score(y_true, y_pred)
 # print("res: ", s3, time.perf_counter() - time03)
 
 
 # time02 = time.perf_counter()
-# cm = ClusteringMetric(y_true=y_true, y_pred=y_pred, decimal=10)
+# cm = ClusteringMetric(y_true=y_true, y_pred=y_pred)
 # res = cm.phi_score()
 # print("res: ", res, time.perf_counter() - time02 )
 #
 # time03 = time.perf_counter()
-# s3 = cut.calculate_phi_score(y_true, y_pred, decimal=10)
+# s3 = cut.calculate_phi_score(y_true, y_pred)
 # print("res: ", s3, time.perf_counter() - time03)
 
 
 # time02 = time.perf_counter()
-# cm = ClusteringMetric(y_true=y_true, y_pred=y_pred, decimal=10)
+# cm = ClusteringMetric(y_true=y_true, y_pred=y_pred)
 # res = cm.rogers_tanimoto_score()
 # print("res: ", res, time.perf_counter() - time02 )
 #
 # time03 = time.perf_counter()
-# s3 = cut.calculate_rogers_tanimoto_score(y_true, y_pred, decimal=10)
+# s3 = cut.calculate_rogers_tanimoto_score(y_true, y_pred)
 # print("res: ", s3, time.perf_counter() - time03)
 
 
 # time02 = time.perf_counter()
-# cm = ClusteringMetric(y_true=y_true, y_pred=y_pred, decimal=10)
+# cm = ClusteringMetric(y_true=y_true, y_pred=y_pred)
 # res = cm.russel_rao_score()
 # print("res: ", res, time.perf_counter() - time02 )
 #
 # time03 = time.perf_counter()
-# s3 = cut.calculate_russel_rao_score(y_true, y_pred, decimal=10)
+# s3 = cut.calculate_russel_rao_score(y_true, y_pred)
 # print("res: ", s3, time.perf_counter() - time03)
 
 
 # time02 = time.perf_counter()
-# cm = ClusteringMetric(y_true=y_true, y_pred=y_pred, decimal=10)
+# cm = ClusteringMetric(y_true=y_true, y_pred=y_pred)
 # res = cm.sokal_sneath1_score()
 # print("res: ", res, time.perf_counter() - time02 )
 #
 # time03 = time.perf_counter()
-# s3 = cut.calculate_sokal_sneath1_score(y_true, y_pred, decimal=10)
+# s3 = cut.calculate_sokal_sneath1_score(y_true, y_pred)
 # print("res: ", s3, time.perf_counter() - time03)
 
 
 time02 = time.perf_counter()
-cm = ClusteringMetric(y_true=y_true, y_pred=y_pred, decimal=10)
+cm = ClusteringMetric(y_true=y_true, y_pred=y_pred)
 res = cm.sokal_sneath2_score()
 print("res: ", res, time.perf_counter() - time02 )
 
 time03 = time.perf_counter()
-s3 = cut.calculate_sokal_sneath2_score(y_true, y_pred, decimal=10)
+s3 = cut.calculate_sokal_sneath2_score(y_true, y_pred)
 print("res: ", s3, time.perf_counter() - time03)
 

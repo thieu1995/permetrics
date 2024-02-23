@@ -18,7 +18,7 @@ y_pred = [0, 1, 0, 0, 0, 1]
 # y_true = ["cat", "ant", "cat", "cat", "ant", "bird", "bird", "bird"]
 # y_pred = ["ant", "ant", "cat", "cat", "ant", "cat", "bird", "ant"]
 
-evaluator = ClassificationMetric(y_true, y_pred, decimal=5)
+evaluator = ClassificationMetric(y_true, y_pred)
 
 ## Call specific function inside object, each function has 2 names like below
 
