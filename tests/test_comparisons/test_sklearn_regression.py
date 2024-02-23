@@ -5,10 +5,11 @@
 # --------------------------------------------------%
 
 import numpy as np
-from permetrics import RegressionMetric
+import pytest
 from sklearn.metrics import explained_variance_score, max_error, mean_absolute_error, \
     mean_squared_error, median_absolute_error, r2_score, mean_absolute_percentage_error
-import pytest
+
+from permetrics import RegressionMetric
 
 
 @pytest.fixture(scope="module")  # scope: Call only 1 time at the beginning

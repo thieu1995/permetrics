@@ -5,8 +5,9 @@
 # --------------------------------------------------%
 
 import numpy as np
-from permetrics import ClusteringMetric
 import pytest
+
+from permetrics import ClusteringMetric
 
 np.random.seed(42)
 
