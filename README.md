@@ -114,18 +114,6 @@ The more complicated cases in the folder: [examples](/examples). You can also re
 for more detailed installation instructions, explanations, and examples.
 
 
-
-# Warning
-
-* **Currently, there is a huge misunderstanding among frameworks around the world about the notation of R, R2, and R^2.** 
-* Please read the file [R-R2-Rsquared.docx](https://github.com/thieu1995/permetrics/blob/master/R-R2-Rsquared.docx) to understand the differences between them and why there is such confusion.
-
-<p align="center"><img src=".github/assets/rr2.png" alt="R" title="R"/></p>
-
-* **My recommendation is to denote the Coefficient of Determination as COD or R2, while the squared Pearson's 
-  Correlation Coefficient should be denoted as R^2 or RSQ (as in Excel software).**
-
-
 # Contributing
 
 There are lots of ways how you can contribute to Permetrics's development, and you are welcome to join in! For example, 
@@ -141,6 +129,18 @@ please check for the guidelines in the [CONTRIBUTING.md](/CONTRIBUTING.md) file.
 * [Issue tracker](https://github.com/thieu1995/permetrics/issues) 
 * [Notable changes log](/ChangeLog.md)
 * [Official discussion group](https://t.me/+fRVCJGuGJg1mNDg1) 
+
+
+# Warning
+
+* **Currently, there is a huge misunderstanding among frameworks around the world about the notation of R, R2, and R^2.** 
+* Please read the file [R-R2-Rsquared.docx](https://github.com/thieu1995/permetrics/blob/master/R-R2-Rsquared.docx) to understand the differences between them and why there is such confusion.
+
+<p align="center"><img src=".github/assets/rr2.png" alt="R" title="R"/></p>
+
+* **My recommendation is to denote the Coefficient of Determination as COD or R2, while the squared Pearson's 
+  Correlation Coefficient should be denoted as R^2 or RSQ (as in Excel software).**
+
 
 ---
 
