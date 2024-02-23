@@ -1,4 +1,4 @@
-MBE - Mean Bias Error
+BE - Mean Bias Error
 =====================
 
 .. toctree::

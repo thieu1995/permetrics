@@ -50,8 +50,3 @@ Example to use MAE metric:
 
 	evaluator = RegressionMetric(y_true, y_pred)
 	print(evaluator.MAE(multi_output="raw_values"))
-
-
-
-
-
