@@ -510,14 +510,14 @@ def test_NRMSE(data):
 def test_RSE(data):
     rm1, rm2 = data[0], data[1]
     # 1D
-    res = rm1.RSE()
+    res = rm1.RSE(n_paras=5)                            # 5 data samples
     assert isinstance(res, (float))
     # ND
-    res = rm2.RSE(multi_output=None)
+    res = rm2.RSE(n_paras=6, multi_output=None)         # 6 data samples
     assert isinstance(res, (float))
-    res = rm2.RSE(multi_output="raw_values")
+    res = rm2.RSE(n_paras=6, multi_output="raw_values")
     assert isinstance(res, (list, tuple, np.ndarray))
-    res = rm2.RSE(multi_output=(0.2, 0.7))
+    res = rm2.RSE(n_paras=6, multi_output=(0.2, 0.7))
     assert isinstance(res, float)
 
 
