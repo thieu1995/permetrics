@@ -1,9 +1,9 @@
-MAPE - Mean Percentage Error
-============================
+MPE - Mean Percentage Error
+===========================
 
 .. toctree::
    :maxdepth: 3
-   :caption: MAPE - Mean Percentage Error
+   :caption: MPE - Mean Percentage Error
 
 .. toctree::
    :maxdepth: 3
@@ -19,14 +19,12 @@ MAPE - Mean Percentage Error
 
 	\text{MPE}(y, \hat{y}) = \frac{100\%}{N} \sum_{i=0}^{N - 1} \frac{y_i - \hat{y}_i}{y_i}.
 
-
-+ Mean Percentage Error (MPE): Best possible score is 0.0. Range = (-inf, +inf)
-+ Link: https://www.dataquest.io/blog/understanding-regression-error-metrics/
-
-
 Latex equation code::
 
 	\text{MPE}(y, \hat{y}) = \frac{100\%}{N} \sum_{i=0}^{N - 1} \frac{y_i - \hat{y}_i}{y_i}.
+
++ Mean Percentage Error (MPE): Best possible score is 0.0. Range = (-inf, +inf)
++ `Link to equation <https://www.dataquest.io/blog/understanding-regression-error-metrics/>`_
 
 
 Example to use MPE metric:
@@ -41,12 +39,12 @@ Example to use MPE metric:
 	y_true = array([3, -0.5, 2, 7])
 	y_pred = array([2.5, 0.0, 2, 8])
 
-	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+	evaluator = RegressionMetric(y_true, y_pred)
 	print(evaluator.mean_percentage_error())
 
 	## For > 1-D array
 	y_true = array([[0.5, 1], [-1, 1], [7, -6]])
 	y_pred = array([[0, 2], [-1, 2], [8, -5]])
 
-	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+	evaluator = RegressionMetric(y_true, y_pred)
 	print(evaluator.MPE(multi_output="raw_values"))

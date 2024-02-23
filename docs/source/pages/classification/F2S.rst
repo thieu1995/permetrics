@@ -42,7 +42,7 @@ Example:
 	# y_true = ["cat", "ant", "cat", "cat", "ant", "bird", "bird", "bird"]
 	# y_pred = ["ant", "ant", "cat", "cat", "ant", "cat", "bird", "ant"]
 
-	cm = ClassificationMetric(y_true, y_pred, decimal = 5)
+	cm = ClassificationMetric(y_true, y_pred)
 
 	print(cm.f2_score(average=None))
 	print(cm.F2S(average="micro"))

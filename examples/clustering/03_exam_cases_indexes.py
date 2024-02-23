@@ -19,7 +19,7 @@ temp = [
     np.ones((300,)), np.zeros((300,))
 ]
 for idx in range(7):
-    evaluator = ClusteringMetric(y_pred=temp[idx], X=X, decimal=5)
+    evaluator = ClusteringMetric(y_pred=temp[idx], X=X)
     print(evaluator.hartigan_index())
 
 # print(evaluator.get_metrics_by_list_names(["BHI", "XBI", "DBI", "BRI", "KDI", "DRI", "DI", "CHI",

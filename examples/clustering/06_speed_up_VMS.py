@@ -34,10 +34,10 @@ s3 = sk_vms(y_true, y_pred)
 print("res: ", s3, time.perf_counter() - time03)
 
 time02 = time.perf_counter()
-cm = ClusteringMetric(y_true=y_true, y_pred=y_pred, decimal=10)
+cm = ClusteringMetric(y_true=y_true, y_pred=y_pred)
 res = cm.v_measure_score()
 print("res: ", res, time.perf_counter() - time02 )
 
 time03 = time.perf_counter()
-s3 = cut.calculate_v_measure_score(y_true, y_pred, decimal=10)
+s3 = cut.calculate_v_measure_score(y_true, y_pred)
 print("res: ", s3, time.perf_counter() - time03)

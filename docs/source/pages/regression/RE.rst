@@ -19,15 +19,13 @@ RE - Relative Error
 
 	\text{RE}(y, \hat{y}) = \frac{|y_i - \hat{y}_i|}{|y_i|}
 
+Latex equation code::
+
+	\text{RE}(y, \hat{y}) = \frac{|y_i - \hat{y}_i|}{|y_i|}
 
 + Relative Error (RE): Best possible score is 0.0, smaller value is better. Range = (-inf, +inf)
 + Note: Computes the relative error between two numbers, or for element between a pair of list, tuple or numpy arrays.
 + The Relative Error (RE) is a metric used to evaluate the accuracy of a regression model by measuring the ratio of the absolute error to the actual value.
-
-
-Latex equation code::
-
-	\text{RE}(y, \hat{y}) = \frac{|y_i - \hat{y}_i|}{|y_i|}
 
 
 Example to use RE metric:
@@ -42,12 +40,12 @@ Example to use RE metric:
 	y_true = array([3, -0.5, 2, 7])
 	y_pred = array([2.5, 0.0, 2, 8])
 
-	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+	evaluator = RegressionMetric(y_true, y_pred)
 	print(evaluator.single_relative_error())
 
 	## For > 1-D array
 	y_true = array([[0.5, 1], [-1, 1], [7, -6]])
 	y_pred = array([[0, 2], [-1, 2], [8, -5]])
 
-	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+	evaluator = RegressionMetric(y_true, y_pred)
 	print(evaluator.RE())

@@ -22,7 +22,7 @@ temp = [
     9*np.ones((300))
 ]
 for idx in range(7):
-    evaluator = ClusteringMetric(y_true=y_true, y_pred=temp[idx], X=X, decimal=5)
+    evaluator = ClusteringMetric(y_true=y_true, y_pred=temp[idx], X=X)
     print(evaluator.gplus_score())
 
 # print(evaluator.get_metrics_by_list_names(["MIS", "NMIS", "RaS", "ARS", "FMS", "HS", "CS", "VMS", "PrS", "ReS", "FmS",

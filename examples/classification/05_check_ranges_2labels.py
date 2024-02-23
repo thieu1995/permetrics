@@ -17,7 +17,7 @@ t1 = [
     np.random.randint(0, 2, len(y_true))
 ]
 for idx in range(len(t1)):
-    evaluator = ClassificationMetric(y_true, t1[idx], decimal=5)
+    evaluator = ClassificationMetric(y_true, t1[idx])
     print(evaluator.gini_index())
 
 #     CM = confusion_matrix

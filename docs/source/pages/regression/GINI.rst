@@ -50,7 +50,7 @@ Example to use Gini metric, there are two GINI versions:
 	y_true = array([3, -0.5, 2, 7])
 	y_pred = array([2.5, 0.0, 2, 8])
 
-	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+	evaluator = RegressionMetric(y_true, y_pred)
 	print(evaluator.gini())
 	print(evaluator.gini_wiki())
 
@@ -58,7 +58,7 @@ Example to use Gini metric, there are two GINI versions:
 	y_true = array([[0.5, 1], [-1, 1], [7, -6]])
 	y_pred = array([[0, 2], [-1, 2], [8, -5]])
 
-	evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+	evaluator = RegressionMetric(y_true, y_pred)
 	print(evaluator.GINI(multi_output="raw_values"))
 	print(evaluator.GINI_WIKI(multi_output="raw_values"))
 

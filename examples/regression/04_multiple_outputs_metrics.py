@@ -18,7 +18,7 @@ y_pred = np.array([ [2.5, 0.0, 2, 8],
                     [5.2, 5.4, 0, 9.1],
                     [-10, 23, 8.2, 4] ])
 
-evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+evaluator = RegressionMetric(y_true, y_pred)
 
 ## 1. By default, all metrics can automatically return the multi-output results
 # rmse = evaluator.RMSE()
@@ -39,9 +39,9 @@ evaluator = RegressionMetric(y_true, y_pred, decimal=5)
 ## 1. Get list metrics by using list_names
 list_metrics = ["RMSE", "MAE", "MSE"]
 list_paras = [
-    {"decimal": 3, "multi_output": "mean"},
-    {"decimal": 4, "multi_output": [0.5, 0.2, 0.1, 0.2]},
-    {"decimal": 5, "multi_output": "raw_values"}
+    {"multi_output": "mean"},
+    {"multi_output": [0.5, 0.2, 0.1, 0.2]},
+    {"multi_output": "raw_values"}
 ]
 dict_result_1 = evaluator.get_metrics_by_list_names(list_metrics, list_paras)
 print(dict_result_1)
@@ -49,9 +49,9 @@ print(dict_result_1)
 
 ## 2. Get list metrics by using dict_metrics
 dict_metrics = {
-    "RMSE": {"decimal": 5, "multi_output": "mean"},
-    "MAE": {"decimal": 4, "multi_output": "raw_values"},
-    "MSE": {"decimal": 2, "multi_output": [0.5, 0.2, 0.1, 0.2]},
+    "RMSE": {"multi_output": "mean"},
+    "MAE": {"multi_output": "raw_values"},
+    "MSE": {"multi_output": [0.5, 0.2, 0.1, 0.2]},
 }
 dict_result_2 = evaluator.get_metrics_by_dict(dict_metrics)
 print(dict_result_2)

@@ -26,7 +26,7 @@ rmse_2 = evaluator.root_mean_squared_error(y_true, y_pred)
 print(f"RMSE: {rmse_1}, {rmse_2}")
 
 mse = evaluator.MSE(y_true, y_pred)
-mae = evaluator.MAE(y_true, y_pred, decimal=5)
+mae = evaluator.MAE(y_true, y_pred)
 print(f"MSE: {mse}, MAE: {mae}")
 
 #     EVS = explained_variance_score

@@ -34,10 +34,10 @@ s3 = sk_hs(y_true, y_pred)
 print("res: ", s3, time.perf_counter() - time03)
 
 time02 = time.perf_counter()
-cm = ClusteringMetric(y_true=y_true, y_pred=y_pred, decimal=8)
+cm = ClusteringMetric(y_true=y_true, y_pred=y_pred)
 res = cm.homogeneity_score()
 print("res: ", res, time.perf_counter() - time02 )
 
 time03 = time.perf_counter()
-s3 = cut.calculate_homogeneity_score(y_true, y_pred, decimal=8)
+s3 = cut.calculate_homogeneity_score(y_true, y_pred)
 print("res: ", s3, time.perf_counter() - time03)

@@ -13,7 +13,7 @@ from permetrics.regression import RegressionMetric
 y_true = np.array([3, -0.5, 2, 7, 5, 6])
 y_pred = np.array([2.5, 0.0, 2, 8, 5, 6])
 
-evaluator = RegressionMetric(y_true, y_pred, decimal=5)
+evaluator = RegressionMetric(y_true, y_pred)
 
 ## Define list of metrics you want to use
 
@@ -33,10 +33,10 @@ print(dict_result_2)
 
 ## 3. Get list metrics by using function and parameters
 dict_metrics = {
-    "RMSE": {"decimal": 5},
-    "MAE": {"decimal": 4},
+    "RMSE": {},
+    "MAE": {},
     "MAPE": None,
-    "NSE": {"decimal": 3},
+    "NSE": {},
 }
 dict_result_3 = evaluator.get_metrics_by_dict(dict_metrics)
 print(dict_result_3)

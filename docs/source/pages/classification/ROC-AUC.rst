@@ -64,7 +64,7 @@ Example:
                    [0.9, 0.1, 0.0],
                    [0.1, 0.8, 0.1]])
 
-	cm = ClassificationMetric(y_true, y_pred, decimal = 5)
+	cm = ClassificationMetric(y_true, y_pred)
 
 	print(cm.roc_auc_score(y_true, y_score, average=None))
 	print(cm.ROC(y_true, y_score))
