@@ -71,7 +71,7 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name: dist-package-${{ matrix.python-version }}
-          path: dist
+          path: dist/
         if: matrix.python-version == 3.11
 
   publish:
@@ -83,7 +83,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: dist-package-3.11
-          path: dist
+          path: dist/
 
       - name: Publish distribution 📦 to Test PyPI
         uses: pypa/gh-action-pypi-publish@master
