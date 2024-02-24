@@ -48,7 +48,7 @@ At the time of publication, `PerMetrics` provides three types of performance met
 
 | **Problem**    | **ID** | **Metric** | **Metric Fullname**                              |
 |----------------|--------|------------|--------------------------------------------------|
-| ****           | 1      | EVS        | Explained Variance Score                         |
+| Regression     | 1      | EVS        | Explained Variance Score                         |
 | ****           | 2      | ME         | Max Error                                        |
 | ****           | 3      | MBE        | Mean Bias Error                                  |
 | ****           | 4      | MAE        | Mean Absolute Error                              |
@@ -214,7 +214,7 @@ import numpy as np
 from permetrics import ClusteringMetric
 from sklearn.datasets import make_blobs
 
-# generate sample data
+# Generate sample data
 X, y_true = make_blobs(n_samples=300, centers=4, cluster_std=0.60, random_state=0)
 y_pred = np.random.randint(0, 4, size=300)
 
@@ -223,11 +223,11 @@ evaluator = ClusteringMetric(y_true=y_true, y_pred=y_pred, X=X)
 # Call specific function inside evaluator, each function has 2 names 
 #   (fullname and short name)
 
-## + Internal metrics: Need X and y_pred and has function's suffix as `index`
+## 1. Internal metrics: Need X and y_pred and has function's suffix as `index`
 print(evaluator.ball_hall_index(X=X, y_pred=y_pred))
 print(evaluator.CHI(X=X, y_pred=y_pred))
 
-## + External metrics: Need y_true and y_pred and has function's suffix as `score`
+## 2. External metrics: Need y_true and y_pred and has function's suffix as `score`
 print(evaluator.adjusted_rand_score(y_true=y_true, y_pred=y_pred))
 print(evaluator.completeness_score(y_true=y_true, y_pred=y_pred))
 ```
