@@ -1,5 +1,5 @@
 ---
-title: 'permetrics: A Framework of Performance Metrics for Machine Learning Models'
+title: 'PerMetrics: A Framework of Performance Metrics for Machine Learning Models'
 tags:
   - model assessment tools
   - performance metrics
@@ -31,7 +31,7 @@ This paper introduces a Python framework named **PerMetrics** (PERformance METRI
 
 **PerMetrics** is a Python project developed in the field of performance assessment and machine learning. To the best of our knowledge, it is the first open-source framework that contributes a significant number of metrics, totaling 111 methods, for three fundamental problems: regression, classification, and clustering. This library relies exclusively on only two well-known third-party Python scientific computing packages: `NumPy` [@harris2020array] and `SciPy` [@virtanen2020scipy]. The modules of `permetrics` are extensively documented, and the automatically generated API provides a complete and up-to-date description of both the object-oriented and functional implementations underlying the framework.
 
-To gain a better understanding of the necessity of `permetrics` library, this section will compare it to several notable libraries currently are available. Most notably, `Scikit-Learn` [@scikit_learn], which also encompasses an assortment of metrics for regression, classification, and clustering problems. Nevertheless, a few classification metrics present in `Scikit-Learn` lack support for multiple outputs, such as the Matthews correlation coefficient (MCC) and Hinge loss. Furthermore, critical metrics such as RMSE, mean absolute percentage error (MAPE), Nash-Sutcliffe efficiency (NSE), and Kling-Gupta efficiency (KGE) are absent. `permetrics` addresses these deficiencies. Additionally, `Scikit-Learn` is deficient in various vital clustering metrics, including but not limited to Ball Hall index, Banfeld Raftery index, sum of squared error, Duda Hart index, and Hartigan index [@van2023metacluster].
+To gain a better understanding of the necessity of **PerMetrics** library, this section will compare it to several notable libraries currently are available. Most notably, `Scikit-Learn` [@scikit_learn], which also encompasses an assortment of metrics for regression, classification, and clustering problems. Nevertheless, a few classification metrics present in `Scikit-Learn` lack support for multiple outputs, such as the Matthews correlation coefficient (MCC) and Hinge loss. Furthermore, critical metrics such as RMSE, mean absolute percentage error (MAPE), Nash-Sutcliffe efficiency (NSE), and Kling-Gupta efficiency (KGE) are absent. `permetrics` addresses these deficiencies. Additionally, `Scikit-Learn` is deficient in various vital clustering metrics, including but not limited to Ball Hall index, Banfeld Raftery index, sum of squared error, Duda Hart index, and Hartigan index [@van2023metacluster].
 
 Another popular package is `Metrics` [@benhamner]. It provides a variety of metrics for different programming languages such as Python, MATLAB, R, and Haskell. However, the development team has ceased activity since 2015. They offer a limited number of metrics because they focused on creating a single set of metrics for multiple programming languages. Additionally, the metrics are not packaged as a complete library but rather exist as repository code on GitHub.
 
@@ -39,7 +39,7 @@ Another popular package is `Metrics` [@benhamner]. It provides a variety of metr
 
 Other popular libraries such as `TensorFlow` [@abadi2016tensorflow], `Keras` [@chollet2017xception], `CatBoost` [@prokhorenkova2018catboost], and `MxNet` [@chen2015mxnet] also contain modules dedicated to metrics. However, the issue with these libraries is that their metric modules are specific to each respective one. It is challenging to combine metric modules from different libraries with each other. If it is possible to combine them, it often requires installing numerous related libraries. Furthermore, the metric modules within each library are tailored to users who are familiar with that specific one, requiring users to learn multiple libraries, syntax structures, and necessary commands associated with each framework to use them in combination. These are significant obstacles when using metrics from such libraries.
 
-All the aforementioned challenges are addressed by our `permetrics` library. It not only offers a simple and concise syntax and usage but also does not require any knowledge of other major libraries such as `TensorFlow`, `Keras`, or `PyTorch`. Additionally, it can be seamlessly integrated with any computational or machine learning library. In the future, we plan to expand `permetrics` to include other domains such as text metrics, audio metrics, detection metrics, and image metrics.
+All the aforementioned challenges are addressed by our **PerMetrics** library. It not only offers a simple and concise syntax and usage but also does not require any knowledge of other major libraries such as `TensorFlow`, `Keras`, or `PyTorch`. Additionally, it can be seamlessly integrated with any computational or machine learning library. In the future, we plan to expand `permetrics` to include other domains such as text metrics, audio metrics, detection metrics, and image metrics.
 
 
 # Available Methods
@@ -165,19 +165,19 @@ At the time of publication, `PerMetrics` provides three types of performance met
 
 # Installation and Simple Example
 
-`PerMetrics` is [published](https://pypi.org/project/permetrics/) to the Python Packaging Index (PyPI) and can be installed via pip
+**PerMetrics** is [published](https://pypi.org/project/permetrics/) to the Python Packaging Index (PyPI) and can be installed via pip
 
 ```bash
 pip install permetrics
 ```
 
-Below are a few fundamental examples illustrating the usage of the `PerMetrics` library. We have prepared a folder `examples` in Github repository that contains these examples and more advances one. Furthermore, to gain a comprehensive understanding of our library, we recommend reading the documentation available at the following [link](https://permetrics.readthedocs.io/).
+Below are a few fundamental examples illustrating the usage of the `permetrics` library. We have prepared a folder `examples` in Github repository that contains these examples and more advances one. Furthermore, to gain a comprehensive understanding of our library, we recommend reading the documentation available at the following [link](https://permetrics.readthedocs.io/).
 
 ## Regression Metrics
 
 ```python
 import numpy as np
-from permetrics.regression import RegressionMetric
+from permetrics import RegressionMetric
 
 y_true = np.array([3, -0.5, 2, 7, 5, 6])
 y_pred = np.array([2.5, 0.0, 2, 8, 5, 6])
@@ -192,12 +192,11 @@ print(evaluator.MAPE())
 ## Classification Metrics
 
 ```python
-from permetrics.classification import ClassificationMetric
+from permetrics import ClassificationMetric
 
 ## For integer labels or categorical labels
 y_true = [0, 1, 0, 0, 1, 0]
 y_pred = [0, 1, 0, 0, 0, 1]
-
 # y_true = ["cat", "ant", "cat", "cat", "ant", "bird", "bird", "bird"]
 # y_pred = ["ant", "ant", "cat", "cat", "ant", "cat", "bird", "ant"]
 
@@ -221,13 +220,14 @@ y_pred = np.random.randint(0, 4, size=300)
 
 evaluator = ClusteringMetric(y_true=y_true, y_pred=y_pred, X=X)
 
-# Call specific function inside object, each function has 2 names (fullname and short name)
+# Call specific function inside evaluator, each function has 2 names 
+#   (fullname and short name)
 
-##    + Internal metrics: Need X and y_pred and has suffix as index
+## + Internal metrics: Need X and y_pred and has function's suffix as `index`
 print(evaluator.ball_hall_index(X=X, y_pred=y_pred))
 print(evaluator.CHI(X=X, y_pred=y_pred))
 
-##    + External metrics: Need y_true and y_pred and has suffix as score
+## + External metrics: Need y_true and y_pred and has function's suffix as `score`
 print(evaluator.adjusted_rand_score(y_true=y_true, y_pred=y_pred))
 print(evaluator.completeness_score(y_true=y_true, y_pred=y_pred))
 ```
