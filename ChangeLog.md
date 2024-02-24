@@ -1,3 +1,14 @@
+# Version 2.0.0
+
++ Resolve problems pointed out by reviewers for JOSS journal
++ Update documents, examples, and README
++ Update pre-condition check for all metrics
++ Remove `decimal` parameter in all metrics
++ Replace `non_zero`, `positive` parameters by `force_finite`, `finite_value` in many metrics.
++ Add features tests and comparisons tests
+
+---------------------------------------------------------------------
+
 # Version 1.5.0
 
 + Add metrics to ClusteringMetric class:

@@ -51,7 +51,7 @@
 # print(internal_evaluator.BRI())
 
 
-__version__ = "1.5.0"
+__version__ = "2.0.0"
 
 from .evaluator import Evaluator
 from .classification import ClassificationMetric
