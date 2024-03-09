@@ -48,6 +48,9 @@ Welcome to Permetrics's documentation!
 .. image:: https://zenodo.org/badge/280617738.svg
    :target: https://zenodo.org/badge/latestdoi/280617738
 
+.. image:: https://joss.theoj.org/papers/10.21105/joss.06143/status.svg
+   :target: https://doi.org/10.21105/joss.06143
+
 .. image:: https://img.shields.io/badge/License-GPLv3-blue.svg
    :target: https://www.gnu.org/licenses/gpl-3.0
 

@@ -4,14 +4,17 @@ Citation Request
 
 Please include these citations if you plan to use this library::
 
-	@software{nguyen_van_thieu_2023_8220489,
-		author       = {Nguyen Van Thieu},
-		title        = {PerMetrics: A Framework of Performance Metrics for Machine Learning Models},
-		month        = aug,
-		year         = 2023,
-		publisher    = {Zenodo},
-		doi          = {10.5281/zenodo.3951205},
-		url          = {https://github.com/thieu1995/permetrics}
+	@article{Thieu_PerMetrics_A_Framework_2024,
+		author = {Thieu, Nguyen Van},
+		doi = {10.21105/joss.06143},
+		journal = {Journal of Open Source Software},
+		month = mar,
+		number = {95},
+		pages = {6143},
+		title = {{PerMetrics: A Framework of Performance Metrics for Machine Learning Models}},
+		url = {https://joss.theoj.org/papers/10.21105/joss.06143},
+		volume = {9},
+		year = {2024}
 	}
 
 	@article{van2023mealpy,

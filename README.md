@@ -22,7 +22,10 @@ alt="PERMETRICS"/>
 ![GitHub contributors](https://img.shields.io/github/contributors/thieu1995/permetrics.svg)
 [![GitTutorial](https://img.shields.io/badge/PR-Welcome-%23FF8300.svg?)](https://git-scm.com/book/en/v2/GitHub-Contributing-to-a-Project)
 [![DOI](https://zenodo.org/badge/280617738.svg)](https://zenodo.org/badge/latestdoi/280617738)
+[![JOSS](https://joss.theoj.org/papers/10.21105/joss.06143/status.svg)](https://doi.org/10.21105/joss.06143)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
+
 
 
 PerMetrics is a python library for performance metrics of machine learning models. We aim to implement all 
@@ -35,17 +38,26 @@ metrics)**
 
 Please include these citations if you plan to use this library:
 
-```code 
-@software{nguyen_van_thieu_2023_8220489,
-  author       = {Nguyen Van Thieu},
-  title        = {PerMetrics: A Framework of Performance Metrics for Machine Learning Models},
-  month        = aug,
-  year         = 2023,
-  publisher    = {Zenodo},
-  doi          = {10.5281/zenodo.3951205},
-  url          = {https://github.com/thieu1995/permetrics}
-}
-```
+- LaTeX:
+
+   ```bibtex
+  @article{Thieu_PerMetrics_A_Framework_2024,
+    author = {Thieu, Nguyen Van},
+    doi = {10.21105/joss.06143},
+    journal = {Journal of Open Source Software},
+    month = mar,
+    number = {95},
+    pages = {6143},
+    title = {{PerMetrics: A Framework of Performance Metrics for Machine Learning Models}},
+    url = {https://joss.theoj.org/papers/10.21105/joss.06143},
+    volume = {9},
+    year = {2024}
+  }
+   ```
+
+- APA:
+
+  Thieu, N. V. (2024). PerMetrics: A Framework of Performance Metrics for Machine Learning Models. Journal of Open Source Software, 9(95), 6143. https://doi.org/10.21105/joss.06143
 
 
 # Installation
