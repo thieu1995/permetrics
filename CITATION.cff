@@ -1,0 +1,28 @@
+cff-version: "1.2.0"
+authors:
+- family-names: Thieu
+  given-names: Nguyen Van
+  orcid: "https://orcid.org/0000-0001-9994-8747"
+doi: 10.5281/zenodo.3951205
+message: If you use this software, please cite our article in the
+  Journal of Open Source Software.
+preferred-citation:
+  authors:
+  - family-names: Thieu
+    given-names: Nguyen Van
+    orcid: "https://orcid.org/0000-0001-9994-8747"
+  date-published: 2024-03-09
+  doi: 10.21105/joss.06143
+  issn: 2475-9066
+  issue: 95
+  journal: Journal of Open Source Software
+  publisher:
+    name: Open Journals
+  start: 6143
+  title: "PerMetrics: A Framework of Performance Metrics for Machine
+    Learning Models"
+  type: article
+  url: "https://joss.theoj.org/papers/10.21105/joss.06143"
+  volume: 9
+title: "PerMetrics: A Framework of Performance Metrics for Machine
+  Learning Models"
