@@ -753,7 +753,7 @@ class ClassificationMetric(Evaluator):
             y_score_i = y_score[:, i]
             tpr[i], fpr[i], thresholds[i] = cu.calculate_roc_curve(y_true_i, y_score_i)
             # Calculate the area under the curve (AUC) using the trapezoidal rule
-            auc.append(np.trapz(tpr[i], fpr[i]))
+            auc.append(np.trapezoid(tpr[i], fpr[i]))
         if average == "macro":
             result = np.mean(auc)
         elif average == "weighted":
