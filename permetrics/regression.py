@@ -41,7 +41,12 @@ class RegressionMetric(Evaluator):
         "MRB": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "MPE": {"type": "unknown", "range": "(-inf, +inf)", "best": "0"},
         "MAPE": {"type": "min", "range": "[0, +inf)", "best": "0"},
-        "SMAPE": {"type": "min", "range": "[0, 1]", "best": "0"},
+
+        "SMAPE": {"type": "min", "range": "[0, 200]", "best": "0"},
+        "SMAPE_NP": {"type": "min", "range": "[0, 2]", "best": "0"},
+        "SMAPE_S": {"type": "min", "range": "[0, 1]", "best": "0"},
+        "SMAPE_S_P": {"type": "min", "range": "[0, 100]", "best": "0"},
+
         "MAAPE": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "MASE": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "NSE": {"type": "max", "range": "(-inf, 1]", "best": "1"},
@@ -335,27 +340,79 @@ class RegressionMetric(Evaluator):
         result = np.mean(np.abs(y_true - y_pred) / np.abs(y_true), axis=0)
         return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def symmetric_mean_absolute_percentage_error(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=1.0, **kwargs):
+    def _symmetric_mean_absolute_percentage_error(self, y_true=None, y_pred=None, version="simplified", percentage=False,
+                                                 multi_output="raw_values", force_finite=True, finite_value=0.0, **kwargs):
         """
-        Symmetric Mean Absolute Percentage Error (SMAPE): Best possible score is 0.0, smaller value is better. Range = [0, 1]
-        If you want percentage then multiply with 100%
-
-        Link: https://en.wikipedia.org/wiki/Symmetric_mean_absolute_percentage_error
+        Symmetric Mean Absolute Percentage Error (SMAPE).
 
         Args:
-            y_true (tuple, list, np.ndarray): The ground truth values
-            y_pred (tuple, list, np.ndarray): The prediction values
-            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            force_finite (bool): When result is not finite, it can be NaN or Inf.
-                Their result will be replaced by `finite_value` (Optional, default = True)
-            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
+            y_true (tuple, list, np.ndarray): Ground truth values.
+            y_pred (tuple, list, np.ndarray): Prediction values.
+            version (str): SMAPE version variant:
+                - "simplified": Range [0, 1] (or [0, 100%]). Makridakis (1993).
+                - "original": Range [0, 2] (or [0, 200%]). Armstrong (1985).
+            percentage (bool): If True, multiplies the final result by 100.
+            multi_output (str/list): Evaluation weight or raw array configuration.
+            force_finite (bool): Replaces non-finite values with finite_value.
+            finite_value (float): Replacement value for NaNs/Infs (Default = 0.0).
 
         Returns:
             result (float, int, np.ndarray): SMAPE metric for single column or multiple columns
         """
         y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
-        result = np.mean(np.abs(y_pred - y_true) / (np.abs(y_true) + np.abs(y_pred)), axis=0)
+        denominator = np.abs(y_true) + np.abs(y_pred)
+        numerator = np.abs(y_pred - y_true)
+
+        with np.errstate(divide="ignore", invalid="ignore"):
+            if version == "simplified":
+                res_elements = numerator / denominator
+            elif version == "original":
+                res_elements = 2.0 * numerator / denominator
+            else:
+                raise ValueError("Invalid version. Choose either 'simplified' or 'original'.")
+            res_elements = np.where((y_true == 0) & (y_pred == 0), 0.0, res_elements)
+
+        result = np.mean(res_elements, axis=0)
+        if percentage:
+            result = result * 100.0
+
         return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
+
+    def symmetric_mean_absolute_percentage_error(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=200., **kwargs):
+        """
+        Symmetric Mean Absolute Percentage Error (SMAPE).
+        Original version. Range [0, 200%].
+        References: Forecasting, Long-Range. "From Crystal Ball to Computer." Scott Armstrong Robert J. Genetski (1978).
+        """
+        return self._symmetric_mean_absolute_percentage_error(y_true, y_pred, version="original", percentage=True,
+                                        multi_output=multi_output, force_finite=force_finite, finite_value=finite_value)
+
+    def symmetric_mean_absolute_percentage_error_np(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=2., **kwargs):
+        """
+        Symmetric Mean Absolute Percentage Error (SMAPE_NP)
+        Original version. Range [0, 2].
+        References: Forecasting, Long-Range. "From Crystal Ball to Computer." Scott Armstrong Robert J. Genetski (1978).
+        """
+        return self._symmetric_mean_absolute_percentage_error(y_true, y_pred, version="original", percentage=False,
+                                        multi_output=multi_output, force_finite=force_finite, finite_value=finite_value)
+
+    def symmetric_mean_absolute_percentage_error_simplified(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=1.0, **kwargs):
+        """
+        Symmetric Mean Absolute Percentage Error Simplified (SMAPE_S).
+        Simplified version of SMAPE with Range [0, 1] (or [0, 100%]), smaller is better.
+        References: Makridakis, Spyros. "Accuracy measures: theoretical and practical concerns." International journal of forecasting 9.4 (1993): 527-529.
+        """
+        return self._symmetric_mean_absolute_percentage_error(y_true, y_pred, version="simplified", percentage=False,
+                                        multi_output=multi_output, force_finite=force_finite, finite_value=finite_value)
+
+    def symmetric_mean_absolute_percentage_error_simplified_p(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=100., **kwargs):
+        """
+        Symmetric Mean Absolute Percentage Error Simplified (SMAPE_S_P).
+        Simplified version of SMAPE with Range [0, 1] (or [0, 100%]), smaller is better.
+        References: Makridakis, Spyros. "Accuracy measures: theoretical and practical concerns." International journal of forecasting 9.4 (1993): 527-529.
+        """
+        return self._symmetric_mean_absolute_percentage_error(y_true, y_pred, version="simplified", percentage=True,
+                                        multi_output=multi_output, force_finite=force_finite, finite_value=finite_value)
 
     def mean_arctangent_absolute_percentage_error(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=1.0, **kwargs):
         """
@@ -1201,6 +1258,9 @@ class RegressionMetric(Evaluator):
     MPE = mean_percentage_error
     MAPE = mean_absolute_percentage_error
     SMAPE = symmetric_mean_absolute_percentage_error
+    SMAPE_NP = symmetric_mean_absolute_percentage_error_np
+    SMAPE_S = symmetric_mean_absolute_percentage_error_simplified
+    SMAPE_S_P = symmetric_mean_absolute_percentage_error_simplified_p
     MAAPE = mean_arctangent_absolute_percentage_error
     MASE = mean_absolute_scaled_error
     NSE = nash_sutcliffe_efficiency

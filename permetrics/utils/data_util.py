@@ -238,10 +238,7 @@
 #         else:
 #             raise TypeError("To calculate clustering metrics, labels must be a 1-D vector.")
 
-
-import copy as cp
 import numpy as np
-import permetrics.utils.constant as co
 from permetrics.utils.encoder import LabelEncoder
 
 
@@ -309,7 +306,6 @@ def get_regression_positive_data(y_true, y_pred, one_dim=None, rule_idx=0):
 
 
 def _clean_class_array(arr, name):
-    """Gỡ bỏ 'Pyramid of Doom', gom chung logic xử lý mảng argmax/one-hot"""
     arr = _to_numpy(arr, name)
     if arr.ndim == 0:
         arr = arr.reshape(1)
@@ -357,7 +353,6 @@ def format_y_score(y_true, y_score):
     binary = n_classes == 2
 
     if ys.ndim == 1:
-        # VÁ BUG NẶNG: Bung mảng xác suất Float 1D thành Matrix 2D cho Binary Class
         if np.issubdtype(ys.dtype, np.floating) and binary:
             ys_matrix = np.vstack([1.0 - ys, ys]).T
             return yt_encoded, ys_matrix, binary, type_t
@@ -371,9 +366,7 @@ def format_y_score(y_true, y_score):
 
     elif ys.ndim == 2:
         if ys.shape[1] != n_classes:
-            raise ValueError(
-                f"y_score has {ys.shape[1]} cols, but y_true has {n_classes} classes."
-            )
+            raise ValueError(f"y_score has {ys.shape[1]} cols, but y_true has {n_classes} classes.")
         return yt_encoded, ys, binary, type_t
 
     raise ValueError("y_score must be 1D or 2D.")
@@ -385,7 +378,6 @@ def format_y_score(y_true, y_score):
 
 
 def is_unique_labels_consecutive_and_start_zero(vector):
-    """Kiểm tra O(1) toán học thay vì ngồi đếm diff"""
     if not np.issubdtype(vector.dtype, np.integer):
         return False
     u = np.unique(vector)
@@ -402,7 +394,6 @@ def format_external_clustering_data(y_true, y_pred):
     le_true = LabelEncoder()
     yt_clean = le_true.fit_transform(yt)
 
-    # VÁ BUG GÃY KEY: Encode độc lập y_pred
     le_pred = LabelEncoder()
     yp_clean = le_pred.fit_transform(yp)
 

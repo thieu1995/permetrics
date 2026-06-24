@@ -48,24 +48,6 @@ class Evaluator:
         Returns:
             final_result: Final output results based on selected parameter
         """
-        if force_finite:
-            result[np.isnan(result) | np.isinf(result)] = finite_value
-        if n_out == 1:
-            return result.flatten()[0]
-        if isinstance(multi_output, (tuple, list, set, np.ndarray)):
-            weights = np.asarray(multi_output, dtype=float)
-            if n_out != len(weights):
-                raise ValueError("Multi-output weights must have the same length with y_true or y_pred!")
-            return np.dot(result, multi_output)
-        elif multi_output == "raw_values":  # Default: raw_values
-            return result
-        else:
-            return np.mean(result)
-
-    def get_output_result(self, result=None, n_out=None, multi_output=None, force_finite=None, finite_value=None):
-        """
-        Get final output result based on selected parameter
-        """
         res = np.asarray(result, dtype=np.float64)
         if force_finite:
             res = np.where(np.isfinite(res), res, finite_value)
