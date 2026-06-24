@@ -55,8 +55,8 @@ Version
 	ACOD = acod = AR2 = ar2 = adjusted_coefficient_of_determination
 	DRV = drv = deviation_of_runoff_volume
 	KGE = kge = kling_gupta_efficiency
-	GINI = gini = gini_coefficient
-	GINI_WIKI = gini_wiki = gini_coefficient_wiki
+	GINI = gini = normalized_gini_coefficient
+	GINI_WIKI = gini_wiki = residual_gini_index
 	PCD = pcd = prediction_of_change_in_direction
 	CE = ce = cross_entropy
 	KLD = kld = kullback_leibler_divergence

@@ -1,5 +1,5 @@
-GINI - GINI Coefficient
-=======================
+GINI - Regression Gini
+======================
 
 .. toctree::
    :maxdepth: 3
@@ -15,51 +15,81 @@ GINI - GINI Coefficient
    :maxdepth: 3
 
 
-The Gini coefficient :cite:`gupta2022integrated` is a statistical measure used to measure income or wealth inequality within a population. It is named
-after the Italian statistician Corrado Gini who developed the concept in 1912. The Gini coefficient ranges from 0 to 1, where 0 represents perfect equality
-(every individual in the population has the same income or wealth) and 1 represents perfect inequality (one individual has all the income or wealth and
-everyone else has none).
+In regression analysis, the term "Gini" refers to two fundamentally different statistical paradigms depending on whether
+one evaluates the **ranking capability** of the predictions or the **dispersion of the prediction errors**.
+
+To prevent statistical misinterpretation, `permetrics` explicitly separates these into two distinct metrics:
+
+.. contents:: Table of Contents
+   :local:
+   :depth: 2
+
+-------------------------------------------------------------------------------
+
+1. Normalized Gini Coefficient (Ranking Power)
+----------------------------------------------
+
+The **Normalized Gini Coefficient** :cite:`frees2011summarizing` measures the *actuarial ranking capability* of a regression model.
+Inherited from economics (the Lorenz curve) and heavily utilized in insurance pricing, credit scoring, and algorithmic
+trading, it quantifies how well the predicted values :math:`y_{\text{pred}}` can rank the actual continuous targets :math:`y_{\text{true}}`.
 
 .. math::
 
-	G = \frac{A}{A + B}
+    G_{\text{norm}} = \frac{\text{Gini}(y_{\text{true}}, y_{\text{pred}})}{\text{Gini}(y_{\text{true}}, y_{\text{true}})}
 
-where G is the Gini coefficient, A is the area between the Lorenz curve and the line of perfect equality, and B is the area under the line of perfect equality.
+where the numerator is the raw covariance Gini of the model, and the denominator is the raw Gini of an *optimal model* (the ground truth sorted by itself).
 
-The Gini coefficient is calculated by plotting the cumulative share of income or wealth (on the x-axis) against the cumulative share of the population (on
-the y-axis) and measuring the area between this curve and the line of perfect equality (which is a straight diagonal line from the origin to the upper right
-corner of the plot).
-
-The Gini coefficient is widely used in social sciences and economics to measure income or wealth inequality within and between countries. It is also used to
-analyze the distribution of other variables, such as educational attainment, health outcomes, and access to resources.
-
-+ Best possible score is 1, bigger value is better. Range = [0, 1]
-+ This version is based on: https://github.com/benhamner/Metrics/blob/master/MATLAB/metrics/gini.m
+Properties
+~~~~~~~~~~
+* **Best possible score:** ``1.0`` (Perfect ranking: the model sorts targets in the exact correct order).
+* **Worst possible score:** ``0.0`` (Random ranking) or ``-1.0`` (Perfectly inverted ranking).
+* **Range:** ``[-1, 1]``
+* **Function call:** ``evaluator.normalized_gini_coefficient()``
 
 
+-------------------------------------------------------------------------------
 
-Example to use Gini metric, there are two GINI versions:
+2. Residual Gini Index (Error Dispersion)
+-----------------------------------------
+
+The **Residual Gini Index** :cite:`yitzhaki2012gini` applies the classic economic Gini index of inequality to
+the **absolute regression residuals** :math:`E = |y_{\text{true}} - y_{\text{pred}}|`.
+
+Instead of measuring ranking, it answers an econometric question: *"Is the model's total error distributed equally
+across all samples, or is 90% of the total error caused by 3 extreme outliers?"*
+
+.. math::
+
+    G_{\text{residual}} = \frac{2 \sum_{i=1}^{n} i \cdot e_{(i)}}{n \sum_{i=1}^{n} e_i} - \frac{n+1}{n}
+
+where :math:`e_{(i)}` represents the absolute errors sorted in **non-decreasing order** (:math:`e_{(1)} \le e_{(2)} \le \dots \le e_{(n)}`).
+
+Properties
+~~~~~~~~~~
+* **Best possible score:** ``0.0`` (Complete equality: every single sample in the dataset experiences the exact same magnitude of error).
+* **Worst possible score:** approaching ``1.0`` (Extreme disparity: the model predicts perfectly for almost all samples, but fails catastrophically on a tiny fraction).
+* **Range:** ``[0, 1]``
+* **Function call:** ``evaluator.residual_gini_index()``
+
+-------------------------------------------------------------------------------
+
+Example Usage
+-------------
 
 .. code-block:: python
-	:emphasize-lines: 8-10,16-18
 
-	from numpy import array
-	from permetrics.regression import RegressionMetric
+    import numpy as np
+    from permetrics.regression import RegressionMetric
 
-	## For 1-D array
-	y_true = array([3, -0.5, 2, 7])
-	y_pred = array([2.5, 0.0, 2, 8])
+    y_true = np.array([10, 20, 30, 40, 50])
+    y_pred = np.array([12, 18, 33, 39, 55])
 
-	evaluator = RegressionMetric(y_true, y_pred)
-	print(evaluator.gini())
-	print(evaluator.gini_wiki())
+    evaluator = RegressionMetric(y_true, y_pred)
 
-	## For > 1-D array
-	y_true = array([[0.5, 1], [-1, 1], [7, -6]])
-	y_pred = array([[0, 2], [-1, 2], [8, -5]])
+    # 1. Evaluate Ranking capability
+    gini_rank = evaluator.normalized_gini_coefficient()
+    print(f"Ranking Gini: {gini_rank:.4f}")  # Expected: ~1.0 (Very good ranker)
 
-	evaluator = RegressionMetric(y_true, y_pred)
-	print(evaluator.GINI(multi_output="raw_values"))
-	print(evaluator.GINI_WIKI(multi_output="raw_values"))
-
-
+    # 2. Evaluate Error sparsity
+    gini_err = evaluator.residual_gini_index()
+    print(f"Residual Gini: {gini_err:.4f}")  # Expected: closer to 0.0
