@@ -9,10 +9,6 @@ import os
 import re
 
 
-with open("requirements.txt") as f:
-    REQUIREMENTS = f.read().splitlines()
-
-
 def get_version():
     init_path = os.path.join(os.path.dirname(__file__), 'permetrics', '__init__.py')
     with open(init_path, 'r', encoding='utf-8') as f:
@@ -83,7 +79,7 @@ setuptools.setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: Utilities",
     ],
-    install_requires=REQUIREMENTS,
+    install_requires=["numpy>=2.2.2", "scipy>=1.13.0"],
     extras_require={
         "dev": ["pytest>=9.0.3", "pytest-cov>=4.1.0", "flake8>=6.0.0", "scikit-learn>=1.5.0"],
     },
