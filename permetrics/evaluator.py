@@ -62,6 +62,24 @@ class Evaluator:
         else:
             return np.mean(result)
 
+    def get_output_result(self, result=None, n_out=None, multi_output=None, force_finite=None, finite_value=None):
+        """
+        Get final output result based on selected parameter
+        """
+        res = np.asarray(result, dtype=np.float64)
+        if force_finite:
+            res = np.where(np.isfinite(res), res, finite_value)
+        if n_out == 1:
+            return float(np.ravel(res)[0])
+        if isinstance(multi_output, (tuple, list, set, np.ndarray)):
+            weights = np.asarray(multi_output, dtype=np.float64)
+            if res.shape[0] != len(weights):
+                raise ValueError(f"Weights length ({len(weights)}) must match n_outputs ({res.shape[0]}).")
+            return float(np.dot(res, weights))
+        if multi_output == "raw_values":
+            return res
+        return float(np.mean(res))
+
     def get_metric_by_name(self, metric_name=str, paras=None) -> dict:
         """
         Get single metric by name, specific parameter of metric by dictionary

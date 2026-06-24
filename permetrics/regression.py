@@ -60,8 +60,8 @@ class RegressionMetric(Evaluator):
         "CI": {"type": "max", "range": "(-inf, 1]", "best": "1"},
         "DRV": {"type": "min", "range": "[1, +inf)", "best": "1"},
         "KGE": {"type": "max", "range": "(-inf, 1]", "best": "1"},
-        "GINI": {"type": "min", "range": "[0, +inf)", "best": "0"},
-        "GINI_WIKI": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "NGINI": {"type": "max", "range": "[-1, +1]", "best": "1"},
+        "RGINI": {"type": "min", "range": "[0, +1]", "best": "0"},
         "PCD": {"type": "max", "range": "[0, 1]", "best": "1"},
         "CE": {"type": "unknown", "range": "(-inf, 0]", "best": "unknown"},
         "KLD": {"type": "unknown", "range": "(-inf, +inf)", "best": "0"},
@@ -1062,74 +1062,72 @@ class RegressionMetric(Evaluator):
         result = (np.sum(y_pred, axis=0) - np.sum(y_true, axis=0)) / np.sum(y_true, axis=0)
         return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def gini_coefficient(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
+    def normalized_gini_coefficient(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0.0, **kwargs):
         """
-        Gini coefficient (GINI): Best possible score is 1, bigger value is better. Range = [0, 1]
+        Normalized Gini Coefficient for Regression (Actuarial Lorenz / Ranking Power).
+        Measures how well the predictions rank the actual continuous targets.
+        Best possible score is 1.0 (perfect ranking), 0.0 is random ranking. Range = [-1, 1].
 
-        Notes
-        ~~~~~
-            + This version is based on below repository matlab code.
-            + https://github.com/benhamner/Metrics/blob/master/MATLAB/metrics/gini.m
-
-        Args:
-            y_true (tuple, list, np.ndarray): The ground truth values
-            y_pred (tuple, list, np.ndarray): The prediction values
-            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            force_finite (bool): When result is not finite, it can be NaN or Inf.
-                Their result will be replaced by `finite_value` (Optional, default = True)
-            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
-
-        Returns:
-            result (float, int, np.ndarray): Gini metric for single column or multiple columns
+        References
+        ~~~~~~~~~~
+            + Frees, Edward W., Glenn Meyers, and A. David Cummings. "Summarizing insurance scores using a Gini index."
+            Journal of the American Statistical Association 106.495 (2011): 1085-1098.
         """
         y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
-        col = y_true.shape[1]
-        idx_sort = np.argsort(-y_pred, axis=0)
-        population_delta = 1.0 / len(y_true)
-        accumulated_population_percentage_sum, accumulated_loss_percentage_sum, score = np.zeros(col), np.zeros(col), np.zeros(col)
-        total_losses = np.sum(y_true, axis=0)
-        for i in range(0, col):
-            for j in range(0, len(y_true)):
-                accumulated_loss_percentage_sum[i] += y_true[idx_sort[j, i], i] / total_losses[i]
-                accumulated_population_percentage_sum[i] += population_delta
-                score[i] += accumulated_loss_percentage_sum[i] - accumulated_population_percentage_sum[i]
-        result = score / len(y_true)
+
+        def _actuarial_gini_col(yt, yp):
+            if np.all(yt == 0):
+                return 0.0
+            n = len(yt)
+
+            # Sort y_true based on decrease order
+            idx_pred = np.argsort(-yp)
+            yt_sorted_by_pred = yt[idx_pred]
+
+            idx_true = np.argsort(-yt)
+            yt_sorted_by_true = yt[idx_true]
+
+            weights = np.arange(n, 0, -1)
+            cov_model = np.sum(weights * yt_sorted_by_pred)
+            cov_optimal = np.sum(weights * yt_sorted_by_true)
+            base_shift = np.sum(yt) * (n + 1) / 2.0
+
+            denominator = cov_optimal - base_shift
+            if denominator == 0:
+                return 0.0
+            return (cov_model - base_shift) / denominator
+
+        if y_true.ndim == 1:
+            result = _actuarial_gini_col(y_true, y_pred)
+        else:
+            result = np.array([_actuarial_gini_col(y_true[:, i], y_pred[:, i]) for i in range(n_out)])
         return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def gini_coefficient_wiki(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
+    def residual_gini_index(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0.0, **kwargs):
         """
-        Gini coefficient (GINI_WIKI): Best possible score is 1, bigger value is better. Range = [0, 1]
+        Gini Index of Absolute Residuals (Error Dispersion).
+        Measures the inequality/sparsity of the absolute regression errors |y_true - y_pred|.
+        Smaller is better (0.0 = all absolute errors are perfectly equal). Range = [0, 1].
 
-        Notes
-        ~~~~~
-            + This version is based on wiki page, may be is the true version
-            + https://en.wikipedia.org/wiki/Gini_coefficient
-            + Gini coefficient can theoretically range from 0 (complete equality) to 1 (complete inequality)
-            + It is sometimes expressed as a percentage ranging between 0 and 100.
-            + If negative values are possible, then the Gini coefficient could theoretically be more than 1.
-
-        Args:
-            y_true (tuple, list, np.ndarray): The ground truth values
-            y_pred (tuple, list, np.ndarray): The prediction values
-            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            force_finite (bool): When result is not finite, it can be NaN or Inf.
-                Their result will be replaced by `finite_value` (Optional, default = True)
-            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
-
-        Returns:
-            result (float, int, np.ndarray): Gini metric for single column or multiple columns
+        References
+        ~~~~~~~~~~
+            + Yitzhaki, Shlomo, and Edna Schechtman. The Gini methodology: a primer on a statistical
+            methodology. Vol. 272. Springer Science & Business Media, 2012.
         """
         y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
-        y = np.concatenate((y_true, y_pred), axis=0)
-        col = y.shape[1]
-        d = len(y)
-        score = np.zeros(col)
-        for k in range(0, col):
-            for i in range(0, d):
-                for j in range(0, d):
-                    score[k] += np.abs(y[i, k] - y[j, k])
-        result = score / (2 * len(y) ** 2 * np.mean(y, axis=0))
-        return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
+        abs_residuals = np.abs(y_true - y_pred)
+
+        def _gini_of_1d_error(arr):
+            if np.sum(arr) == 0:
+                return 0.0
+            arr_sorted = np.sort(arr)
+            n = len(arr_sorted)
+            return (2.0 * np.sum(np.arange(1, n + 1) * arr_sorted) / (n * np.sum(arr_sorted))) - (n + 1) / n
+        if y_true.ndim == 1:
+            result = _gini_of_1d_error(abs_residuals)
+        else:
+            result = np.array([_gini_of_1d_error(abs_residuals[:, i]) for i in range(n_out)])
+        return self.get_output_result(result,n_out, multi_output, force_finite, finite_value=finite_value)
 
     def single_relative_error(self, y_true=None, y_pred=None, **kwargs):
         """
@@ -1232,8 +1230,8 @@ class RegressionMetric(Evaluator):
     EC = efficiency_coefficient
     OI = overall_index
     CRM = coefficient_of_residual_mass
-    GINI = gini_coefficient
-    GINI_WIKI = gini_coefficient_wiki
+    NGINI = normalized_gini_coefficient
+    RGINI = residual_gini_index
 
     RE = RB = single_relative_bias = single_relative_error
     AE = single_absolute_error
