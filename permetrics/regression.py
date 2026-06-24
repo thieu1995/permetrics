@@ -933,34 +933,46 @@ class RegressionMetric(Evaluator):
         result = np.mean(div, axis=0)
         return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def normalized_root_mean_square_error(self, y_true=None, y_pred=None, model=0, multi_output="raw_values", force_finite=True, finite_value=1., **kwargs):
+    def normalized_root_mean_square_error(self, y_true=None, y_pred=None, normalization="mean",
+                                          multi_output="raw_values", force_finite=True, finite_value=1e10, **kwargs):
         """
-        Normalized Root Mean Square Error (NRMSE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
+        Normalized Root Mean Square Error (NRMSE).
+        Best possible score is 0.0, smaller value is better. Range = [0, +inf).
 
-        Link: https://medium.com/microsoftazure/how-to-better-evaluate-the-goodness-of-fit-of-regressions-990dbf1c0091
+        References:
+            + https://www.marinedatascience.co/blog/2019/01/07/normalizing-the-rmse/
+            + https://en.wikipedia.org/wiki/Root-mean-square_deviation#Normalized_root-mean-square_deviation
+            + https://search.r-project.org/CRAN/refmans/hydroGOF/html/nrmse.html
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
-            model (int): Normalize RMSE by different ways, (Optional, default = 0, valid values = [0, 1, 2, 3]
-            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
-            force_finite (bool): When result is not finite, it can be NaN or Inf.
-                Their result will be replaced by `finite_value` (Optional, default = True)
-            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
-
-        Returns:
-            result (float, int, np.ndarray): NRMSE metric for single column or multiple columns
+            normalization (str): The method to normalize RMSE. Valid values:
+                - "mean": Normalizes by the mean of y_true (also known as CV(RMSE)).
+                - "range": Normalizes by the difference between max and min of y_true.
+                - "std": Normalizes by the standard deviation of y_true.
+                - "iqr": Normalizes by the Interquartile Range (Q3 - Q1) of y_true.
+            multi_output: Can be "raw_values" or list weights of variables.
+            force_finite (bool): Replace NaN or Inf results with `finite_value`.
+            finite_value (float): Replacement value for Non-finite errors.
         """
         y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
-        rmse = np.sqrt(np.sum((y_pred - y_true) ** 2, axis=0) / len(y_true))
-        if model == 1:
-            result = rmse / np.mean(y_pred, axis=0)
-        elif model == 2:
-            result = rmse / (np.max(y_true, axis=0) - np.min(y_true, axis=0))
-        elif model == 3:
-            result = np.sqrt(np.sum(np.log((y_pred + 1) / (y_true + 1)) ** 2, axis=0) / len(y_true))
+        rmse = np.sqrt(np.mean((y_pred - y_true) ** 2, axis=0))
+
+        if normalization == "mean":
+            denominator = np.mean(y_true, axis=0)
+        elif normalization == "range":
+            denominator = np.max(y_true, axis=0) - np.min(y_true, axis=0)
+        elif normalization == "std":
+            denominator = np.std(y_true, axis=0)
+        elif normalization == "iqr":
+            q75, q25 = np.percentile(y_true, [75, 25], axis=0)
+            denominator = q75 - q25
         else:
-            result = rmse / y_pred.std(axis=0)
+            raise ValueError("normalization must be 'mean', 'range', 'std', or 'iqr'")
+
+        with np.errstate(divide="ignore", invalid="ignore"):
+            result = np.where(denominator == 0, 0.0 if np.all(rmse == 0) else np.inf, rmse / denominator)
         return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
     def residual_standard_error(self, y_true=None, y_pred=None, n_paras=None, multi_output="raw_values", force_finite=True, finite_value=1., **kwargs):
