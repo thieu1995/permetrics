@@ -13,6 +13,7 @@ from permetrics import RegressionMetric
 @pytest.fixture(scope="module")  # scope: Call only 1 time at the beginning
 def data():
     rm1 = RegressionMetric(y_true=np.array([3, -0.5, 2, 7, 5]), y_pred=np.array([2.5, 0.0, 2, 8, 5]))
+    rm1 = RegressionMetric(y_true=5, y_pred=4)
     rm2 = RegressionMetric(y_true=np.array([[3, 1], [-0.5, 2], [2, 3], [7, 4], [5, 5], [6, 6]]),
                            y_pred=np.array([[2.5, 0.5], [0.0, 1.5], [2, 2], [8, 3], [5, 4], [3, 5]]))
     return rm1, rm2
@@ -595,28 +596,28 @@ def test_CRM(data):
 def test_GINI(data):
     rm1, rm2 = data[0], data[1]
     # 1D
-    res = rm1.GINI()
+    res = rm1.NGINI()
     assert isinstance(res, (float))
     # ND
-    res = rm2.GINI(multi_output=None)
+    res = rm2.NGINI(multi_output=None)
     assert isinstance(res, (float))
-    res = rm2.GINI(multi_output="raw_values")
+    res = rm2.NGINI(multi_output="raw_values")
     assert isinstance(res, (list, tuple, np.ndarray))
-    res = rm2.GINI(multi_output=(0.2, 0.7))
+    res = rm2.NGINI(multi_output=(0.2, 0.7))
     assert isinstance(res, float)
 
 
 def test_GINI_WIKI(data):
     rm1, rm2 = data[0], data[1]
     # 1D
-    res = rm1.GINI_WIKI()
+    res = rm1.RGINI()
     assert isinstance(res, (float))
     # ND
-    res = rm2.GINI_WIKI(multi_output=None)
+    res = rm2.RGINI(multi_output=None)
     assert isinstance(res, (float))
-    res = rm2.GINI_WIKI(multi_output="raw_values")
+    res = rm2.RGINI(multi_output="raw_values")
     assert isinstance(res, (list, tuple, np.ndarray))
-    res = rm2.GINI_WIKI(multi_output=(0.2, 0.7))
+    res = rm2.RGINI(multi_output=(0.2, 0.7))
     assert isinstance(res, float)
 
 

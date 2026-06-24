@@ -97,8 +97,8 @@ print(dict_result_2)
 #     EC = efficiency_coefficient
 #     OI = overall_index
 #     CRM = coefficient_of_residual_mass
-#     GINI = gini_coefficient
-#     GINI_WIKI = gini_coefficient_wiki
+#     NGINI = normalized_gini_coefficient
+#     RGINI = residual_gini_index
 #
 #     RE = RB = single_relative_bias = single_relative_error
 #     AE = single_absolute_error
