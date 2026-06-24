@@ -4,18 +4,34 @@
 #       Github: https://github.com/thieu1995        %
 # --------------------------------------------------%
 
-from setuptools import setup, find_packages
+import setuptools
+import os
+import re
+
+
+with open("requirements.txt") as f:
+    REQUIREMENTS = f.read().splitlines()
+
+
+def get_version():
+    init_path = os.path.join(os.path.dirname(__file__), 'permetrics', '__init__.py')
+    with open(init_path, 'r', encoding='utf-8') as f:
+        init_content = f.read()
+    version_match = re.search(r"^__version__ = ['\"]([^'\"]+)['\"]", init_content, re.M)
+    if version_match:
+        return version_match.group(1)
+    raise RuntimeError("Unable to find version string.")
 
 
 def readme():
     with open('README.md', encoding='utf-8') as f:
-        README = f.read()
-    return README
+        res = f.read()
+    return res
 
 
-setup(
+setuptools.setup(
     name="permetrics",
-    version="2.0.0",
+    version=get_version(),
     author="Thieu",
     author_email="nguyenthieu2102@gmail.com",
     description="PerMetrics: A Framework of Performance Metrics for Machine Learning Models",
@@ -39,7 +55,7 @@ setup(
         'Change Log': 'https://github.com/thieu1995/permetrics/blob/master/ChangeLog.md',
         'Forum': 'https://t.me/+fRVCJGuGJg1mNDg1',
     },
-    packages=find_packages(exclude=['tests*', 'examples*']),
+    packages=setuptools.find_packages(exclude=['tests*', 'examples*']),
     include_package_data=True,
     license="GPLv3",
     classifiers=[
@@ -51,11 +67,10 @@ setup(
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Natural Language :: English",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
-        "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
+        "Programming Language :: Python :: 3.14",
         "Topic :: System :: Benchmark",
         "Topic :: Scientific/Engineering",
         "Topic :: Scientific/Engineering :: Mathematics",
@@ -68,9 +83,9 @@ setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: Utilities",
     ],
-    install_requires=["numpy>=1.15.1", "scipy>=1.7.1"],
+    install_requires=REQUIREMENTS,
     extras_require={
-        "dev": ["pytest>=7.0", "pytest-cov==4.0.0", "flake8>=4.0.1", "scikit-learn>=1.0.1"],
+        "dev": ["pytest>=7.2.0", "pytest-cov>=4.1.0", "flake8>=6.0.0", "scikit-learn>=1.5.0"],
     },
-    python_requires='>=3.7',
+    python_requires='>=3.11',
 )
