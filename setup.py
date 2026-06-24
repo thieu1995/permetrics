@@ -85,7 +85,7 @@ setuptools.setup(
     ],
     install_requires=REQUIREMENTS,
     extras_require={
-        "dev": ["pytest>=7.2.0", "pytest-cov>=4.1.0", "flake8>=6.0.0", "scikit-learn>=1.5.0"],
+        "dev": ["pytest>=9.0.3", "pytest-cov>=4.1.0", "flake8>=6.0.0", "scikit-learn>=1.5.0"],
     },
     python_requires='>=3.11',
 )
