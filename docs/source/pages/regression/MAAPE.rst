@@ -18,7 +18,7 @@ MAAPE - Mean Arctangent Absolute Percentage Error
 
 .. math::
 
-	MAAPE = \frac{100}{n} \sum_{i=1}^{n} \left|\frac{A_i - F_i}{A_i}\right| \arctan\left(\frac{A_i - F_i}{A_i}\right)
+	MAAPE = \frac{100}{n} \sum_{i=1}^{n} \arctan\left(\left|\frac{A_i - F_i}{A_i}\right|\right)
 
 where A_i is the i-th actual value, F_i is the i-th forecasted value, and n is the number of observations.
 
