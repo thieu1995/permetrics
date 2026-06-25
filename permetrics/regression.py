@@ -31,8 +31,8 @@ class RegressionMetric(Evaluator):
     SUPPORT = {
         "EVS": {"type": "max", "range": "(-inf, 1]", "best": "1"},
         "ME": {"type": "min", "range": "[0, +inf)", "best": "0"},
-        "MBE": {"type": "unknown", "range": "(-inf, +inf)", "best": "0"},
         "MAE": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "MBE": {"type": "unknown", "range": "(-inf, +inf)", "best": "0"},
         "MSE": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "RMSE": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "MSLE": {"type": "min", "range": "[0, +inf)", "best": "0"},
@@ -48,12 +48,12 @@ class RegressionMetric(Evaluator):
         "MAAPE": {"type": "min", "range": "[0, +1.5708)", "best": "0"},
         "MASE": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "NSE": {"type": "max", "range": "(-inf, 1]", "best": "1"},
-        "NNSE": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "NNSE": {"type": "max", "range": "(0, 1]", "best": "1"},
         "WI": {"type": "max", "range": "[0, 1]", "best": "1"},
         "R": {"type": "max", "range": "[-1, 1]", "best": "1"},
         "PCC": {"type": "max", "range": "[-1, 1]", "best": "1"},
-        "AR": {"type": "max", "range": "[-1, 1]", "best": "1"},
-        "APCC": {"type": "max", "range": "[-1, 1]", "best": "1"},
+        "AR": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "APCC": {"type": "max", "range": "[0, 1]", "best": "1"},
         "R2S": {"type": "max", "range": "[0, 1]", "best": "1"},
         "RSQ": {"type": "max", "range": "[0, 1]", "best": "1"},
         "R2": {"type": "max", "range": "(-inf, 1]", "best": "1"},
@@ -61,15 +61,15 @@ class RegressionMetric(Evaluator):
         "AR2": {"type": "max", "range": "(-inf, 1]", "best": "1"},
         "ACOD": {"type": "max", "range": "(-inf, 1]", "best": "1"},
         "CI": {"type": "max", "range": "[-1, 1]", "best": "1"},
-        "DRV": {"type": "min", "range": "[1, +inf)", "best": "1"},
+        "DRV": {"type": "unknown", "range": "(-inf, +inf)", "best": "1"},
         "KGE": {"type": "max", "range": "(-inf, 1]", "best": "1"},
         "NGINI": {"type": "max", "range": "[-1, +1]", "best": "1"},
         "RGINI": {"type": "min", "range": "[0, +1]", "best": "0"},
         "PCD": {"type": "max", "range": "[0, 1]", "best": "1"},
-        "CE": {"type": "unknown", "range": "(-inf, 0]", "best": "unknown"},
-        "KLD": {"type": "unknown", "range": "[0, +inf)", "best": "0"},
+        "CE": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "KLD": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "JSD": {"type": "min", "range": "[0, 1]", "best": "0"},
-        "VAF": {"type": "max", "range": "(-inf, 100%)", "best": "100"},
+        "VAF": {"type": "max", "range": "(-inf, 100)", "best": "100"},
         "RAE": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "RRSE": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "A10": {"type": "max", "range": "[0, 1]", "best": "1"},
@@ -77,16 +77,16 @@ class RegressionMetric(Evaluator):
         "A30": {"type": "max", "range": "[0, 1]", "best": "1"},
         "NRMSE": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "RSE": {"type": "min", "range": "[0, +inf)", "best": "0"},
-        "RE": {"type": "unknown", "range": "(-inf, +inf)", "best": "0"},
-        "RB": {"type": "unknown", "range": "(-inf, +inf)", "best": "0"},
-        "AE": {"type": "unknown", "range": "(-inf, +inf)", "best": "0"},
-        "SE": {"type": "min", "range": "[0, +inf)", "best": "0"},
-        "SLE": {"type": "min", "range": "[0, +inf)", "best": "0"},
-        "COV": {"type": "max", "range": "(-inf, +inf)", "best": "no best"},
+        "COV": {"type": "max", "range": "(-inf, +inf)", "best": "unknown"},
         "COR": {"type": "max", "range": "[-1, 1]", "best": "1"},
         "EC": {"type": "max", "range": "(-inf, 1]", "best": "1"},
         "OI": {"type": "max", "range": "(-inf, 1]", "best": "1"},
         "CRM": {"type": "min", "range": "(-inf, +inf)", "best": "0"},
+        "RE": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "RB": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "AE": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "SE": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "SLE": {"type": "min", "range": "[0, +inf)", "best": "0"},
     }
 
     def __init__(self, y_true=None, y_pred=None, **kwargs):
@@ -130,7 +130,7 @@ class RegressionMetric(Evaluator):
 
     def explained_variance_score(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0.0, **kwargs):
         """
-        Explained Variance Score (EVS). Best possible score is 1.0, greater value is better. Range = (-inf, 1.0]
+        Explained Variance Score (EVS)
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
@@ -149,7 +149,7 @@ class RegressionMetric(Evaluator):
 
     def max_error(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=1.0, **kwargs):
         """
-        Max Error (ME): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
+        Max Error (ME)
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
@@ -187,7 +187,7 @@ class RegressionMetric(Evaluator):
 
     def mean_absolute_error(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=1.0, **kwargs):
         """
-        Mean Absolute Error (MAE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
+        Mean Absolute Error (MAE)
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
@@ -206,7 +206,7 @@ class RegressionMetric(Evaluator):
 
     def mean_squared_error(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=1.0, **kwargs):
         """
-        Mean Squared Error (MSE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
+        Mean Squared Error (MSE)
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
@@ -225,7 +225,7 @@ class RegressionMetric(Evaluator):
 
     def root_mean_squared_error(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=1.0, **kwargs):
         """
-        Root Mean Squared Error (RMSE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
+        Root Mean Squared Error (RMSE)
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
@@ -244,7 +244,7 @@ class RegressionMetric(Evaluator):
 
     def mean_squared_log_error(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=1.0, **kwargs):
         """
-        Mean Squared Log Error (MSLE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
+        Mean Squared Log Error (MSLE)
         Link: https://peltarion.com/knowledge-center/documentation/modeling-view/build-an-ai-model/loss-functions/mean-squared-logarithmic-error-(msle)
 
         Args:
@@ -283,7 +283,7 @@ class RegressionMetric(Evaluator):
 
     def mean_relative_error(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=1.0, **kwargs):
         """
-        Mean Relative Error (MRE) - Mean Relative Bias (MRB): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
+        Mean Relative Error (MRE) - Mean Relative Bias (MRB)
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
@@ -463,7 +463,7 @@ class RegressionMetric(Evaluator):
 
     def nash_sutcliffe_efficiency(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0.0, **kwargs):
         """
-        Nash-Sutcliffe Efficiency (NSE): Best possible score is 1.0, bigger value is better. Range = (-inf, 1]
+        Nash-Sutcliffe Efficiency (NSE)
         Link: https://agrimetsoft.com/calculators/Nash%20Sutcliffe%20model%20Efficiency%20coefficient
 
         Args:
@@ -483,7 +483,7 @@ class RegressionMetric(Evaluator):
 
     def normalized_nash_sutcliffe_efficiency(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0.0, **kwargs):
         """
-        Normalize Nash-Sutcliffe Efficiency (NNSE): Best possible score is 1.0, bigger value is better. Range = [0, 1]
+        Normalize Nash-Sutcliffe Efficiency (NNSE)
         Link: https://agrimetsoft.com/calculators/Nash%20Sutcliffe%20model%20Efficiency%20coefficient
 
         Args:
@@ -504,7 +504,7 @@ class RegressionMetric(Evaluator):
 
     def willmott_index(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0.0, **kwargs):
         """
-        Willmott Index (WI): Best possible score is 1.0, bigger value is better. Range = [0, 1]
+        Willmott Index (WI)
 
         Notes
         ~~~~~
@@ -528,7 +528,7 @@ class RegressionMetric(Evaluator):
 
     def coefficient_of_determination(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0.0, **kwargs):
         """
-        Coefficient of Determination (COD/R2): Best possible score is 1.0, bigger value is better. Range = (-inf, 1]
+        Coefficient of Determination (COD/R2)
 
         Notes
         ~~~~~
@@ -554,7 +554,7 @@ class RegressionMetric(Evaluator):
     def adjusted_coefficient_of_determination(self, y_true=None, y_pred=None, X_shape=None,
                                               multi_output="raw_values", force_finite=True, finite_value=0.0, **kwargs):
         """
-        Adjusted Coefficient of Determination (ACOD/AR2): Best possible score is 1.0, bigger value is better. Range = (-inf, 1]
+        Adjusted Coefficient of Determination (ACOD/AR2)
 
         Notes
         ~~~~~
@@ -587,7 +587,7 @@ class RegressionMetric(Evaluator):
 
     def pearson_correlation_coefficient(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=-1.0, **kwargs):
         """
-        Pearson’s Correlation Coefficient (PCC or R): Best possible score is 1.0, bigger value is better. Range = [-1, 1]
+        Pearson’s Correlation Coefficient (PCC or R)
         Notes
         ~~~~~
             + Reference evapotranspiration for Londrina, Paraná, Brazil: performance of different estimation methods
@@ -611,7 +611,7 @@ class RegressionMetric(Evaluator):
 
     def absolute_pearson_correlation_coefficient(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
         """
-        Absolute Pearson’s Correlation Coefficient (APCC or AR): Best possible score is 1.0, bigger value is better. Range = [0, 1]
+        Absolute Pearson’s Correlation Coefficient (APCC or AR)
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
@@ -630,7 +630,8 @@ class RegressionMetric(Evaluator):
 
     def pearson_correlation_coefficient_square(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
         """
-        (Pearson’s Correlation Index)^2 = R^2 = R2S = RSQ (R square): Best possible score is 1.0, bigger value is better. Range = [0, 1]
+        (Pearson’s Correlation Index)^2 = R^2 = R2S = RSQ (R square)
+
         Notes
         ~~~~~
             + Do not misunderstand between R2s and R2 (Coefficient of Determination), they are different
@@ -688,7 +689,7 @@ class RegressionMetric(Evaluator):
 
     def deviation_of_runoff_volume(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=10., **kwargs):
         """
-        Deviation of Runoff Volume (DRV): Best possible score is 1.0, smaller value is better. Range = [0, +inf)
+        Deviation of Runoff Volume (DRV)
         Link: https://rstudio-pubs-static.s3.amazonaws.com/433152_56d00c1e29724829bad5fc4fd8c8ebff.html
 
         Args:
@@ -760,7 +761,7 @@ class RegressionMetric(Evaluator):
 
     def cross_entropy(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=-1., **kwargs):
         """
-        Cross Entropy (CE): Range = (-inf, 0]. Can't give any comment about this one
+        Cross Entropy (CE)
 
         Notes
         ~~~~~
@@ -825,7 +826,7 @@ class RegressionMetric(Evaluator):
 
     def variance_accounted_for(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
         """
-        Variance Accounted For between 2 signals (VAF): Best possible score is 100% (identical signal), bigger value is better. Range = (-inf, 100%]
+        Variance Accounted For between 2 signals (VAF)
         Link: https://www.dcsc.tudelft.nl/~jwvanwingerden/lti/doc/html/vaf.html
 
         Args:
@@ -845,7 +846,7 @@ class RegressionMetric(Evaluator):
 
     def root_relative_squared_error(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
         """
-        Root Relative Squared Error (RRSE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
+        Root Relative Squared Error (RRSE)
 
         Notes
         ~~~~~
@@ -874,7 +875,7 @@ class RegressionMetric(Evaluator):
 
     def relative_absolute_error(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=1e10, **kwargs):
         """
-        Relative Absolute Error (RAE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
+        Relative Absolute Error (RAE)
 
         Notes
         ~~~~~
@@ -903,7 +904,7 @@ class RegressionMetric(Evaluator):
 
     def a10_index(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
         """
-        A10 index (A10): Best possible score is 1.0, bigger value is better. Range = [0, 1]
+        A10 index (A10)
 
         Notes
         ~~~~~
@@ -930,7 +931,7 @@ class RegressionMetric(Evaluator):
 
     def a20_index(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
         """
-        A20 index (A20): Best possible score is 1.0, bigger value is better. Range = [0, 1]
+        A20 index (A20)
 
         Notes
         ~~~~~
@@ -956,7 +957,7 @@ class RegressionMetric(Evaluator):
 
     def a30_index(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
         """
-        A30 index (A30): Best possible score is 1.0, bigger value is better. Range = [0, 1]
+        A30 index (A30)
 
         Note: a30-index evaluated metric by showing the number of samples that fit the prediction values with a deviation of ±30% compared to experimental values
 
@@ -981,7 +982,6 @@ class RegressionMetric(Evaluator):
                                           multi_output="raw_values", force_finite=True, finite_value=1e10, **kwargs):
         """
         Normalized Root Mean Square Error (NRMSE).
-        Best possible score is 0.0, smaller value is better. Range = [0, +inf).
 
         References:
             + https://www.marinedatascience.co/blog/2019/01/07/normalizing-the-rmse/
@@ -1021,7 +1021,7 @@ class RegressionMetric(Evaluator):
 
     def residual_standard_error(self, y_true=None, y_pred=None, X_shape=None, multi_output="raw_values", force_finite=True, finite_value=1., **kwargs):
         """
-        Residual Standard Error (RSE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
+        Residual Standard Error (RSE)
 
         Links:
             + https://www.statology.org/residual-standard-error-r/
@@ -1052,7 +1052,7 @@ class RegressionMetric(Evaluator):
 
     def covariance(self, y_true=None, y_pred=None, sample=False, multi_output="raw_values", force_finite=True, finite_value=-10., **kwargs):
         """
-        Covariance (COV): There is no best value, bigger value is better. Range = [-inf, +inf)
+        Covariance (COV)
             + is a measure of the relationship between two random variables
             + evaluates how much – to what extent – the variables change together
             + does not assess the dependency between variables
@@ -1083,13 +1083,8 @@ class RegressionMetric(Evaluator):
 
     def correlation(self, y_true=None, y_pred=None, sample=False, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
         """
-        Correlation (COR): Best possible value = 1, bigger value is better. Range = [-1, +1]
-            + measures the strength of the relationship between variables
-            + is the scaled measure of covariance. It is dimensionless.
-            + the correlation coefficient is always a pure value and not measured in any units.
-
-        Links:
-            + https://corporatefinanceinstitute.com/resources/data-science/covariance/
+        Correlation (COR)
+        Links: https://corporatefinanceinstitute.com/resources/data-science/covariance/
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
@@ -1114,10 +1109,8 @@ class RegressionMetric(Evaluator):
 
     def efficiency_coefficient(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
         """
-        Efficiency Coefficient (EC): Best possible value = 1, bigger value is better. Range = [-inf, +1]
-
-        Links:
-            + https://doi.org/10.1016/j.solener.2019.01.037
+        Efficiency Coefficient (EC)
+        Links: https://doi.org/10.1016/j.solener.2019.01.037
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
@@ -1137,9 +1130,7 @@ class RegressionMetric(Evaluator):
     def overall_index(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
         """
         Overall Index (OI)
-
-        Links:
-            + https://doi.org/10.1016/j.solener.2019.01.037
+        Links: https://doi.org/10.1016/j.solener.2019.01.037
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
@@ -1160,10 +1151,8 @@ class RegressionMetric(Evaluator):
 
     def coefficient_of_residual_mass(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=-1.0, **kwargs):
         """
-        Coefficient of Residual Mass (CRM): Best possible value = 0.0, smaller value is better. Range = [-inf, +inf]
-
-        Links:
-            + https://doi.org/10.1016/j.csite.2022.101797
+        Coefficient of Residual Mass (CRM)
+        Links: https://doi.org/10.1016/j.csite.2022.101797
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
@@ -1249,7 +1238,7 @@ class RegressionMetric(Evaluator):
 
     def single_relative_error(self, y_true=None, y_pred=None, **kwargs):
         """
-        Relative Error (RE): Best possible score is 0.0, smaller value is better. Range = (-inf, +inf)
+        Relative Error (RE)
         Note: Computes the relative error between two numbers, or for element between a pair of list, tuple or numpy arrays.
 
         Args:
@@ -1264,7 +1253,7 @@ class RegressionMetric(Evaluator):
 
     def single_absolute_error(self, y_true=None, y_pred=None, **kwargs):
         """
-        Absolute Error (AE): Best possible score is 0.0, smaller value is better. Range = (-inf, +inf)
+        Absolute Error (AE)
         Note: Computes the absolute error between two numbers, or for element between a pair of list, tuple or numpy arrays.
 
         Args:
@@ -1279,7 +1268,7 @@ class RegressionMetric(Evaluator):
 
     def single_squared_error(self, y_true=None, y_pred=None, **kwargs):
         """
-        Squared Error (SE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
+        Squared Error (SE)
         Note: Computes the squared error between two numbers, or for element between a pair of list, tuple or numpy arrays.
 
         Args:
@@ -1294,7 +1283,7 @@ class RegressionMetric(Evaluator):
 
     def single_squared_log_error(self, y_true=None, y_pred=None, **kwargs):
         """
-        Squared Log Error (SLE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
+        Squared Log Error (SLE)
         Note: Computes the squared log error between two numbers, or for element between a pair of list, tuple or numpy arrays.
 
         Args:
