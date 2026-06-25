@@ -45,7 +45,7 @@ class RegressionMetric(Evaluator):
         "SMAPE_NP": {"type": "min", "range": "[0, 2]", "best": "0"},
         "SMAPE_S": {"type": "min", "range": "[0, 1]", "best": "0"},
         "SMAPE_S_P": {"type": "min", "range": "[0, 100]", "best": "0"},
-        "MAAPE": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "MAAPE": {"type": "min", "range": "[0, +1.5708)", "best": "0"},
         "MASE": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "NSE": {"type": "max", "range": "(-inf, 1]", "best": "1"},
         "NNSE": {"type": "max", "range": "[0, 1]", "best": "1"},
@@ -60,7 +60,7 @@ class RegressionMetric(Evaluator):
         "COD": {"type": "max", "range": "(-inf, 1]", "best": "1"},
         "AR2": {"type": "max", "range": "(-inf, 1]", "best": "1"},
         "ACOD": {"type": "max", "range": "(-inf, 1]", "best": "1"},
-        "CI": {"type": "max", "range": "(-inf, 1]", "best": "1"},
+        "CI": {"type": "max", "range": "[-1, 1]", "best": "1"},
         "DRV": {"type": "min", "range": "[1, +inf)", "best": "1"},
         "KGE": {"type": "max", "range": "(-inf, 1]", "best": "1"},
         "NGINI": {"type": "max", "range": "[-1, +1]", "best": "1"},
@@ -168,7 +168,7 @@ class RegressionMetric(Evaluator):
 
     def mean_bias_error(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=1.0, **kwargs):
         """
-        Mean Bias Error (MBE): Best possible score is 0.0. Range = (-inf, +inf)
+        Mean Bias Error (MBE)
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
@@ -264,7 +264,7 @@ class RegressionMetric(Evaluator):
 
     def median_absolute_error(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=1.0, **kwargs):
         """
-        Median Absolute Error (MedAE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
+        Median Absolute Error (MedAE)
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
@@ -302,7 +302,7 @@ class RegressionMetric(Evaluator):
 
     def mean_percentage_error(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=1.0, **kwargs):
         """
-        Mean Percentage Error (MPE): Best possible score is 0.0. Range = (-inf, +inf)
+        Mean Percentage Error (MPE)
         Link: https://www.dataquest.io/blog/understanding-regression-error-metrics/
 
         Args:
@@ -415,7 +415,7 @@ class RegressionMetric(Evaluator):
 
     def mean_arctangent_absolute_percentage_error(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=1.0, **kwargs):
         """
-        Mean Arctangent Absolute Percentage Error (MAAPE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
+        Mean Arctangent Absolute Percentage Error (MAAPE)
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
@@ -656,7 +656,7 @@ class RegressionMetric(Evaluator):
 
     def confidence_index(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
         """
-        Confidence Index (or Performance Index): CI (PI): Best possible score is 1.0, bigger value is better. Range = (-inf, 1]
+        Confidence Index (or Performance Index): CI (PI)
 
         Notes
         ~~~~~
@@ -734,7 +734,7 @@ class RegressionMetric(Evaluator):
 
     def prediction_of_change_in_direction(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
         """
-        Prediction of Change in Direction (PCD): Best possible score is 1.0, bigger value is better. Range = [0, 1]
+        Prediction of Change in Direction (PCD)
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
@@ -748,9 +748,14 @@ class RegressionMetric(Evaluator):
             result (float, int, np.ndarray): PCD metric for single column or multiple columns
         """
         y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+
+        if y_true.shape[0] < 2:
+            result = np.full(n_out, np.nan) if n_out > 1 else np.nan
+            return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
         d = np.diff(y_true, axis=0)
         dp = np.diff(y_pred, axis=0)
-        result = np.mean(np.sign(d) == np.sign(dp), axis=0)
+        result = np.mean((d * dp) > 0, axis=0)
+
         return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
     def cross_entropy(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=-1., **kwargs):
@@ -1131,7 +1136,7 @@ class RegressionMetric(Evaluator):
 
     def overall_index(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
         """
-        Overall Index (OI): Best possible value = 1, bigger value is better. Range = [-inf, +1]
+        Overall Index (OI)
 
         Links:
             + https://doi.org/10.1016/j.solener.2019.01.037
