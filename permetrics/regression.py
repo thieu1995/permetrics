@@ -1007,7 +1007,7 @@ class RegressionMetric(Evaluator):
             result = np.where(denominator == 0, 0.0 if np.all(rmse == 0) else np.inf, rmse / denominator)
         return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def residual_standard_error(self, y_true=None, y_pred=None, n_paras=None, multi_output="raw_values", force_finite=True, finite_value=1., **kwargs):
+    def residual_standard_error(self, y_true=None, y_pred=None, X_shape=None, multi_output="raw_values", force_finite=True, finite_value=1., **kwargs):
         """
         Residual Standard Error (RSE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
@@ -1018,7 +1018,7 @@ class RegressionMetric(Evaluator):
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
-            n_paras (int): The number of model's parameters
+            X_shape (tuple, list, np.ndarray): The shape of X_train dataset
             multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
             force_finite (bool): When result is not finite, it can be NaN or Inf.
                 Their result will be replaced by `finite_value` (Optional, default = True)
@@ -1027,9 +1027,14 @@ class RegressionMetric(Evaluator):
         Returns:
             result (float, int, np.ndarray): RSE metric for single column or multiple columns
         """
+        if X_shape is None:
+            raise ValueError("You need to pass the shape of X_train dataset to calculate RSE.")
+        if len(X_shape) != 2 or X_shape[0] < 4 or X_shape[1] < 1:
+            raise ValueError("You need to pass the real shape of X_train dataset to calculate RSE.")
+        df_residuals = X_shape[0] - X_shape[1] - 1.0
+
         y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
         ss_residuals = np.sum((y_true - y_pred) ** 2, axis=0)
-        df_residuals = len(y_true) - n_paras - 1
         result = np.sqrt(ss_residuals / df_residuals)
         return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
