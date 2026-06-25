@@ -87,6 +87,7 @@ print(dict_result_2)
 #     JSD = jensen_shannon_divergence
 #     VAF = variance_accounted_for
 #     RAE = relative_absolute_error
+#     RRSE = root_relative_squared_error
 #     A10 = a10_index
 #     A20 = a20_index
 #     A30 = a30_index
