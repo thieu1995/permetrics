@@ -41,12 +41,10 @@ class RegressionMetric(Evaluator):
         "MRB": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "MPE": {"type": "unknown", "range": "(-inf, +inf)", "best": "0"},
         "MAPE": {"type": "min", "range": "[0, +inf)", "best": "0"},
-
         "SMAPE": {"type": "min", "range": "[0, 200]", "best": "0"},
         "SMAPE_NP": {"type": "min", "range": "[0, 2]", "best": "0"},
         "SMAPE_S": {"type": "min", "range": "[0, 1]", "best": "0"},
         "SMAPE_S_P": {"type": "min", "range": "[0, 100]", "best": "0"},
-
         "MAAPE": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "MASE": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "NSE": {"type": "max", "range": "(-inf, 1]", "best": "1"},
@@ -69,10 +67,11 @@ class RegressionMetric(Evaluator):
         "RGINI": {"type": "min", "range": "[0, +1]", "best": "0"},
         "PCD": {"type": "max", "range": "[0, 1]", "best": "1"},
         "CE": {"type": "unknown", "range": "(-inf, 0]", "best": "unknown"},
-        "KLD": {"type": "unknown", "range": "(-inf, +inf)", "best": "0"},
-        "JSD": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "KLD": {"type": "unknown", "range": "[0, +inf)", "best": "0"},
+        "JSD": {"type": "min", "range": "[0, 1]", "best": "0"},
         "VAF": {"type": "max", "range": "(-inf, 100%)", "best": "100"},
         "RAE": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "RRSE": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "A10": {"type": "max", "range": "[0, 1]", "best": "1"},
         "A20": {"type": "max", "range": "[0, 1]", "best": "1"},
         "A30": {"type": "max", "range": "[0, 1]", "best": "1"},
@@ -323,7 +322,7 @@ class RegressionMetric(Evaluator):
 
     def mean_absolute_percentage_error(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=1.0, **kwargs):
         """
-        Mean Absolute Percentage Error (MAPE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
+        Mean Absolute Percentage Error (MAPE)
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
@@ -433,25 +432,33 @@ class RegressionMetric(Evaluator):
         result = np.mean(np.arctan(np.abs((y_true - y_pred) / y_true)), axis=0)
         return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def mean_absolute_scaled_error(self, y_true=None, y_pred=None, m=1, multi_output="raw_values", force_finite=True, finite_value=1.0, **kwargs):
+    def mean_absolute_scaled_error(self, y_true=None, y_pred=None, m=1, multi_output="raw_values", force_finite=True, finite_value=1e10, **kwargs):
         """
-        Mean Absolute Scaled Error (MASE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
+        Mean Absolute Scaled Error (MASE)
         Link: https://en.wikipedia.org/wiki/Mean_absolute_scaled_error
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
             y_pred (tuple, list, np.ndarray): The prediction values
-            m (int): m = 1 for non-seasonal data, m > 1 for seasonal data
+            m (int): m = 1 for non-seasonal data, m > 1 for seasonal data. (Optional, default = 1)
             multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
             force_finite (bool): When result is not finite, it can be NaN or Inf.
                 Their result will be replaced by `finite_value` (Optional, default = True)
-            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
+            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 1e10)
 
         Returns:
             result (float, int, np.ndarray): MASE metric for single column or multiple columns
         """
         y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
-        result = np.mean(np.abs(y_true - y_pred), axis=0) / np.mean(np.abs(y_true[m:] - y_true[:-m]), axis=0)
+
+        if y_true.shape[0] <= m:
+            result = np.full(n_out, np.nan) if n_out > 1 else np.nan
+            return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
+        numerator = np.mean(np.abs(y_true - y_pred), axis=0)
+        denominator = np.mean(np.abs(y_true[m:] - y_true[:-m]), axis=0)
+        with np.errstate(divide='ignore', invalid='ignore'):
+            result = numerator / denominator
+
         return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
     def nash_sutcliffe_efficiency(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0.0, **kwargs):
@@ -701,7 +708,7 @@ class RegressionMetric(Evaluator):
 
     def kling_gupta_efficiency(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
         """
-        Kling-Gupta Efficiency (KGE): Best possible score is 1, bigger value is better. Range = (-inf, 1]
+        Kling-Gupta Efficiency (KGE)
         Link: https://rstudio-pubs-static.s3.amazonaws.com/433152_56d00c1e29724829bad5fc4fd8c8ebff.html
 
         Args:
@@ -772,7 +779,7 @@ class RegressionMetric(Evaluator):
 
     def kullback_leibler_divergence(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=-1., **kwargs):
         """
-        Kullback-Leibler Divergence (KLD): Best possible score is 0.0 . Range = (-inf, +inf)
+        Kullback-Leibler Divergence (KLD)
         Link: https://machinelearningmastery.com/divergence-between-probability-distributions/
 
         Args:
@@ -792,7 +799,7 @@ class RegressionMetric(Evaluator):
 
     def jensen_shannon_divergence(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=1., **kwargs):
         """
-        Jensen-Shannon Divergence (JSD): Best possible score is 0.0 (identical), smaller value is better . Range = [0, +inf)
+        Jensen-Shannon Divergence (JSD)
         Link: https://machinelearningmastery.com/divergence-between-probability-distributions/
 
         Args:
