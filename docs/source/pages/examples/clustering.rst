@@ -3,16 +3,6 @@ Clustering Metrics
 
 .. toctree::
    :maxdepth: 3
-   :caption: Clustering Metrics
-
-.. toctree::
-   :maxdepth: 3
-
-.. toctree::
-   :maxdepth: 3
-
-.. toctree::
-   :maxdepth: 3
 
 
 Note that, this type of metrics is kinda differ from regression and classification. There are two type of clustering metrics include internal and external

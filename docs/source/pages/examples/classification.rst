@@ -3,17 +3,6 @@ Classification Metrics
 
 .. toctree::
    :maxdepth: 3
-   :caption: Classification Metrics
-
-.. toctree::
-   :maxdepth: 3
-
-.. toctree::
-   :maxdepth: 3
-
-.. toctree::
-   :maxdepth: 3
-
 
 Functional Style
 ----------------
