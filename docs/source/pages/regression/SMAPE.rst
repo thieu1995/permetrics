@@ -3,25 +3,14 @@ SMAPE - Symmetric Mean Absolute Percentage Error
 
 .. toctree::
    :maxdepth: 3
-   :caption: SMAPE - Symmetric Mean Absolute Percentage Error
-
-.. toctree::
-   :maxdepth: 3
-
-.. toctree::
-   :maxdepth: 3
-
-.. toctree::
-   :maxdepth: 3
-
-
-In time series forecasting, the **Symmetric Mean Absolute Percentage Error (SMAPE)** is notorious for having multiple
-conflicting definitions across literature. To completely eliminate ambiguity, `permetrics` explicitly
-implements **four distinct variants** categorized into two mathematical paradigms:
 
 .. contents:: Table of Contents
    :local:
    :depth: 2
+
+In time series forecasting, the **Symmetric Mean Absolute Percentage Error (SMAPE)** is notorious for having multiple
+conflicting definitions across literature. To completely eliminate ambiguity, `permetrics` explicitly
+implements **four distinct variants** categorized into two mathematical paradigms:
 
 -------------------------------------------------------------------------------
 
@@ -97,6 +86,7 @@ Mathematical Disambiguation & Rules
 1. **Zero-Division Protection:** In all four implementations, if both the actual value and the predicted value at
 timestamp :math:`i` are strictly zero (:math:`y_i = 0` and :math:`\hat{y}_i = 0`), the element-wise error is
 explicitly evaluated as ``0.0`` to prevent ``NaN`` propagation.
+
 2. **Asymmetry Warning:** Despite the name "Symmetric", all SMAPE variants inherently penalize over-forecasting
 (:math:`\hat{y}_i > y_i`) more heavily than under-forecasting (:math:`\hat{y}_i < y_i`).
 
@@ -104,7 +94,7 @@ explicitly evaluated as ``0.0`` to prevent ``NaN`` propagation.
 Example to use SMAPE metrics:
 
 .. code-block:: python
-	:emphasize-lines: 8-9,15-16
+	:emphasize-lines: 8-12,18-19
 
 	from numpy import array
 	from permetrics.regression import RegressionMetric

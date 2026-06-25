@@ -1,63 +1,71 @@
-BE - Mean Bias Error
+MBE - Mean Bias Error
 =====================
 
 .. toctree::
    :maxdepth: 3
-   :caption: MBE - Mean Bias Error
 
-.. toctree::
-   :maxdepth: 3
-
-.. toctree::
-   :maxdepth: 3
-
-.. toctree::
-   :maxdepth: 3
+.. contents:: Table of Contents
+   :local:
+   :depth: 2
 
 
+The **Mean Bias Error (MBE)** :cite:`kato2016prediction` is a fundamental statistical measure used to evaluate the systematic bias of a forecasting model. It calculates the average difference between the predicted values and the actual values while strictly preserving the sign (direction) of the errors.
 
 .. math::
 
-	\text{MBE}(y, \hat{y}) = \frac{1}{n} \sum_{i=1}^{n}(f_i - y_i)
+    \text{MBE}(y, \hat{y}) = \frac{1}{N} \sum_{i=1}^{N} (\hat{y}_i - y_i)
 
-Latex equation code::
+Note: In ``permetrics``, the formula is calculated as Predicted minus Actual :math:`(\hat{y}_i - y_i)`. Therefore, a positive MBE strictly indicates that the model tends to overestimate, while a negative MBE indicates underestimation.
 
-	\text{MBE}(y, \hat{y}) = \frac{1}{n} \sum_{i=1}^{n}(f_i - y_i)
+-------------------------------------------------------------------------------
 
+Description
+-----------
 
-The Mean Bias Error (MBE) :cite:`kato2016prediction` is a statistical measure used to assess the bias of a forecasting model. The MBE measures the average
-difference between the forecasted and actual values, without considering their direction.
+**Key Insight: The Cancellation Effect (Fatal Flaw as an Accuracy Metric)**
+Because MBE preserves the direction of errors, positive errors (over-predictions) and negative errors (under-predictions) will cancel each other out. A model that predicts :math:`+100` for the first sample and :math:`-100` for the second sample will have a perfect MBE of ``0.0``, masking the fact that its individual predictions are highly inaccurate. Therefore, MBE is **never** a measure of absolute accuracy. It must always be paired with an absolute metric like MAE or RMSE.
 
-The MBE is expressed in the same units as the forecasted and actual values, and a best possible score of 0.0 indicates no bias in the forecasting model. The
-MBE has a range of (-infinity, +infinity), with a positive MBE indicating that the forecasted values are, on average, larger than the actual values, and a
-negative MBE indicating the opposite.
+**Advantages:**
+	* **Directional Diagnostic:** It is the ultimate diagnostic tool to determine if your model is systematically over-forecasting or under-forecasting.
+	* **Conservation of Mass/Energy:** In physical sciences and inventory management, keeping MBE close to zero ensures that the *total volume* predicted over a period matches the *total volume* observed, even if individual days are inaccurate.
 
-The MBE is a useful measure to evaluate the systematic errors of a forecasting model, such as overestimation or underestimation of the forecasted values.
-However, it does not provide information about the magnitude or direction of the individual errors, and it should be used in conjunction with other
-statistical measures, such as the Mean Absolute Error (MAE), to provide a more comprehensive evaluation of the forecasting model's accuracy.
+**Disadvantages:**
+	* **Illusion of Perfection:** An MBE of zero does not mean the model is perfect; it simply means the sum of over-predictions perfectly balances the sum of under-predictions.
+	* **Outlier Sensitivity:** Because it uses raw differences, an extreme outlier in one direction can heavily skew the bias. If data is heavily skewed, the **Median Bias Error (MdBE)** is often a more robust alternative.
 
-It is important to note that the MBE is sensitive to outliers and may not be appropriate for data with non-normal distributions or extreme values. In such
-cases, other measures, such as the Median Bias Error (MBE), may be more appropriate.
+-------------------------------------------------------------------------------
 
+Properties
+----------
 
-Example to use MBE metric:
+* **Best possible score:** ``0.0`` (Indicates zero systematic bias; over-predictions perfectly balance under-predictions).
+* **Range:** ``(-inf, +inf)``
+    * **MBE > 0:** The model systematically overestimates.
+    * **MBE < 0:** The model systematically underestimates.
+
+-------------------------------------------------------------------------------
+
+Example Usage
+-------------
 
 .. code-block:: python
-	:emphasize-lines: 8-9,15-16
+    :emphasize-lines: 10, 18
 
-	from numpy import array
-	from permetrics.regression import RegressionMetric
+    from numpy import array
+    from permetrics.regression import RegressionMetric
 
-	## For 1-D array
-	y_true = array([3, -0.5, 2, 7])
-	y_pred = array([2.5, 0.0, 2, 8])
+    ## 1. For 1-D array (Single-output)
+    y_true = array([3, -0.5, 2, 7])
+    y_pred = array([2.5, 0.0, 2, 8])
 
-	evaluator = RegressionMetric(y_true, y_pred)
-	print(evaluator.mean_bias_error())
+    evaluator = RegressionMetric(y_true, y_pred)
 
-	## For > 1-D array
-	y_true = array([[0.5, 1], [-1, 1], [7, -6]])
-	y_pred = array([[0, 2], [-1, 2], [8, -5]])
+    # Calculate Mean Bias Error
+    print("MBE: ", evaluator.MBE())
+    ## 2. For > 1-D array (Multi-output)
+    y_true = array([[0.5, 1], [-1, 1], [7, -6]])
+    y_pred = array([[0, 2], [-1, 2], [8, -5]])
 
-	evaluator = RegressionMetric(y_true, y_pred)
-	print(evaluator.MBE(multi_output="raw_values"))
+    evaluator = RegressionMetric(y_true, y_pred)
+    # Return an array of scores for each column
+    print("MBE (Multi-output): ", evaluator.MBE(multi_output="raw_values"))

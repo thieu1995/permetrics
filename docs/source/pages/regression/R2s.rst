@@ -1,53 +1,66 @@
-R2s - (Pearson’s Correlation Index)**2
-======================================
-
-.. toctree::
-   :maxdepth: 3
-   :caption: R2s - (Pearson’s Correlation Index)**2
+R2s - Squared Pearson's Correlation Coefficient
+===============================================
 
 .. toctree::
    :maxdepth: 3
 
-.. toctree::
-   :maxdepth: 3
+.. contents:: Table of Contents
+   :local:
+   :depth: 2
 
-.. toctree::
-   :maxdepth: 3
+**Squared Pearson's Correlation Coefficient (R2s)** is exactly what the name implies: the mathematical square of Pearson's Correlation Coefficient (R).
 
+In ``permetrics``, this metric is explicitly implemented to combat the widespread nomenclature confusion across online tutorials and major frameworks. Many libraries incorrectly denote the Coefficient of Determination (COD) as :math:`R^2` (R-squared), misleading users into thinking COD is merely the square of the linear correlation. **R2s** serves to physically separate the true squared correlation from the explained variance (COD/R2).
 
 .. math::
 
-	\text{R2s}(y, \hat{y}) = \Bigg[ \frac{ \sum_{i=0}^{N - 1} ((y_i - mean(y))*(\hat{y_i} - mean(\hat{y}))) }{ \sqrt{ \sum_{i=0}^{N - 1} (y_i - mean(y))^2}*\sqrt{\sum_{i=0}^{N - 1} (\hat{y_i} - mean(\hat{y}))^2} } \Bigg]^2
+    \text{R2s}(y, \hat{y}) = \left[ \frac{\sum_{i=1}^{N} (y_i - \bar{y})(\hat{y}_i - \bar{\hat{y}})}{\sqrt{\sum_{i=1}^{N} (y_i - \bar{y})^2} \sqrt{\sum_{i=1}^{N} (\hat{y}_i - \bar{\hat{y}})^2}} \right]^2
 
-Latex equation code::
+Note: :math:`\bar{y}` and :math:`\bar{\hat{y}}` represent the mean of the actual and predicted values, respectively.
 
-	\text{R2s}(y, \hat{y}) = \Bigg[ \frac{ \sum_{i=0}^{N - 1} ((y_i - mean(y))*(\hat{y_i} - mean(\hat{y}))) }{ \sqrt{ \sum_{i=0}^{N - 1} (y_i - mean(y))^2}*\sqrt{\sum_{i=0}^{N - 1} (\hat{y_i} - mean(\hat{y}))^2} } \Bigg]^2
+-------------------------------------------------------------------------------
 
-+ (Pearson’s Correlation Index)^2 = R^2 = R2s (R square): Best possible score is 1.0, bigger value is better. Range = [0, 1]
-+ This actually a useless metric that I implemented here just to demonstrate the misunderstanding between R2s and R2 (Coefficient of Determination).
-+ Most of online tutorials (article, wikipedia,...) or even scikit-learn library are denoted the wrong R2s and R2.
-+ R^2 = R2s = R squared makes people think it as (Pearson’s Correlation Index)^2
-+ However, R2 = Coefficient of Determination, `link <https://en.wikipedia.org/wiki/Pearson_correlation_coefficient>`_
+Description
+-----------
 
+**Advantages:**
+	* **Educational clarity:** Serves as a definitive benchmark to prove whether a given mathematical framework is calculating the true Coefficient of Determination (explained variance) or merely returning the squared correlation.
 
-Example to use R2s metric:
+**Disadvantages:**
+	* **Loss of directional context:** Because the value is squared, it strips away the negative sign of inversely correlated data. A perfect negative correlation (:math:`R = -1`) and a perfect positive correlation (:math:`R = 1`) will both yield an ``R2s`` of ``1.0``.
+	* **Redundancy:** In practical modeling, calculating ``R2s`` rarely provides actionable value beyond what the raw Pearson's R already tells you.
+
+-------------------------------------------------------------------------------
+
+Properties
+----------
+
+* **Best possible score:** ``1.0`` (Bigger value is better).
+* **Range:** ``[0.0, 1.0]``.
+
+-------------------------------------------------------------------------------
+
+Example Usage
+-------------
 
 .. code-block:: python
-	:emphasize-lines: 8-9,15-16
+    :emphasize-lines: 10, 18
 
-	from numpy import array
-	from permetrics.regression import RegressionMetric
+    from numpy import array
+    from permetrics.regression import RegressionMetric
 
-	## For 1-D array
-	y_true = array([3, -0.5, 2, 7])
-	y_pred = array([2.5, 0.0, 2, 8])
+    ## 1. For 1-D array (Single-output)
+    y_true = array([3, -0.5, 2, 7])
+    y_pred = array([2.5, 0.0, 2, 8])
 
-	evaluator = RegressionMetric(y_true, y_pred)
-	print(evaluator.pearson_correlation_coefficient_square())
+    evaluator = RegressionMetric(y_true, y_pred)
+    # Calculate Squared Pearson's Correlation Coefficient
+    print("R2s: ", evaluator.pearson_correlation_coefficient_square())
 
-	## For > 1-D array
-	y_true = array([[0.5, 1], [-1, 1], [7, -6]])
-	y_pred = array([[0, 2], [-1, 2], [8, -5]])
+    ## 2. For > 1-D array (Multi-output)
+    y_true = array([[0.5, 1], [-1, 1], [7, -6]])
+    y_pred = array([[0, 2], [-1, 2], [8, -5]])
 
-	evaluator = RegressionMetric(y_true, y_pred)
-	print(evaluator.R2s(multi_output="raw_values"))
+    evaluator = RegressionMetric(y_true, y_pred)
+    # Return an array of scores for each column
+    print("R2s (Multi-output): ", evaluator.R2s(multi_output="raw_values"))

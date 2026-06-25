@@ -3,26 +3,15 @@ NRMSE - Normalized Root Mean Square Error
 
 .. toctree::
    :maxdepth: 3
-   :caption: NRMSE - Normalized Root Mean Square Error
 
-.. toctree::
-   :maxdepth: 3
-
-.. toctree::
-   :maxdepth: 3
-
-.. toctree::
-   :maxdepth: 3
-
+.. contents:: Table of Contents
+   :local:
+   :depth: 2
 
 The **Normalized Root Mean Square Error (NRMSE)** facilitates the comparison of models across different datasets with different scales by normalizing the RMSE.
 Because there is no single consensus on the normalization factor in statistical literature, `permetrics` explicitly implements
 **four standard normalization methods**. To prevent score manipulation, all methods strictly utilize the ground truth values (:math:`y_{\text{true}}`) as the denominator.
 
-
-.. contents:: Table of Contents
-   :local:
-   :depth: 2
 
 .. math::
 
@@ -51,11 +40,11 @@ Properties
 
 * **Best possible score:** ``0.0`` (Smaller value is better).
 * **Range:** ``[0, +inf)``
-* **Mathematical Reference:**
-* `Ref1: <https://www.marinedatascience.co/blog/2019/01/07/normalizing-the-rmse/>`_
-* `Ref2: <https://search.r-project.org/CRAN/refmans/hydroGOF/html/nrmse.html>`_
-* `Ref3: <https://en.wikipedia.org/wiki/Root-mean-square_deviation#Normalized_root-mean-square_deviation>`_
+* **Mathematical Reference:** `Link 1`_, `Link 2`_, `Link 3`_
 
+.. _Link 1: https://www.marinedatascience.co/blog/2019/01/07/normalizing-the-rmse/
+.. _Link 2: https://search.r-project.org/CRAN/refmans/hydroGOF/html/nrmse.html
+.. _Link 3: https://en.wikipedia.org/wiki/Root-mean-square_deviation#Normalized_root-mean-square_deviation
 
 -------------------------------------------------------------------------------
 
@@ -63,7 +52,7 @@ Example Usage
 -------------
 
 .. code-block:: python
-    :emphasize-lines: 9-11, 18-19
+    :emphasize-lines: 11-14, 23
 
     from numpy import array
     from permetrics.regression import RegressionMetric

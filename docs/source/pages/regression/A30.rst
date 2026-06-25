@@ -1,55 +1,66 @@
-A30 - A30 index
+A30 - A30 Index
 ===============
 
 .. toctree::
    :maxdepth: 3
-   :caption: A30 - A30 index
 
-.. toctree::
-   :maxdepth: 3
+.. contents:: Table of Contents
+   :local:
+   :depth: 2
 
-.. toctree::
-   :maxdepth: 3
+The **A30 Index** :cite:`van2023groundwater` is an empirical evaluation metric that quantifies the proportion of predictions falling within a **±30% deviation** from the experimental (actual) values.
 
-.. toctree::
-   :maxdepth: 3
-
+This metric is often utilized in highly variable domains or early-stage modeling where a wider tolerance margin (30%) is practically acceptable. A higher A30 score indicates better predictive accuracy, demonstrating that a larger percentage of the model's predictions are close to the actual values.
 
 .. math::
 
-	\text{A30}(y, \hat{y}) = \frac{1}{n}\sum_{i=1}^{n} \left\{\begin{array}{ll} 1, & \textrm{if } \frac{|\hat{y}_i - y_i|}{y_i} \leq 0.3\\ 0, & \textrm{otherwise} \end{array}\right.
+    \text{A30}(y, \hat{y}) = \frac{1}{N} \sum_{i=1}^{N} \begin{cases} 1, & \text{if } \frac{|y_i - \hat{y}_i|}{|y_i|} \leq 0.3 \\ 0, & \text{otherwise} \end{cases}
 
-Latex equation code::
+-------------------------------------------------------------------------------
 
-	\text{A30}(y, \hat{y}) = \frac{1}{n}\sum_{i=1}^{n} \left\{\begin{array}{ll} 1, & \textrm{if } \frac{|\hat{y}_i - y_i|}{y_i} \leq 0.3\\ 0, & \textrm{otherwise} \end{array}\right.
+Description
+-----------
 
+**Advantages:**
+	* **High interpretability:** Easily understood by non-technical stakeholders (e.g., "85% of predictions are within a 30% error margin").
+	* **Accommodates high variance:** Extremely useful for datasets with inherent noise where stricter metrics (like A10) might fail to capture the model's baseline utility.
+	* **Outlier resilience:** Extreme deviations do not disproportionately skew the metric; they are simply counted as outside the tolerance threshold (score = 0).
 
-+ Best possible score is 1.0, bigger value is better. Range = [0, 1]
-+ a30-index (A30) :cite:`van2023groundwater` evaluated metric by showing the number of samples that fit the prediction values with a deviation of ±30%
-compared to experimental values.
-+ In other words, the A30 metric measures the proportion of cases where the absolute difference between the predicted and actual values is less than or equal
-to 30% of the actual value. A higher A30 score indicates better predictive accuracy, as the model is able to make more accurate predictions that are closer
-to the actual values.
+**Disadvantages:**
+	* **Rigid threshold (Cliff effect):** A prediction with a 30.1% error is penalized exactly the same as a prediction with a 500% error. It ignores the concept of "near-misses".
+	* **Zero-target vulnerability:** Because the formula divides by the actual value (:math:`y_i`), the calculation will become undefined (division by zero) if the ground truth data contains absolute zeros.
 
+-------------------------------------------------------------------------------
 
-Example to use A30 metric:
+Properties
+----------
+
+* **Best possible score:** ``1.0`` (Higher is better; 100% of samples fall within the ±30% tolerance zone).
+* **Range:** ``[0.0, 1.0]``
+
+-------------------------------------------------------------------------------
+
+Example Usage
+-------------
 
 .. code-block:: python
-	:emphasize-lines: 8-9,15-16
+    :emphasize-lines: 10, 18
 
-	from numpy import array
-	from permetrics.regression import RegressionMetric
+    from numpy import array
+    from permetrics.regression import RegressionMetric
 
-	## For 1-D array
-	y_true = array([3, -0.5, 2, 7])
-	y_pred = array([2.5, 0.0, 2, 8])
+    ## 1. For 1-D array (Single-output)
+    y_true = array([3, -0.5, 2, 7])
+    y_pred = array([2.5, 0.0, 2, 8])
 
-	evaluator = RegressionMetric(y_true, y_pred)
-	print(evaluator.a30_index())
+    evaluator = RegressionMetric(y_true, y_pred)
+    # Calculate A30 Index
+    print("A30 Index: ", evaluator.A30())
 
-	## For > 1-D array
-	y_true = array([[0.5, 1], [-1, 1], [7, -6]])
-	y_pred = array([[0, 2], [-1, 2], [8, -5]])
+    ## 2. For > 1-D array (Multi-output)
+    y_true = array([[0.5, 1], [-1, 1], [7, -6]])
+    y_pred = array([[0, 2], [-1, 2], [8, -5]])
 
-	evaluator = RegressionMetric(y_true, y_pred)
-	print(evaluator.A30(multi_output="raw_values"))
+    evaluator = RegressionMetric(y_true, y_pred)
+    # Return an array of scores for each column
+    print("A30 Index (Multi-output): ", evaluator.A30(multi_output="raw_values"))

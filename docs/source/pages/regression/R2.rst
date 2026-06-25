@@ -3,59 +3,74 @@ R2 - Coefficient of Determination
 
 .. toctree::
    :maxdepth: 3
-   :caption: R2 - Coefficient of Determination
 
-.. toctree::
-   :maxdepth: 3
+.. contents:: Table of Contents
+   :local:
+   :depth: 2
 
-.. toctree::
-   :maxdepth: 3
+The **Coefficient of Determination** (denoted strictly as **COD** or **R2** in ``permetrics``) :cite:`nguyen2021nqsv` is a statistical metric that represents the proportion of variance in the dependent variable that has been explained by the independent variables in the model.
 
-.. toctree::
-   :maxdepth: 3
-
+It provides a measure of how well unseen samples are likely to be predicted by the model through the proportion of explained variance.
 
 .. math::
 
-	R2(y, \hat{y}) = 1 - \frac{\sum_{i=1}^{N} (y_i - \hat{y}_i)^2}{\sum_{i=1}^{N} (y_i - \bar{y})^2}
+    \text{R2}(y, \hat{y}) = 1 - \frac{\sum_{i=1}^{N} (y_i - \hat{y}_i)^2}{\sum_{i=1}^{N} (y_i - \bar{y})^2}
 
-where :math:`\bar{y} = \frac{1}{N} \sum_{i=1}^{N} y_i` and :math:`\sum_{i=1}^{N} (y_i - \hat{y}_i)^2 = \sum_{i=1}^{N} \epsilon_i^2`
+Note: :math:`\bar{y} = \frac{1}{N} \sum_{i=1}^{N} y_i` is the mean of the observed data.
 
-Latex equation code::
+-------------------------------------------------------------------------------
 
-	R2(y, \hat{y}) = 1 - \frac{\sum_{i=1}^{N} (y_i - \hat{y}_i)^2}{\sum_{i=1}^{N} (y_i - \bar{y})^2}
+.. warning:: The Misunderstanding of "R-Squared"
+   Many popular frameworks (including Scikit-Learn and MATLAB) erroneously denote this metric mathematically as :math:`R^2` (R-squared). This is a historical nomenclature flaw that leads to severe mathematical misunderstandings, as users frequently confuse it with the actual square of Pearson’s Correlation Coefficient.
 
+   Because this metric calculates explained variance based on residual errors (which can be infinitely large), **its range can be negative**. A true mathematically squared value (:math:`x^2`) cannot be negative. Therefore, ``permetrics`` explicitly denotes this metric as **R2** or **COD**, reserving the term "R-Squared" solely for the squared Pearson's Correlation Coefficient.
 
-+ Coefficient of Determination (COD/R2) :cite:`nguyen2021nqsv`: Best possible score is 1.0, bigger value is better. Range = (-inf, 1]
-+ `Link to equation <https://scikit-learn.org/stable/modules/model_evaluation.html#r2-score>`_
-+ Scikit-learn and other websites denoted COD as R^2 (or R squared), it leads to the misunderstanding of R^2 in which R is Pearson’s Correlation Coefficient.
-+ We should denote it as COD or R2 only.
+-------------------------------------------------------------------------------
 
-+ It represents the proportion of variance (of y) that has been explained by the independent variables in the model. It provides an indication of goodness of
-fit and therefore a measure of how well unseen samples are likely to be predicted by the model, through the proportion of explained variance.
-+ As such variance is dataset dependent, R2 may not be meaningfully comparable across different datasets.
-+ Best possible score is 1.0 and it can be negative (because the model can be arbitrarily worse). A constant model that always predicts the expected value of
-y, disregarding the input features, would get a R2 score of 0.0.
+Description
+-----------
 
+**Advantages**: Highly intuitive for evaluating model skill.
+    * ``R2 = 1.0``: Perfect predictions.
+    * ``R2 = 0.0``: The model is merely predicting the expected mean of the actual values, disregarding the input features entirely.
+    * ``R2 < 0.0``: The model performs worse than a simple horizontal line predicting the mean.
 
-Example to use R2 metric:
+**Disadvantages:**
+	* **Dataset dependency:** Because the variance is strictly dependent on the specific dataset, R2 scores are generally not meaningfully comparable across different datasets.
+	* **Sensitivity to outliers:** Since residual errors in the numerator are squared, a single extreme outlier can drastically pull the R2 score down into negative territory.
+
+-------------------------------------------------------------------------------
+
+Properties
+----------
+
+* **Best possible score:** ``1.0`` (Bigger value is better).
+* **Range:** ``(-inf, 1.0]``
+* **Mathematical Reference:** `Scikit-Learn Model Evaluation <https://scikit-learn.org/stable/modules/model_evaluation.html#r2-score>`_
+
+-------------------------------------------------------------------------------
+
+Example Usage
+-------------
 
 .. code-block:: python
-	:emphasize-lines: 8-9,15-16
+    :emphasize-lines: 10, 18
 
-	from numpy import array
-	from permetrics.regression import RegressionMetric
+    from numpy import array
+    from permetrics.regression import RegressionMetric
 
-	## For 1-D array
-	y_true = array([3, -0.5, 2, 7])
-	y_pred = array([2.5, 0.0, 2, 8])
+    ## 1. For 1-D array (Single-output)
+    y_true = array([3, -0.5, 2, 7])
+    y_pred = array([2.5, 0.0, 2, 8])
 
-	evaluator = RegressionMetric(y_true, y_pred)
-	print(evaluator.coefficient_of_determination())
+    evaluator = RegressionMetric(y_true, y_pred)
+    # Calculate Coefficient of Determination
+    print("R2: ", evaluator.COD())
 
-	## For > 1-D array
-	y_true = array([[0.5, 1], [-1, 1], [7, -6]])
-	y_pred = array([[0, 2], [-1, 2], [8, -5]])
+    ## 2. For > 1-D array (Multi-output)
+    y_true = array([[0.5, 1], [-1, 1], [7, -6]])
+    y_pred = array([[0, 2], [-1, 2], [8, -5]])
 
-	evaluator = RegressionMetric(y_true, y_pred)
-	print(evaluator.R2(multi_output="raw_values"))
+    evaluator = RegressionMetric(y_true, y_pred)
+    # Return an array of scores for each column
+    print("R2 (Multi-output): ", evaluator.R2(multi_output="raw_values"))

@@ -3,60 +3,68 @@ MSLE - Mean Squared Logarithmic Error
 
 .. toctree::
    :maxdepth: 3
-   :caption: MSLE - Mean Squared Logarithmic Error
 
-.. toctree::
-   :maxdepth: 3
+.. contents:: Table of Contents
+   :local:
+   :depth: 2
 
-.. toctree::
-   :maxdepth: 3
+The **Mean Squared Logarithmic Error (MSLE)** :cite:`hodson2021mean` is a variation of the Mean Squared Error (MSE) that incorporates a logarithmic transformation.
 
-.. toctree::
-   :maxdepth: 3
-
+It measures the expected value of the squared logarithmic error, making it highly suitable for targets with exponential growth patterns, such as population counts, total sales, or web traffic.
 
 .. math::
 
-    \text{MSLE}(y, \hat{y}) = \frac{1}{N} \sum_{i=0}^{N - 1} (\log_e (1 + y_i) - \log_e (1 + \hat{y}_i) )^2
+    \text{MSLE}(y, \hat{y}) = \frac{1}{N} \sum_{i=1}^{N} \left( \ln(1 + y_i) - \ln(1 + \hat{y}_i) \right)^2
 
-Latex equation code::
+Note: :math:`\ln` denotes the natural logarithm. The addition of :math:`1` to both :math:`y` and :math:`\hat{y}` ensures the mathematical safety of the logarithm when dealing with zero values.
 
-	\text{MSLE}(y, \hat{y}) = \frac{1}{N} \sum_{i=0}^{N - 1} (\log_e (1 + y_i) - \log_e (1 + \hat{y}_i) )^2
+-------------------------------------------------------------------------------
 
+Description
+-----------
 
-Where :math:`\log_e (x)` means the natural logarithm of x. This metric is best to use when targets having exponential growth, such as population counts,
-average sales of a commodity over a span of years etc. Note that this metric penalizes an under-predicted estimate greater than an over-predicted estimate.
+**Advantages:**
+	* **Relative Error Focus:** By applying the logarithm, MSLE treats small differences between small true and predicted values approximately the same as big differences between large true and predicted values. It focuses on the *relative ratio* rather than the absolute difference.
+	* **Asymmetric Penalization (Crucial Feature):** Unlike standard MSE, MSLE strongly penalizes *under-predictions* more than *over-predictions*. If actual sales are 1000, predicting 600 (under) will yield a significantly higher MSLE penalty than predicting 1400 (over). This is ideal for inventory domains where under-stocking is costlier than over-stocking.
+	* **Zero-Value Safe:** The :math:`\ln(1+x)` transformation perfectly handles cases where the actual or predicted value is exactly ``0.0``.
 
-The Mean Squared Logarithmic Error (MSLE) :cite:`hodson2021mean` is a statistical measure used to evaluate the accuracy of a forecasting model, particularly
-when the data has a wide range of values. It measures the average of the squared differences between the logarithms of the predicted and actual values.
+**Disadvantages:**
+	* **Strict Domain Constraint:** Actual and predicted values **must** be strictly non-negative (:math:`\ge 0`). If the model outputs a negative prediction (or if the dataset contains negative values), the calculation will crash or return NaN due to an invalid logarithmic domain.
+	* **Interpretation:** The absolute value of MSLE is not intuitive on its own; it is primarily used for comparing the relative performance of different models.
 
-The logarithmic transformation used in the MSLE reduces the impact of large differences between the actual and predicted values and provides a better
-measure of the relative errors between the two values. The MSLE is always a positive value, with a smaller MSLE indicating better forecast accuracy.
+-------------------------------------------------------------------------------
 
-+ The MSLE is commonly used in applications such as demand forecasting, stock price prediction, and sales forecasting, where the data has a wide range of
-values and the relative errors are more important than the absolute errors.
-+ It is important to note that the MSLE is not suitable for data with negative values or zero values, as the logarithm function is not defined for these values.
-+ Best possible score is 0.0, smaller value is better. Range = [0, +inf)
+Properties
+----------
 
+* **Best possible score:** ``0.0`` (Smaller value is better).
+* **Range:** ``[0.0, +inf)``
 
-Example to use MSLE metric:
+-------------------------------------------------------------------------------
+
+Example Usage
+-------------
+
+*Note: Ensure that all target and predicted values are non-negative.*
 
 .. code-block:: python
-	:emphasize-lines: 8-9,15-16
+    :emphasize-lines: 10, 18
 
-	from numpy import array
-	from permetrics.regression import RegressionMetric
+    from numpy import array
+    from permetrics.regression import RegressionMetric
 
-	## For 1-D array
-	y_true = array([3, -0.5, 2, 7])
-	y_pred = array([2.5, 0.0, 2, 8])
+    ## 1. For 1-D array (Single-output)
+    y_true = array([3, 0.5, 2, 7])
+    y_pred = array([2.5, 0.0, 2, 8])
 
-	evaluator = RegressionMetric(y_true, y_pred)
-	print(evaluator.mean_squared_log_error())
+    evaluator = RegressionMetric(y_true, y_pred)
+    # Calculate Mean Squared Logarithmic Error
+    print("MSLE: ", evaluator.MSLE())
 
-	## For > 1-D array
-	y_true = array([[0.5, 1], [-1, 1], [7, -6], [1, 2]])
-	y_pred = array([[0, 2], [-1, 2], [8, -5], [1.1, 1.9]])
+    ## 2. For > 1-D array (Multi-output)
+    y_true = array([[0.5, 1], [1, 1], [7, 6], [1, 2]])
+    y_pred = array([[0, 2], [1, 2], [8, 5], [1.1, 1.9]])
 
-	evaluator = RegressionMetric(y_true, y_pred)
-	print(evaluator.MSLE(multi_output="raw_values"))
+    evaluator = RegressionMetric(y_true, y_pred)
+    # Return an array of scores for each column
+    print("MSLE (Multi-output): ", evaluator.MSLE(multi_output="raw_values"))

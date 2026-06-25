@@ -1,57 +1,64 @@
-A10 - A10 index
+A10 - A10 Index
 ===============
 
 .. toctree::
    :maxdepth: 3
-   :caption: A10 - A10 index
 
-.. toctree::
-   :maxdepth: 3
+.. contents:: Table of Contents
+   :local:
+   :depth: 2
 
-.. toctree::
-   :maxdepth: 3
-
-.. toctree::
-   :maxdepth: 3
-
+The **A10 Index** is a strictly threshold-based regression metric widely used in engineering and empirical models. It quantifies the proportion of predictions that deviate by no more than **±10%** from the actual ground truth values.
 
 .. math::
 
-	\text{A10}(y, \hat{y}) = \frac{1}{n}\sum_{i=1}^{n} \left\{\begin{array}{ll} 1, & \textrm{if } \frac{|\hat{y}_i - y_i|}{y_i} \leq 0.1\\ 0, & \textrm{otherwise} \end{array}\right.
+    \text{A10}(y, \hat{y}) = \frac{1}{N} \sum_{i=1}^{N} \begin{cases} 1, & \text{if } \frac{|y_i - \hat{y}_i|}{|y_i|} \leq 0.1 \\ 0, & \text{otherwise} \end{cases}
 
-Latex equation code::
+-------------------------------------------------------------------------------
 
-	\text{A10}(y, \hat{y}) = \frac{1}{n}\sum_{i=1}^{n} \left\{\begin{array}{ll} 1, & \textrm{if } \frac{|\hat{y}_i - y_i|}{y_i} \leq 0.1\\ 0, & \textrm{otherwise} \end{array}\right.
+Description
+-----------
 
+**Advantages:**
+	* **Exceptional interpretability:** Directly translates into business, engineering, or clinical success criteria (e.g., "85% of our predictions fall within the strict 10% margin of error").
+	* **Robust to extreme outliers:** Unlike RMSE or MSE, massive prediction errors do not disproportionately skew the final score. An outlier is simply counted as a failure (score = 0).
 
-+ Best possible score is 1.0, bigger value is better. Range = [0, 1]
-+ a10-index is engineering index for evaluating artificial intelligence models by showing the number of samples that fit the
-prediction values with a deviation of ±10% compared to experimental values
-+ `Link to equation <https://www.mdpi.com/2076-3417/9/18/3715/htm>`_
+**Disadvantages:**
+	* **Rigid threshold (Cliff effect):** A prediction with a 10.1% error is penalized exactly the same as a prediction with a 500% error. It completely ignores "near-misses".
+	* **Undefined for zero targets:** Because it divides by the actual value (:math:`y_i`), the metric calculation will crash or become undefined if the ground truth data contains absolute zeros.
 
-In other words, the A10 metric measures the proportion of cases where the absolute difference between the predicted and actual values is less than or equal
-to 10% of the actual value. A higher A10 score indicates better predictive accuracy, as the model is able to make more accurate predictions that are closer
-to the actual values.
+-------------------------------------------------------------------------------
 
+Properties
+----------
 
-Example to use A10 metric:
+* **Best possible score:** ``1.0`` (Higher is better, meaning 100% of samples are within the ±10% tolerance zone).
+* **Range:** ``[0.0, 1.0]``
+* **Mathematical Reference:** `MDPI Applied Sciences <https://www.mdpi.com/2076-3417/9/18/3715/htm>`_
+
+-------------------------------------------------------------------------------
+
+Example Usage
+-------------
 
 .. code-block:: python
-	:emphasize-lines: 8-9,15-16
+    :emphasize-lines: 10, 18
 
-	from numpy import array
-	from permetrics.regression import RegressionMetric
+    from numpy import array
+    from permetrics.regression import RegressionMetric
 
-	## For 1-D array
-	y_true = array([3, -0.5, 2, 7])
-	y_pred = array([2.5, 0.0, 2, 8])
+    ## 1. For 1-D array (Single-output)
+    y_true = array([3, -0.5, 2, 7])
+    y_pred = array([2.5, 0.0, 2, 8])
 
-	evaluator = RegressionMetric(y_true, y_pred)
-	print(evaluator.a10_index())
+    evaluator = RegressionMetric(y_true, y_pred)
+    # Calculate A10 Index
+    print("A10 Index: ", evaluator.A10())
 
-	## For > 1-D array
-	y_true = array([[0.5, 1], [-1, 1], [7, -6]])
-	y_pred = array([[0, 2], [-1, 2], [8, -5]])
+    ## 2. For > 1-D array (Multi-output)
+    y_true = array([[0.5, 1], [-1, 1], [7, -6]])
+    y_pred = array([[0, 2], [-1, 2], [8, -5]])
 
-	evaluator = RegressionMetric(y_true, y_pred)
-	print(evaluator.A10(multi_output="raw_values"))
+    evaluator = RegressionMetric(y_true, y_pred)
+    # Return an array of scores for each column
+    print("A10 Index (Multi-output): ", evaluator.A10(multi_output="raw_values"))
