@@ -98,7 +98,8 @@ Regression Metrics
 +-----+------------+--------------------------------------------------+------------------------------------------------------+
 | 47  |    CRM     |           Coefficient of Residual Mass           |   Smaller is better (Best = 0), Range=(-inf, +inf)   |
 +-----+------------+--------------------------------------------------+------------------------------------------------------+
-
+| 48  |    RRSE     |           Root Relative Squared Error           |   Smaller is better (Best = 0), Range=[0, +inf)    |
++-----+------------+--------------------------------------------------+------------------------------------------------------+
 
 
 From now on:
@@ -149,6 +150,7 @@ From now on:
    regression/JSD.rst
    regression/VAF.rst
    regression/RAE.rst
+   regression/RRSE.rst
    regression/A10.rst
    regression/A20.rst
    regression/A30.rst

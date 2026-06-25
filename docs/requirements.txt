@@ -1,7 +1,7 @@
 # Defining the exact version will make sure things don't break
-sphinx==4.4.0
-sphinx_rtd_theme==1.0.0
-readthedocs-sphinx-search==0.3.2
-sphinxcontrib-bibtex==2.5.0
+sphinx>=9.0.4
+sphinx_rtd_theme>=3.1.0
+readthedocs-sphinx-search>=0.3.1
+sphinxcontrib-bibtex>=2.7.0
 numpy>=2.2.2
 scipy>=1.13.0
