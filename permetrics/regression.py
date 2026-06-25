@@ -831,14 +831,42 @@ class RegressionMetric(Evaluator):
         result = (1 - np.var(y_true - y_pred, axis=0) / np.var(y_true, axis=0)) * 100
         return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
-    def relative_absolute_error(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
+    def root_relative_squared_error(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
+        """
+        Root Relative Squared Error (RRSE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
+
+        Notes
+        ~~~~~
+            + WEKA Standard: https://waikato.github.io/weka-wiki/formats_and_processing/evaluating_models/
+
+        Args:
+            y_true (tuple, list, np.ndarray): The ground truth values
+            y_pred (tuple, list, np.ndarray): The prediction values
+            multi_output: Can be "raw_values" or list weights of variables such as [0.5, 0.2, 0.3] for 3 columns, (Optional, default = "raw_values")
+            force_finite (bool): When result is not finite, it can be NaN or Inf.
+                Their result will be replaced by `finite_value` (Optional, default = True)
+            finite_value (float): The finite value used to replace Inf or NaN result (Optional, default = 0.0)
+
+        Returns:
+            result (float, int, np.ndarray): RRSE metric for single column or multiple columns
+        """
+        y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
+
+        numerator = np.sum((y_true - y_pred) ** 2, axis=0)
+        y_mean = np.mean(y_true, axis=0)
+        denominator = np.sum((y_true - y_mean) ** 2, axis=0)
+        with np.errstate(divide='ignore', invalid='ignore'):
+            result = np.sqrt(numerator / denominator)
+
+        return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
+
+    def relative_absolute_error(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=1e10, **kwargs):
         """
         Relative Absolute Error (RAE): Best possible score is 0.0, smaller value is better. Range = [0, +inf)
 
         Notes
         ~~~~~
-            + https://stackoverflow.com/questions/59499222/how-to-make-a-function-of-mae-and-rae-without-using-librarymetrics
-            + https://www.statisticshowto.com/relative-absolute-error
+            + WEKA Standard: https://waikato.github.io/weka-wiki/formats_and_processing/evaluating_models/
 
         Args:
             y_true (tuple, list, np.ndarray): The ground truth values
@@ -852,9 +880,13 @@ class RegressionMetric(Evaluator):
             result (float, int, np.ndarray): RAE metric for single column or multiple columns
         """
         y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
-        numerator = np.power(np.sum((y_pred - y_true) ** 2, axis=0), 1 / 2.)
-        denominator = np.power(np.sum(y_true ** 2, axis=0), 1 / 2.)
-        result = numerator/denominator
+
+        numerator = np.sum(np.abs(y_true - y_pred), axis=0)
+        y_mean = np.mean(y_true, axis=0)
+        denominator = np.sum(np.abs(y_true - y_mean), axis=0)
+        with np.errstate(divide='ignore', invalid='ignore'):
+            result = numerator / denominator
+
         return self.get_output_result(result, n_out, multi_output, force_finite, finite_value=finite_value)
 
     def a10_index(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0., **kwargs):
@@ -1292,6 +1324,7 @@ class RegressionMetric(Evaluator):
     JSD = jensen_shannon_divergence
     VAF = variance_accounted_for
     RAE = relative_absolute_error
+    RRSE = root_relative_squared_error
     A10 = a10_index
     A20 = a20_index
     A30 = a30_index
