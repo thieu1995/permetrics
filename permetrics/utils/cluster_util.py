@@ -160,15 +160,15 @@ def calculate_mean_squared_error_index(X=None, y_pred=None):
 
 
 def calculate_ball_hall_index(X=None, y_pred=None):
-    n_clusters = len(np.unique(y_pred))
+    pred_labels = np.unique(y_pred)
     wgss = 0
     ## For each cluster, find the centroid and then the within-group SSE
-    for k in range(n_clusters):
+    for k in pred_labels:
         centroid_mask = y_pred == k
         cluster_k = X[centroid_mask]
         centroid = np.mean(cluster_k, axis=0)
         wgss += np.sum((cluster_k - centroid) ** 2)
-    return wgss / n_clusters
+    return wgss / len(pred_labels)
 
 
 def calculate_calinski_harabasz_index(X=None, y_pred=None, force_finite=True, finite_value=0.0):
@@ -483,7 +483,8 @@ def calculate_duda_hart_index(X=None, y_pred=None, force_finite=True, finite_val
 
 
 def calculate_beale_index(X=None, y_pred=None, force_finite=True, finite_value=1e10):
-    n_clusters = len(np.unique(y_pred))
+    pred_labels = np.unique(y_pred)
+    n_clusters = len(pred_labels)
     if n_clusters == 1:
         if force_finite:
             return finite_value
@@ -493,7 +494,7 @@ def calculate_beale_index(X=None, y_pred=None, force_finite=True, finite_value=1
     centers, _ = compute_barycenters(X, y_pred)
     sse_within = 0
     sse_between = 0
-    for k in range(n_clusters):
+    for k in pred_labels:
         sse_within += np.sum((X[y_pred == k] - centers[k]) ** 2)
         sse_between += np.sum((centers[k] - np.mean(X, axis=0)) ** 2)
     df_within = n_samples - n_clusters
@@ -515,7 +516,8 @@ def calculate_r_squared_index(X=None, y_pred=None):
 
 
 def calculate_density_based_clustering_validation_index(X=None, y_pred=None, force_finite=True, finite_value=1.):
-    n_clusters = len(np.unique(y_pred))
+    pred_labels = np.unique(y_pred)
+    n_clusters = len(pred_labels)
     if n_clusters == 1:
         if force_finite:
             return finite_value
@@ -523,7 +525,7 @@ def calculate_density_based_clustering_validation_index(X=None, y_pred=None, for
             raise ValueError("The Density-based Clustering Validation Index is undefined when y_pred has only 1 cluster.")
     n_samples, n_features = X.shape
     centroids = np.zeros((n_clusters, n_features))
-    for k in range(n_clusters):
+    for k in pred_labels:
         centroids[k] = np.mean(X[y_pred == k], axis=0)
     intra_cluster_distances = cdist(X, centroids, 'euclidean')
     min_inter_cluster_distances = np.zeros(n_samples)
