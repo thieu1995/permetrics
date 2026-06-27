@@ -237,6 +237,7 @@
 #             return labels, le
 #         else:
 #             raise TypeError("To calculate clustering metrics, labels must be a 1-D vector.")
+import warnings
 
 import numpy as np
 from permetrics.utils.encoder import LabelEncoder
@@ -336,11 +337,13 @@ def format_classification_data(y_true, y_pred):
     if type_t != type_p:
         raise TypeError(f"Dtype mismatch: y_true ({type_t}) != y_pred ({type_p}).")
 
-    u_true = np.unique(yt)
-    if not np.isin(np.unique(yp), u_true).all():
-        raise ValueError("y_pred contains unknown labels not present in y_true.")
+    extra_labels = np.setdiff1d(np.unique(yp), np.unique(yt))
+    if len(extra_labels) > 0:
+        warnings.warn(f"y_pred contains classes {extra_labels} not present in y_true. "
+                      "These will be treated as zero-support classes.", UserWarning, stacklevel=3)
 
-    return yt, yp, len(u_true) == 2, type_t
+    uni_cls = sorted(np.unique(np.concatenate((yt, yp))).tolist())
+    return yt, yp, uni_cls, type_t
 
 
 def format_y_score(y_true, y_score):
