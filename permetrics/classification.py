@@ -72,8 +72,8 @@ class ClassificationMetric(Evaluator):
     matthews_correlation_coefficient(...)
         Calculate the Matthews correlation coefficient.
 
-    hamming_score(...)
-        Calculate the hamming score.
+    hamming_loss(...)
+        Calculate the hamming loss.
 
     lift_score(...)
         Calculate the lift score.
@@ -122,16 +122,19 @@ class ClassificationMetric(Evaluator):
         "F2S": {"type": "max", "range": "[0, 1]", "best": "1"},
         "FBS": {"type": "max", "range": "[0, 1]", "best": "1"},
         "MCC": {"type": "max", "range": "[-1, +1]", "best": "1"},
-        "HS": {"type": "max", "range": "[0, 1]", "best": "1"},
-        "LS": {"type": "max", "range": "[0, +inf)", "best": "no best"},
         "CKS": {"type": "max", "range": "[-1, +1]", "best": "1"},
         "JSI": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "JSS": {"type": "max", "range": "[0, 1]", "best": "1"},
         "GMS": {"type": "max", "range": "[0, 1]", "best": "1"},
-
         "ROC-AUC": {"type": "max", "range": "[0, 1]", "best": "1"},
-        "GINI": {"type": "min", "range": "[0, 1]", "best": "0"},
+        "ROC": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "AUC": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "GINI": {"type": "max", "range": "[-1, 1]", "best": "1"},
+        "LS": {"type": "max", "range": "[0, +inf)", "best": "unknown"},
+
         "CEL": {"type": "min", "range": "[0, +inf)", "best": "0"},
-        "HL": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "HML": {"type": "min", "range": "[0, 1]", "best": "0"},
+        "HGL": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "KLDL": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "BSL": {"type": "min", "range": "[0, 1]", "best": "0"}
     }
@@ -465,7 +468,7 @@ class ClassificationMetric(Evaluator):
         """
         return self._aggregate("mcc", y_true, y_pred, labels, pos_label, average)
 
-    def hamming_score(self, y_true=None, y_pred=None, labels=None, pos_label=1, average="binary", **kwargs):
+    def hamming_loss(self, y_true=None, y_pred=None, labels=None, pos_label=1, average="binary", **kwargs):
         """
         Parameters
         ----------
@@ -483,9 +486,9 @@ class ClassificationMetric(Evaluator):
         Returns
         -------
         float or dict
-            Hamming score.
+            Hamming loss.
         """
-        return self._aggregate("hamming_score", y_true, y_pred, labels, pos_label, average)
+        return self._aggregate("hamming_loss", y_true, y_pred, labels, pos_label, average)
 
     def lift_score(self, y_true=None, y_pred=None, labels=None, pos_label=1, average="binary", **kwargs):
         """
@@ -551,7 +554,7 @@ class ClassificationMetric(Evaluator):
         float or dict
             Jaccard similarity index.
         """
-        return self._aggregate("jaccard_similarities", y_true, y_pred, labels, pos_label, average)
+        return self._aggregate("jaccard_score", y_true, y_pred, labels, pos_label, average)
 
     def g_mean_score(self, y_true=None, y_pred=None, labels=None, pos_label=1, average="binary", **kwargs):
         """
@@ -722,8 +725,16 @@ class ClassificationMetric(Evaluator):
             Cross-entropy loss.
         """
         y_true, y_pred, _, _ = self.get_processed_data2(y_true, y_pred)
-        y_true_oh = np.eye(y_pred.shape[1] if y_pred.ndim > 1 else 2)[y_true.astype(int)]
-        return float(-np.mean(np.sum(y_true_oh * np.log(np.clip(y_pred, self.EPSILON, 1.0 - self.EPSILON)), axis=1)))
+
+        # 1. Transmit 1D hard labels [0, 2] or 2D soft labels [[0.9, 0.1]]
+        if y_true.ndim == 1 or (y_true.ndim == 2 and y_true.shape[1] == 1):
+            n_classes = y_pred.shape[1] if y_pred.ndim > 1 else 2
+            y_t = np.eye(n_classes)[y_true.ravel().astype(int)]
+        else:
+            y_t = y_true.astype(float)
+        # 2. ONLY the lower bound clip to avoid the log(0) trap, the upper bound 1.0 is absolutely safe.
+        y_p = np.clip(y_pred, self.EPSILON, 1.0)
+        return float(-np.mean(np.sum(y_t * np.log(y_p), axis=1)))
 
     def hinge_loss(self, y_true=None, y_pred=None, **kwargs):
         """
@@ -758,8 +769,19 @@ class ClassificationMetric(Evaluator):
             Kullback-Leibler divergence loss.
         """
         y_true, y_pred, _, _ = self.get_processed_data2(y_true, y_pred)
-        y_t_oh = np.clip(np.eye(y_pred.shape[1] if y_pred.ndim > 1 else 2)[y_true.astype(int)], self.EPSILON, 1.0 - self.EPSILON)
-        return float(np.mean(np.sum(y_t_oh * np.log(y_t_oh / np.clip(y_pred, self.EPSILON, 1.0 - self.EPSILON)), axis=1)))
+
+        # 1. Pass Hard label [0, 2, 1] or pass Soft label [[0.8, 0.2]]
+        if y_true.ndim == 1 or (y_true.ndim == 2 and y_true.shape[1] == 1):
+            n_classes = y_pred.shape[1] if y_pred.ndim > 1 else 2
+            y_t = np.eye(n_classes)[y_true.ravel().astype(int)]
+        else:
+            y_t = y_true.astype(float)
+        # 2. Only clip y_pred to avoid log(0), preserve the purity of y_true.
+        y_p = np.clip(y_pred, self.EPSILON, 1.0)
+        # 3. Technique to eliminate the "0 * -inf = nan" trap:
+        # Where y_t == 0, force the ratio y_t / y_p = 1.0 -> log(1.0) = 0 -> 0 * 0 = 0
+        ratio = np.where(y_t > 0, y_t / y_p, 1.0)
+        return float(np.mean(np.sum(y_t * np.log(ratio), axis=1)))
 
 
     CM = confusion_matrix
@@ -772,14 +794,15 @@ class ClassificationMetric(Evaluator):
     FBS = fbeta_score
     SS = specificity_score
     MCC = matthews_correlation_coefficient
-    HS = hamming_score
-    LS = lift_score
     CKS = cohen_kappa_score
-    JSI = JSC = jaccard_similarity_coefficient = jaccard_similarity_index
+    ROC = AUC = RAS = roc_auc_score
+    JSI = jaccard_similarity_coefficient = JSS = jaccard_similarity_score = JSC = jaccard_similarity_index
     GMS = g_mean_score
     GINI = gini_index
-    CEL = crossentropy_loss
-    HL = hinge_loss
+    LS = lift_score
+
+    HML = hamming_loss
+    HGL = hinge_loss
     KLDL = kullback_leibler_divergence_loss
     BSL = brier_score_loss
-    ROC = AUC = RAS = roc_auc_score
+    CEL = crossentropy_loss

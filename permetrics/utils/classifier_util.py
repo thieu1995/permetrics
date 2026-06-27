@@ -125,9 +125,9 @@ def calculate_single_label_metric(matrix, imap, imap_count, beta=1.0):
             "f2": (5 * prec * rec) / (4 * prec + rec) if (4 * prec + rec) != 0 else 0.0,
             "fbeta": ((1 + beta ** 2) * prec * rec) / (beta ** 2 * prec + rec) if (beta ** 2 * prec + rec) != 0 else 0.0,
             "mcc": mcc,
-            "hamming_score": 1.0 - (tp / total_sum) if total_sum != 0 else 0.0,
+            "hamming_loss": (fp + fn) / total_sum if total_sum != 0 else 0.0,
             "lift_score": ls,
-            "jaccard_similarities": tp / (tp + fp + fn) if (tp + fp + fn) != 0 else 0.0,
+            "jaccard_score": tp / (tp + fp + fn) if (tp + fp + fn) != 0 else 0.0,
             "kappa_score": kappa,
             "g_mean": np.sqrt(rec * spec)
         }
