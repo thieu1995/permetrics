@@ -10,10 +10,10 @@ import pytest
 from permetrics import RegressionMetric
 
 STANDARD_METRICS = [
-    "EVS", "ME", "MBE", "MAE", "MSE", "RMSE","MSLE", "MedAE", "MRE", "MPE", "MAPE", "SMAPE",
+    "EVS", "ME", "MBE", "MAE", "MSE", "RMSE", "MSLE", "MedAE", "MRE", "MPE", "MAPE", "SMAPE",
     "SMAPE_NP", "SMAPE_S", "SMAPE_S_P", "MAAPE", "MASE", "NSE", "NNSE", "WI", "R", "AR",
     "RSQ", "CI", "COD", "ACOD", "DRV", "KGE", "PCD", "CE", "KLD", "JSD", "VAF", "RAE", "RRSE",
-    "A10", "A20", "A30", "NRMSE", "RSE", "COV", "COR", "EC", "OI", "CRM", "NGINI", "RGINI",
+    "A10", "A20", "A30", "NRMSE", "RSE", "COV", "COR", "EC", "OI", "CRM", "NGINI", "RGINI"
 ]
 
 SAMPLE_WISE_METRICS = ["RE", "AE", "SE", "SLE"]
