@@ -8,7 +8,6 @@
 ## 2. Create object
 ## 3. From object call function and use
 
-import numpy as np
 from permetrics.classification import ClassificationMetric
 
 ## For integer labels or categorical labels
@@ -26,21 +25,3 @@ print(evaluator.f1_score())
 print(evaluator.F1S(average="micro"))
 print(evaluator.f1_score(average="macro"))
 print(evaluator.F1S(average="weighted"))
-
-#     CM = confusion_matrix
-#     PS = precision_score
-#     NPV = negative_predictive_value
-#     RS = recall_score
-#     AS = accuracy_score
-#     F1S = f1_score
-#     F2S = f2_score
-#     FBS = fbeta_score
-#     SS = specificity_score
-#     MCC = matthews_correlation_coefficient
-#     HS = hamming_score
-#     LS = lift_score
-#     CKS = cohen_kappa_score
-#     JSI = JSC = jaccard_similarity_coefficient = jaccard_similarity_index
-#     GMS = g_mean_score
-#     GINI = gini_index
-#     ROC = AUC = RAS = roc_auc_score

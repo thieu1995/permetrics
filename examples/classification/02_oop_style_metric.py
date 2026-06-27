@@ -12,7 +12,6 @@
 ## 2. Create object
 ## 3. From object call function and use
 
-import numpy as np
 from permetrics.classification import ClassificationMetric
 
 y_true = [0, 1, 0, 0, 1, 0]
@@ -22,26 +21,8 @@ evaluator = ClassificationMetric(y_true, y_pred)
 
 ## Get the result of any function you want to
 
-hamming_score = evaluator.hamming_score()
+hl = evaluator.hamming_loss()
 mcc = evaluator.matthews_correlation_coefficient()
 specificity = evaluator.specificity_score()
 
-print(f"HL: {hamming_score}, MCC: {mcc}, specificity: {specificity}")
-
-#     CM = confusion_matrix
-#     PS = precision_score
-#     NPV = negative_predictive_value
-#     RS = recall_score
-#     AS = accuracy_score
-#     F1S = f1_score
-#     F2S = f2_score
-#     FBS = fbeta_score
-#     SS = specificity_score
-#     MCC = matthews_correlation_coefficient
-#     HS = hamming_score
-#     LS = lift_score
-#     CKS = cohen_kappa_score
-#     JSI = JSC = jaccard_similarity_coefficient = jaccard_similarity_index
-#     GMS = g_mean_score
-#     GINI = gini_index
-#     ROC = AUC = RAS = roc_auc_score
+print(f"HML: {hl}, MCC: {mcc}, specificity: {specificity}")
