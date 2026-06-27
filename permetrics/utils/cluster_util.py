@@ -15,6 +15,13 @@ from scipy.sparse import coo_matrix
 from collections import Counter
 
 
+def sum_comb(x):
+    """
+    Calculate the total number of pairs nC2 = n(n-1)/2
+    """
+    return np.sum(x * (x - 1) / 2)
+
+
 def compute_clusters(labels):
     """
     Get the dict of clusters and dict of cluster size
@@ -88,19 +95,19 @@ def compute_BGSS(X, labels):
     # Calculate the overall mean of the data
     overall_mean = np.mean(X, axis=0)
 
-    # # Calculate between-cluster variance and cluster sizes
-    # cluster_sizes = np.bincount(labels, minlength=n_clusters)
-    # cluster_means = np.array([np.mean(X[labels == i], axis=0) for i in range(n_clusters)])
-    # between_var = np.sum(cluster_sizes * np.sum((cluster_means - overall_mean) ** 2, axis=1))
+    # # Calculate the between-cluster variance
+    # between_var = 0.0
+    # for i in range(n_clusters):
+    #     cluster_mask = labels == i
+    #     cluster_size = np.sum(cluster_mask)
+    #     cluster_mean = np.mean(X[cluster_mask], axis=0)
+    #     between_var += cluster_size * np.sum((cluster_mean - overall_mean) ** 2)
     # return between_var
 
-    # Calculate the between-cluster variance
-    between_var = 0.0
-    for i in range(n_clusters):
-        cluster_mask = labels == i
-        cluster_size = np.sum(cluster_mask)
-        cluster_mean = np.mean(X[cluster_mask], axis=0)
-        between_var += cluster_size * np.sum((cluster_mean - overall_mean) ** 2)
+    # Calculate between-cluster variance and cluster sizes
+    cluster_sizes = np.bincount(labels, minlength=n_clusters)
+    cluster_means = np.array([np.mean(X[labels == i], axis=0) for i in range(n_clusters)])
+    between_var = np.sum(cluster_sizes * np.sum((cluster_means - overall_mean) ** 2, axis=1))
     return between_var
 
 
@@ -115,18 +122,24 @@ def compute_contingency_matrix(y_true, y_pred):
 def compute_confusion_matrix(y_true, y_pred, normalize=False):
     """
     Computes the confusion matrix for a clustering problem given the true labels and the predicted labels.
-    http://cran.nexr.com/web/packages/clusterCrit/vignettes/clusterCrit.pdf
     """
+    contingency = compute_contingency_matrix(y_true, y_pred)
     n = len(y_true)
-    yy = yn = ny = nn = 0.
-    for i in range(n - 1):
-        y_true_diff = y_true[i + 1:] == y_true[i]
-        y_pred_diff = y_pred[i + 1:] == y_pred[i]
-        yy += np.sum(y_true_diff & y_pred_diff)
-        yn += np.sum(y_true_diff & ~y_pred_diff)
-        ny += np.sum(~y_true_diff & y_pred_diff)
-        nn += np.sum(~y_true_diff & ~y_pred_diff)
-    res = np.array([yy, yn, ny, nn], dtype=np.int64)
+    yy = sum_comb(contingency)
+
+    sum_rows = np.ravel(contingency.sum(axis=1))
+    sum_cols = np.ravel(contingency.sum(axis=0))
+
+    yy_plus_yn = sum_comb(sum_rows)  # same cluster in y_true
+    yy_plus_ny = sum_comb(sum_cols)  # same cluster in y_pred
+
+    yn = yy_plus_yn - yy
+    ny = yy_plus_ny - yy
+
+    total_pairs = n * (n - 1) / 2
+    nn = total_pairs - (yy + yn + ny)
+
+    res = np.array([yy, yn, ny, nn], dtype=np.float64)
     if normalize:
         return res / np.sum(res)
     return res
