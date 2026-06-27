@@ -12,47 +12,123 @@ import numpy as np
 
 class ClassificationMetric(Evaluator):
     """
-    Defines a ClassificationMetric class that hold all classification metrics
-    (for both binary and multiple classification problem)
+    A class for evaluating classification metrics.
 
     Parameters
     ----------
-    y_true: tuple, list, np.ndarray, default = None
-        The ground truth values.
+    y_true : tuple, list, np.ndarray, optional
+        The ground truth values. Default is None.
 
-    y_pred: tuple, list, np.ndarray, default = None
-        The prediction values.
+    y_pred : tuple, list, np.ndarray, optional
+        The predicted values. Default is None.
 
-    labels: tuple, list, np.ndarray, default = None
-        List of labels to index the matrix. This may be used to reorder or select a subset of labels.
+    labels : tuple, list, np.ndarray, optional
+        List of labels to index the matrix. This may be used to reorder or select a subset of labels. Default is None.
 
-    average: (str, None): {'micro', 'macro', 'weighted'} or None, default="macro"
-        If None, the scores for each class are returned. Otherwise, this determines the type of averaging performed on the data:
+    pos_label : int or str
+        Positive label for binary classification.
 
-        ``'micro'``:
-            Calculate metrics globally by considering each element of the label indicator matrix as a label.
-        ``'macro'``:
-            Calculate metrics for each label, and find their unweighted mean.  This does not take label imbalance into account.
-        ``'weighted'``:
-            Calculate metrics for each label, and find their average, weighted by support (the number of true instances for each label).
+    average : str or None, optional
+        Determines the type of averaging performed on the data. Options are:
+        - 'binary': Calculate for binary classification problem
+        - 'micro': Calculate metrics globally by considering each element of the label indicator matrix as a label.
+        - 'macro': Calculate metrics for each label and find their unweighted mean.
+        - 'weighted': Calculate metrics for each label and find their average, weighted by support.
+        - None: Scores for each class are returned.
+        Default is "binary".
+
+    Methods
+    -------
+    get_support(name=None, verbose=True)
+        Retrieve the support information for a specific metric or all metrics.
+
+    get_processed_data(y_true=None, y_pred=None)
+        Process and format the input data for evaluation.
+
+    get_processed_data2(y_true=None, y_pred=None)
+        Process and format the input data for ROC and probability-based metrics.
+
+    precision_score(...)
+        Calculate the precision score.
+
+    negative_predictive_value(...)
+        Calculate the negative predictive value.
+
+    specificity_score(...)
+        Calculate the specificity score.
+
+    recall_score(...)
+        Calculate the recall score.
+
+    f1_score(...)
+        Calculate the F1 score.
+
+    f2_score(...)
+        Calculate the F2 score.
+
+    fbeta_score(...)
+        Calculate the F-beta score.
+
+    matthews_correlation_coefficient(...)
+        Calculate the Matthews correlation coefficient.
+
+    hamming_score(...)
+        Calculate the hamming score.
+
+    lift_score(...)
+        Calculate the lift score.
+
+    cohen_kappa_score(...)
+        Calculate the Cohen's kappa score.
+
+    jaccard_similarity_index(...)
+        Calculate the Jaccard similarity index.
+
+    g_mean_score(...)
+        Calculate the geometric mean score.
+
+    accuracy_score(...)
+        Calculate the accuracy score.
+
+    confusion_matrix(...)
+        Generate the confusion matrix.
+
+    roc_auc_score(...)
+        Calculate the ROC-AUC score.
+
+    gini_index(...)
+        Calculate the Gini index.
+
+    brier_score_loss(...)
+        Calculate the Brier score loss.
+
+    crossentropy_loss(...)
+        Calculate the cross-entropy loss.
+
+    hinge_loss(...)
+        Calculate the hinge loss.
+
+    kullback_leibler_divergence_loss(...)
+        Calculate the Kullback-Leibler divergence loss.
     """
 
     SUPPORT = {
+        "AS": {"type": "max", "range": "[0, 1]", "best": "1"},
         "PS": {"type": "max", "range": "[0, 1]", "best": "1"},
         "NPV": {"type": "max", "range": "[0, 1]", "best": "1"},
         "RS": {"type": "max", "range": "[0, 1]", "best": "1"},
-        "AS": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "SS": {"type": "max", "range": "[0, 1]", "best": "1"},
         "F1S": {"type": "max", "range": "[0, 1]", "best": "1"},
         "F2S": {"type": "max", "range": "[0, 1]", "best": "1"},
         "FBS": {"type": "max", "range": "[0, 1]", "best": "1"},
-        "SS": {"type": "max", "range": "[0, 1]", "best": "1"},
         "MCC": {"type": "max", "range": "[-1, +1]", "best": "1"},
         "HS": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "LS": {"type": "max", "range": "[0, +inf)", "best": "no best"},
         "CKS": {"type": "max", "range": "[-1, +1]", "best": "1"},
         "JSI": {"type": "max", "range": "[0, 1]", "best": "1"},
         "GMS": {"type": "max", "range": "[0, 1]", "best": "1"},
+
         "ROC-AUC": {"type": "max", "range": "[0, 1]", "best": "1"},
-        "LS": {"type": "max", "range": "[0, +inf)", "best": "no best"},
         "GINI": {"type": "min", "range": "[0, 1]", "best": "0"},
         "CEL": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "HL": {"type": "min", "range": "[0, +inf)", "best": "0"},
@@ -70,6 +146,21 @@ class ClassificationMetric(Evaluator):
 
     @staticmethod
     def get_support(name=None, verbose=True):
+        """
+        Retrieve the support information for a specific metric or all metrics.
+
+        Parameters
+        ----------
+        name : str, optional
+            Name of the metric to retrieve. Use "all" to retrieve all metrics.
+        verbose : bool, optional
+            Whether to print the metric details.
+
+        Returns
+        -------
+        dict
+            Support information for the specified metric(s).
+        """
         if name == "all":
             if verbose:
                 for key, value in ClassificationMetric.SUPPORT.items():
@@ -77,690 +168,599 @@ class ClassificationMetric(Evaluator):
             return ClassificationMetric.SUPPORT
         if name not in list(ClassificationMetric.SUPPORT.keys()):
             raise ValueError(f"ClassificationMetric doesn't support metric named: {name}")
-        else:
-            if verbose:
-                print(f"Metric {name}: {ClassificationMetric.SUPPORT[name]}")
-            return ClassificationMetric.SUPPORT[name]
+        if verbose:
+            print(f"Metric {name}: {ClassificationMetric.SUPPORT[name]}")
+        return ClassificationMetric.SUPPORT[name]
 
     def get_processed_data(self, y_true=None, y_pred=None):
         """
-        Args:
-            y_true (tuple, list, np.ndarray): The ground truth values
-            y_pred (tuple, list, np.ndarray): The prediction values
+        Process and format the input data for evaluation.
 
         Returns:
             y_true_final: y_true used in evaluation process.
             y_pred_final: y_pred used in evaluation process
-            one_dim: is y_true has 1 dimensions or not
+            unique_classes: All unique classes from y_true and y_pred
+            representor: the label is number or string
         """
         if (y_true is not None) and (y_pred is not None):
-            y_true, y_pred, binary, representor = du.format_classification_data(y_true, y_pred)
-        else:
-            if (self.y_true is not None) and (self.y_pred is not None):
-                y_true, y_pred, binary, representor = du.format_classification_data(self.y_true, self.y_pred)
-            else:
-                raise ValueError("y_true or y_pred is None. You need to pass y_true and y_pred to object creation or function called.")
-        return y_true, y_pred, binary, representor
+            return du.format_classification_data(y_true, y_pred)
+        if (self.y_true is not None) and (self.y_pred is not None):
+            return du.format_classification_data(self.y_true, self.y_pred)
+        raise ValueError("y_true or y_pred is None. You need to pass y_true and y_pred to object creation or function called.")
 
     def get_processed_data2(self, y_true=None, y_pred=None):
         """
-        Args:
-            y_true (tuple, list, np.ndarray): The ground truth values
-            y_pred (tuple, list, np.ndarray): The prediction scores
-
         Returns:
             y_true_final: y_true used in evaluation process.
             y_pred_final: y_pred used in evaluation process
-            one_dim: is y_true has 1 dimensions or not
+            binary: is problem binary or multi-class classification
+            representor: the label is number or string
         """
         if (y_true is not None) and (y_pred is not None):
-            y_true, y_pred, binary, representor = du.format_y_score(y_true, y_pred)
-        else:
-            if (self.y_true is not None) and (self.y_pred is not None):
-                y_true, y_pred, binary, representor = du.format_y_score(self.y_true, self.y_pred)
-            else:
-                raise ValueError("y_true or y_pred is None. You need to pass y_true and y_pred to object creation or function called.")
-        return y_true, y_pred, binary, representor
+            return du.format_y_score(y_true, y_pred)
+        if (self.y_true is not None) and (self.y_pred is not None):
+            return du.format_y_score(self.y_true, self.y_pred)
+        raise ValueError("y_true or y_pred is None. You need to pass y_true and y_pred to object creation or function called.")
+
+    def _get_micro_stats(self, matrix):
+        """Helper calculates accurate global components for multi-class classification"""
+        N = matrix.sum()
+        K = matrix.shape[0]
+        tp = np.trace(matrix)
+        fp = fn = N - tp
+        tn = N * K - (tp + fp + fn)
+        return tp, fp, fn, tn
+
+    def _aggregate(self, metric_key, y_true, y_pred, labels, pos_label, average, beta=1.0):
+        """
+        Aggregate metrics based on the specified averaging method.
+
+        Parameters
+        ----------
+        metric_key : str
+            Metric key to calculate.
+        y_true : array-like
+            Ground truth values.
+        y_pred : array-like
+            Predicted values.
+        labels : list, optional
+            List of labels to consider.
+        pos_label : int or str
+            Positive label for binary classification.
+        average : str or None
+            Averaging method ('binary', 'micro', 'macro', 'weighted', or None).
+        beta : float, optional
+            Weight of recall in the F-beta score.
+
+        Returns
+        -------
+        float or dict
+            Aggregated metric value(s).
+        """
+        y_true, y_pred, unique_classes, _ = self.get_processed_data(y_true, y_pred)
+
+        # 1. Check binary classification problem
+        if average == "binary":
+            if len(unique_classes) > 2:
+                raise ValueError(f"Target is multiclass ({len(unique_classes)} classes) but average='binary'. "
+                    "Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].")
+            if len(unique_classes) > 1 and pos_label not in unique_classes:
+                raise ValueError(f"pos_label={pos_label} is not a valid label. Unique labels are {unique_classes}")
+
+        # 2. Calculate the original Confusion Matrix
+        matrix, imap, imap_count = cu.calculate_confusion_matrix(y_true, y_pred, labels=None, normalize=None)
+
+        # 3. Micro: Combining multi-class problems into original composite 2x2 matrices
+        if average == "micro":
+            tp, fp, fn, tn = self._get_micro_stats(matrix)
+            m_micro = np.array([[tp, fn], [fp, tn]], dtype=float)
+            res_micro = cu.calculate_single_label_metric(m_micro, {"_m": 0}, {"_m": tp + fn}, beta=beta)
+            return float(res_micro["_m"][metric_key])
+
+        # 4. Calculate all classes
+        all_metrics = cu.calculate_single_label_metric(matrix, imap, imap_count, beta=beta)
+
+        # 5. Binary (Returns the correct float of pos_label)
+        if average == "binary":
+            return float(all_metrics[pos_label][metric_key]) if pos_label in all_metrics else 0.0
+
+        target_labels = list(labels) if labels is not None else list(imap.keys())
+        if not np.all(np.isin(target_labels, unique_classes)):
+            raise ValueError("Specified labels do not exist in data.")
+
+        # 6. None (Returns a dict based on the label)
+        if average is None:
+            return {lbl: all_metrics[lbl][metric_key] for lbl in target_labels if lbl in all_metrics}
+
+        vals = np.array([all_metrics[lbl][metric_key] for lbl in target_labels if lbl in all_metrics], dtype=float)
+        supps = np.array([all_metrics[lbl]["n_true"] for lbl in target_labels if lbl in all_metrics], dtype=float)
+
+        if average == "macro":
+            return float(np.mean(vals)) if len(vals) > 0 else 0.0
+        if average == "weighted":
+            total_s = np.sum(supps)
+            return float(np.dot(vals, supps) / total_s) if total_s > 0 else 0.0
+
+        raise ValueError(f"Unsupported average setting: {average}")
+
+    def precision_score(self, y_true=None, y_pred=None, labels=None, pos_label=1, average="binary", **kwargs):
+        """
+        Parameters
+        ----------
+        y_true : array-like, optional
+            Ground truth values.
+        y_pred : array-like, optional
+            Predicted values.
+        labels : list, optional
+            List of labels to include in the calculation.
+        pos_label : int or str, optional
+            The positive class label for binary classification.
+        average : str, optional
+            Averaging method ('binary', 'micro', 'macro', 'weighted', or None).
+
+        Returns
+        -------
+        float or dict
+            Precision score.
+        """
+        return self._aggregate("precision", y_true, y_pred, labels, pos_label, average)
+
+    def negative_predictive_value(self, y_true=None, y_pred=None, labels=None, pos_label=1, average="binary", **kwargs):
+        """
+        Calculate the negative predictive value.
+
+        Parameters
+        ----------
+        y_true : array-like, optional
+            Ground truth values.
+        y_pred : array-like, optional
+            Predicted values.
+        labels : list, optional
+            List of labels to include in the calculation.
+        pos_label : int or str, optional
+            The positive class label for binary classification.
+        average : str, optional
+            Averaging method ('binary', 'micro', 'macro', 'weighted', or None).
+
+        Returns
+        -------
+        float or dict
+            Negative predictive value.
+        """
+        return self._aggregate("negative_predictive_value", y_true, y_pred, labels, pos_label, average)
+
+    def specificity_score(self, y_true=None, y_pred=None, labels=None, pos_label=1, average="binary", **kwargs):
+        """
+        Calculate the specificity score.
+
+        Parameters
+        ----------
+        y_true : array-like, optional
+            Ground truth values.
+        y_pred : array-like, optional
+            Predicted values.
+        labels : list, optional
+            List of labels to include in the calculation.
+        pos_label : int or str, optional
+            The positive class label for binary classification.
+        average : str, optional
+            Averaging method ('binary', 'micro', 'macro', 'weighted', or None).
+
+        Returns
+        -------
+        float or dict
+            Specificity score.
+        """
+        return self._aggregate("specificity", y_true, y_pred, labels, pos_label, average)
+
+    def recall_score(self, y_true=None, y_pred=None, labels=None, pos_label=1, average="binary", **kwargs):
+        """
+        Parameters
+        ----------
+        y_true : array-like, optional
+            Ground truth values.
+        y_pred : array-like, optional
+            Predicted values.
+        labels : list, optional
+            List of labels to include in the calculation.
+        pos_label : int or str, optional
+            The positive class label for binary classification.
+        average : str, optional
+            Averaging method ('binary', 'micro', 'macro', 'weighted', or None).
+
+        Returns
+        -------
+        float or dict
+            Recall score.
+        """
+        return self._aggregate("recall", y_true, y_pred, labels, pos_label, average)
+
+    def f1_score(self, y_true=None, y_pred=None, labels=None, pos_label=1, average="binary", **kwargs):
+        """
+        Parameters
+        ----------
+        y_true : array-like, optional
+            Ground truth values.
+        y_pred : array-like, optional
+            Predicted values.
+        labels : list, optional
+            List of labels to include in the calculation.
+        pos_label : int or str, optional
+            The positive class label for binary classification.
+        average : str, optional
+            Averaging method ('binary', 'micro', 'macro', 'weighted', or None).
+
+        Returns
+        -------
+        float or dict
+            F1 score.
+        """
+        return self._aggregate("f1", y_true, y_pred, labels, pos_label, average)
+
+    def f2_score(self, y_true=None, y_pred=None, labels=None, pos_label=1, average="binary", **kwargs):
+        """
+        Parameters
+        ----------
+        y_true : array-like, optional
+            Ground truth values.
+        y_pred : array-like, optional
+            Predicted values.
+        labels : list, optional
+            List of labels to include in the calculation.
+        pos_label : int or str, optional
+            The positive class label for binary classification.
+        average : str, optional
+            Averaging method ('binary', 'micro', 'macro', 'weighted', or None).
+
+        Returns
+        -------
+        float or dict
+            F2 score.
+        """
+        return self._aggregate("f2", y_true, y_pred, labels, pos_label, average)
+
+    def fbeta_score(self, y_true=None, y_pred=None, beta=1.0, labels=None, pos_label=1, average="binary", **kwargs):
+        """
+        Parameters
+        ----------
+        y_true : array-like, optional
+            Ground truth values.
+        y_pred : array-like, optional
+            Predicted values.
+        beta : float, optional
+            Weight of recall in the F-beta score.
+        labels : list, optional
+            List of labels to include in the calculation.
+        pos_label : int or str, optional
+            The positive class label for binary classification.
+        average : str, optional
+            Averaging method ('binary', 'micro', 'macro', 'weighted', or None).
+
+        Returns
+        -------
+        float or dict
+            F-beta score.
+        """
+        return self._aggregate("fbeta", y_true, y_pred, labels, pos_label, average, beta=beta)
+
+    def matthews_correlation_coefficient(self, y_true=None, y_pred=None, labels=None, pos_label=1, average="binary", **kwargs):
+        """
+        Parameters
+        ----------
+        y_true : array-like, optional
+            Ground truth values.
+        y_pred : array-like, optional
+            Predicted values.
+        labels : list, optional
+            List of labels to include in the calculation.
+        pos_label : int or str, optional
+            The positive class label for binary classification.
+        average : str, optional
+            Averaging method ('binary', 'micro', 'macro', 'weighted', or None).
+
+        Returns
+        -------
+        float or dict
+            Matthews correlation coefficient.
+        """
+        return self._aggregate("mcc", y_true, y_pred, labels, pos_label, average)
+
+    def hamming_score(self, y_true=None, y_pred=None, labels=None, pos_label=1, average="binary", **kwargs):
+        """
+        Parameters
+        ----------
+        y_true : array-like, optional
+            Ground truth values.
+        y_pred : array-like, optional
+            Predicted values.
+        labels : list, optional
+            List of labels to include in the calculation.
+        pos_label : int or str, optional
+            The positive class label for binary classification.
+        average : str, optional
+            Averaging method ('binary', 'micro', 'macro', 'weighted', or None).
+
+        Returns
+        -------
+        float or dict
+            Hamming score.
+        """
+        return self._aggregate("hamming_score", y_true, y_pred, labels, pos_label, average)
+
+    def lift_score(self, y_true=None, y_pred=None, labels=None, pos_label=1, average="binary", **kwargs):
+        """
+        Parameters
+        ----------
+        y_true : array-like, optional
+            Ground truth values.
+        y_pred : array-like, optional
+            Predicted values.
+        labels : list, optional
+            List of labels to include in the calculation.
+        pos_label : int or str, optional
+            The positive class label for binary classification.
+        average : str, optional
+            Averaging method ('binary', 'micro', 'macro', 'weighted', or None).
+
+        Returns
+        -------
+        float or dict
+            Lift score.
+        """
+        return self._aggregate("lift_score", y_true, y_pred, labels, pos_label, average)
+
+    def cohen_kappa_score(self, y_true=None, y_pred=None, labels=None, pos_label=1, average="binary", **kwargs):
+        """
+        Parameters
+        ----------
+        y_true : array-like, optional
+            Ground truth values.
+        y_pred : array-like, optional
+            Predicted values.
+        labels : list, optional
+            List of labels to include in the calculation.
+        pos_label : int or str, optional
+            The positive class label for binary classification.
+        average : str, optional
+            Averaging method ('binary', 'micro', 'macro', 'weighted', or None).
+
+        Returns
+        -------
+        float or dict
+            Cohen's kappa score.
+        """
+        return self._aggregate("kappa_score", y_true, y_pred, labels, pos_label, average)
+
+    def jaccard_similarity_index(self, y_true=None, y_pred=None, labels=None, pos_label=1, average="binary", **kwargs):
+        """
+        Parameters
+        ----------
+        y_true : array-like, optional
+            Ground truth values.
+        y_pred : array-like, optional
+            Predicted values.
+        labels : list, optional
+            List of labels to include in the calculation.
+        pos_label : int or str, optional
+            The positive class label for binary classification.
+        average : str, optional
+            Averaging method ('binary', 'micro', 'macro', 'weighted', or None).
+
+        Returns
+        -------
+        float or dict
+            Jaccard similarity index.
+        """
+        return self._aggregate("jaccard_similarities", y_true, y_pred, labels, pos_label, average)
+
+    def g_mean_score(self, y_true=None, y_pred=None, labels=None, pos_label=1, average="binary", **kwargs):
+        """
+        Parameters
+        ----------
+        y_true : array-like, optional
+            Ground truth values.
+        y_pred : array-like, optional
+            Predicted values.
+        labels : list, optional
+            List of labels to include in the calculation.
+        pos_label : int or str, optional
+            The positive class label for binary classification.
+        average : str, optional
+            Averaging method ('binary', 'micro', 'macro', 'weighted', or None).
+
+        Returns
+        -------
+        float or dict
+            Geometric mean (G-mean) score.
+        """
+        return self._aggregate("g_mean", y_true, y_pred, labels, pos_label, average)
+
+    def accuracy_score(self, y_true=None, y_pred=None, normalize=True, sample_weight=None, **kwargs):
+        """
+        Parameters
+        ----------
+        y_true : array-like, optional
+            Ground truth (correct) target values.
+        y_pred : array-like, optional
+            Estimated target values.
+        normalize : bool, optional
+            If True, return the fraction of correctly classified samples (float).
+            If False, return the number of correctly classified samples (int).
+        sample_weight : array-like, optional
+            Sample weights.
+
+        Returns
+        -------
+        float or int
+            Accuracy score.
+        """
+        y_true, y_pred, _, _ = self.get_processed_data(y_true, y_pred)
+        return cu.calculate_accuracy_score(y_true, y_pred, normalize=normalize, sample_weight=sample_weight)
+
+    # =====================================================================
+    # ROC & LOSS FUNCTIONS
+    # =====================================================================
 
     def confusion_matrix(self, y_true=None, y_pred=None, labels=None, normalize=None, **kwargs):
         """
-        Generate confusion matrix and useful information
+        Parameters
+        ----------
+        y_true : array-like, optional
+            Ground truth (correct) target values.
+        y_pred : array-like, optional
+            Estimated target values.
+        labels : list, optional
+            List of labels to index the matrix.
+        normalize : str or None, optional
+            Normalization mode ('true', 'pred', 'all', or None).
 
-        Args:
-            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
-            y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
-            labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
-            normalize ('true', 'pred', 'all', None): Normalizes confusion matrix over the true (rows), predicted (columns) conditions or all the population.
-
-        Returns:
-            matrix (np.ndarray): a 2-dimensional list of pairwise counts
-            imap (dict): a map between label and index of confusion matrix
-            imap_count (dict): a map between label and number of true label in y_true
+        Returns
+        -------
+        np.ndarray
+            Confusion matrix.
         """
-        y_true, y_pred, binary, representor = self.get_processed_data(y_true, y_pred)
-        matrix, imap, imap_count = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize)
-        return matrix, imap, imap_count
-
-    def precision_score(self, y_true=None, y_pred=None, labels=None, average="macro", **kwargs):
-        """
-        Generate precision score for multiple classification problem
-        Higher is better (Best = 1), Range = [0, 1]
-
-        Args:
-            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
-            y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
-            labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
-            average (str, None): {'micro', 'macro', 'weighted'} or None, default="macro"
-                If None, the scores for each class are returned. Otherwise, this determines the type of averaging performed on the data:
-
-                ``'micro'``:
-                    Calculate metrics globally by considering each element of the label indicator matrix as a label.
-                ``'macro'``:
-                    Calculate metrics for each label, and find their unweighted mean.  This does not take label imbalance into account.
-                ``'weighted'``:
-                    Calculate metrics for each label, and find their average, weighted by support (the number of true instances for each label).
-
-        Returns:
-            precision (float, dict): the precision score
-        """
-        y_true, y_pred, binary, representor = self.get_processed_data(y_true, y_pred)
-        matrix, imap, imap_count = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
-        metrics = cu.calculate_single_label_metric(matrix, imap, imap_count)
-
-        list_precision = np.array([item["precision"] for item in metrics.values()])
-        list_weights = np.array([item["n_true"] for item in metrics.values()])
-
-        if average == "micro":
-            tp_global = np.sum(np.diag(matrix))
-            fp_global = fn_global = np.sum(matrix) - tp_global
-            result = tp_global / (tp_global + fp_global)
-        elif average == "macro":
-            result = np.mean(list_precision)
-        elif average == "weighted":
-            result = np.dot(list_weights, list_precision) / np.sum(list_weights)
-        else:
-            result = dict([(label, item["precision"]) for label, item in metrics.items()])
-        return result
-
-    def negative_predictive_value(self, y_true=None, y_pred=None, labels=None, average="macro", **kwargs):
-        """
-        Generate negative predictive value for multiple classification problem
-        Higher is better (Best = 1), Range = [0, 1]
-
-        Args:
-            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
-            y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
-            labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
-            average (str, None): {'micro', 'macro', 'weighted'} or None, default="macro"
-
-        Returns:
-            npv (float, dict): the negative predictive value
-        """
-        y_true, y_pred, binary, representor = self.get_processed_data(y_true, y_pred)
-        matrix, imap, imap_count = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
-        metrics = cu.calculate_single_label_metric(matrix, imap, imap_count)
-
-        list_npv = np.array([item["negative_predictive_value"] for item in metrics.values()])
-        list_weights = np.array([item["n_true"] for item in metrics.values()])
-
-        if average == "micro":
-            tp_global = tn_global = np.sum(np.diag(matrix))
-            fp_global = fn_global = np.sum(matrix) - tp_global
-            result = tn_global / (tn_global + fn_global)
-        elif average == "macro":
-            result = np.mean(list_npv)
-        elif average == "weighted":
-            result = np.dot(list_weights, list_npv) / np.sum(list_weights)
-        else:
-            result = dict([(label, item["negative_predictive_value"]) for label, item in metrics.items()])
-        return result
-
-    def specificity_score(self, y_true=None, y_pred=None, labels=None, average="macro", **kwargs):
-        """
-        Generate specificity score for multiple classification problem
-        Higher is better (Best = 1), Range = [0, 1]
-
-        Args:
-            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
-            y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
-            labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
-            average (str, None): {'micro', 'macro', 'weighted'} or None, default="macro"
-
-        Returns:
-            ss (float, dict): the specificity score
-        """
-        y_true, y_pred, binary, representor = self.get_processed_data(y_true, y_pred)
-        matrix, imap, imap_count = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
-        metrics = cu.calculate_single_label_metric(matrix, imap, imap_count)
-
-        list_ss = np.array([item["specificity"] for item in metrics.values()])
-        list_weights = np.array([item["n_true"] for item in metrics.values()])
-
-        if average == "micro":
-            tp_global = tn_global = np.sum(np.diag(matrix))
-            fp_global = fn_global = np.sum(matrix) - tp_global
-            result = tn_global / (tn_global + fp_global)
-        elif average == "macro":
-            result = np.mean(list_ss)
-        elif average == "weighted":
-            result = np.dot(list_weights, list_ss) / np.sum(list_weights)
-        else:
-            result = dict([(label, item["specificity"]) for label, item in metrics.items()])
-        return result
-
-    def recall_score(self, y_true=None, y_pred=None, labels=None, average="macro", **kwargs):
-        """
-        Generate recall score for multiple classification problem
-        Higher is better (Best = 1), Range = [0, 1]
-
-        Args:
-            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
-            y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
-            labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
-            average (str, None): {'micro', 'macro', 'weighted'} or None, default="macro"
-
-        Returns:
-            recall (float, dict): the recall score
-        """
-        y_true, y_pred, binary, representor = self.get_processed_data(y_true, y_pred)
-        matrix, imap, imap_count = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
-        metrics = cu.calculate_single_label_metric(matrix, imap, imap_count)
-
-        list_recall = np.array([item["recall"] for item in metrics.values()])
-        list_weights = np.array([item["n_true"] for item in metrics.values()])
-
-        if average == "micro":
-            tp_global = np.sum(np.diag(matrix))
-            fp_global = fn_global = np.sum(matrix) - tp_global
-            result = tp_global / (tp_global + fn_global)
-        elif average == "macro":
-            result = np.mean(list_recall)
-        elif average == "weighted":
-            result = np.dot(list_weights, list_recall) / np.sum(list_weights)
-        else:
-            result = dict([(label, item["recall"]) for label, item in metrics.items()])
-        return result
-
-    def accuracy_score(self, y_true=None, y_pred=None, labels=None, average="macro", **kwargs):
-        """
-        Generate accuracy score for multiple classification problem
-        Higher is better (Best = 1), Range = [0, 1]
-
-        Args:
-            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
-            y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
-            labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
-            average (str, None): {'micro', 'macro', 'weighted'} or None, default="macro"
-
-        Returns:
-            accuracy (float, dict): the accuracy score
-        """
-        y_true, y_pred, binary, representor = self.get_processed_data(y_true, y_pred)
-        matrix, imap, imap_count = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
-        metrics = cu.calculate_single_label_metric(matrix, imap, imap_count)
-
-        list_accuracy = np.array([item["accuracy"] for item in metrics.values()])
-        list_weights = np.array([item["n_true"] for item in metrics.values()])
-        list_tp = np.array([item['tp'] for item in metrics.values()])
-
-        if average == "micro":
-            result = np.sum(list_tp) / np.sum(list_weights)
-        elif average == "macro":
-            result = np.mean(list_accuracy)
-        elif average == "weighted":
-            result = np.dot(list_weights, list_accuracy) / np.sum(list_weights)
-        else:
-            result = dict([(label, item["accuracy"]) for label, item in metrics.items()])
-        return result
-
-    def f1_score(self, y_true=None, y_pred=None, labels=None, average="macro", **kwargs):
-        """
-        Generate f1 score for multiple classification problem
-        Higher is better (Best = 1), Range = [0, 1]
-
-        Args:
-            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
-            y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
-            labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
-            average (str, None): {'micro', 'macro', 'weighted'} or None, default="macro"
-
-        Returns:
-            f1 (float, dict): the f1 score
-        """
-        y_true, y_pred, binary, representor = self.get_processed_data(y_true, y_pred)
-        matrix, imap, imap_count = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
-        metrics = cu.calculate_single_label_metric(matrix, imap, imap_count)
-
-        list_f1 = np.array([item["f1"] for item in metrics.values()])
-        list_weights = np.array([item["n_true"] for item in metrics.values()])
-
-        if average == "micro":
-            tp_global = np.sum(np.diag(matrix))
-            fp_global = fn_global = np.sum(matrix) - tp_global
-            precision = tp_global / (tp_global + fp_global)
-            recall = tp_global / (tp_global + fn_global)
-            result = (2 * precision * recall) / (precision + recall)
-        elif average == "macro":
-            result = np.mean(list_f1)
-        elif average == "weighted":
-            result = np.dot(list_weights, list_f1) / np.sum(list_weights)
-        else:
-            result = dict([(label, item["f1"]) for label, item in metrics.items()])
-        return result
-
-    def f2_score(self, y_true=None, y_pred=None, labels=None, average="macro", **kwargs):
-        """
-        Generate f2 score for multiple classification problem
-        Higher is better (Best = 1), Range = [0, 1]
-
-        Args:
-            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
-            y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
-            labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
-            average (str, None): {'micro', 'macro', 'weighted'} or None, default="macro"
-
-        Returns:
-            f2 (float, dict): the f2 score
-        """
-        y_true, y_pred, binary, representor = self.get_processed_data(y_true, y_pred)
-        matrix, imap, imap_count = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
-        metrics = cu.calculate_single_label_metric(matrix, imap, imap_count)
-
-        list_f2 = np.array([item["f2"] for item in metrics.values()])
-        list_weights = np.array([item["n_true"] for item in metrics.values()])
-
-        if average == "micro":
-            tp_global = np.sum(np.diag(matrix))
-            fp_global = fn_global = np.sum(matrix) - tp_global
-            precision = tp_global / (tp_global + fp_global)
-            recall = tp_global / (tp_global + fn_global)
-            result = (5 * precision * recall) / (4 * precision + recall)
-        elif average == "macro":
-            result = np.mean(list_f2)
-        elif average == "weighted":
-            result = np.dot(list_weights, list_f2) / np.sum(list_weights)
-        else:
-            result = dict([(label, item["f2"]) for label, item in metrics.items()])
-        return result
-
-    def fbeta_score(self, y_true=None, y_pred=None, beta=1.0, labels=None, average="macro", **kwargs):
-        """
-        The beta parameter determines the weight of recall in the combined score.
-        beta < 1 lends more weight to precision, while beta > 1 favors recall
-        (beta -> 0 considers only precision, beta -> +inf only recall).
-        Higher is better (Best = 1), Range = [0, 1]
-
-        Args:
-            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
-            y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
-            beta (float): the weight of recall in the combined score, default = 1.0
-            labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
-            average (str, None): {'micro', 'macro', 'weighted'} or None, default="macro"
-
-        Returns:
-            fbeta (float, dict): the fbeta score
-        """
-        y_true, y_pred, binary, representor = self.get_processed_data(y_true, y_pred)
-        matrix, imap, imap_count = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
-        metrics = cu.calculate_single_label_metric(matrix, imap, imap_count, beta=beta)
-
-        list_fbeta = np.array([item["fbeta"] for item in metrics.values()])
-        list_weights = np.array([item["n_true"] for item in metrics.values()])
-
-        if average == "micro":
-            tp_global = np.sum(np.diag(matrix))
-            fp_global = fn_global = np.sum(matrix) - tp_global
-            precision = tp_global / (tp_global + fp_global)
-            recall = tp_global / (tp_global + fn_global)
-            result = ((1 + beta ** 2) * precision * recall) / (beta ** 2 * precision + recall)
-        elif average == "macro":
-            result = np.mean(list_fbeta)
-        elif average == "weighted":
-            result = np.dot(list_weights, list_fbeta) / np.sum(list_weights)
-        else:
-            result = dict([(label, item["fbeta"]) for label, item in metrics.items()])
-        return result
-
-    def matthews_correlation_coefficient(self, y_true=None, y_pred=None, labels=None, average="macro", **kwargs):
-        """
-        Generate Matthews Correlation Coefficient
-        Higher is better (Best = 1), Range = [-1, +1]
-
-        Args:
-            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
-            y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
-            labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
-            average (str, None): {'micro', 'macro', 'weighted'} or None, default="macro"
-
-        Returns:
-            mcc (float, dict): the Matthews correlation coefficient
-        """
-        y_true, y_pred, binary, representor = self.get_processed_data(y_true, y_pred)
-        matrix, imap, imap_count = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
-        metrics = cu.calculate_single_label_metric(matrix, imap, imap_count)
-
-        list_mcc = np.array([item["mcc"] for item in metrics.values()])
-        list_weights = np.array([item["n_true"] for item in metrics.values()])
-
-        if average == "micro":
-            tp = tn = np.sum(np.diag(matrix))
-            fp = fn = np.sum(matrix) - tp
-            result = (tp * tn - fp * fn) / np.sqrt(((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn)))
-        elif average == "macro":
-            result = np.mean(list_mcc)
-        elif average == "weighted":
-            result = np.dot(list_weights, list_mcc) / np.sum(list_weights)
-        else:
-            result = dict([(label, item["mcc"]) for label, item in metrics.items()])
-        return result
-
-    def hamming_score(self, y_true=None, y_pred=None, labels=None, average="macro", **kwargs):
-        """
-        Generate hamming score for multiple classification problem
-        Higher is better (Best = 1), Range = [0, 1]
-
-        Args:
-            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
-            y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
-            labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
-            average (str, None): {'micro', 'macro', 'weighted'} or None, default="macro"
-
-        Returns:
-            hl (float, dict): the hamming score
-        """
-        y_true, y_pred, binary, representor = self.get_processed_data(y_true, y_pred)
-        matrix, imap, imap_count = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
-        metrics = cu.calculate_single_label_metric(matrix, imap, imap_count)
-
-        list_hs = np.array([item["hamming_score"] for item in metrics.values()])
-        list_weights = np.array([item["n_true"] for item in metrics.values()])
-        list_tp = np.array([item['tp'] for item in metrics.values()])
-
-        if average == "micro":
-            result = 1.0 - np.sum(list_tp) / np.sum(list_weights)
-        elif average == "macro":
-            result = np.mean(list_hs)
-        elif average == "weighted":
-            result = np.dot(list_weights, list_hs) / np.sum(list_weights)
-        else:
-            result = dict([(label, item["hamming_score"]) for label, item in metrics.items()])
-        return result
-
-    def lift_score(self, y_true=None, y_pred=None, labels=None, average="macro", **kwargs):
-        """
-        Generate lift score for multiple classification problem
-        Higher is better (Best = +1), Range = [0, +1]
-
-        Args:
-            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
-            y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
-            labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
-            average (str, None): {'micro', 'macro', 'weighted'} or None, default="macro"
-
-        Returns:
-            ls (float, dict): the lift score
-        """
-        y_true, y_pred, binary, representor = self.get_processed_data(y_true, y_pred)
-        matrix, imap, imap_count = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
-        metrics = cu.calculate_single_label_metric(matrix, imap, imap_count)
-
-        list_ls = np.array([item["lift_score"] for item in metrics.values()])
-        list_weights = np.array([item["n_true"] for item in metrics.values()])
-
-        if average == "micro":
-            tp = tn = np.sum(np.diag(matrix))
-            fp = fn = np.sum(matrix) - tp
-            result = (tp/(tp + fp)) / ((tp + fn) / (tp + tn + fp + fn))
-        elif average == "macro":
-            result = np.mean(list_ls)
-        elif average == "weighted":
-            result = np.dot(list_weights, list_ls) / np.sum(list_weights)
-        else:
-            result = dict([(label, item["lift_score"]) for label, item in metrics.items()])
-        return result
-
-    def cohen_kappa_score(self, y_true=None, y_pred=None, labels=None, average="macro", **kwargs):
-        """
-        Generate Cohen Kappa score for multiple classification problem
-        Higher is better (Best = +1), Range = [-1, +1]
-
-        Args:
-            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
-            y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
-            labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
-            average (str, None): {'micro', 'macro', 'weighted'} or None, default="macro"
-
-        Returns:
-            cks (float, dict): the Cohen Kappa score
-        """
-        y_true, y_pred, binary, representor = self.get_processed_data(y_true, y_pred)
-        matrix, imap, imap_count = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
-        metrics = cu.calculate_single_label_metric(matrix, imap, imap_count)
-
-        list_kp = np.array([item["kappa_score"] for item in metrics.values()])
-        list_weights = np.array([item["n_true"] for item in metrics.values()])
-
-        if average == 'weighted':
-            result = np.dot(list_weights, list_kp) / np.sum(list_weights)
-        elif average == 'macro':
-            result = np.mean(list_kp)
-        elif average == 'micro':
-            result = np.average(list_kp)
-        else:
-            result = dict([(label, item["kappa_score"]) for label, item in metrics.items()])
-        return result
-
-    def jaccard_similarity_index(self, y_true=None, y_pred=None, labels=None, average="macro", **kwargs):
-        """
-        Generate Jaccard similarity index for multiple classification problem
-        Higher is better (Best = +1), Range = [0, +1]
-
-        Args:
-            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
-            y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
-            labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
-            average (str, None): {'micro', 'macro', 'weighted'} or None, default="macro"
-
-        Returns:
-            jsi (float, dict): the Jaccard similarity index
-        """
-        y_true, y_pred, binary, representor = self.get_processed_data(y_true, y_pred)
-        matrix, imap, imap_count = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
-        metrics = cu.calculate_single_label_metric(matrix, imap, imap_count)
-
-        list_js = np.array([item["jaccard_similarities"] for item in metrics.values()])
-        list_weights = np.array([item["n_true"] for item in metrics.values()])
-
-        if average == "micro":
-            tp = tn = np.sum(np.diag(matrix))
-            fp = fn = np.sum(matrix) - tp
-            result = tp / (tp + fp + fn)
-        elif average == "macro":
-            result = np.mean(list_js)
-        elif average == "weighted":
-            result = np.dot(list_weights, list_js) / np.sum(list_weights)
-        else:
-            result = dict([(label, item["jaccard_similarities"]) for label, item in metrics.items()])
-        return result
-
-    def g_mean_score(self, y_true=None, y_pred=None, labels=None, average="macro", **kwargs):
-        """
-        Calculates the G-mean (Geometric mean) score between y_true and y_pred.
-        Higher is better (Best = +1), Range = [0, +1]
-
-        Args:
-            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
-            y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
-            labels (tuple, list, np.ndarray): List of labels to index the matrix. This may be used to reorder or select a subset of labels.
-            average (str, None): {'micro', 'macro', 'weighted'} or None, default="macro"
-
-        Returns:
-            float, dict: The G-mean score.
-        """
-        y_true, y_pred, binary, representor = self.get_processed_data(y_true, y_pred)
-        matrix, imap, imap_count = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize=None)
-        metrics = cu.calculate_single_label_metric(matrix, imap, imap_count)
-
-        list_gm = np.array([item["g_mean"] for item in metrics.values()])
-        list_weights = np.array([item["n_true"] for item in metrics.values()])
-
-        if average == "micro":
-            tp = tn = np.sum(np.diag(matrix))
-            fp = fn = np.sum(matrix) - tp
-            result = np.sqrt((tp / (tp + fn)) * (tn / (tn + fp)))
-        elif average == "macro":
-            result = np.mean(list_gm)
-        elif average == "weighted":
-            result = np.dot(list_weights, list_gm) / np.sum(list_weights)
-        else:
-            result = dict([(label, item["g_mean"]) for label, item in metrics.items()])
-        return result
-
-    def gini_index(self, y_true=None, y_pred=None, **kwargs):
-        """
-        Calculates the Gini index between y_true and y_pred.
-        Smaller is better (Best = 0), Range = [0, +1]
-
-        Args:
-            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
-            y_pred (tuple, list, np.ndarray): a list of integers or strings for y_pred classes
-
-        Returns:
-            float, dict: The Gini index
-        """
-        y_true, y_pred, binary, representor = self.get_processed_data(y_true, y_pred)
-        # Calculate class probabilities
-        total_samples = len(y_true)
-        y_prob = np.zeros(total_samples)
-        for idx in range(0, total_samples):
-            if y_true[idx] == y_pred[idx]:
-                y_prob[idx] = 1
-            else:
-                y_prob[idx] = 0
-        positive_samples = np.sum(y_prob)
-        negative_samples = total_samples - positive_samples
-        p_positive = positive_samples / total_samples
-        p_negative = negative_samples / total_samples
-        # Calculate Gini index
-        result = 1 - (p_positive ** 2 + p_negative ** 2)
-        return result
-
-    def crossentropy_loss(self, y_true=None, y_pred=None, **kwargs):
-        """
-        Calculates the Cross-Entropy loss between y_true and y_pred.
-        Smaller is better (Best = 0), Range = [0, +inf)
-
-        Args:
-            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
-            y_pred (tuple, list, np.ndarray): A LIST OF PREDICTED SCORES (NOT LABELS)
-
-        Returns:
-            float: The Cross-Entropy loss
-        """
-        y_true, y_pred, binary, representor = self.get_processed_data2(y_true, y_pred)
-        num_classes = len(np.unique(y_true))
-        y_true = np.eye(num_classes)[y_true]
-        y_pred = np.clip(y_pred, self.EPSILON, 1 - self.EPSILON)
-        result = -np.mean(np.sum(y_true * np.log(y_pred), axis=1))
-        return result
-
-    def hinge_loss(self, y_true=None, y_pred=None, **kwargs):
-        """
-        Calculates the Hinge loss between y_true and y_pred.
-        Smaller is better (Best = 0), Range = [0, +inf)
-
-        Args:
-            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
-            y_pred (tuple, list, np.ndarray): a list of labels (or predicted scores in case of multi-class)
-
-        Returns:
-            float: The Hinge loss
-        """
-        y_true, y_pred, binary, representor = self.get_processed_data2(y_true, y_pred)
-        # Convert y_true to one-hot encoded array
-        num_classes = len(np.unique(y_true))
-        y_true = np.eye(num_classes)[y_true]
-        neg = np.max((1 - y_true) * y_pred, axis=1)
-        pos = np.sum(y_true * y_pred, axis=1)
-        result = neg - pos + 1
-        result[result < 0] = 0
-        return np.mean(result)
-
-    def kullback_leibler_divergence_loss(self, y_true=None, y_pred=None, **kwargs):
-        """
-        Calculates the Kullback-Leibler divergence loss between y_true and y_pred.
-        Smaller is better (Best = 0), Range = [0, +inf)
-
-        Args:
-            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
-            y_pred (tuple, list, np.ndarray): a list of labels (or predicted scores in case of multi-class)
-
-        Returns:
-            float: The Kullback-Leibler divergence loss
-        """
-        y_true, y_pred, binary, representor = self.get_processed_data2(y_true, y_pred)
-        y_pred = np.clip(y_pred, self.EPSILON, 1 - self.EPSILON)  # Clip predicted probabilities
-        # Convert y_true to one-hot encoded array
-        num_classes = len(np.unique(y_true))
-        y_true = np.eye(num_classes)[y_true]
-        y_true = np.clip(y_true, self.EPSILON, 1 - self.EPSILON)  # Clip true labels
-        res = np.sum(y_true * np.log(y_true / y_pred), axis=1)
-        result = np.mean(res)
-        return result
-
-    def brier_score_loss(self, y_true=None, y_pred=None, **kwargs):
-        """
-        Calculates the Brier Score Loss between y_true and y_pred.
-        Smaller is better (Best = 0), Range = [0, 1]
-
-        Args:
-            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
-            y_pred (tuple, list, np.ndarray): a list of labels (or predicted scores in case of multi-class)
-
-        Returns:
-            float, dict: The Brier Score Loss
-        """
-        y_true, y_pred, binary, representor = self.get_processed_data2(y_true, y_pred)
-        # Convert y_true to one-hot encoded array
-        num_classes = len(np.unique(y_true))
-        y_true = np.eye(num_classes)[y_true]
-        result = np.mean(np.sum((y_true - y_pred) ** 2, axis=1))
-        return result
+        y_true, y_pred, _, _ = self.get_processed_data(y_true, y_pred)
+        matrix, _, _ = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize)
+        return matrix
 
     def roc_auc_score(self, y_true=None, y_pred=None, average="macro", **kwargs):
         """
-        Calculates the ROC-AUC score between y_true and y_score.
-        Higher is better (Best = +1), Range = [0, +1]
+        Compute the Area Under the Receiver Operating Characteristic Curve (ROC AUC).
 
-        Args:
-            y_true (tuple, list, np.ndarray): a list of integers or strings for known classes
-            y_pred (tuple, list, np.ndarray): A LIST OF PREDICTED SCORES (NOT LABELS)
-            average (str, None): {'macro', 'weighted'} or None, default="macro"
+        Parameters
+        ----------
+        y_true : array-like, optional
+            Ground truth (correct) target values.
+        y_pred : array-like, optional
+            Estimated probabilities or decision function.
+        average : str, optional
+            Averaging method ('macro', 'weighted', or None).
 
-        Returns:
-            float, dict: The AUC score.
+        Returns
+        -------
+        float or dict
+            ROC AUC score.
         """
-        y_true, y_score, binary, representor = self.get_processed_data2(y_true, y_pred)
-        list_weights = cu.calculate_class_weights(y_true, y_pred=None, y_score=y_score)
-        # one-vs-all (rest) approach
-        tpr = dict()
-        fpr = dict()
-        thresholds = dict()
-        auc = []
-        n_classes = len(np.unique(y_true))
-        for i in range(n_classes):
-            y_true_i = np.array([1 if y == i else 0 for y in y_true])
-            y_score_i = y_score[:, i]
-            tpr[i], fpr[i], thresholds[i] = cu.calculate_roc_curve(y_true_i, y_score_i)
-            # Calculate the area under the curve (AUC) using the trapezoidal rule
-            auc.append(np.trapezoid(tpr[i], fpr[i]))
+        y_true, y_score, binary, _ = self.get_processed_data2(y_true, y_pred)
+        # 1. Only 1 class in y_true
+        if len(np.unique(y_true)) == 1:
+            raise ValueError("Only one class present in y_true. ROC AUC score is not defined in that case.")
+
+        trapz = getattr(np, "trapezoid", getattr(np, "trapz", None))
+        # 2. Binary cases
+        if binary or len(np.unique(y_true)) == 2:
+            if y_score.ndim == 2:
+                if y_score.shape[1] == 2:
+                    y_score = y_score[:, 1]  #  probability of class Positive
+                elif y_score.shape[1] == 1:
+                    y_score = y_score.ravel()
+                else:
+                    raise ValueError(f"Target is binary but y_score has {y_score.shape[1]} columns.")
+            tpr, fpr, _ = cu.calculate_roc_curve(y_true, y_score)
+            return float(trapz(tpr, fpr))
+
+        # 3. Multiclass (One-vs-Rest)
+        classes = np.unique(y_true).tolist()
+        auc_list = [float(trapz(*cu.calculate_roc_curve(np.where(y_true == cls, 1, 0), y_score[:, i])[:2]))
+                    for i, cls in enumerate(classes)]
+
         if average == "macro":
-            result = np.mean(auc)
-        elif average == "weighted":
-            result = np.dot(list_weights, auc) / np.sum(list_weights)
-        else:
-            result = dict([(idx, auc[idx]) for idx in range(n_classes)])
-        return result
+            return float(np.mean(auc_list))
+        if average == "weighted":
+            weights = cu.calculate_class_support(y_true)
+            return float(np.dot(weights, auc_list) / np.sum(weights))
+        return dict(zip(classes, auc_list))
+
+    def gini_index(self, y_true=None, y_pred=None, **kwargs):
+        """
+        Compute the Gini index based on the ROC AUC score.
+
+        Parameters
+        ----------
+        y_true : array-like, optional
+            Ground truth (correct) target values.
+        y_pred : array-like, optional
+            Estimated probabilities or decision function.
+
+        Returns
+        -------
+        float or dict
+            Gini index.
+        """
+        auc_val = self.roc_auc_score(y_true, y_pred, **kwargs)
+        return {k: 2 * v - 1.0 for k, v in auc_val.items()} if isinstance(auc_val, dict) else float(2 * auc_val - 1.0)
+
+    def brier_score_loss(self, y_true=None, y_pred=None, **kwargs):
+        """
+        Parameters
+        ----------
+        y_true : array-like, optional
+            Ground truth (correct) target values.
+        y_pred : array-like, optional
+            Predicted probabilities.
+
+        Returns
+        -------
+        float
+            Brier score loss.
+        """
+        y_true, y_pred, _, _ = self.get_processed_data2(y_true, y_pred)
+        return float(np.mean(np.sum((np.eye(y_pred.shape[1] if y_pred.ndim > 1 else 2)[y_true.astype(int)] - y_pred) ** 2, axis=1)))
+
+    def crossentropy_loss(self, y_true=None, y_pred=None, **kwargs):
+        """
+        Parameters
+        ----------
+        y_true : array-like, optional
+            Ground truth (correct) target values.
+        y_pred : array-like, optional
+            Predicted probabilities.
+
+        Returns
+        -------
+        float
+            Cross-entropy loss.
+        """
+        y_true, y_pred, _, _ = self.get_processed_data2(y_true, y_pred)
+        y_true_oh = np.eye(y_pred.shape[1] if y_pred.ndim > 1 else 2)[y_true.astype(int)]
+        return float(-np.mean(np.sum(y_true_oh * np.log(np.clip(y_pred, self.EPSILON, 1.0 - self.EPSILON)), axis=1)))
+
+    def hinge_loss(self, y_true=None, y_pred=None, **kwargs):
+        """
+        Parameters
+        ----------
+        y_true : array-like, optional
+            Ground truth (correct) target values.
+        y_pred : array-like, optional
+            Predicted scores.
+
+        Returns
+        -------
+        float
+            Hinge loss.
+        """
+        y_true, y_pred, _, _ = self.get_processed_data2(y_true, y_pred)
+        y_true_oh = np.eye(y_pred.shape[1] if y_pred.ndim > 1 else 2)[y_true.astype(int)]
+        return float(np.mean(np.maximum(0.0, np.max((1.0 - y_true_oh) * y_pred, axis=1) - np.sum(y_true_oh * y_pred, axis=1) + 1.0)))
+
+    def kullback_leibler_divergence_loss(self, y_true=None, y_pred=None, **kwargs):
+        """
+        Parameters
+        ----------
+        y_true : array-like, optional
+            Ground truth (correct) target values.
+        y_pred : array-like, optional
+            Predicted probabilities.
+
+        Returns
+        -------
+        float
+            Kullback-Leibler divergence loss.
+        """
+        y_true, y_pred, _, _ = self.get_processed_data2(y_true, y_pred)
+        y_t_oh = np.clip(np.eye(y_pred.shape[1] if y_pred.ndim > 1 else 2)[y_true.astype(int)], self.EPSILON, 1.0 - self.EPSILON)
+        return float(np.mean(np.sum(y_t_oh * np.log(y_t_oh / np.clip(y_pred, self.EPSILON, 1.0 - self.EPSILON)), axis=1)))
+
 
     CM = confusion_matrix
     PS = precision_score
