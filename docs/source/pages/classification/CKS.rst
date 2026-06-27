@@ -1,97 +1,146 @@
-Cohen Kappa Score (CKS)
-=======================
-
-.. toctree::
-   :maxdepth: 3
-   :caption: Cohen Kappa Score (CKS)
+CKS - Cohen's Kappa Score
+=========================
 
 .. toctree::
    :maxdepth: 3
 
-.. toctree::
-   :maxdepth: 3
-
-.. toctree::
-   :maxdepth: 3
+.. contents:: Table of Contents
+   :local:
+   :depth: 2
 
 
-The Cohen's Kappa score is a statistic that measures the level of agreement between two annotators on a categorical classification problem.
-It is a measure of inter-annotator reliability that is often used in medical diagnoses, quality control, and content analysis.
+**Cohen's Kappa Score (CKS)** :cite:`cohen1960coefficient` is a robust statistical measure of inter-rater agreement for categorical items. In classification benchmarking, it measures the level of agreement between the *Predicted Labels* and the *True Ground Truth*, while strictly **compensating for the agreement that could happen purely by chance**.
 
-The Kappa score is calculated as the ratio of the observed agreement between two annotators to the agreement that would be expected by chance.
-The observed agreement is the number of instances that are classified the same way by both annotators, and the expected agreement is
-the number of instances that are classified the same way by chance, given the individual annotator's classifications.
+.. image:: /_static/images/class_score_1.png
+   :align: center
+   :alt: Cohen's Kappa Agreement Illustration
 
-The formula for the Cohen's Kappa score is as follows .. math::
-
-	k = (observed agreement - expected agreement) / (1 - expected agreement)
-
-where observed agreement is the proportion of items that are classified the same way by both annotators, and expected
-agreement is theproportion of items that are classified the same way by chance.
 
 .. math::
 
-	$\kappa = \frac{p_o - p_e}{1 - p_e}$
+    \kappa = \frac{p_o - p_e}{1 - p_e}
 
-	where
+Where:
 
-	$p_o = \frac{tp + tn}{tp + tn + fp + fn}$
+* :math:`p_o` is the relative observed agreement among raters (identical to accuracy: :math:`\frac{TP + TN}{N}`).
+* :math:`p_e` is the hypothetical probability of chance agreement, calculated using the marginal probabilities of each class.
 
-	$p_e = \frac{(tp + fp) \cdot (tp + fn) + (tn + fn) \cdot (tn + fp)}{(tp + tn + fp + fn)^2}$
+-------------------------------------------------------------------------------
 
-	$tp$ represents the number of true positive annotations (agreements between the two annotators)
+Engineering Insight: The "Lucky Guess" Filter
+---------------------------------------------
 
-	$tn$ represents the number of true negative annotations (agreements between the two annotators)
+Accuracy completely fails on imbalanced datasets because it treats lucky guesses as skill.
 
-	$fp$ represents the number of false positive annotations (disagreements between the two annotators)
+Imagine an automated fraud detection engine evaluating 100 transactions (95 legitimate, 5 fraudulent). A broken model simply outputs `"legitimate"` 100% of the time:
+	* **Accuracy** (:math:`p_o`): ``0.95``
+	* **Expected Chance Agreement** (:math:`p_e`): The ground truth has 95% legitimate. The model predicts 100% legitimate. The probability of both randomly matching `"legitimate"` is :math:`0.95 \times 1.0 = 0.95`.
+	* **Cohen's Kappa:** :math:`\frac{0.95 - 0.95}{1 - 0.95} = \mathbf{0.0}`
 
-	$fn$ represents the number of false negative annotations (disagreements between the two annotators)
+While Accuracy awards the broken model a 95%, Cohen's Kappa returns a brutal ``0.0``, mathematically proving that the model possesses zero predictive intelligence beyond baseline chance.
 
-	$p_o$ represents the observed agreement, and $p_e$ represents the expected agreement based on chance.
+-------------------------------------------------------------------------------
 
+Architectural Design: One-vs-Rest Decomposition
+-----------------------------------------------
 
-+ Best possible score is 1.0, higher value is better. Range = [-1, 1]
-+ The value of k ranges from -1 to 1, with values closer to 1 indicating high levels of agreement, and values closer to -1 indicating low levels of agreement.
-A value of 0 indicates that the agreement between the annotators is no better than chance. A value of 1 indicates perfect agreement.
+Standard statistical literature defines multiclass Kappa over a single global :math:`K \times K` matrix. ``permetrics`` extends this paradigm by decomposing multiclass problems into independent **One-vs-Rest (OvR)** :math:`2 \times 2` confusion matrices per class, calculating class-specific Kappa scores, and aggregating them via the `average` parameter:
 
-The Cohen's Kappa score can be used for both binary and multi-class classification problems. For multi-class classification problems,
-the observed agreement and expected agreement are calculated based on a confusion matrix, which is a table that shows the
-number of instances that are classified into each possible pair of true and predicted classes.
-The confusion matrix is used to calculate the observed agreement and expected agreement between the annotators, and
-the resulting values are used in the formula for the Cohen's Kappa score.
+* **None:** Returns a dictionary/array of independent chance-corrected agreement scores for each target class.
+* **macro:** Computes the unweighted mean of the One-vs-Rest Kappa scores. This highlights models that maintain genuine predictive skill across rare minority classes.
+* **micro:** Calculates globally across the aggregate matrix.
+* **weighted:** Computes the mean of the OvR Kappa scores weighted by true class support.
 
+-------------------------------------------------------------------------------
 
-It's important to note that the Cohen's Kappa score can be negative if the agreement between y_true and y_pred is lower than what would be expected by chance.
-A value of 1.0 indicates perfect agreement, and a value of 0.0 indicates no agreement beyond chance.
+Benchmark Interpretation Scale
+------------------------------
 
-Also, this implementation of the Cohen's Kappa score is flexible and can handle binary as well as multi-class classification problems.
-The calculation of the confusion matrix and the subsequent calculation of the expected and observed agreements is based on the assumption
-that the ground truth labels and predicted labels are integer values that represent the different classes.
-If the labels are represented as strings or some other data type, additional pre-processing would be required to convert them
-to integer values that can be used in the confusion matrix.
+According to the landmark guidelines by Landis & Koch (1977), Kappa values are categorized as follows:
 
+===========  ==================================
+Kappa Score  Strength of Agreement
+===========  ==================================
+< 0.00       Poor (Systematic Disagreement)
+0.00 - 0.20  Slight Agreement
+0.21 - 0.40  Fair Agreement
+0.41 - 0.60  Moderate Agreement
+0.61 - 0.80  Substantial Agreement
+0.81 - 1.00  Almost Perfect Agreement
+===========  ==================================
 
+-------------------------------------------------------------------------------
 
-Example:
+Properties
+----------
+
+* **Best possible score:** ``1.0`` (Perfect agreement between predictions and reality).
+* **Baseline score:** ``0.0`` (Agreement is exactly what would be expected by random chance).
+* **Worst possible score:** ``-1.0`` (Systematic inverse agreement; predictions are systematically wronger than random chance).
+* **Range:** ``[-1.0, 1.0]``
+
+-------------------------------------------------------------------------------
+
+Example Usage
+-------------
 
 .. code-block:: python
-	:emphasize-lines: 11,13-16
+    :emphasize-lines: 11,14,18,22,32,34-37,40-43,52,54-57
 
-	from numpy import array
-	from permetrics.classification import ClassificationMetric
+    from permetrics.classification import ClassificationMetric
 
-	## For integer labels or categorical labels
-	y_true = [0, 1, 2, 0, 2, 1, 1, 2, 2, 0]
-	y_pred = [0, 0, 2, 0, 2, 2, 1, 1, 2, 0]
+    # ==============================================================================
+    # SCENARIO 1: Binary Classification
+    # The default 'binary' mode requires a specific positive class (pos_label)
+    # ==============================================================================
+    print("--- 1. BINARY CLASSIFICATION EXAMPLES ---")
 
-	# y_true = ["cat", "ant", "cat", "cat", "ant", "bird", "bird", "bird"]
-	# y_pred = ["ant", "ant", "cat", "cat", "ant", "cat", "bird", "ant"]
+    y_true_bin = [0, 1, 0, 0, 1, 0]
+    y_pred_bin = [0, 1, 0, 0, 0, 1]
+    cm_bin = ClassificationMetric(y_true_bin, y_pred_bin)
 
-	cm = ClassificationMetric(y_true, y_pred)
+    # 1. Default configuration: average="binary", pos_label=1
+    cks_bin_default = cm_bin.CKS()
+    print(f"Default (average='binary', pos_label=1): {cks_bin_default}")
 
-	cm = ClassificationMetric(y_true, y_pred)
+    # 2. Change pos_label to 0
+    cks_bin_pos0 = cm_bin.CKS(average="binary", pos_label=0)
+    print(f"Binary with pos_label=0                : {cks_bin_pos0}")
 
-	print(cm.cohen_kappa_score(average=None))
-	print(cm.CKS(average="micro"))
-	print(cm.CKS(average="macro"))
-	print(cm.CKS(average="weighted"))
+    # 3. Independent chance-adjusted scores per class
+    cks_bin_none = cm_bin.CKS(average=None)
+    print(f"Binary with average=None               : {cks_bin_none}")
+
+    # ==============================================================================
+    # SCENARIO 2: Multiclass Classification with Integer Labels
+    # ==============================================================================
+    print("\n--- 2. MULTICLASS (INTEGER LABELS) EXAMPLES ---")
+
+    y_true_multi_int = [0, 1, 2, 0, 1, 2, 0, 2]
+    y_pred_multi_int = [0, 2, 1, 0, 1, 1, 0, 2]
+    cm_multi_int = ClassificationMetric(y_true_multi_int, y_pred_multi_int)
+
+    print(f"average=None       : {cm_multi_int.CKS(average=None)}")
+    print(f"average='macro'    : {cm_multi_int.CKS(average='macro')}")
+    print(f"average='micro'    : {cm_multi_int.CKS(average='micro')}")
+    print(f"average='weighted' : {cm_multi_int.CKS(average='weighted')}")
+
+    # Filter specific classes
+    print(f"Filter classes [1, 2] (average=None)    : {cm_multi_int.CKS(labels=[1, 2], average=None)}")
+    print(f"Filter classes [1, 2] (average='macro')   : {cm_multi_int.CKS(labels=[1, 2], average='macro')}")
+    print(f"Filter classes [1, 2] (average='micro')   : {cm_multi_int.CKS(labels=[1, 2], average='micro')}")
+    print(f"Filter classes [1, 2] (average='weighted'): {cm_multi_int.CKS(labels=[1, 2], average='weighted')}")
+
+    # ==============================================================================
+    # SCENARIO 3: Multiclass Classification with Categorical/String Labels
+    # ==============================================================================
+    print("\n--- 3. MULTICLASS (CATEGORICAL/STRING LABELS) EXAMPLES ---")
+
+    y_true_str = ["cat", "ant", "cat", "cat", "ant", "bird", "bird", "bird"]
+    y_pred_str = ["ant", "ant", "cat", "cat", "ant", "cat", "bird", "ant"]
+    cm_str = ClassificationMetric(y_true_str, y_pred_str)
+
+    print(f"average=None (Class dict) : {cm_str.CKS(average=None)}")
+    print(f"average='macro'           : {cm_str.CKS(average='macro')}")
+    print(f"average='micro'           : {cm_str.CKS(average='micro')}")
+    print(f"average='weighted'        : {cm_str.CKS(average='weighted')}")

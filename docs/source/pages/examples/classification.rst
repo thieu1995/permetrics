@@ -54,7 +54,7 @@ Object-Oriented Style
 
 	## Get the result of any function you want to
 
-	hamming_score = evaluator.hamming_score()
+	hl = evaluator.hamming_loss()
 	mcc = evaluator.matthews_correlation_coefficient()
 	specificity = evaluator.specificity_score()
-	print(f"HL: {hamming_score}, MCC: {mcc}, specificity: {specificity}")
+	print(f"Hamming: {hl}, MCC: {mcc}, specificity: {specificity}")

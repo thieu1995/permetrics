@@ -116,22 +116,8 @@ Version
 	python examples/RMSE.py
 
 
-
 # The more complicated tests in the folder: examples
-```
-
-
-
 
 .. toctree::
    :maxdepth: 3
    :caption: Example for different version
-
-.. toctree::
-   :maxdepth: 3
-
-.. toctree::
-   :maxdepth: 3
-
-.. toctree::
-   :maxdepth: 3

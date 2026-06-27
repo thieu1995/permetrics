@@ -68,7 +68,6 @@ Reference Documents
 11) https://machinelearningmastery.com/precision-recall-and-f-measure-for-imbalanced-classification/
 
 
-
 =======
 License
 =======
@@ -79,8 +78,4 @@ The project is licensed under GNU General Public License (GPL) V3 license.
 .. toctree::
    :maxdepth: 4
 
-.. toctree::
-   :maxdepth: 4
-
-.. toctree::
-   :maxdepth: 4
+   version.rst

@@ -44,12 +44,3 @@ based programming. We will go through detail of how to use 3 main type of metric
 
 .. toctree::
    :maxdepth: 3
-
-.. toctree::
-   :maxdepth: 3
-
-.. toctree::
-   :maxdepth: 3
-
-.. toctree::
-   :maxdepth: 3

@@ -1,62 +1,110 @@
-GINI Index
-==========
-
-.. toctree::
-   :maxdepth: 3
-   :caption: GINI Index (GINI)
+GINI - Gini Index
+=================
 
 .. toctree::
    :maxdepth: 3
 
-.. toctree::
-   :maxdepth: 3
-
-.. toctree::
-   :maxdepth: 3
+.. contents:: Table of Contents
+   :local:
+   :depth: 2
 
 
-The Gini index is a measure of impurity or inequality often used in decision tree algorithms for evaluating the quality of a split.
-It quantifies the extent to which a split divides the target variable (class labels) unevenly across the resulting branches.
+The **Gini Index** (often referred to as the **Gini Coefficient** or **Accuracy Ratio** in credit scoring) is a measure of a classification model's discriminatory power.
 
-The Gini index ranges from 0 to 1, where 0 indicates a perfect split, meaning all the samples in each branch belong to the same class, and 1 indicates an
-impure split, where the samples are evenly distributed across all classes. To calculate the Gini index, you can use the following formula:
+Mathematically, it is a linear transformation of the ROC AUC score. While the ROC AUC represents the absolute area under the curve (ranging from 0.5 to 1.0 for valid models), the Gini Index normalizes this metric so that a random baseline model scores exactly ``0.0``, and a perfect model scores exactly ``1.0``.
 
-Gini index = 1 - (sum of squared probabilities of each class)
+.. math::
 
-For a binary classification problem, with two classes (0 and 1), the Gini index can be calculated as::
+    \text{Gini} = 2 \times \text{AUC} - 1
 
-	Gini index = 1 - (p0^2 + p1^2)
-	where p0 is the probability of class 0 and p1 is the probability of class 1 in the split.
+-------------------------------------------------------------------------------
 
-For a multiclass classification problem, the Gini index is calculated as::
+Engineering Insight: The Financial Industry Standard
+----------------------------------------------------
 
-	Gini index = 1 - (p0^2 + p1^2 + ... + pn^2)
-	where p0, p1, ..., pn are the probabilities of each class in the split.
+If you are developing classification models for the banking, insurance, or credit risk sectors, the Gini Index is the mandatory industry standard for model validation.
 
-The Gini index is used to evaluate the quality of a split and guide the decision tree algorithm to select the split that results in the lowest Gini index.
+Business stakeholders often find the baseline AUC score of ``0.5`` (for random guessing) counter-intuitive. By applying the Gini transformation, developers can present a metric where ``0.0`` clearly represents "zero predictive intelligence" and ``1.0`` represents "perfect discrimination," making it significantly easier to communicate model performance to non-technical risk committees.
 
-It's important to note that the Gini index is not typically used as an evaluation metric for the overall performance of a classification model. Instead, it
-is primarily used within the context of decision trees for determining the optimal splits during the tree-building process. The Gini index is also used as a
-metric to evaluate the performance of a binary classification model. It is a measure of how well the model separates the positive and negative classes.
+-------------------------------------------------------------------------------
 
-+ Smaller is better (Best = 0), Range = [0, +1]
+Averaging Strategies (Via ROC AUC Inheritance)
+----------------------------------------------
 
-Example:
+Because the Gini Index is directly derived from the ROC AUC score, it fully supports the same **One-vs-Rest (OvR)** multiclass decomposition via the `average` keyword argument:
+
+* **None:** Returns a dictionary/array containing the independent Gini score for each class.
+* **macro:** Calculates the unweighted arithmetic mean of the OvR Gini scores across all classes.
+* **weighted:** Calculates the OvR Gini scores and computes their mean weighted by actual class prevalence.
+
+-------------------------------------------------------------------------------
+
+Benchmark Interpretation Scale
+------------------------------
+
+===========  ==================================
+Gini Score   Discriminative Power
+===========  ==================================
+< 0.00       Model is worse than random guessing
+0.00         Zero discrimination (Random)
+0.01 - 0.40  Weak model
+0.41 - 0.60  Good model (Standard for Credit)
+0.61 - 0.80  Strong model
+> 0.80       Suspiciously high (Check for leakage)
+===========  ==================================
+
+-------------------------------------------------------------------------------
+
+Properties
+----------
+
+* **Best possible score:** ``1.0`` (Perfect ranking).
+* **Baseline score:** ``0.0`` (Random guessing).
+* **Worst possible score:** ``-1.0`` (Systematic inverse ranking).
+* **Range:** ``[-1.0, 1.0]``
+* **References:** `Scikit-Learn Gini importance (Concepts) <https://scikit-learn.org/stable/modules/tree.html>`_
+
+-------------------------------------------------------------------------------
+
+Example Usage
+-------------
 
 .. code-block:: python
-	:emphasize-lines: 11-14
+    :emphasize-lines: 12,13,17,18,32,34-36
 
-	from numpy import array
-	from permetrics.classification import ClassificationMetric
+    from permetrics.classification import ClassificationMetric
 
-	## For integer labels or categorical labels
-	y_true = [0, 1, 0, 0, 1, 0]
-	y_pred = [0, 1, 0, 0, 0, 1]
+    # ==============================================================================
+    # SCENARIO 1: Binary Classification (Passing Probability Scores)
+    # y_pred expects continuous probability scores belonging to the Positive Class
+    # ==============================================================================
+    print("--- 1. BINARY CLASSIFICATION EXAMPLES ---")
 
-	# y_true = ["cat", "ant", "cat", "cat", "ant", "bird", "bird", "bird"]
-	# y_pred = ["ant", "ant", "cat", "cat", "ant", "cat", "bird", "ant"]
+    y_true_bin = [0, 0, 1, 1]
+    y_score_bin = [0.1, 0.4, 0.35, 0.8]
 
-	cm = ClassificationMetric(y_true, y_pred)
-	print(cm.gini_index(average=None))
-	print(cm.GINI()
-	print(cm.GINI()
+    cm_bin = ClassificationMetric(y_true_bin, y_score_bin)
+    print(f"Binary GINI Score : {cm_bin.GINI()}")
+
+    # Passing a 2D matrix of probabilities
+    y_score_2d = [[0.9, 0.1], [0.6, 0.4], [0.65, 0.35], [0.2, 0.8]]
+    cm_2d = ClassificationMetric(y_true_bin, y_score_2d)
+    print(f"Binary GINI (2D)  : {cm_2d.GINI()}")
+
+    # ==============================================================================
+    # SCENARIO 2: Multiclass Classification (One-vs-Rest)
+    # y_pred expects a 2D array of shape (n_samples, n_classes)
+    # ==============================================================================
+    print("\n--- 2. MULTICLASS OVR EXAMPLES ---")
+
+    y_true_multi = [0, 1, 2, 0, 1, 2]
+    y_score_multi = [
+        [0.7, 0.2, 0.1], [0.1, 0.8, 0.1], [0.2, 0.2, 0.6],
+        [0.8, 0.1, 0.1], [0.3, 0.6, 0.1], [0.1, 0.1, 0.8]
+    ]
+
+    cm_multi = ClassificationMetric(y_true_multi, y_score_multi)
+    # Keyword arguments like 'average' are automatically passed to roc_auc_score
+    print(f"average=None (Class dict) : {cm_multi.GINI(average=None)}")
+    print(f"average='macro'           : {cm_multi.GINI(average='macro')}")
+    print(f"average='weighted'        : {cm_multi.GINI(average='weighted')}")

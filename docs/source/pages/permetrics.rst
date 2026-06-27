@@ -25,6 +25,7 @@ permetrics.regression module
    :members:
    :undoc-members:
    :show-inheritance:
+   :no-index:
 
 permetrics.classification module
 --------------------------------
@@ -33,6 +34,7 @@ permetrics.classification module
    :members:
    :undoc-members:
    :show-inheritance:
+   :no-index:
 
 permetrics.clustering module
 ----------------------------
@@ -41,16 +43,8 @@ permetrics.clustering module
    :members:
    :undoc-members:
    :show-inheritance:
+   :no-index:
 
-
-.. toctree::
-   :maxdepth: 3
-
-.. toctree::
-   :maxdepth: 3
-
-.. toctree::
-   :maxdepth: 3
 
 .. toctree::
    :maxdepth: 3

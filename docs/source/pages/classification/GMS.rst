@@ -1,86 +1,134 @@
-G-Mean Score (GMS)
-==================
-
-.. toctree::
-   :maxdepth: 3
-   :caption: G-Mean Score (GMS)
+GMS - Geometric Mean Score
+==========================
 
 .. toctree::
    :maxdepth: 3
 
-.. toctree::
-   :maxdepth: 3
-
-.. toctree::
-   :maxdepth: 3
+.. contents:: Table of Contents
+   :local:
+   :depth: 2
 
 
-G-mean is a performance metric in the field of machine learning and specifically in binary classification problems.
-It is a balanced version of the geometric mean, which is calculated as the square root of the product of true positive rate (TPR) and true negative rate
-(TNR) also known as sensitivity and specificity, respectively.
+The **Geometric Mean Score (GMS)** (widely known as **G-Mean**) :cite:`he2009learning` evaluates the balance between classification performance on the positive class (Recall/Sensitivity) and the negative class (Specificity).
 
-The G-mean is a commonly used metric to evaluate the performance of a classifier in imbalanced datasets where one class has a much higher
-number of samples than the other. It provides a balanced view of the model's performance as it penalizes low values of TPR and TNR in a single score.
-The G-mean score provides a balanced evaluation of a classifier's performance by considering both the positive and negative classes.
+.. image:: /_static/images/class_score_1.png
+   :align: center
+   :alt: Geometric Mean Score Balance Illustration
 
-The formula for the G-mean score is given by
+Originally proposed by :cite:`kubat1997addressing` G-Mean is a cornerstone evaluation metric for heavily imbalanced learning. Unlike arithmetic averages that allow high accuracy on the majority class to mask poor performance on the rare minority class, the geometric mean severely penalizes extreme disparities. A classifier can only achieve a high G-Mean score if it performs strongly on both positive and negative instances simultaneously.
 
 .. math::
 
-	G-mean = sqrt(TPR * TNR)
+    \text{G-Mean} = \sqrt{\text{Sensitivity} \times \text{Specificity}} = \sqrt{\text{Recall} \times \text{TNR}} = \sqrt{\frac{TP}{TP + FN} \times \frac{TN}{TN + FP}}
 
-	Gmean = \sqrt{TPR * TNR}
+-------------------------------------------------------------------------------
 
-where TPR (True Positive Rate) is defined as
+Engineering Insight: Geometric vs. Arithmetic Aggregation
+---------------------------------------------------------
 
+To understand why library developers rely on the Geometric Mean for imbalanced classification, consider a dataset of 10,000 legitimate bank transactions (Class 0) and 10 fraudulent transactions (Class 1).
+
+A lazy model simply classifies every single input as legitimate (`Class 0`):
+* **Recall (Sensitivity on Fraud):** ``0.0`` *(0 out of 10 caught)*
+* **Specificity (TNR on Legitimate):** ``1.0`` *(10,000 out of 10,000 correctly bypassed)*
+
+If we evaluate this model using an **Arithmetic Mean**:
 .. math::
 
-	$TPR = \frac{TP}{TP + FN}$
+    \text{Arithmetic Mean} = \frac{0.0 + 1.0}{2} = \mathbf{0.50}
 
-and TNR (True Negative Rate) is defined as
+The model receives a 50% score, creating an illusion of moderate utility.
 
+However, evaluating with the **Geometric Mean**:
 .. math::
 
-	$TNR = \frac{TN}{TN + FP}$
+    \text{G-Mean} = \sqrt{0.0 \times 1.0} = \mathbf{0.0}
 
-with TP (True Positives) as the number of instances that are correctly classified as positive, TN (True Negatives) as the number
-of instances that are correctly classified as negative, FP (False Positives) as the number of instances that are wrongly classified
-as positive, and FN (False Negatives) as the number of instances that are wrongly classified as negative.
+The score instantly collapses to zero. Mathematically, the product inside the square root is dictated by its smallest factor. The G-Mean acts as a strict bottleneck: **the model's overall score cannot exceed the performance of its worst-performing class.**
 
+-------------------------------------------------------------------------------
 
-+ Best possible score is 1.0, higher value is better. Range = [0, 1]
-For a binary classification problem with two classes, the G-mean score provides a single value that represents the overall accuracy of the classifier.
-A G-mean score of 1.0 indicates perfect accuracy, while a score of less than 1.0 indicates that one of the classes is being misclassified more frequently than the other.
+Architectural Design: Multiclass OvR Extension
+----------------------------------------------
 
-In a multi-class classification problem, the G-mean score can be calculated for each class and then averaged over all classes to provide a
-single value that represents the overall accuracy of the classifier. The average can be weighted or unweighted, depending on the desired interpretation of the results.
+While classical literature defines G-Mean strictly for binary classification, ``permetrics`` extends this metric to handle multiclass environments via **One-vs-Rest (OvR)** decomposition:
 
-For example, consider a multi-class classification problem with three classes: class A, class B, and class C. The G-mean score for each class can be
-calculated using the formula above, and then averaged over all classes to provide an overall G-mean score for the classifier.
+* **None:** Returns a dictionary/array containing the independent binary G-Mean score for each class (treating Class :math:`c` as Positive and all other classes combined as Negative).
+* **macro:** Computes the unweighted arithmetic mean of the OvR G-Mean scores across all classes. This is an exceptional benchmark for auditing models trained on skewed multiclass distributions.
+* **micro:** Calculates globally across the aggregate matrix.
+* **weighted:** Computes the mean of the OvR G-Mean scores weighted by true class support.
 
-The G-mean score provides a way to balance the accuracy of a classifier between positive and negative classes, and is particularly useful in
-cases where the class distribution is imbalanced, or when one class is more important than the other.
+-------------------------------------------------------------------------------
 
+Properties
+----------
 
-Example:
+* **Best possible score:** ``1.0`` (Indicates perfect Recall and perfect Specificity).
+* **Worst possible score:** ``0.0`` (Occurs if the model completely fails on either the positive class or the negative class).
+* **Range:** ``[0.0, 1.0]``
+
+-------------------------------------------------------------------------------
+
+Example Usage
+-------------
 
 .. code-block:: python
-	:emphasize-lines: 11,13-16
+    :emphasize-lines: 11,14,18,22,32,34-37,40-43,52,54-57
 
-	from numpy import array
-	from permetrics.classification import ClassificationMetric
+    from permetrics.classification import ClassificationMetric
 
-	## For integer labels or categorical labels
-	y_true = [0, 1, 0, 0, 1, 0]
-	y_pred = [0, 1, 0, 0, 0, 1]
+    # ==============================================================================
+    # SCENARIO 1: Binary Classification
+    # The default 'binary' mode requires a specific positive class (pos_label)
+    # ==============================================================================
+    print("--- 1. BINARY CLASSIFICATION EXAMPLES ---")
 
-	# y_true = ["cat", "ant", "cat", "cat", "ant", "bird", "bird", "bird"]
-	# y_pred = ["ant", "ant", "cat", "cat", "ant", "cat", "bird", "ant"]
+    y_true_bin = [0, 1, 0, 0, 1, 0]
+    y_pred_bin = [0, 1, 0, 0, 0, 1]
+    cm_bin = ClassificationMetric(y_true_bin, y_pred_bin)
 
-	cm = ClassificationMetric(y_true, y_pred)
+    # 1. Default configuration: average="binary", pos_label=1
+    gms_bin_default = cm_bin.GMS()
+    print(f"Default (average='binary', pos_label=1): {gms_bin_default}")
 
-	print(cm.g_mean_score(average=None))
-	print(cm.GMS(average="micro"))
-	print(cm.GMS(average="macro"))
-	print(cm.GMS(average="weighted"))
+    # 2. Change pos_label to 0
+    gms_bin_pos0 = cm_bin.GMS(average="binary", pos_label=0)
+    print(f"Binary with pos_label=0                : {gms_bin_pos0}")
 
+    # 3. Independent One-vs-Rest G-Mean scores per class
+    gms_bin_none = cm_bin.GMS(average=None)
+    print(f"Binary with average=None               : {gms_bin_none}")
+
+    # ==============================================================================
+    # SCENARIO 2: Multiclass Classification with Integer Labels
+    # ==============================================================================
+    print("\n--- 2. MULTICLASS (INTEGER LABELS) EXAMPLES ---")
+
+    y_true_multi_int = [0, 1, 2, 0, 1, 2, 0, 2]
+    y_pred_multi_int = [0, 2, 1, 0, 1, 1, 0, 2]
+    cm_multi_int = ClassificationMetric(y_true_multi_int, y_pred_multi_int)
+
+    print(f"average=None       : {cm_multi_int.GMS(average=None)}")
+    print(f"average='macro'    : {cm_multi_int.GMS(average='macro')}")
+    print(f"average='micro'    : {cm_multi_int.GMS(average='micro')}")
+    print(f"average='weighted' : {cm_multi_int.GMS(average='weighted')}")
+
+    # Filter specific classes
+    print(f"Filter classes [1, 2] (average=None)    : {cm_multi_int.GMS(labels=[1, 2], average=None)}")
+    print(f"Filter classes [1, 2] (average='macro')   : {cm_multi_int.GMS(labels=[1, 2], average='macro')}")
+    print(f"Filter classes [1, 2] (average='micro')   : {cm_multi_int.GMS(labels=[1, 2], average='micro')}")
+    print(f"Filter classes [1, 2] (average='weighted'): {cm_multi_int.GMS(labels=[1, 2], average='weighted')}")
+
+    # ==============================================================================
+    # SCENARIO 3: Multiclass Classification with Categorical/String Labels
+    # ==============================================================================
+    print("\n--- 3. MULTICLASS (CATEGORICAL/STRING LABELS) EXAMPLES ---")
+
+    y_true_str = ["cat", "ant", "cat", "cat", "ant", "bird", "bird", "bird"]
+    y_pred_str = ["ant", "ant", "cat", "cat", "ant", "cat", "bird", "ant"]
+    cm_str = ClassificationMetric(y_true_str, y_pred_str)
+
+    print(f"average=None (Class dict) : {cm_str.GMS(average=None)}")
+    print(f"average='macro'           : {cm_str.GMS(average='macro')}")
+    print(f"average='micro'           : {cm_str.GMS(average='micro')}")
+    print(f"average='weighted'        : {cm_str.GMS(average='weighted')}")

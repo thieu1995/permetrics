@@ -1,72 +1,116 @@
-ROC-AUC
-=======
-
-.. toctree::
-   :maxdepth: 3
-   :caption: ROC-AUC
+ROC AUC Score
+=============
 
 .. toctree::
    :maxdepth: 3
 
-.. toctree::
-   :maxdepth: 3
+.. contents:: Table of Contents
+   :local:
+   :depth: 2
 
-.. toctree::
-   :maxdepth: 3
+
+The **ROC AUC Score (ROC)** :cite:`fawcett2006introduction` computes the Area Under the Receiver Operating Characteristic Curve. By plotting the True Positive Rate (Sensitivity) against the False Positive Rate (1 - Specificity) at various classification thresholds, it quantifies the general ranking capability of a probabilistic classifier.
 
 
 .. image:: /_static/images/class_score_1.png
-
-ROC-AUC (Receiver Operating Characteristic - Area Under the Curve) is a metric used to evaluate the performance of a binary classification model. It is a measure of how well the model is able to distinguish between positive and negative classes.
-
-A ROC curve is a plot of the true positive rate (TPR) against the false positive rate (FPR) at various threshold settings. The TPR is the ratio of the number of true positives to the total number of positives, while the FPR is the ratio of the number of false positives to the total number of negatives.
-
-The AUC is the area under the ROC curve. It ranges between 0 and 1, where a value of 0.5 represents a model that performs no better than random guessing, and a value of 1 represents a model that makes perfect predictions. A higher AUC value indicates that the model is better at distinguishing between the positive and negative classes.
-
-Interpretation of the ROC curve and AUC value depends on the specific problem and domain. In general, a model with an AUC value of 0.7 to 0.8 is considered acceptable, while a value greater than 0.8 is considered good. However, the interpretation may vary depending on the specific use case and the cost of false positives and false negatives.
+   :align: center
+   :alt: Receiver Operating Characteristic Area Under Curve Illustration
 
 
-In the multi-class and multi-label case, this is the average of the AS score of each class with weighting depending on the average parameter.
+Intuitively, the ROC AUC represents the exact probability that a classifier will rank a randomly chosen positive instance higher than a randomly chosen negative instance.
 
-In a multiclass classification problem, ROC-AUC can still be used as a metric, but it requires some modifications to account for the multiple classes.
+.. math::
 
-One approach is to use the one-vs-all (OvA) strategy, where we train a binary classifier for each class, treating it as the positive class and all other classes as the negative class. For each class, we calculate the ROC curve and AUC value, and then average the AUC values across all classes to obtain a single metric.
+    \text{AUC} = \int_{0}^{1} \text{TPR}(\tau) \, d\left(\text{FPR}(\tau)\right)
 
-Another approach is to use the one-vs-one (OvO) strategy, where we train a binary classifier for each pair of classes, treating one class as the positive class and the other as the negative class. For each pair of classes, we calculate the ROC curve and AUC value, and then average the AUC values across all pairs to obtain a single metric.
+Where :math:`\tau` represents the sweeping decision threshold.
 
-In either case, it is important to ensure that the classes are balanced, meaning that the number of examples in each class is roughly equal, or to use appropriate sampling techniques to handle class imbalance.
+-------------------------------------------------------------------------------
 
-It is worth noting that ROC-AUC may not always be the best metric for multiclass problems, especially when the classes are highly imbalanced or the cost of false positives and false negatives varies across classes. In such cases, other metrics such as precision, recall, F1-score, or weighted average of these metrics may be more appropriate.
+Architectural Design: Input Integrity & Safeguards
+--------------------------------------------------
 
-+ Best possible score is 1.0, higher value is better. Range = [0, 1]
-+ https://www.analyticsvidhya.com/blog/2020/06/auc-roc-curve-machine-learning/
-+ There is no "micro" average mode in ROC-AUC metric
+**1. The Probabilistic Input Requirement** (`y_score`)
+Unlike accuracy or precision metrics that evaluate discrete label predictions (e.g., ``[0, 1, 1]``), the ROC AUC strictly evaluates continuous confidence scores or uncalibrated decision function outputs (e.g., ``[0.12, 0.88, 0.94]``). Passing discrete class labels degrades the curve into a single step-function coordinate.
 
-Example:
+**2. The Single-Class Exception (Safeguard)**
+If the test dataset contains only one unique target class (e.g., evaluating a batch of 100% negative samples), the False Positive Rate cannot be swept. ``permetrics`` explicitly intercepts this edge case and raises a `ValueError` rather than returning an uninterpretable `NaN`.
+
+-------------------------------------------------------------------------------
+
+Multiclass Extension (One-vs-Rest Decomposition)
+------------------------------------------------
+
+While classical literature establishes ROC strictly for binary targets, ``permetrics`` implements a generalized **One-vs-Rest (OvR)** scheme for multi-label and multiclass environments:
+
+* **None:** Decomposes the dataset into independent binary targets per class (Class :math:`c` vs. Rest) and returns a dictionary mapping each class label to its standalone AUC score.
+* **macro:** Calculates the unweighted arithmetic mean of the OvR AUC scores across all classes. This treats minority and majority classes with equal weight.
+* **weighted:** Calculates the OvR AUC scores and computes their mean weighted by the actual class prevalence in the ground truth.
+
+-------------------------------------------------------------------------------
+
+Benchmark Interpretation Scale
+------------------------------
+
+===========  ==================================
+AUC Score    Discriminative Capacity
+===========  ==================================
+0.50         No Discrimination (Random Guess)
+0.51 - 0.70  Poor Discrimination
+0.71 - 0.80  Acceptable Discrimination
+0.81 - 0.90  Excellent Discrimination
+> 0.90       Outstanding Discrimination
+===========  ==================================
+
+-------------------------------------------------------------------------------
+
+Properties
+----------
+
+* **Best possible score:** ``1.0`` (Perfect ranking; every positive instance is scored higher than any negative instance).
+* **Baseline score:** ``0.5`` (Equivalent to random ranking).
+* **Range:** ``[0.0, 1.0]`` *(Values below 0.5 indicate systematic label inversion).*
+* **References:** `Scikit-Learn roc_auc_score <https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html>`_
+
+-------------------------------------------------------------------------------
+
+Example Usage
+-------------
 
 .. code-block:: python
-	:emphasize-lines: 20-23
+    :emphasize-lines: 11,12,15,16,17,31-34
 
-	from numpy import array
-	from permetrics.classification import ClassificationMetric
+    from permetrics.classification import ClassificationMetric
 
-	## For integer labels or categorical labels
-	y_true = [0, 1, 0, 0, 1, 0]
-	y_score = [0, 1, 0, 0, 0, 1]
+    # ==============================================================================
+    # SCENARIO 1: Binary Classification (Passing Probability Scores)
+    # y_pred expects continuous probability scores belonging to the Positive Class
+    # ==============================================================================
+    print("--- 1. BINARY CLASSIFICATION EXAMPLES ---")
 
-	y_true = np.array([0, 1, 2, 1, 2, 0, 0, 1])
-	y_score = np.array([[0.8, 0.1, 0.1],
-                   [0.2, 0.5, 0.3],
-                   [0.1, 0.3, 0.6],
-                   [0.3, 0.7, 0.0],
-                   [0.4, 0.3, 0.3],
-                   [0.6, 0.2, 0.2],
-                   [0.9, 0.1, 0.0],
-                   [0.1, 0.8, 0.1]])
+    y_true_bin = [0, 0, 1, 1]
+    y_score_bin = [0.1, 0.4, 0.35, 0.8]
+    cm_bin = ClassificationMetric(y_true_bin, y_score_bin)
+    print(f"Binary ROC AUC Score : {cm_bin.ROC()}")
 
-	cm = ClassificationMetric(y_true, y_pred)
+    # Passing a 2D matrix of probabilities (e.g., direct output from .predict_proba())
+    y_score_2d = [[0.9, 0.1], [0.6, 0.4], [0.65, 0.35], [0.2, 0.8]]
+    cm_2d = ClassificationMetric(y_true_bin, y_score_2d)
+    print(f"Binary ROC (2D Input): {cm_2d.ROC()}")
 
-	print(cm.roc_auc_score(y_true, y_score, average=None))
-	print(cm.ROC(y_true, y_score))
-	print(cm.AUC(y_true, y_score, average="macro"))
-	print(cm.RAS(y_true, y_score, average="weighted"))
+    # ==============================================================================
+    # SCENARIO 2: Multiclass Classification (One-vs-Rest)
+    # y_pred expects a 2D array of shape (n_samples, n_classes)
+    # ==============================================================================
+    print("\n--- 2. MULTICLASS OVR EXAMPLES ---")
+
+    y_true_multi = [0, 1, 2, 0, 1, 2]
+    y_score_multi = [
+        [0.7, 0.2, 0.1], [0.1, 0.8, 0.1], [0.2, 0.2, 0.6],
+        [0.8, 0.1, 0.1], [0.3, 0.6, 0.1], [0.1, 0.1, 0.8]
+    ]
+
+    cm_multi = ClassificationMetric(y_true_multi, y_score_multi)
+    print(f"average=None (Class dict) : {cm_multi.ROC(average=None)}")
+    print(f"average='macro'           : {cm_multi.ROC(average='macro')}")
+    print(f"average='weighted'        : {cm_multi.ROC(average='weighted')}")
