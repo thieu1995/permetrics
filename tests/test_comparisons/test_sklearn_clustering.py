@@ -1,15 +1,23 @@
 #!/usr/bin/env python
-# Created by "Thieu" at 16:47, 23/02/2024 ----------%                                                                               
-#       Email: nguyenthieu2102@gmail.com            %                                                    
-#       Github: https://github.com/thieu1995        %                         
+# Created by "Thieu" at 16:47, 23/02/2024 ----------%
+#       Email: nguyenthieu2102@gmail.com            %
+#       Github: https://github.com/thieu1995        %
 # --------------------------------------------------%
 
 import numpy as np
 import pytest
-from sklearn.metrics import mutual_info_score, normalized_mutual_info_score, \
-    adjusted_rand_score, rand_score, \
-    completeness_score, homogeneity_score, v_measure_score, \
-    fowlkes_mallows_score, calinski_harabasz_score, davies_bouldin_score
+from sklearn.metrics import (
+    mutual_info_score,
+    normalized_mutual_info_score,
+    adjusted_rand_score,
+    rand_score,
+    completeness_score,
+    homogeneity_score,
+    v_measure_score,
+    fowlkes_mallows_score,
+    calinski_harabasz_score,
+    davies_bouldin_score,
+)
 
 from permetrics import ClusteringMetric
 

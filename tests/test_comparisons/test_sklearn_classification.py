@@ -1,12 +1,18 @@
 #!/usr/bin/env python
-# Created by "Thieu" at 16:14, 07/02/2024 ----------%                                                                               
-#       Email: nguyenthieu2102@gmail.com            %                                                    
-#       Github: https://github.com/thieu1995        %                         
+# Created by "Thieu" at 16:14, 07/02/2024 ----------%
+#       Email: nguyenthieu2102@gmail.com            %
+#       Github: https://github.com/thieu1995        %
 # --------------------------------------------------%
 
 import numpy as np
 import pytest
-from sklearn.metrics import accuracy_score, f1_score, fbeta_score, precision_score, recall_score
+from sklearn.metrics import (
+    accuracy_score,
+    f1_score,
+    fbeta_score,
+    precision_score,
+    recall_score,
+)
 
 from permetrics import ClassificationMetric
 
@@ -24,24 +30,36 @@ def data():
     cm1 = ClassificationMetric(y_true=y_true1, y_pred=y_pred1)
 
     # Example one-hot encoded y_true and y_pred
-    y_true2 = np.array([[0, 1, 0],  # Class 1
-                        [1, 0, 0],  # Class 0
-                        [0, 0, 1],  # Class 2
-                        [0, 1, 0],  # Class 1
-                        [0, 0, 1]])  # Class 2
-    y_pred2 = np.array([[0.1, 0.8, 0.1],  # Predicted probabilities for Class 1, Class 0, Class 2
-                        [0.7, 0.2, 0.1],
-                        [0.2, 0.3, 0.5],
-                        [0.3, 0.6, 0.1],
-                        [0.1, 0.2, 0.7]])
+    y_true2 = np.array(
+        [
+            [0, 1, 0],  # Class 1
+            [1, 0, 0],  # Class 0
+            [0, 0, 1],  # Class 2
+            [0, 1, 0],  # Class 1
+            [0, 0, 1],
+        ]
+    )  # Class 2
+    y_pred2 = np.array(
+        [
+            [0.1, 0.8, 0.1],  # Predicted probabilities for Class 1, Class 0, Class 2
+            [0.7, 0.2, 0.1],
+            [0.2, 0.3, 0.5],
+            [0.3, 0.6, 0.1],
+            [0.1, 0.2, 0.7],
+        ]
+    )
     cm2 = ClassificationMetric(y_true=y_true2, y_pred=y_pred2)
 
     y_true3 = np.array([0, 1, 2, 0, 2])  # Class 2
-    y_pred3 = np.array([[0.1, 0.8, 0.1],  # Predicted probabilities for Class 1, Class 0, Class 2
-                        [0.7, 0.2, 0.1],
-                        [0.2, 0.3, 0.5],
-                        [0.3, 0.6, 0.1],
-                        [0.1, 0.2, 0.7]])
+    y_pred3 = np.array(
+        [
+            [0.1, 0.8, 0.1],  # Predicted probabilities for Class 1, Class 0, Class 2
+            [0.7, 0.2, 0.1],
+            [0.2, 0.3, 0.5],
+            [0.3, 0.6, 0.1],
+            [0.1, 0.2, 0.7],
+        ]
+    )
     cm3 = ClassificationMetric(y_true=y_true3, y_pred=y_pred3)
     return (y_true1, y_pred1), (y_true2, y_pred2), (y_true3, y_pred3), cm1, cm2, cm3
 

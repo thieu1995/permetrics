@@ -1,13 +1,20 @@
 #!/usr/bin/env python
-# Created by "Thieu" at 18:21, 22/02/2024 ----------%                                                                               
-#       Email: nguyenthieu2102@gmail.com            %                                                    
-#       Github: https://github.com/thieu1995        %                         
+# Created by "Thieu" at 18:21, 22/02/2024 ----------%
+#       Email: nguyenthieu2102@gmail.com            %
+#       Github: https://github.com/thieu1995        %
 # --------------------------------------------------%
 
 import numpy as np
 import pytest
-from sklearn.metrics import explained_variance_score, max_error, mean_absolute_error, \
-    mean_squared_error, median_absolute_error, r2_score, mean_absolute_percentage_error
+from sklearn.metrics import (
+    explained_variance_score,
+    max_error,
+    mean_absolute_error,
+    mean_squared_error,
+    median_absolute_error,
+    r2_score,
+    mean_absolute_percentage_error,
+)
 
 from permetrics import RegressionMetric
 
