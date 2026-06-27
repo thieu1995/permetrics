@@ -1177,8 +1177,8 @@ class RegressionMetric(Evaluator):
 
         References
         ~~~~~~~~~~
-            + Frees, Edward W., Glenn Meyers, and A. David Cummings. "Summarizing insurance scores using a Gini index."
-            Journal of the American Statistical Association 106.495 (2011): 1085-1098.
+
+        + Frees, Edward W., Glenn Meyers, and A. David Cummings. "Summarizing insurance scores using a Gini index." Journal of the American Statistical Association 106.495 (2011): 1085-1098.
         """
         y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
 
@@ -1213,13 +1213,11 @@ class RegressionMetric(Evaluator):
     def residual_gini_index(self, y_true=None, y_pred=None, multi_output="raw_values", force_finite=True, finite_value=0.0, **kwargs):
         """
         Gini Index of Absolute Residuals (Error Dispersion).
-        Measures the inequality/sparsity of the absolute regression errors |y_true - y_pred|.
-        Smaller is better (0.0 = all absolute errors are perfectly equal). Range = [0, 1].
 
         References
         ~~~~~~~~~~
-            + Yitzhaki, Shlomo, and Edna Schechtman. The Gini methodology: a primer on a statistical
-            methodology. Vol. 272. Springer Science & Business Media, 2012.
+
+        + Yitzhaki, Shlomo, and Edna Schechtman. The Gini methodology: a primer on a statistical methodology. Vol. 272. Springer Science & Business Media, 2012.
         """
         y_true, y_pred, n_out = self.get_processed_data(y_true, y_pred)
         abs_residuals = np.abs(y_true - y_pred)

@@ -106,17 +106,18 @@ class Evaluator:
         """
         Get results of list metrics by its name and parameters wrapped by dictionary
 
-        For example:
-            {
-                "RMSE": {"multi_output": multi_output},
-                "MAE": {"multi_output": multi_output}
-            }
-
         Args:
             metrics_dict (dict): key is metric name and value is dict of parameters
 
         Returns:
-            results (dict): e.g, { "RMSE": 0.3524, "MAE": 0.445263 }
+            dict: e.g, { "RMSE": 0.3524, "MAE": 0.445263 }
+
+        Examples:
+            >>> evaluator.get_metrics_by_dict({
+            ...     "RMSE": {"multi_output": "raw_values"},
+            ...     "MAE": {"multi_output": "raw_values"}
+            ... })
+            {"RMSE": 0.3524, "MAE": 0.445263}
         """
         results = {}
         for metric_name, paras_dict in metrics_dict.items():
