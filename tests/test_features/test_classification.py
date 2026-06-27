@@ -194,7 +194,7 @@ class TestAggregateEngine:
     ("f2_score", ["F2S"], "f2"),
     ("fbeta_score", ["FBS"], "fbeta"),
     ("matthews_correlation_coefficient", ["MCC"], "mcc"),
-    ("hamming_score", ["HS"], "hamming_score"),
+    ("hamming_loss", ["HML"], "hamming_loss"),
     ("lift_score", ["LS"], "lift_score"),
     ("cohen_kappa_score", ["CKS"], "kappa_score"),
     ("jaccard_similarity_index", ["JSI", "JSC", "jaccard_similarity_coefficient"], "jaccard_similarities"),
@@ -300,7 +300,7 @@ class TestROCAndLosses:
         mock_du.format_y_score.return_value = (y_true, y_pred, True, "num")
         hl = metric.hinge_loss([0, 1], y_pred)
         assert hl >= 0.0
-        assert metric.HL == metric.hinge_loss
+        assert metric.HGL == metric.hinge_loss
 
         # 4. Kullback-Leibler Divergence Loss
         kldl = metric.kullback_leibler_divergence_loss([0, 1], y_pred)
@@ -389,7 +389,7 @@ def prob_data_zoo():
 # 2. SINGLE-LABEL METRICS GROUP TEST (14 APIs)
 # =====================================================================
 
-SINGLE_LABEL_METRICS = ["PS", "NPV", "RS", "F1S", "F2S", "FBS", "SS", "MCC", "HS", "LS", "CKS", "JSI", "GMS"]
+SINGLE_LABEL_METRICS = ["PS", "NPV", "RS", "F1S", "F2S", "FBS", "SS", "MCC", "HML", "LS", "CKS", "JSI", "GMS"]
 
 
 @pytest.mark.parametrize("metric_alias", SINGLE_LABEL_METRICS)
@@ -402,7 +402,7 @@ def test_single_label_multiclass_compatible(clf_data_zoo, metric_alias):
         func = getattr(cm, metric_alias)
         for idx, avg in enumerate(avg_paras):
             res = func(average=avg)
-            assert isinstance(res, expected_types[idx]), f"Lỗi tại {metric_alias} với average={avg}"
+            assert isinstance(res, expected_types[idx]), f"Error from {metric_alias} with average={avg}"
 
 
 @pytest.mark.parametrize("metric_alias", SINGLE_LABEL_METRICS)
@@ -444,13 +444,13 @@ def test_roc_and_gini_engine(prob_data_zoo, metric_alias):
             assert isinstance(res, (float, dict))
 
 
-@pytest.mark.parametrize("loss_alias", ["CEL", "HL", "KLDL", "BSL"])
+@pytest.mark.parametrize("loss_alias", ["CEL", "HGL", "KLDL", "BSL"])
 def test_loss_functions(prob_data_zoo, loss_alias):
     for cm in prob_data_zoo:
         loss_func = getattr(cm, loss_alias)
         val = loss_func()
         assert isinstance(val, float)
-        assert val >= 0.0, f"Hàm loss {loss_alias} trả về giá trị âm vô lý: {val}"
+        assert val >= 0.0, f"Loss function {loss_alias} returns negative value: {val}"
 
 
 # ==========================================================================
