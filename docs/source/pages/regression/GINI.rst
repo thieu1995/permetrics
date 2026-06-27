@@ -53,7 +53,7 @@ Properties
 -----------------------------------------
 
 The **Residual Gini Index** :cite:`yitzhaki2012gini` applies the classic economic Gini index of inequality to
-the **absolute regression residuals** :math:`E = |y_{\text{true}} - y_{\text{pred}}|`.
+the **absolute regression residuals** :math:`E = \lvert y_{\text{true}} - y_{\text{pred}} \rvert`.
 
 Instead of measuring ranking, it answers an econometric question: *"Is the model's total error distributed equally
 across all samples, or is 90% of the total error caused by 3 extreme outliers?"*

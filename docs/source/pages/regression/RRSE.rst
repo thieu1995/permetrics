@@ -30,6 +30,7 @@ Description
     * ``RRSE < 1.0``: The model outperforms the simple mean-predicting baseline.
     * ``RRSE = 1.0``: The model is only as accurate as predicting the baseline mean.
     * ``RRSE > 1.0``: The model performs *worse* than the simple baseline.
+
 * **Scale-independent:** Because the squared error is divided by the data's inherent variance, the metric is dimensionless. This allows for fair comparisons of model accuracy across entirely different domains and datasets.
 * **Large Error Identification:** By squaring the residuals before summing, RRSE aggressively highlights models that occasionally make massive prediction errors.
 

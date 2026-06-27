@@ -25,21 +25,23 @@ Description
 -----------
 
 **Advantages:**
-	* **Holistic Evaluation:** Models can sometimes cheat individual metrics (e.g., having a high correlation :math:`R` but terrible absolute magnitude, or vice versa). By multiplying :math:`R` and :math:`WI`, CI heavily penalizes models unless they perform well in both trend prediction and magnitude accuracy.
-	* **Standardized Benchmarking:** Unlike raw error metrics (MAE, RMSE), CI provides a standardized classification scale, making it extremely easy to categorize model performance for non-technical stakeholders.
 
-**Performance Classification:**
-Based on standard hydrological and forecasting literature, CI values are categorized as follows:
-	* **> 0.85**: Excellent
-	* **0.76 - 0.85**: Very Good
-	* **0.66 - 0.75**: Good
-	* **0.61 - 0.65**: Satisfactory
-	* **0.51 - 0.60**: Poor
-	* **0.41 - 0.50**: Bad
-	* **< 0.40**: Very Bad
+* **Holistic Evaluation:** Models can sometimes cheat individual metrics (e.g., having a high correlation :math:`R` but terrible absolute magnitude, or vice versa). By multiplying :math:`R` and :math:`WI`, CI heavily penalizes models unless they perform well in both trend prediction and magnitude accuracy.
+* **Standardized Benchmarking:** Unlike raw error metrics (MAE, RMSE), CI provides a standardized classification scale, making it extremely easy to categorize model performance for non-technical stakeholders.
+
+**Performance Classification:** Based on standard hydrological and forecasting literature, CI values are categorized as follows:
+
+* **> 0.85**: Excellent
+* **0.76 - 0.85**: Very Good
+* **0.66 - 0.75**: Good
+* **0.61 - 0.65**: Satisfactory
+* **0.51 - 0.60**: Poor
+* **0.41 - 0.50**: Bad
+* **< 0.40**: Very Bad
 
 **Disadvantages:**
-	* **Negative Value Ambiguity:** Because :math:`\text{WI}` is strictly positive :math:`[0, 1]`, a negative CI score is driven entirely by a negative Pearson :math:`\text{R}`. A negative score simply means the model is inversely correlated with the ground truth, which generally indicates a complete structural failure of the predictive model.
+
+* **Negative Value Ambiguity:** Because :math:`\text{WI}` is strictly positive :math:`[0, 1]`, a negative CI score is driven entirely by a negative Pearson :math:`\text{R}`. A negative score simply means the model is inversely correlated with the ground truth, which generally indicates a complete structural failure of the predictive model.
 
 -------------------------------------------------------------------------------
 
