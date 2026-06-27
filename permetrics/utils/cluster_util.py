@@ -841,17 +841,27 @@ def calculate_entropy_score(y_true=None, y_pred=None):
     return result
 
 
-def compute_nd_splus_sminus_t(y_true=None, y_pred=None):
-    """concordant_discordant"""
-    n_samples = len(y_true)
-    nd = n_samples * (n_samples - 1) / 2
-    s_plus = 0.  # Number of concordant comparisons
-    t = 0.  # Number of comparisons of two pairs of objects with same cluster labels
-    for idx in range(n_samples - 1):
-        t += np.sum((y_true[idx] == y_true[idx + 1:]) & (y_pred[idx] == y_pred[idx + 1:]))
-        s_plus += np.sum((y_true[idx] == y_true[idx + 1:]) & (y_pred[idx] == y_pred[idx + 1:]))
-        s_plus += np.sum((y_true[idx] != y_true[idx + 1:]) & (y_pred[idx] != y_pred[idx + 1:]))
-    s_minus = nd - s_plus       # Number of discordant comparisons
+def compute_nd_splus_sminus_t(y_true, y_pred):
+    """
+    Optimized version computing Concordant/Discordant pairs in O(N) using Combinatorics.
+    """
+    n = len(y_true)
+    nd = n * (n - 1) / 2.0  # Total pairs
+    contingency = compute_contingency_matrix(y_true, y_pred)
+
+    a = sum_comb(contingency)  # Same True, Same Pred (it is t)
+    sum_rows = np.ravel(contingency.sum(axis=1))
+    sum_cols = np.ravel(contingency.sum(axis=0))
+
+    same_true = sum_comb(sum_rows)
+    same_pred = sum_comb(sum_cols)
+    b = same_true - a  # Same True, Diff Pred
+    c = same_pred - a  # Diff True, Same Pred
+    d = nd - a - b - c  # Diff True, Diff Pred
+    t = a
+    s_plus = a + d
+    s_minus = b + c
+
     return nd, s_plus, s_minus, t
 
 
