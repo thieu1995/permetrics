@@ -125,22 +125,14 @@ class ClusteringMetric(Evaluator):
         """
         force_finite = self.force_finite if force_finite is None else force_finite
         finite_value = self.finite_value if finite_value is None else finite_value
-        if y_pred is None:              # Check for function called
-            if self.y_pred is None:     # Check for object of class called
-                raise ValueError("You need to pass y_true and y_pred to calculate external clustering metrics.")
-            else:
-                if self.y_true is None:
-                    # y_true, y_pred, self.le = format_internal_clustering_data(self.y_pred)
-                    raise ValueError("You need to pass y_true and y_pred to calculate external clustering metrics.")
-                else:
-                    y_true, y_pred, self.le = du.format_external_clustering_data(self.y_true, self.y_pred)
-        else:   # This is for function called, it will override object of class called
-            if y_true is None:
-                # y_true, y_pred, self.le = format_internal_clustering_data(y_pred)
-                raise ValueError("You need to pass y_true and y_pred to calculate external clustering metrics.")
-            else:
-                y_true, y_pred, self.le = du.format_external_clustering_data(y_true, y_pred)
-        return y_true, y_pred, self.le, force_finite, finite_value
+
+        # Prioritize parameters passed to the function; if none are available, retrieve them from the instance.
+        yt = y_true if y_true is not None else self.y_true
+        yp = y_pred if y_pred is not None else self.y_pred
+        if yt is None or yp is None:
+            raise ValueError("You need to pass y_true and y_pred to calculate external clustering metrics.")
+        yt_final, yp_final, self.le = du.format_external_clustering_data(yt, yp)
+        return yt_final, yp_final, self.le, force_finite, finite_value
 
     def get_processed_internal_data(self, y_pred=None, force_finite=None, finite_value=None):
         """
@@ -157,13 +149,10 @@ class ClusteringMetric(Evaluator):
         """
         force_finite = self.force_finite if force_finite is None else force_finite
         finite_value = self.finite_value if finite_value is None else finite_value
-        if y_pred is None:              # Check for function called
-            if self.y_pred is None:     # Check for instance called
-                raise ValueError("You need to pass y_pred to calculate external clustering metrics.")
-            else:
-                y_pred, self.le = du.format_internal_clustering_data(self.y_pred)
-        else:   # This is for function called, it will override object of class called
-            y_pred, self.le = du.format_internal_clustering_data(y_pred)
+        yp = y_pred if y_pred is not None else self.y_pred
+        if yp is None:
+            raise ValueError("You need to pass y_pred to calculate external clustering metrics.")
+        y_pred, self.le = du.format_internal_clustering_data(yp)
         return y_pred, self.le, force_finite, finite_value
 
     def check_X(self, X):
