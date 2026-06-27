@@ -5,14 +5,34 @@
 # --------------------------------------------------%
 
 import numpy as np
-from sklearn.metrics import accuracy_score, f1_score, fbeta_score, precision_score, recall_score, brier_score_loss
+from sklearn.metrics import accuracy_score, f1_score, fbeta_score, precision_score, recall_score, brier_score_loss, confusion_matrix
 from permetrics import ClassificationMetric
+from permetrics.utils.classifier_util import calculate_confusion_matrix
 
 
 def is_close_enough(x1, x2, eps=1e-5):
     if abs(x1 - x2) <= eps:
         return True
     return False
+
+
+y_true = [2, 0, 2, 2, 0, 1]
+y_pred = [0, 0, 2, 2, 0, 2]
+t1 = confusion_matrix(y_true, y_pred)
+t2 = calculate_confusion_matrix(y_true, y_pred)
+print(t1, t2)
+
+
+y_true = ["cat", "ant", "cat", "cat", "ant", "bird"]
+y_pred = ["ant", "ant", "cat", "cat", "ant", "cat"]
+t1 = confusion_matrix(y_true, y_pred, labels=["bird", "cat"], normalize="true")
+t2 = calculate_confusion_matrix(y_true, y_pred, labels=["bird", "cat"], normalize="true")
+print(t1, t2)
+
+
+
+
+
 
 
 # ==============================================================================

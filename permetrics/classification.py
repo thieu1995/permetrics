@@ -600,31 +600,31 @@ class ClassificationMetric(Evaluator):
         y_true, y_pred, _, _ = self.get_processed_data(y_true, y_pred)
         return cu.calculate_accuracy_score(y_true, y_pred, normalize=normalize, sample_weight=sample_weight)
 
-    # =====================================================================
-    # ROC & LOSS FUNCTIONS
-    # =====================================================================
-
     def confusion_matrix(self, y_true=None, y_pred=None, labels=None, normalize=None, **kwargs):
         """
-        Parameters
-        ----------
-        y_true : array-like, optional
-            Ground truth (correct) target values.
-        y_pred : array-like, optional
-            Estimated target values.
-        labels : list, optional
-            List of labels to index the matrix.
-        normalize : str or None, optional
-            Normalization mode ('true', 'pred', 'all', or None).
+        Compute the confusion matrix for classification tasks.
 
-        Returns
-        -------
-        np.ndarray
-            Confusion matrix.
+        Args:
+            y_true (array-like): Ground truth (correct) labels.
+            y_pred (array-like): Predicted labels.
+            labels (list, optional): Subset of labels to include in the matrix. Default is None.
+            normalize (str, optional): Normalization method. One of {"true", "pred", "all"}.
+                - "true": Normalize rows (true labels).
+                - "pred": Normalize columns (predicted labels).
+                - "all": Normalize the entire matrix.
+                Default is None (no normalization).
+
+        Returns:
+            tuple:
+                - matrix (ndarray): Confusion matrix (normalized if specified).
+                - imap (dict): Mapping of labels to matrix indices.
+                - imap_count (dict): Count of true labels for each class.
+
+        Raises:
+            ValueError: If specified labels do not exist in `y_true` or `y_pred`.
         """
         y_true, y_pred, _, _ = self.get_processed_data(y_true, y_pred)
-        matrix, _, _ = cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize)
-        return matrix
+        return cu.calculate_confusion_matrix(y_true, y_pred, labels, normalize)
 
     def roc_auc_score(self, y_true=None, y_pred=None, average="macro", **kwargs):
         """

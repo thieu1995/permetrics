@@ -16,8 +16,8 @@ def calculate_confusion_matrix(y_true=None, y_pred=None, labels=None, normalize=
     the specified normalization method.
 
     Args:
-        y_true (array-like, optional): Ground truth (correct) labels.
-        y_pred (array-like, optional): Predicted labels.
+        y_true (array-like): Ground truth (correct) labels.
+        y_pred (array-like): Predicted labels.
         labels (list, optional): Subset of labels to include in the matrix. Default is None.
         normalize (str, optional): Normalization method. One of {"true", "pred", "all"}.
             - "true": Normalize rows (true labels).
@@ -32,47 +32,59 @@ def calculate_confusion_matrix(y_true=None, y_pred=None, labels=None, normalize=
             - imap_count (dict): Count of true labels for each class.
 
     Raises:
-        TypeError: If specified labels do not exist in `y_true` or `y_pred`.
+        ValueError: If specified labels do not exist in `y_true` or `y_pred`.
     """
-    y_true = np.asarray(y_true)
-    y_pred = np.asarray(y_pred)
+    if y_true is None or y_pred is None:
+        raise ValueError("y_true and y_pred must not be None.")
 
-    unique = sorted(np.unique(np.concatenate((y_true, y_pred))).tolist())
-    n_classes = len(unique)
-    imap = {key: i for i, key in enumerate(unique)}
+    y_true = np.asarray(y_true).ravel()
+    y_pred = np.asarray(y_pred).ravel()
 
+    if y_true.size == 0 or y_pred.size == 0 or y_true.size != y_pred.size:
+        raise ValueError("y_true and y_pred must be non-empty and of equal length.")
+
+    unique_all = sorted(np.unique(np.concatenate((y_true, y_pred))).tolist())
     unique_t, counts_t = np.unique(y_true, return_counts=True)
-    imap_count = {k: 0 for k in unique}
-    imap_count.update(dict(zip(unique_t, counts_t)))
+    imap_count_all = dict(zip(unique_t, counts_t))
+
+    if labels is None:
+        labels_selected = unique_all
+    else:
+        labels_selected = list(labels)
+        if len(labels_selected) == 0:
+            raise ValueError("Parameter 'labels' cannot be an empty list.")
+
+    n_classes = len(labels_selected)
+    imap = {key: i for i, key in enumerate(labels_selected)}
+    imap_count = {lbl: int(imap_count_all.get(lbl, 0)) for lbl in labels_selected}
 
     matrix = np.zeros((n_classes, n_classes), dtype=int)
-    y_t_idx = np.array([imap[y] for y in y_true])
-    y_p_idx = np.array([imap[y] for y in y_pred])
-    np.add.at(matrix, (y_t_idx, y_p_idx), 1)
+    # Only index the pairs (y_t, y_p) where BOTH belong to the labels_selected set.
+    valid_mask = np.isin(y_true, labels_selected) & np.isin(y_pred, labels_selected)
+    if np.any(valid_mask):
+        y_t_idx = np.array([imap[y] for y in y_true[valid_mask]])
+        y_p_idx = np.array([imap[y] for y in y_pred[valid_mask]])
+        np.add.at(matrix, (y_t_idx, y_p_idx), 1)
+
+    if normalize is None:
+        return matrix, imap, imap_count
+
+    if normalize not in {"true", "pred", "all"}:
+        raise ValueError("normalize must be one of {'true', 'pred', 'all', None}")
 
     matrix_norm = matrix.astype(float)
     with np.errstate(all="ignore"):
         if normalize == "true":
-            matrix_norm /= matrix_norm.sum(axis=1, keepdims=True)
+            # [MATHEMATICAL TRUTH]: Divide by the actual original denominator of that class, (here is the different between Scikit-Learn and PerMetrics)
+            real_supports = np.array([imap_count[lbl] for lbl in labels_selected], dtype=float)[:, None]
+            matrix_norm /= real_supports
         elif normalize == "pred":
             matrix_norm /= matrix_norm.sum(axis=0, keepdims=True)
         elif normalize == "all":
-            matrix_norm /= matrix_norm.sum()
+            matrix_norm /= float(y_true.size)
         matrix_norm = np.nan_to_num(matrix_norm)
 
-    if labels is None:
-        return matrix_norm, imap, imap_count
-
-    labels = list(labels)
-    if not np.all(np.isin(labels, unique)):
-        raise TypeError("All specified labels must exist in y_true or y_pred!")
-
-    idx_subset = [imap[lbl] for lbl in labels]
-    matrix_final = matrix_norm[np.ix_(idx_subset, idx_subset)]
-    imap_final = {key: i for i, key in enumerate(labels)}
-    imap_count_final = {label: imap_count[label] for label in labels}
-
-    return matrix_final, imap_final, imap_count_final
+    return matrix_norm, imap, imap_count
 
 
 def calculate_single_label_metric(matrix, imap, imap_count, beta=1.0):

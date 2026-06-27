@@ -424,7 +424,7 @@ def test_accuracy_score_multiclass(clf_data_zoo):
 
 def test_confusion_matrix(clf_data_zoo):
     for cm, _ in clf_data_zoo:
-        matrix = cm.CM()
+        matrix, _, _ = cm.CM()
         assert isinstance(matrix, np.ndarray)
         assert matrix.ndim == 2
 
