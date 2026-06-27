@@ -5,7 +5,6 @@
 # --------------------------------------------------%
 
 import numpy as np
-from permetrics.utils import constant as co
 
 
 class Evaluator:
@@ -13,7 +12,7 @@ class Evaluator:
     This is base class for all performance metrics
     """
 
-    EPSILON = co.EPSILON
+    EPSILON = 1e-10
     SUPPORT = {}
 
     def __init__(self, y_true=None, y_pred=None, **kwargs):
