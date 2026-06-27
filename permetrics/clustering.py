@@ -167,12 +167,17 @@ class ClusteringMetric(Evaluator):
         return y_pred, self.le, force_finite, finite_value
 
     def check_X(self, X):
-        if X is None:
-            if self.X is None:
-                raise ValueError("To calculate internal metrics, you need to pass X.")
-            else:
-                return self.X
-        return X
+        data = X if X is not None else self.X
+        if data is None:
+            raise ValueError("You need to pass X to calculate internal clustering metrics.")
+        features_arr = np.asarray(data)
+        ## Check if the ndim is exactly 2
+        if features_arr.ndim != 2:
+            raise ValueError(f"Expected a 2D array, but got a {features_arr.ndim}D array instead.")
+        ## Check if the array is empty (e.g., shape is (0, 0) or (5, 0))
+        if features_arr.size == 0:
+            raise ValueError("The provided 2D array is empty!")
+        return features_arr
 
     def ball_hall_index(self, X=None, y_pred=None, **kwargs):
         """
@@ -384,7 +389,7 @@ class ClusteringMetric(Evaluator):
         wgss = cu.compute_WGSS(X, y_pred)
         return np.log(bgss/wgss)
 
-    def silhouette_index(self, X=None, y_pred=None, multi_output=False, force_finite=True, finite_value=-1., **kwargs):
+    def silhouette_index(self, X=None, y_pred=None, multi_output=False, force_finite=True, finite_value=-1., chunk_size=5000, **kwargs):
         """
         Computes the Silhouette Index
         Bigger is better (Best = 1), Range = [-1, +1]
@@ -396,13 +401,15 @@ class ClusteringMetric(Evaluator):
             multi_output (bool): Returned scores for each cluster, default=False
             force_finite (bool): Make result as finite number
             finite_value (float): The value that used to replace the infinite value or NaN value.
+            chunk_size (int): Split original data to chunk_size to avoid OOM problem
 
         Returns:
             result (float): The Silhouette Index
         """
         X = self.check_X(X)
         y_pred, _, force_finite, finite_value = self.get_processed_internal_data(y_pred, force_finite, finite_value)
-        return cu.calculate_silhouette_index(X, y_pred, multi_output, force_finite, finite_value)
+        return cu.calculate_silhouette_index(X, y_pred, chunk_size=chunk_size, multi_output=multi_output,
+                                             force_finite=force_finite, finite_value=finite_value)
 
     def sum_squared_error_index(self, X=None, y_pred=None, **kwarg):
         """

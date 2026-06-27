@@ -345,114 +345,68 @@ def calculate_log_det_ratio_index(X=None, y_pred=None, force_finite=True, finite
     return X.shape[0] * np.log(t1)
 
 
-def calculate_silhouette_index_ver1(X=None, y_pred=None):
-    dm = distance_matrix(X, X)
-    res = np.zeros(X.shape[0])
-    for i in range(X.shape[0]):
-        a = np.mean(dm[i, y_pred == y_pred[i]])  # Cohesion
-        b_values = [np.mean(dm[i, y_pred == label]) for label in np.unique(y_pred) if label != y_pred[i]]
-        b = np.min(b_values) if len(b_values) > 0 else 0  # Separation
-        res[i] = (b - a) / max(a, b)
-    return np.mean(res)
+def calculate_silhouette_index(X, y_pred, chunk_size=5000, multi_output=False, force_finite=True, finite_value=-1.0):
+    """
+    A chunk-based implementation of Silhouette Score to prevent OOM on large datasets (100K+).
+    """
+    unique_labels = np.unique(y_pred)
+    if len(unique_labels) == 1:
+        if force_finite:
+            return finite_value if not multi_output else np.full(len(X), finite_value)
+        else:
+            raise ValueError("The Silhouette Index is undefined when y_pred has only 1 cluster.")
 
+    n_samples = len(X)
+    silhouette_scores = np.zeros(n_samples)
 
-def calculate_silhouette_index_ver2(X=None, y_pred=None, multi_output=False, force_finite=True, finite_value=-1.):
-    unique_clusters = np.unique(y_pred)
-    if len(unique_clusters) == 1:
-        raise ValueError("The Silhouette Score is undefined when y_pred has only 1 cluster.")
-    num_points = len(X)
-    pairwise_distances = cdist(X, X)
-    silhouette_scores = np.zeros(num_points)
-    for i in range(num_points):
-        point_i = X[i]
-        cluster_i = y_pred[i]
-        # Calculate the average distance within the same cluster (a_i)
-        mask_i = y_pred == cluster_i
-        a_i = np.mean(pairwise_distances[i, mask_i])
-        # Calculate the average distance to the nearest neighboring cluster (b_i)
-        b_i = np.min([np.mean(pairwise_distances[i, y_pred == cluster_j])
-                      for cluster_j in unique_clusters if cluster_j != cluster_i])
-        # Calculate the silhouette score for the point
-        silhouette_scores[i] = (b_i - a_i) / max(a_i, b_i)
+    # Chunk processing is used to prevent RAM overflow.
+    for start in range(0, n_samples, chunk_size):
+        end = min(start + chunk_size, n_samples)
+        X_chunk = X[start:end]
+        y_chunk = y_pred[start:end]
+
+        # Calculate the distance from the current chunk to ALL other points, matrix shape (chunk_size, n_samples)
+        D_chunk = cdist(X_chunk, X, metric='euclidean')
+
+        a_chunk = np.zeros(len(X_chunk))
+        b_chunk = np.full(len(X_chunk), np.inf)
+
+        for label in unique_labels:
+            mask_label = (y_pred == label)
+            N_label = np.sum(mask_label)
+            if N_label == 0:
+                continue
+
+            # Total distance from the chunk to the `label` cluster
+            sum_D_to_label = np.sum(D_chunk[:, mask_label], axis=1)
+            in_label_mask = (y_chunk == label)
+
+            # 1. Calculate a(i) - Same cluster
+            if np.any(in_label_mask):
+                denom = N_label - 1
+                if denom > 0:
+                    a_chunk[in_label_mask] = sum_D_to_label[in_label_mask] / denom
+                else:
+                    a_chunk[in_label_mask] = 0.0  # By convention, a_i = 0 if the cluster has only 1 element.
+
+            # 2. Calculate b(i) - Different cluster
+            out_label_mask = ~in_label_mask
+            if np.any(out_label_mask):
+                mean_D_to_label = sum_D_to_label[out_label_mask] / N_label
+                b_chunk[out_label_mask] = np.minimum(b_chunk[out_label_mask], mean_D_to_label)
+
+        # 3. Calculate the Silhouette coefficient for the current chunk.
+        valid = (a_chunk != 0) | (b_chunk != np.inf)
+        s_chunk = np.zeros(len(X_chunk))
+        s_chunk[valid] = (b_chunk[valid] - a_chunk[valid]) / np.maximum(a_chunk[valid], b_chunk[valid])
+
+        # If the cluster has only 1 point, silhouette = 0
+        s_chunk[a_chunk == 0.0] = 0.0
+        silhouette_scores[start:end] = s_chunk
+
+    if multi_output:
+        return silhouette_scores
     return np.mean(silhouette_scores)
-
-
-def calculate_silhouette_index_ver3(X=None, y_pred=None, multi_output=False, force_finite=True, finite_value=-1.):
-    unique_clusters = np.unique(y_pred)
-    if len(unique_clusters) == 1:
-        if force_finite:
-            return finite_value
-        else:
-            raise ValueError("The Silhouette Index is undefined when y_pred has only 1 cluster.")
-    num_clusters = len(unique_clusters)
-    num_points = len(X)
-    # Precompute pairwise distances
-    pairwise_distances_matrix = cdist(X, X)
-    a_values = np.zeros(num_points)
-    b_values = np.zeros(num_points)
-    for i in range(num_clusters):
-        mask_i = y_pred == unique_clusters[i]
-        mask_i_indices = np.where(mask_i)[0]
-        a_values_i = np.sum(pairwise_distances_matrix[mask_i_indices][:, mask_i_indices], axis=1) / np.sum(mask_i)
-        a_values[mask_i_indices] = a_values_i
-        b_values_i = np.min([
-            np.sum(pairwise_distances_matrix[mask_i_indices][:, y_pred == unique_clusters[j]], axis=1) / np.sum(y_pred == unique_clusters[j])
-            for j in range(num_clusters) if j != i], axis=0)
-        b_values[mask_i_indices] = b_values_i
-    results = (b_values - a_values) / np.maximum(a_values, b_values)
-    if multi_output:
-        return results
-    return np.mean(results)
-
-
-def calculate_silhouette_index(X=None, y_pred=None, multi_output=False, force_finite=True, finite_value=-1.):
-    """
-    Calculates the silhouette score for a given clustering.
-
-    Args:
-      data: A numpy array of shape (n_samples, n_features) representing the data points.
-      labels: A numpy array of shape (n_samples,) containing the cluster labels for each data point.
-
-    Returns:
-      The silhouette score, a value between -1 and 1.
-    """
-    unique_clusters = np.unique(y_pred)
-    if len(unique_clusters) == 1:
-        if force_finite:
-            return finite_value
-        else:
-            raise ValueError("The Silhouette Index is undefined when y_pred has only 1 cluster.")
-
-    n_samples, n_features = X.shape
-    n_clusters = len(unique_clusters)
-
-    # Calculate pairwise distances between data points
-    distances = np.linalg.norm(X[:, np.newaxis, :] - X[np.newaxis, :, :], axis=2)
-
-    # Calculate centers
-    centers = np.zeros((n_clusters, n_features))
-    for i in range(n_clusters):
-        x = X[y_pred == i]
-        centers[i] = np.mean(x, axis=0)
-
-    res = np.zeros(n_samples)
-    for i in range(n_samples):
-        # Calculate average distance to the points within the same cluster for each sample
-        cluster_i_indices = np.where(y_pred == y_pred[i])[0]
-        aa = np.mean(distances[i, cluster_i_indices])
-
-        # Find the nearest cluster that this i sample doesn't belong to
-        bb = np.inf
-        for j in range(n_clusters):
-            if j != y_pred[i]:
-                bb = min(bb, np.linalg.norm(X[i] - centers[j]))
-        # Calculate silhouette coefficient for each sample
-        res[i] = (bb - aa) / max(aa, bb)
-
-    # Return the average silhouette score
-    if multi_output:
-        return res
-    return np.mean(res)
 
 
 def calculate_duda_hart_index(X=None, y_pred=None, force_finite=True, finite_value=1e10):
