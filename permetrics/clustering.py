@@ -443,7 +443,7 @@ class ClusteringMetric(Evaluator):
         y_pred, _, _, _ = self.get_processed_internal_data(y_pred)
         return cu.calculate_mean_squared_error_index(X, y_pred)
 
-    def duda_hart_index(self, X=None, y_pred=None, force_finite=True, finite_value=1e10, **kwargs):
+    def duda_hart_index(self, X=None, y_pred=None, chunk_size=5000, force_finite=True, finite_value=1e10, **kwargs):
         """
         Computes the Duda Index or Duda-Hart index
         Smaller is better (Best = 0), Range = [0, +inf)
@@ -452,6 +452,7 @@ class ClusteringMetric(Evaluator):
             X (array-like of shape (n_samples, n_features)):
                 A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
+            chunk_size (int): Split original data to chunk_size to avoid OOM problem
             force_finite (bool): Make result as finite number
             finite_value (float): The value that used to replace the infinite value or NaN value.
 
@@ -460,7 +461,7 @@ class ClusteringMetric(Evaluator):
         """
         X = self.check_X(X)
         y_pred, _, force_finite, finite_value = self.get_processed_internal_data(y_pred, force_finite, finite_value)
-        return cu.calculate_duda_hart_index(X, y_pred, force_finite, finite_value)
+        return cu.calculate_duda_hart_index(X, y_pred, chunk_size, force_finite, finite_value)
 
     def beale_index(self, X=None, y_pred=None, force_finite=True, finite_value=1e10, **kwarg):
         """

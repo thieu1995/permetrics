@@ -409,31 +409,57 @@ def calculate_silhouette_index(X, y_pred, chunk_size=5000, multi_output=False, f
     return np.mean(silhouette_scores)
 
 
-def calculate_duda_hart_index(X=None, y_pred=None, force_finite=True, finite_value=1e10):
-    # Find the unique cluster labels
+def calculate_duda_hart_index(X=None, y_pred=None, chunk_size=5000, force_finite=True, finite_value=1e10):
     unique_labels = np.unique(y_pred)
     if len(unique_labels) == 1:
         if force_finite:
             return finite_value
         else:
             raise ValueError("The Duda-Hart index is undefined when y_pred has only 1 cluster.")
-    # Compute the pairwise distances between data points
-    pairwise_distances = cdist(X, X)
-    # Initialize the numerator and denominator for Duda index calculation
-    intra_cluster_distances = 0
-    inter_cluster_distances = 0
-    # Iterate over each unique cluster label
+    n_samples = len(X)
+    # Initialize a dict to store the total distance and cluster size to avoid errors if labels are missing (not contiguous).
+    intra_sums = {label: 0.0 for label in unique_labels}
+    inter_sums = {label: 0.0 for label in unique_labels}
+    cluster_sizes = {label: np.sum(y_pred == label) for label in unique_labels}
+
+    # Batch processing prevents RAM overflow.
+    for start in range(0, n_samples, chunk_size):
+        end = min(start + chunk_size, n_samples)
+        X_chunk = X[start:end]
+        y_chunk = y_pred[start:end]
+
+        # Matrix shape (chunk_size, n_samples)
+        D_chunk = cdist(X_chunk, X, metric='euclidean')
+        for label in unique_labels:
+            row_mask = (y_chunk == label)
+            if not np.any(row_mask):
+                continue
+
+            col_mask_intra = (y_pred == label)
+            col_mask_inter = (y_pred != label)
+            # Sum the total intra and inter distances for the 'label' cluster.
+            intra_sums[label] += np.sum(D_chunk[np.ix_(row_mask, col_mask_intra)])
+            inter_sums[label] += np.sum(D_chunk[np.ix_(row_mask, col_mask_inter)])
+
+    # Calculate the mean from the sums of the accumulated totals.
+    intra_cluster_distances = 0.0
+    inter_cluster_distances = 0.0
+
     for label in unique_labels:
-        # Find the indices of data points in the current cluster
-        cluster_indices = np.where(y_pred == label)[0]
-        # Compute the average pairwise distance within the current cluster
-        intra_cluster_distances += np.mean(pairwise_distances[np.ix_(cluster_indices, cluster_indices)])
-        # Compute the average pairwise distance to other clusters
-        other_cluster_indices = np.where(y_pred != label)[0]
-        inter_cluster_distances += np.mean(pairwise_distances[np.ix_(cluster_indices, other_cluster_indices)])
-    # Calculate the Duda index
-    result = intra_cluster_distances / inter_cluster_distances
-    return result
+        n_k = cluster_sizes[label]
+        if n_k > 0:
+            # The np.mean of the N*N sub-matrix is equivalent to Sum / N^2
+            intra_cluster_distances += intra_sums[label] / (n_k ** 2)
+
+            n_other = n_samples - n_k
+            if n_other > 0:
+                # np.mean of sub-matrix N*M is equivalent to Sum / (N*M)
+                inter_cluster_distances += inter_sums[label] / (n_k * n_other)
+
+    # Handle cases where the denominator is zero to avoid ZeroDivisionError.
+    if inter_cluster_distances == 0:
+        return finite_value if force_finite else np.inf
+    return intra_cluster_distances / inter_cluster_distances
 
 
 def calculate_beale_index(X=None, y_pred=None, force_finite=True, finite_value=1e10):
