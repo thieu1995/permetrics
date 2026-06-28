@@ -46,6 +46,7 @@ Clustering Metrics
    clustering/PuS.rst
    clustering/EnS.rst
    clustering/TauS.rst
+   clustering/GAS.rst
 
 
 ======================
