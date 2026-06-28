@@ -15,9 +15,9 @@ Clustering Metrics
    clustering/DI.rst
    clustering/LSRI.rst
    clustering/SI.rst
+   clustering/SSEI.rst
 
    clustering/DHI.rst
-   clustering/SSEI.rst
    clustering/BI.rst
    clustering/RSI.rst
    clustering/DBCVI.rst
