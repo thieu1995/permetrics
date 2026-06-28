@@ -1,8 +1,5 @@
 #!/usr/bin/env python
-# Created by "Matt Q." at 23:05, 27/10/2022 --------%
-#       Github: https://github.com/N3uralN3twork    %
-#                                                   %
-# Improved by: "Thieu" at 11:45, 25/07/2023 --------%
+# Created by "Thieu" at 00:04, 29/06/2026 ----------%
 #       Email: nguyenthieu2102@gmail.com            %
 #       Github: https://github.com/thieu1995        %
 # --------------------------------------------------%
@@ -15,27 +12,39 @@ from permetrics.utils import cluster_util as cu
 
 class ClusteringMetric(Evaluator):
     """
-    Defines a ClusteringMetric class that hold all internal and external metrics for clustering problems
+    Defines a ClusteringMetric class that holds all internal and external metrics
+    for clustering problems.
 
-    + An extension of scikit-learn metrics section, with the addition of many more internal metrics.
-    + https://scikit-learn.org/stable/modules/clustering.html#clustering-evaluation
+    This class provides a unified interface to compute a wide range of clustering
+    validation indexes (CVIs), including both internal metrics (requiring only data
+    features $X$ and predicted labels) and external metrics (requiring ground truth labels).
 
     Parameters
     ----------
-    y_true: tuple, list, np.ndarray, default = None
-        The ground truth values. This is for calculating external metrics
+    y_true : tuple, list, or np.ndarray, default=None
+        The ground truth class labels. Used for calculating external validation metrics.
+    y_pred : tuple, list, or np.ndarray, default=None
+        The predicted cluster labels. Used for both internal and external metrics.
+    X : tuple, list, or np.ndarray, default=None
+        The input feature matrix/dataset of shape (n_samples, n_features).
+        Required for internal validation metrics.
+    force_finite : bool, default=True
+        If True, non-finite values (such as NaN or Inf) resulting from undefined
+        mathematical operations (e.g., division by zero) will be replaced by `finite_value`.
+    finite_value : float, default=None
+        The specific fallback value used to replace infinite or NaN results when
+        `force_finite` is True.
 
-    y_pred: tuple, list, np.ndarray, default = None
-        The prediction values. This is for both calculating internal and external metrics
-
-    X: tuple, list, np.ndarray, default = None
-        The features of datasets. This is for calculating internal metrics
-
-    force_finite: bool, default = True
-        When result is not finite, it can be NaN or Inf. Their result will be replaced by `finite_value`
-
-    finite_value: float, default = None
-        The value that used to replace the infinite value or NaN value.
+    Attributes
+    ----------
+    X : np.ndarray or None
+        Stored feature dataset.
+    le : LabelEncoder or None
+        The label encoder instance used during internal data formatting.
+    force_finite : bool
+        Flag indicating whether to replace non-finite metrics.
+    finite_value : float or None
+        Fallback value for non-finite metrics.
     """
 
     SUPPORT = {
@@ -96,6 +105,27 @@ class ClusteringMetric(Evaluator):
 
     @staticmethod
     def get_support(name=None, verbose=True):
+        """
+        Get metadata support information for a specific metric or all metrics.
+
+        Parameters
+        ----------
+        name : str, default=None
+            The abbreviation of the metric (e.g., 'DBCVI', 'SI').
+            If 'all', returns information for all supported metrics.
+        verbose : bool, default=True
+            Whether to print the metric details directly to the console.
+
+        Returns
+        -------
+        dict
+            A dictionary containing properties ('type', 'range', 'best') of the requested metric(s).
+
+        Raises
+        ------
+        ValueError
+            If the metric name is not supported by the class.
+        """
         if name == "all":
             if verbose:
                 for key, value in ClusteringMetric.SUPPORT.items():
@@ -110,18 +140,33 @@ class ClusteringMetric(Evaluator):
 
     def get_processed_external_data(self, y_true=None, y_pred=None, force_finite=None, finite_value=None):
         """
-        Args:
-            y_true (tuple, list, np.ndarray): The ground truth values
-            y_pred (tuple, list, np.ndarray): The prediction values
-            force_finite (bool): Force the result as finite number
-            finite_value (float): The finite number
+        Validate, prioritize, and format the ground truth and predicted labels for external metrics.
 
-        Returns:
-            y_true_final: y_true used in evaluation process.
-            y_pred_final: y_pred used in evaluation process
-            le: label encoder object
-            force_finite: Force the result as finite number
-            finite_value: The finite number
+        Parameters
+        ----------
+        y_true : tuple, list, or np.ndarray, optional
+            The ground truth class values. If None, uses the instance attribute `self.y_true`.
+        y_pred : tuple, list, or np.ndarray, optional
+            The predicted cluster labels. If None, uses the instance attribute `self.y_pred`.
+        force_finite : bool, optional
+            Override for the `force_finite` configuration.
+        finite_value : float, optional
+            Override for the `finite_value` fallback configuration.
+
+        Returns
+        -------
+        tuple
+            A tuple containing:
+            - y_true_final (np.ndarray): Formatted ground truth labels.
+            - y_pred_final (np.ndarray): Formatted predicted cluster labels.
+            - le (LabelEncoder): The label encoder instance mapping target values.
+            - force_finite (bool): The final finite-forcing flag applied.
+            - finite_value (float or None): The final fallback value applied.
+
+        Raises
+        ------
+        ValueError
+            If either `y_true` or `y_pred` is unavailable.
         """
         force_finite = self.force_finite if force_finite is None else force_finite
         finite_value = self.finite_value if finite_value is None else finite_value
@@ -136,16 +181,30 @@ class ClusteringMetric(Evaluator):
 
     def get_processed_internal_data(self, y_pred=None, force_finite=None, finite_value=None):
         """
-        Args:
-            y_pred (tuple, list, np.ndarray): The prediction values
-            force_finite (bool): Make result as finite number
-            finite_value (float): The value that used to replace the infinite value or NaN value.
+        Validate, prioritize, and format predicted labels for internal metrics.
 
-        Returns:
-            y_pred_final: y_pred used in evaluation process
-            le: label encoder object
-            force_finite
-            finite_value
+        Parameters
+        ----------
+        y_pred : tuple, list, or np.ndarray, optional
+            The predicted cluster labels. If None, uses the instance attribute `self.y_pred`.
+        force_finite : bool, optional
+            Override for the `force_finite` configuration.
+        finite_value : float, optional
+            Override for the `finite_value` fallback configuration.
+
+        Returns
+        -------
+        tuple
+            A tuple containing:
+            - y_pred_final (np.ndarray): Formatted predicted cluster labels.
+            - le (LabelEncoder): The label encoder instance.
+            - force_finite (bool): The final finite-forcing flag applied.
+            - finite_value (float or None): The final fallback value applied.
+
+        Raises
+        ------
+        ValueError
+            If `y_pred` is unavailable.
         """
         force_finite = self.force_finite if force_finite is None else force_finite
         finite_value = self.finite_value if finite_value is None else finite_value
@@ -156,6 +215,24 @@ class ClusteringMetric(Evaluator):
         return y_pred, self.le, force_finite, finite_value
 
     def check_X(self, X):
+        """
+        Validate the structural properties of the feature matrix array X.
+
+        Parameters
+        ----------
+        X : tuple, list, or np.ndarray, optional
+            The input features. If None, uses the instance attribute `self.X`.
+
+        Returns
+        -------
+        np.ndarray
+            The validated 2D NumPy array representation of the dataset.
+
+        Raises
+        ------
+        ValueError
+            If the feature data is missing, not exactly 2-dimensional, or is empty.
+        """
         data = X if X is not None else self.X
         if data is None:
             raise ValueError("You need to pass X to calculate internal clustering metrics.")
