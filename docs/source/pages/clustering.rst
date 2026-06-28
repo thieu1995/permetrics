@@ -37,6 +37,7 @@ Clustering Metrics
    clustering/CDS.rst
    clustering/HGS.rst
    clustering/JS.rst
+   clustering/KS.rst
 
    clustering/ES.rst
    clustering/PuS.rst
