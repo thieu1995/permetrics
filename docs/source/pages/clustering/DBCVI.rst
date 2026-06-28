@@ -11,10 +11,12 @@ DBCVI - Density-Based Clustering Validation Index
 
 The **Density-Based Clustering Validation Index (DBCVI)** index is an internal evaluation metric specifically designed for density-based clustering algorithms (such as DBSCAN or OPTICS). Unlike traditional metrics (e.g., Silhouette, Davies-Bouldin) which assume spherical clusters and rely on centroids, DBCVI evaluates arbitrary-shaped clusters by analyzing the density connectedness of the data points using Minimum Spanning Trees (MST).
 
-Intuitively, DBCVI answers the question: *"Are the clusters truly dense continuous regions separated by areas of lower density, regardless of their geometric shape?"* -------------------------------------------------------------------------------
+Intuitively, DBCVI answers the question: "Are the clusters truly dense continuous regions separated by areas of lower density, regardless of their geometric shape?"
+
+-------------------------------------------------------------------------------
 
 Mathematical Formulation
-----------------------
+------------------------
 
 DBCVI operates entirely without cluster centroids. Instead, it relies on the concept of **Mutual Reachability Distance (MRD)** to construct a shape-aware density graph.
 
@@ -57,7 +59,7 @@ The final score is the weighted average of all cluster validities, heavily penal
 -------------------------------------------------------------------------------
 
 Handling Edge Cases & API
----------------------------
+-------------------------
 
 * **Noise Objects:** Standard density algorithms often label outliers as noise (typically ``-1``). DBCVI naturally handles noise by excluding noise points from the MST construction, but penalizing the final score by scaling it down by the ratio of clustered points to total points.
 * **force_finite (bool):** If ``True``, catches mathematical edge cases (e.g., fewer than 2 valid clusters) and returns a safe fallback value. Default is ``True``.
