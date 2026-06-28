@@ -780,16 +780,20 @@ def calculate_russel_rao_score(y_true=None, y_pred=None, force_finite=True, fini
     return yy / NT
 
 
-def calculate_sokal_sneath1_score(y_true=None, y_pred=None):
+def calculate_sokal_sneath1_score(y_true=None, y_pred=None, force_finite=True, finite_value=0.0):
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
     den = yy + 2 * (yn + ny)
-    return yy / den if den > 0 else 0.0
+    if den == 0:
+        return finite_value if force_finite else _raise_err("Sokal Sneath 1", "denominator is zero")
+    return yy / den
 
 
-def calculate_sokal_sneath2_score(y_true=None, y_pred=None):
+def calculate_sokal_sneath2_score(y_true=None, y_pred=None, force_finite=True, finite_value=0.0):
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
     den = yy + nn + 0.5 * (yn + ny)
-    return (yy + nn) / den if den > 0 else 0.0
+    if den == 0:
+        return finite_value if force_finite else _raise_err("Sokal Sneath 2", "denominator is zero")
+    return (yy + nn) / den
 
 
 # def calculate_purity_score(y_true=None, y_pred=None):

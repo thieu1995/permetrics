@@ -76,9 +76,9 @@ class ClusteringMetric(Evaluator):
         "PhS": {"type": "max", "range": "[-1, 1]", "best": "1"},
         "RTS": {"type": "max", "range": "[0, 1]", "best": "1"},
         "RRS": {"type": "max", "range": "[0, 1]", "best": "1"},
-
         "SS1S": {"type": "max", "range": "[0, 1]", "best": "1"},
         "SS2S": {"type": "max", "range": "[0, 1]", "best": "1"},
+
         "PuS": {"type": "max", "range": "[0, 1]", "best": "1"},
         "ES": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "TS": {"type": "max", "range": "(-inf, +inf)", "best": "unknown"},
@@ -818,45 +818,37 @@ class ClusteringMetric(Evaluator):
         y_true, y_pred, _, force_finite, finite_value = self.get_processed_external_data(y_true, y_pred, force_finite, finite_value)
         return cu.calculate_russel_rao_score(y_true, y_pred, force_finite, finite_value)
 
-    def sokal_sneath1_score(self, y_true=None, y_pred=None, **kwargs):
+    def sokal_sneath1_score(self, y_true=None, y_pred=None, force_finite=True, finite_value=0.0, **kwargs):
         """
         Computes the Sokal-Sneath 1 score
-        Bigger is better (Best = 1), Range = [0, 1]
-
-        It measures the similarity between two partitions by computing the proportion of pairs of samples that are in the same cluster
-        in both partitions, with an adjustment for the number of pairs of samples that are in different clusters in one partition
-        but in the same cluster in the other partition. The Sokal-Sneath indices range from 0 to 1, where a value of 1 indicates
-        perfect agreement between the two partitions being compared. A value of 0 indicates complete disagreement between the two partitions.
 
         Args:
             y_true (array-like): The true labels for each sample.
             y_pred (array-like): The predicted cluster labels for each sample.
+            force_finite (bool): Make result as finite number
+            finite_value (float): The value that used to replace the infinite value or NaN value.
 
         Returns:
             result (float): The Sokal-Sneath 1 score
         """
-        y_true, y_pred, _, _, _ = self.get_processed_external_data(y_true, y_pred)
-        return cu.calculate_sokal_sneath1_score(y_true, y_pred)
+        y_true, y_pred, _, force_finite, finite_value = self.get_processed_external_data(y_true, y_pred, force_finite, finite_value)
+        return cu.calculate_sokal_sneath1_score(y_true, y_pred, force_finite, finite_value)
 
-    def sokal_sneath2_score(self, y_true=None, y_pred=None, **kwargs):
+    def sokal_sneath2_score(self, y_true=None, y_pred=None, force_finite=True, finite_value=0.0, **kwargs):
         """
         Computes the Sokal-Sneath 2 score
-        Bigger is better (Best = 1), Range = [0, 1]
-
-        It measures the similarity between two partitions by computing the proportion of pairs of samples that are in the same cluster
-        in both partitions, with an adjustment for the number of pairs of samples that are in different clusters in one partition
-        but in the same cluster in the other partition. The Sokal-Sneath indices range from 0 to 1, where a value of 1 indicates
-        perfect agreement between the two partitions being compared. A value of 0 indicates complete disagreement between the two partitions.
 
         Args:
             y_true (array-like): The true labels for each sample.
             y_pred (array-like): The predicted cluster labels for each sample.
+            force_finite (bool): Make result as finite number
+            finite_value (float): The value that used to replace the infinite value or NaN value.
 
         Returns:
             result (float): The Sokal-Sneath 2 score
         """
-        y_true, y_pred, _, _, _ = self.get_processed_external_data(y_true, y_pred)
-        return cu.calculate_sokal_sneath2_score(y_true, y_pred)
+        y_true, y_pred, _, force_finite, finite_value = self.get_processed_external_data(y_true, y_pred, force_finite, finite_value)
+        return cu.calculate_sokal_sneath2_score(y_true, y_pred, force_finite, finite_value)
 
     def purity_score(self, y_true=None, y_pred=None, **kwargs):
         """
@@ -996,9 +988,9 @@ class ClusteringMetric(Evaluator):
     PhS = phi_score
     RTS = rogers_tanimoto_score
     RRS = russel_rao_score
-
     SS1S = sokal_sneath1_score
     SS2S = sokal_sneath2_score
+
     PuS = purity_score
     ES = entropy_score
     TS = tau_score
