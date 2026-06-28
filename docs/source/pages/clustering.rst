@@ -27,6 +27,7 @@ Clustering Metrics
    clustering/NMIS.rst
    clustering/RaS.rst
    clustering/ARS.rst
+   clustering/FMS.rst
 
    clustering/ES.rst
    clustering/PuS.rst
