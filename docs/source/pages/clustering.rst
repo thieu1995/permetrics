@@ -33,6 +33,7 @@ Clustering Metrics
    clustering/VMS.rst
    clustering/PrS.rst
    clustering/ReS.rst
+   clustering/FS.rst
 
    clustering/ES.rst
    clustering/PuS.rst
@@ -114,7 +115,7 @@ It's important to choose the appropriate clustering metrics based on the specifi
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
 | 28  | ReS    | Recall Score                              | Bigger is better (Best = 1), Range = [0, 1]            |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 29  | FmS    | F-Measure Score                           | Bigger is better (Best = 1), Range = [0, 1]            |
+| 29  | FS     | F-Measure Score                           | Bigger is better (Best = 1), Range = [0, 1]            |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
 | 30  | CDS    | Czekanowski Dice Score                    | Bigger is better (Best = 1), Range = [0, 1]            |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
