@@ -22,25 +22,52 @@ def generate_dataset(num_samples, num_features, num_clusters, cluster_std):
     return data, centroids, labels
 
 
-def silhouette_score(data_points, cluster_assignments):
-    pairwise_distances = np.sqrt(((data_points[:, np.newaxis] - data_points) ** 2).sum(axis=2))
-
-    def calculate_a(i, cluster_idx):
-        return np.mean(pairwise_distances[i, cluster_assignments == cluster_idx])
-
-    def calculate_b(i):
-        return np.min([calculate_a(i, other_cluster) for other_cluster in np.unique(cluster_assignments) if other_cluster != cluster_assignments[i]])
-
-    a_values = np.array([calculate_a(i, cluster_assignments[i]) for i in range(len(data_points))])
-    b_values = np.array([calculate_b(i) for i in range(len(data_points))])
-
-    silhouette_scores = (b_values - a_values) / np.maximum(a_values, b_values)
-    overall_silhouette_score = np.mean(silhouette_scores)
-
-    return overall_silhouette_score, silhouette_scores
+def silhouette_score_ver1(X=None, y_pred=None):
+    ## Slow and cost RAM - can't run with 50k
+    ## 30k samples -> 90% RAM, 186 seconds
+    dm = distance_matrix(X, X)
+    res = np.zeros(X.shape[0])
+    for i in range(X.shape[0]):
+        a = np.mean(dm[i, y_pred == y_pred[i]])  # Cohesion
+        b_values = [np.mean(dm[i, y_pred == label]) for label in np.unique(y_pred) if label != y_pred[i]]
+        b = np.min(b_values) if len(b_values) > 0 else 0  # Separation
+        res[i] = (b - a) / max(a, b)
+    return np.mean(res)
 
 
-def silhouette_score(data_points, cluster_assignments):
+def silhouette_score_ver2(X=None, y_pred=None, multi_output=False, force_finite=True, finite_value=-1.):
+    ## Fast but cost RAM
+    ## 30K samples -> 90% RAM, 71 seconds
+    unique_clusters = np.unique(y_pred)
+    if len(unique_clusters) == 1:
+        if force_finite:
+            return finite_value
+        else:
+            raise ValueError("The Silhouette Index is undefined when y_pred has only 1 cluster.")
+    num_clusters = len(unique_clusters)
+    num_points = len(X)
+    # Precompute pairwise distances
+    pairwise_distances_matrix = cdist(X, X)
+    a_values = np.zeros(num_points)
+    b_values = np.zeros(num_points)
+    for i in range(num_clusters):
+        mask_i = y_pred == unique_clusters[i]
+        mask_i_indices = np.where(mask_i)[0]
+        a_values_i = np.sum(pairwise_distances_matrix[mask_i_indices][:, mask_i_indices], axis=1) / np.sum(mask_i)
+        a_values[mask_i_indices] = a_values_i
+        b_values_i = np.min([
+            np.sum(pairwise_distances_matrix[mask_i_indices][:, y_pred == unique_clusters[j]], axis=1) / np.sum(y_pred == unique_clusters[j])
+            for j in range(num_clusters) if j != i], axis=0)
+        b_values[mask_i_indices] = b_values_i
+    results = (b_values - a_values) / np.maximum(a_values, b_values)
+    if multi_output:
+        return results
+    return np.mean(results)
+
+
+def silhouette_score_ver3(data_points, cluster_assignments):
+    ## Fast but can't run with 50k samples
+    ## 30k samples, RAM 90%, and 54.8 seconds
     unique_clusters = np.unique(cluster_assignments)
     num_clusters = len(unique_clusters)
     num_points = len(data_points)
@@ -72,29 +99,33 @@ def silhouette_score(data_points, cluster_assignments):
 
 
 # Example usage
-num_samples = 10000
-num_features = 2
-num_clusters = 5
+num_samples = 20000
+num_features = 10
+num_clusters = 15
 cluster_std = 0.5
 
 data, centroids, labels = generate_dataset(num_samples, num_features, num_clusters, cluster_std)
 
 # Calculate SSE using the optimized function
-time01 = time.perf_counter()
-ch_score, _ = silhouette_score(data, labels)
-print("Res:", ch_score, time.perf_counter() - time01)
 
 t4 = time.perf_counter()
 s4 = sk_si(data, labels)
-print("Res: ", s4, time.perf_counter() - t4)
+print("Res1: ", s4, time.perf_counter() - t4)
 
-time02 = time.perf_counter()
-cm = ClusteringMetric(y_true=labels, y_pred=labels, X=data)
-sse02 = cm.silhouette_index()
-print("Res: ", sse02, time.perf_counter() - time02 )
+cm = ClusteringMetric(y_pred=labels, X=data)
+t5 = time.perf_counter()
+# s5 = cut.calculate_silhouette_index(data, labels)
+s5 = cm.silhouette_index()
+print("Res2: ", s5, time.perf_counter() - t5)
 
-time03 = time.perf_counter()
-s3 = cut.calculate_silhouette_index(data, labels)
-print("Res: ", s3, time.perf_counter() - time03)
+t6 = time.perf_counter()
+s6 = silhouette_score_ver1(data, labels)
+print("Res3: ", s6, time.perf_counter() - t6)
 
+t8 = time.perf_counter()
+s8 = silhouette_score_ver2(data, labels)
+print("Res4: ", s8, time.perf_counter() - t8)
 
+time01 = time.perf_counter()
+ch_score = silhouette_score_ver3(data, labels)
+print("Res5:", ch_score, time.perf_counter() - time01)
