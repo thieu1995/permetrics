@@ -79,9 +79,9 @@ class ClusteringMetric(Evaluator):
         "SS1S": {"type": "max", "range": "[0, 1]", "best": "1"},
         "SS2S": {"type": "max", "range": "[0, 1]", "best": "1"},
         "PuS": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "EnS": {"type": "min", "range": "[0, +inf)", "best": "0"},
 
-        "ES": {"type": "min", "range": "[0, +inf)", "best": "0"},
-        "TS": {"type": "max", "range": "(-inf, +inf)", "best": "unknown"},
+        "TauS": {"type": "max", "range": "[-1, 1]", "best": "1"},
         "GAS": {"type": "max", "range": "[-1, 1]", "best": "1"},
         "GPS": {"type": "min", "range": "[0, 1]", "best": "0"},
     }
@@ -867,18 +867,6 @@ class ClusteringMetric(Evaluator):
     def entropy_score(self, y_true=None, y_pred=None, **kwargs):
         """
         Computes the Entropy score
-        Smaller is better (Best = 0), Range = [0, +inf)
-
-        Entropy is a metric used to evaluate the quality of clustering results, particularly when the ground truth labels of the
-        data points are known. It measures the amount of uncertainty or disorder within the clusters produced by a clustering algorithm.
-
-        Here's how the Entropy score is calculated:
-
-            1) For each cluster, compute the class distribution by counting the occurrences of each class label within the cluster.
-            2) Normalize the class distribution by dividing the count of each class label by the total number of data points in the cluster.
-            3) Compute the entropy for each cluster using the normalized class distribution.
-            4) Weight the entropy of each cluster by its relative size (proportion of data points in the whole dataset).
-            5) Sum up the weighted entropies of all clusters.
 
         Args:
             y_true (array-like): The true labels for each sample.
@@ -890,24 +878,23 @@ class ClusteringMetric(Evaluator):
         y_true, y_pred, _, _, _ = self.get_processed_external_data(y_true, y_pred)
         return cu.calculate_entropy_score(y_true, y_pred)
 
-    def tau_score(self, y_true=None, y_pred=None, **kwargs):
+    def tau_score(self, y_true=None, y_pred=None, force_finite=True, finite_value=0.0, **kwargs):
         """
-        Computes the Tau Score between two clustering solutions.
-        Bigger is better (No best value), Range = (-inf, +inf)
-
-        Ref: Cluster Validation for Mixed-Type Data (Rabea Aschenbruck and Gero Szepannek)
+        Computes the Tau Score
 
         Args:
             y_true (array-like): The true labels for each sample.
             y_pred (array-like): The predicted cluster labels for each sample.
+            force_finite (bool): Make result as finite number
+            finite_value (float): The value that used to replace the infinite value or NaN value.
 
         Returns:
             result (float): The Tau Score
         """
-        y_true, y_pred, _, _, _ = self.get_processed_external_data(y_true, y_pred)
-        return cu.calculate_tau_score(y_true, y_pred)
+        y_true, y_pred, _, force_finite, finite_value = self.get_processed_external_data(y_true, y_pred, force_finite, finite_value)
+        return cu.calculate_tau_score(y_true, y_pred, force_finite, finite_value)
 
-    def gamma_score(self, y_true=None, y_pred=None, **kwargs):
+    def gamma_score(self, y_true=None, y_pred=None, force_finite=True, finite_value=0.0, **kwargs):
         """
         Computes the Gamma Score between two clustering solutions.
         Bigger is better (Best = 1), Range = [-1, 1]
@@ -917,14 +904,16 @@ class ClusteringMetric(Evaluator):
         Args:
             y_true (array-like): The true labels for each sample.
             y_pred (array-like): The predicted cluster labels for each sample.
+            force_finite (bool): Make result as finite number
+            finite_value (float): The value that used to replace the infinite value or NaN value.
 
         Returns:
             result (float): The Gamma Score
         """
-        y_true, y_pred, _, _, _ = self.get_processed_external_data(y_true, y_pred)
-        return cu.calculate_gamma_score(y_true, y_pred)
+        y_true, y_pred, _, force_finite, finite_value = self.get_processed_external_data(y_true, y_pred, force_finite, finite_value)
+        return cu.calculate_gamma_score(y_true, y_pred, force_finite, finite_value)
 
-    def gplus_score(self, y_true=None, y_pred=None, **kwargs):
+    def gplus_score(self, y_true=None, y_pred=None, force_finite=True, finite_value=0.0, **kwargs):
         """
         Computes the Gplus Score between two clustering solutions.
         Smaller is better (Best = 0), Range = [0, 1]
@@ -934,12 +923,14 @@ class ClusteringMetric(Evaluator):
         Args:
             y_true (array-like): The true labels for each sample.
             y_pred (array-like): The predicted cluster labels for each sample.
+            force_finite (bool): Make result as finite number
+            finite_value (float): The value that used to replace the infinite value or NaN value.
 
         Returns:
             result (float): The Gplus Score
         """
-        y_true, y_pred, _, _, _ = self.get_processed_external_data(y_true, y_pred)
-        return cu.calculate_gplus_score(y_true, y_pred)
+        y_true, y_pred, _, force_finite, finite_value = self.get_processed_external_data(y_true, y_pred, force_finite, finite_value)
+        return cu.calculate_gplus_score(y_true, y_pred, force_finite, finite_value)
 
     BHI = ball_hall_index
     CHI = calinski_harabasz_index
@@ -981,8 +972,8 @@ class ClusteringMetric(Evaluator):
     SS1S = sokal_sneath1_score
     SS2S = sokal_sneath2_score
     PuS = purity_score
+    EnS = entropy_score
 
-    ES = entropy_score
-    TS = tau_score
+    TauS = tau_score
     GAS = gamma_score
     GPS = gplus_score
