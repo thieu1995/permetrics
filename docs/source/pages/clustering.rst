@@ -20,9 +20,11 @@ Clustering Metrics
    clustering/DHI.rst
    clustering/BI.rst
    clustering/RSI.rst
-
    clustering/DBCVI.rst
    clustering/HI.rst
+
+   clustering/MIS.rst
+
    clustering/ES.rst
    clustering/PuS.rst
    clustering/TS.rst
