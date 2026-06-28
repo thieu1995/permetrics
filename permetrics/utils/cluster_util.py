@@ -764,9 +764,12 @@ def calculate_phi_score(y_true=None, y_pred=None, force_finite=True, finite_valu
     return (yy * nn - yn * ny) / np.sqrt(den_sq)
 
 
-def calculate_rogers_tanimoto_score(y_true=None, y_pred=None):
+def calculate_rogers_tanimoto_score(y_true=None, y_pred=None, force_finite=True, finite_value=0.0):
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
-    return (yy + nn) / (yy + nn + 2 * (yn + ny))
+    den_sq = yy + nn + 2 * (yn + ny)
+    if den_sq == 0:
+        return finite_value if force_finite else _raise_err("Rogers Tanimoto", "denominator is zero")
+    return (yy + nn) / den_sq
 
 
 def calculate_russel_rao_score(y_true=None, y_pred=None):
