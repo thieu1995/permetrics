@@ -4,13 +4,13 @@ Clustering Metrics
 .. toctree::
    :maxdepth: 1
 
+   clustering/BHI.rst
    clustering/DHI.rst
    clustering/SSEI.rst
    clustering/BI.rst
    clustering/RSI.rst
    clustering/DBCVI.rst
    clustering/CHI.rst
-   clustering/BHI.rst
    clustering/DI.rst
    clustering/HI.rst
    clustering/ES.rst

@@ -8,11 +8,9 @@
 # --------------------------------------------------%
 
 import numpy as np
-from scipy.spatial.distance import cdist, pdist, squareform
-from scipy.spatial import distance_matrix
+from scipy.spatial.distance import cdist, pdist
 from scipy.stats import entropy as calculate_entropy
 from scipy.sparse import coo_matrix
-from collections import Counter
 
 
 def sum_comb(x):

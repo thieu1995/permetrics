@@ -9,11 +9,8 @@ Welcome to Permetrics's documentation!
 .. image:: https://img.shields.io/badge/release-2.0.1-yellow.svg
    :target: https://github.com/thieu1995/permetrics/releases
 
-.. image:: https://img.shields.io/pypi/wheel/gensim.svg
-   :target: https://pypi.python.org/pypi/permetrics
-
 .. image:: https://badge.fury.io/py/permetrics.svg
-   :target: https://badge.fury.io/py/permetrics
+   :target: https://pypi.python.org/pypi/permetrics
 
 .. image:: https://img.shields.io/pypi/pyversions/permetrics.svg
    :target: https://www.python.org/
