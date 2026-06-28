@@ -82,7 +82,6 @@ class ClusteringMetric(Evaluator):
         "EnS": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "TauS": {"type": "max", "range": "[-1, 1]", "best": "1"},
         "GAS": {"type": "max", "range": "[-1, 1]", "best": "1"},
-
         "GPS": {"type": "min", "range": "[0, 1]", "best": "0"},
     }
 

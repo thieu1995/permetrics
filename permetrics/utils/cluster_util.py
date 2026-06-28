@@ -866,7 +866,6 @@ def calculate_gamma_score(y_true=None, y_pred=None, force_finite=True, finite_va
 
 
 def calculate_gplus_score(y_true=None, y_pred=None, force_finite=True, finite_value=0.0):
-    nd, s_plus, s_minus, t = compute_nd_splus_sminus_t(y_true, y_pred)
-    if nd == 0:
+    if len(y_true) < 2:
         return finite_value if force_finite else _raise_err("G-Plus", "dataset has fewer than 2 samples")
-    return s_minus / nd
+    return 1.0 - calculate_rand_score(y_true, y_pred)
