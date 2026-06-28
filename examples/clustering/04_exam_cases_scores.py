@@ -25,7 +25,7 @@ for idx in range(7):
     evaluator = ClusteringMetric(y_true=y_true, y_pred=temp[idx], X=X)
     print(evaluator.gplus_score())
 
-# print(evaluator.get_metrics_by_list_names(["MIS", "NMIS", "RaS", "ARS", "FMS", "HS", "CS", "VMS", "PrS", "ReS", "FmS",
+# print(evaluator.get_metrics_by_list_names(["MIS", "NMIS", "RaS", "ARS", "FMS", "HS", "CS", "VMS", "PrS", "ReS", "FS",
 #                                            "CDS", "HGS", "JS", "KS", "MNS", "PhS", "RTS", "RRS", "SS1S", "SS2S",
 #                                            "PuS", "ES", "TS", "GAS", "GPS"]))
 
@@ -39,7 +39,7 @@ for idx in range(7):
 # VMS = v_measure_score
 # PrS = precision_score
 # ReS = recall_score
-# FmS = f_measure_score
+# FS = f_measure_score
 # CDS = czekanowski_dice_score
 # HGS = hubert_gamma_score
 # JS = jaccard_score

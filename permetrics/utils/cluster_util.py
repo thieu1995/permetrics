@@ -689,11 +689,11 @@ def calculate_recall_score(y_true=None, y_pred=None):
     return yy / (yy + yn)
 
 
-def calculate_f_measure_score(y_true=None, y_pred=None):
+def calculate_f_measure_score(y_true=None, y_pred=None, beta=1.0):
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
     p = yy / (yy + ny)
     r = yy / (yy + yn)
-    return 2 * p * r / (p + r)
+    return ((1 + beta**2) * p * r) / (beta**2 * p + r)
 
 
 def calculate_czekanowski_dice_score(y_true=None, y_pred=None):

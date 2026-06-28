@@ -17,7 +17,7 @@ y_pred = np.random.randint(0, 4, size=300)
 
 evaluator = ClusteringMetric(y_true=y_true, y_pred=y_pred)
 
-print(evaluator.get_metrics_by_list_names(["MIS", "NMIS", "RaS", "FMS", "HS", "CS", "VMS", "PrS", "ReS", "FmS",
+print(evaluator.get_metrics_by_list_names(["MIS", "NMIS", "RaS", "FMS", "HS", "CS", "VMS", "PrS", "ReS", "FS",
                                            "CDS", "HGS", "JS", "KS", "MNS", "PhS", "RTS", "RRS", "SS1S", "SS2S"]))
 
 # MIS = mutual_info_score
@@ -29,7 +29,7 @@ print(evaluator.get_metrics_by_list_names(["MIS", "NMIS", "RaS", "FMS", "HS", "C
 # VMS = v_measure_score
 # PrS = precision_score
 # ReS = recall_score
-# FmS = f_measure_score
+# FS = f_measure_score
 # CDS = czekanowski_dice_score
 # HGS = hubert_gamma_score
 # JS = jaccard_score

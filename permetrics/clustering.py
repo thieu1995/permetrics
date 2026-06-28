@@ -66,9 +66,9 @@ class ClusteringMetric(Evaluator):
         "CS": {"type": "max", "range": "[0, 1]", "best": "1"},
         "VMS": {"type": "max", "range": "[0, 1]", "best": "1"},
         "PrS": {"type": "max", "range": "[0, 1]", "best": "1"},
-
         "ReS": {"type": "max", "range": "[0, 1]", "best": "1"},
-        "FmS": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "FS": {"type": "max", "range": "[0, 1]", "best": "1"},
+
         "CDS": {"type": "max", "range": "[0, 1]", "best": "1"},
         "HGS": {"type": "max", "range": "[-1, 1]", "best": "1"},
         "JS": {"type": "max", "range": "[0, 1]", "best": "1"},
@@ -523,7 +523,7 @@ class ClusteringMetric(Evaluator):
 
     def normalized_mutual_info_score(self, y_true=None, y_pred=None, force_finite=True, finite_value=0., **kwargs):
         """
-        Computes the normalized mutual information between two clusters.
+        Computes the normalized mutual information
         It is a variation of the mutual information score that normalizes the result to take values between 0 and 1.
         It is defined as the mutual information divided by the average entropy of the true and predicted clusterings.
         Bigger is better (Best = 1), Range = [0, 1]
@@ -542,7 +542,7 @@ class ClusteringMetric(Evaluator):
 
     def rand_score(self, y_true=None, y_pred=None, **kwargs):
         """
-        Computes the Rand score between two clusters.
+        Computes the Rand score
 
         Args:
             y_true (array-like): The true labels for each sample.
@@ -556,7 +556,7 @@ class ClusteringMetric(Evaluator):
 
     def adjusted_rand_score(self, y_true=None, y_pred=None, **kwargs):
         """
-        Computes the Adjusted rand score between two clusters.
+        Computes the Adjusted rand score
 
         Args:
             y_true (array-like): The true labels for each sample.
@@ -570,7 +570,7 @@ class ClusteringMetric(Evaluator):
 
     def fowlkes_mallows_score(self, y_true=None, y_pred=None, force_finite=True, finite_value=0., **kwargs):
         """
-        Computes the Fowlkes-Mallows score between two clusters.
+        Computes the Fowlkes-Mallows score
 
         Args:
             y_true (array-like): The true labels for each sample.
@@ -586,7 +586,7 @@ class ClusteringMetric(Evaluator):
 
     def homogeneity_score(self, y_true=None, y_pred=None, **kwargs):
         """
-        Computes the Homogeneity Score between two clusters.
+        Computes the Homogeneity Score
 
         It measures the extent to which each cluster contains only data points that belong to a single class or category.
         In other words, homogeneity assesses whether all the data points in a cluster are members of the same true class or label.
@@ -604,7 +604,7 @@ class ClusteringMetric(Evaluator):
 
     def completeness_score(self, y_true=None, y_pred=None, **kwargs):
         """
-        Computes the Completeness Score between two clusters.
+        Computes the Completeness Score
         It measures the ratio of samples that are correctly assigned to the same cluster to the total number of samples in the data.
 
         Args:
@@ -619,7 +619,7 @@ class ClusteringMetric(Evaluator):
 
     def v_measure_score(self, y_true=None, y_pred=None, beta=1.0, **kwargs):
         """
-        Computes the V Measure Score between two clusters.
+        Computes the V Measure Score
 
         It is a combination of two other metrics: homogeneity and completeness. Homogeneity measures whether all the
         data points in a given cluster belong to the same class. Completeness measures whether all the data points of a certain
@@ -638,13 +638,7 @@ class ClusteringMetric(Evaluator):
 
     def precision_score(self, y_true=None, y_pred=None, **kwargs):
         """
-        Computes the Precision score between two clusters.
-        Bigger is better (Best = 1), Range = [0, 1]. It is different than precision score in classification metrics
-
-        It measures the proportion of points that are correctly grouped together in P2, given that
-        they are grouped together in P1. It is calculated as the ratio of yy (the number of points that are correctly
-        grouped together in both P1 and P2) to the sum of yy and ny (the number of points that are grouped together
-        in P2 but not in P1). The formula for P is P = yy / (yy + ny).
+        Computes the Precision Score
 
         Args:
             y_true (array-like): The true labels for each sample.
@@ -658,12 +652,7 @@ class ClusteringMetric(Evaluator):
 
     def recall_score(self, y_true=None, y_pred=None, **kwargs):
         """
-        Computes the Recall score between two clusters.
-        Bigger is better (Best = 1), Range = [0, 1]
-
-        It measures the proportion of points that are correctly grouped together in P2, given that they are grouped
-        together in P1. It is calculated as the ratio of yy to the sum of yy and yn (the number of points that
-        are grouped together in P1 but not in P2). The formula for R is R = yy / (yy + yn).
+        Computes the Recall Score
 
         Args:
             y_true (array-like): The true labels for each sample.
@@ -675,29 +664,24 @@ class ClusteringMetric(Evaluator):
         y_true, y_pred, _, _, _ = self.get_processed_external_data(y_true, y_pred)
         return cu.calculate_recall_score(y_true, y_pred)
 
-    def f_measure_score(self, y_true=None, y_pred=None, **kwargs):
+    def f_measure_score(self, y_true=None, y_pred=None, beta=1.0, **kwargs):
         """
-        Computes the F-Measure score between two clusters.
-        Bigger is better (Best = 1), Range = [0, 1]
-
-        It is the harmonic mean of the precision and recall coefficients, given by the formula F = 2PR / (P + R). It provides a
-        single score that summarizes both precision and recall. The Fa-measure is a weighted version of the F-measure that
-        allows for a trade-off between precision and recall. It is defined as Fa = (1 + a)PR / (aP + R),
-        where a is a parameter that determines the relative importance of precision and recall.
+        Computes the F-Measure score
 
         Args:
             y_true (array-like): The true labels for each sample.
             y_pred (array-like): The predicted cluster labels for each sample.
+            beta (float): The weight parameter, default = 1.0
 
         Returns:
             result (float): The F-Measure score
         """
         y_true, y_pred, _, _, _ = self.get_processed_external_data(y_true, y_pred)
-        return cu.calculate_f_measure_score(y_true, y_pred)
+        return cu.calculate_f_measure_score(y_true, y_pred, beta=beta)
 
     def czekanowski_dice_score(self, y_true=None, y_pred=None, **kwargs):
         """
-        Computes the  Czekanowski-Dice score between two clusters.
+        Computes the  Czekanowski-Dice score
         It is the harmonic mean of the precision and recall coefficients. Bigger is better (Best = 1), Range = [0, 1]
 
         Args:
@@ -712,7 +696,7 @@ class ClusteringMetric(Evaluator):
 
     def hubert_gamma_score(self, y_true=None, y_pred=None, force_finite=True, finite_value=-1.0, **kwargs):
         """
-        Computes the Hubert Gamma score between two clusters.
+        Computes the Hubert Gamma score
         Bigger is better (Best = 1), Range=[-1, +1]
 
         The Hubert Gamma index ranges from -1 to 1, where a value of 1 indicates perfect agreement between the two partitions
@@ -733,7 +717,7 @@ class ClusteringMetric(Evaluator):
 
     def jaccard_score(self, y_true=None, y_pred=None, **kwargs):
         """
-        Computes the Jaccard score between two clusters.
+        Computes the Jaccard score
         Bigger is better (Best = 1), Range = [0, 1]
 
         It ranges from 0 to 1, where a value of 1 indicates perfect agreement between the two partitions being compared.
@@ -755,7 +739,7 @@ class ClusteringMetric(Evaluator):
 
     def kulczynski_score(self, y_true=None, y_pred=None, **kwargs):
         """
-        Computes the Kulczynski score between two clusters.
+        Computes the Kulczynski score
         Bigger is better (Best = 1), Range = [0, 1]
 
         It is the arithmetic mean of the precision and recall coefficients, which means that it takes into account both precision and recall.
@@ -774,7 +758,7 @@ class ClusteringMetric(Evaluator):
 
     def mc_nemar_score(self, y_true=None, y_pred=None, **kwargs):
         """
-        Computes the Mc Nemar score between two clusters.
+        Computes the Mc Nemar score
         Bigger is better (No best value), Range=(-inf, +inf)
 
         It is an adaptation of the non-parametric McNemar test for the comparison of frequencies between two paired samples.
@@ -797,7 +781,7 @@ class ClusteringMetric(Evaluator):
 
     def phi_score(self, y_true=None, y_pred=None, force_finite=True, finite_value=-1e10, **kwargs):
         """
-        Computes the Phi score between two clusters.
+        Computes the Phi score
         Bigger is better (No best value), Range = (-inf, +inf)
 
         It is a classical measure of the correlation between two dichotomous variables, and it can be used to measure the
@@ -819,7 +803,7 @@ class ClusteringMetric(Evaluator):
 
     def rogers_tanimoto_score(self, y_true=None, y_pred=None, **kwargs):
         """
-        Computes the Rogers-Tanimoto score between two clusters.
+        Computes the Rogers-Tanimoto score
         Bigger is better (Best = 1), Range = [0, 1]
 
         It measures the similarity between two partitions by computing the proportion of pairs of samples that are either
@@ -840,7 +824,7 @@ class ClusteringMetric(Evaluator):
 
     def russel_rao_score(self, y_true=None, y_pred=None, **kwargs):
         """
-        Computes the Russel-Rao score between two clusters.
+        Computes the Russel-Rao score
         Bigger is better (Best = 1), Range = [0, 1]
 
         It measures the proportion of concordances between the two partitions by computing the proportion of pairs of samples
@@ -859,7 +843,7 @@ class ClusteringMetric(Evaluator):
 
     def sokal_sneath1_score(self, y_true=None, y_pred=None, **kwargs):
         """
-        Computes the Sokal-Sneath 1 score between two clusters.
+        Computes the Sokal-Sneath 1 score
         Bigger is better (Best = 1), Range = [0, 1]
 
         It measures the similarity between two partitions by computing the proportion of pairs of samples that are in the same cluster
@@ -879,7 +863,7 @@ class ClusteringMetric(Evaluator):
 
     def sokal_sneath2_score(self, y_true=None, y_pred=None, **kwargs):
         """
-        Computes the Sokal-Sneath 2 score between two clusters.
+        Computes the Sokal-Sneath 2 score
         Bigger is better (Best = 1), Range = [0, 1]
 
         It measures the similarity between two partitions by computing the proportion of pairs of samples that are in the same cluster
@@ -1025,9 +1009,9 @@ class ClusteringMetric(Evaluator):
     CS = completeness_score
     VMS = v_measure_score
     PrS = precision_score
-
     ReS = recall_score
-    FmS = f_measure_score
+    FS = f_measure_score
+
     CDS = czekanowski_dice_score
     HGS = hubert_gamma_score
     JS = jaccard_score

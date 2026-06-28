@@ -198,9 +198,9 @@ def test_ReS(external_model):
     assert isinstance(res, (float, int))
 
 
-def test_FmS(external_model):
+def test_FS(external_model):
     evaluator = external_model
-    res = evaluator.FmS()
+    res = evaluator.FS()
     assert isinstance(res, (float, int))
 
 

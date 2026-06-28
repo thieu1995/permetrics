@@ -46,7 +46,7 @@ print(evaluator.BHI())
 # VMS = v_measure_score
 # PrS = precision_score
 # ReS = recall_score
-# FmS = f_measure_score
+# FS = f_measure_score
 # CDS = czekanowski_dice_score
 # HGS = hubert_gamma_score
 # JS = jaccard_score
