@@ -484,13 +484,8 @@ def calculate_beale_index(X=None, y_pred=None, force_finite=True, finite_value=1
 
 
 def calculate_r_squared_index(X=None, y_pred=None):
-    n_clusters = len(np.unique(y_pred))
-    total_var = np.var(X, axis=0).sum()
-    var_within = 0
-    for k in range(n_clusters):
-        var_within += np.var(X[y_pred == k], axis=0).sum()
-    result = (total_var - var_within) / total_var
-    return result
+    tss = compute_TSS(X)
+    return (tss - compute_WGSS(X, y_pred)) / tss if tss > 0 else 1.0
 
 
 def calculate_density_based_clustering_validation_index(X=None, y_pred=None, force_finite=True, finite_value=1.):

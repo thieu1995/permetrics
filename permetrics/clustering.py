@@ -40,20 +40,21 @@ class ClusteringMetric(Evaluator):
 
     SUPPORT = {
         "BHI": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "CHI": {"type": "max", "range": "[0, +inf)", "best": "unknown"},
         "XBI": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "DBI": {"type": "min", "range": "[0, +inf)", "best": "0"},
-        "BRI": {"type": "min", "range": "(-inf, +inf)", "best": "no best"},
-        "KDI": {"type": "max", "range": "(-inf, +inf)", "best": "no best"},
-        "DRI": {"type": "max", "range": "[0, +inf)", "best": "no best"},
-        "DI": {"type": "max", "range": "[0, +inf)", "best": "no best"},
-        "CHI": {"type": "max", "range": "[0, +inf)", "best": "no best"},
-        "LDRI": {"type": "max", "range": "(-inf, +inf)", "best": "no best"},
-        "LSRI": {"type": "max", "range": "(-inf, +inf)", "best": "no best"},
+        "BRI": {"type": "min", "range": "(-inf, +inf)", "best": "unknown"},
+        "DRI": {"type": "max", "range": "[1, +inf)", "best": "unknown"},
+        "KDI": {"type": "max", "range": "(-inf, +inf)", "best": "unknown"},
+        "DI": {"type": "max", "range": "[0, +inf)", "best": "unknown"},
+        "LDRI": {"type": "max", "range": "(-inf, +inf)", "best": "unknown"},
+        "LSRI": {"type": "max", "range": "(-inf, +inf)", "best": "unknown"},
         "SI": {"type": "max", "range": "[-1, +1]", "best": "1"},
         "SSEI": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "MSEI": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "DHI": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "BI": {"type": "min", "range": "[0, +inf)", "best": "0"},
+
         "RSI": {"type": "max", "range": "(-inf, +1]", "best": "1"},
         "DBCVI": {"type": "min", "range": "[0, 1]", "best": "0"},
         "HI": {"type": "min", "range": "[0, +inf)", "best": "0"},
@@ -190,12 +191,6 @@ class ClusteringMetric(Evaluator):
         """
         Compute the Calinski and Harabasz (1974) index. It is also known as the Variance Ratio Criterion.
         The score is defined as ratio between the within-cluster dispersion and the between-cluster dispersion.
-        Bigger is better (No best value), Range=[0, inf)
-
-        Notes:
-        ~~~~~~
-            + This metric in scikit-learn library is wrong in calculate the intra_disp variable (WGSS)
-            + https://github.com/scikit-learn/scikit-learn/blob/7f9bad99d/sklearn/metrics/cluster/_unsupervised.py#L351C1-L351C1
 
         Args:
             X (array-like of shape (n_samples, n_features)):
@@ -214,7 +209,6 @@ class ClusteringMetric(Evaluator):
     def xie_beni_index(self, X=None, y_pred=None, force_finite=True, finite_value=1e10, **kwargs):
         """
         Computes the Xie-Beni index.
-        Smaller is better (Best = 0), Range=[0, +inf)
 
         The Xie-Beni index is an index of fuzzy clustering, but it is also applicable to crisp clustering.
         The numerator is the mean of the squared distances of all of the points with respect to their
@@ -235,30 +229,9 @@ class ClusteringMetric(Evaluator):
         y_pred, _, force_finite, finite_value = self.get_processed_internal_data(y_pred, force_finite, finite_value)
         return cu.calculate_xie_beni_index(X, y_pred, force_finite, finite_value)
 
-    def banfeld_raftery_index(self, X=None, y_pred=None, force_finite=True, finite_value=1e10, **kwargs):
-        """
-        Computes the Banfeld-Raftery Index.
-        Smaller is better (No best value), Range=(-inf, inf)
-        This index is the weighted sum of the logarithms of the traces of the variance covariance matrix of each cluster
-
-        Args:
-            X (array-like of shape (n_samples, n_features)):
-                A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
-            y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
-            force_finite (bool): Make result as finite number
-            finite_value (float): The value that used to replace the infinite value or NaN value.
-
-        Returns:
-            result (float): The Banfeld-Raftery Index
-        """
-        X = self.check_X(X)
-        y_pred, _, force_finite, finite_value = self.get_processed_internal_data(y_pred, force_finite, finite_value)
-        return cu.calculate_banfeld_raftery_index(X, y_pred, force_finite, finite_value)
-
     def davies_bouldin_index(self, X=None, y_pred=None, force_finite=True, finite_value=1e10, **kwargs):
         """
         Computes the Davies-Bouldin index
-        Smaller is better (Best = 0), Range=[0, +inf)
 
         Args:
             X (array-like of shape (n_samples, n_features)):
@@ -274,10 +247,27 @@ class ClusteringMetric(Evaluator):
         y_pred, _, force_finite, finite_value = self.get_processed_internal_data(y_pred, force_finite, finite_value)
         return cu.calculate_davies_bouldin_index(X, y_pred, force_finite, finite_value)
 
+    def banfeld_raftery_index(self, X=None, y_pred=None, force_finite=True, finite_value=1e10, **kwargs):
+        """
+        Computes the Banfeld-Raftery Index.
+
+        Args:
+            X (array-like of shape (n_samples, n_features)):
+                A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
+            y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
+            force_finite (bool): Make result as finite number
+            finite_value (float): The value that used to replace the infinite value or NaN value.
+
+        Returns:
+            result (float): The Banfeld-Raftery Index
+        """
+        X = self.check_X(X)
+        y_pred, _, force_finite, finite_value = self.get_processed_internal_data(y_pred, force_finite, finite_value)
+        return cu.calculate_banfeld_raftery_index(X, y_pred, force_finite, finite_value)
+
     def det_ratio_index(self, X=None, y_pred=None, force_finite=True, finite_value=0., **kwargs):
         """
         Computes the Det-Ratio index
-        Bigger is better (No best value), Range=[0, +inf)
 
         Args:
             X (array-like of shape (n_samples, n_features)):
@@ -293,30 +283,9 @@ class ClusteringMetric(Evaluator):
         y_pred, _, force_finite, finite_value = self.get_processed_internal_data(y_pred, force_finite, finite_value)
         return cu.calculate_det_ratio_index(X, y_pred, force_finite, finite_value)
 
-    def dunn_index(self, X=None, y_pred=None, use_modified=True, force_finite=True, finite_value=0., **kwargs):
-        """
-        Computes the Dunn Index
-        Bigger is better (No best value), Range=[0, +inf)
-
-        Args:
-            X (array-like of shape (n_samples, n_features)):
-                A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
-            y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
-            use_modified (bool): The modified version we proposed to speed up the computational time for this metric, default=True
-            force_finite (bool): Make result as finite number
-            finite_value (float): The value that used to replace the infinite value or NaN value.
-
-        Returns:
-            result (float): The Dunn Index
-        """
-        X = self.check_X(X)
-        y_pred, _, force_finite, finite_value = self.get_processed_internal_data(y_pred, force_finite, finite_value)
-        return cu.calculate_dunn_index(X, y_pred, use_modified, force_finite, finite_value)
-
     def ksq_detw_index(self, X=None, y_pred=None, use_normalized=True, **kwargs):
         """
         Computes the Ksq-DetW Index
-        Bigger is better (No best value), Range=(-inf, +inf)
 
         Args:
             X (array-like of shape (n_samples, n_features)):
@@ -334,7 +303,6 @@ class ClusteringMetric(Evaluator):
     def log_det_ratio_index(self, X=None, y_pred=None, force_finite=True, finite_value=-1e10, **kwargs):
         """
         Computes the Log Det Ratio Index
-        Bigger is better (No best value), Range=(-inf, +inf)
 
         Args:
             X (array-like of shape (n_samples, n_features)):
@@ -350,10 +318,28 @@ class ClusteringMetric(Evaluator):
         y_pred, _, force_finite, finite_value = self.get_processed_internal_data(y_pred, force_finite, finite_value)
         return cu.calculate_log_det_ratio_index(X, y_pred, force_finite, finite_value)
 
+    def dunn_index(self, X=None, y_pred=None, use_modified=True, force_finite=True, finite_value=0., **kwargs):
+        """
+        Computes the Dunn Index
+
+        Args:
+            X (array-like of shape (n_samples, n_features)):
+                A list of `n_features`-dimensional data points. Each row corresponds to a single data point.
+            y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
+            use_modified (bool): The modified version we proposed to speed up the computational time for this metric, default=True
+            force_finite (bool): Make result as finite number
+            finite_value (float): The value that used to replace the infinite value or NaN value.
+
+        Returns:
+            result (float): The Dunn Index
+        """
+        X = self.check_X(X)
+        y_pred, _, force_finite, finite_value = self.get_processed_internal_data(y_pred, force_finite, finite_value)
+        return cu.calculate_dunn_index(X, y_pred, use_modified, force_finite, finite_value)
+
     def log_ss_ratio_index(self, X=None, y_pred=None, force_finite=True, finite_value=-1e10, **kwargs):
         """
         Computes the Log SS Ratio Index
-        Bigger is better (No best value), Range=(-inf, +inf)
 
         Args:
             X (array-like of shape (n_samples, n_features)):
@@ -381,7 +367,6 @@ class ClusteringMetric(Evaluator):
     def silhouette_index(self, X=None, y_pred=None, multi_output=False, force_finite=True, finite_value=-1., chunk_size=5000, **kwargs):
         """
         Computes the Silhouette Index
-        Bigger is better (Best = 1), Range = [-1, +1]
 
         Args:
             X (array-like of shape (n_samples, n_features)):
@@ -403,14 +388,6 @@ class ClusteringMetric(Evaluator):
     def sum_squared_error_index(self, X=None, y_pred=None, **kwarg):
         """
         Computes the Sum of Squared Error Index
-        Smaller is better (Best = 0), Range = [0, +inf)
-
-        SSEI measures the sum of squared distances between each data point and its corresponding centroid or cluster center.
-        It quantifies the compactness of the clusters. Here's how you can calculate the SSE in a clustering problem:
-
-            1) Assign each data point to its nearest centroid or cluster center based on some distance metric (e.g., Euclidean distance).
-            2) For each data point, calculate the squared Euclidean distance between the data point and its assigned centroid.
-            3) Sum up the squared distances for all data points to obtain the SSE.
 
         Args:
             X (array-like of shape (n_samples, n_features)):
@@ -427,8 +404,6 @@ class ClusteringMetric(Evaluator):
     def mean_squared_error_index(self, X=None, y_pred=None, **kwarg):
         """
         Computes the Mean Squared Error Index
-        Smaller is better (Best = 0), Range = [0, +inf)
-
         MSEI measures the mean of squared distances between each data point and its corresponding centroid or cluster center.
 
         Args:
@@ -446,7 +421,6 @@ class ClusteringMetric(Evaluator):
     def duda_hart_index(self, X=None, y_pred=None, chunk_size=5000, force_finite=True, finite_value=1e10, **kwargs):
         """
         Computes the Duda Index or Duda-Hart index
-        Smaller is better (Best = 0), Range = [0, +inf)
 
         Args:
             X (array-like of shape (n_samples, n_features)):
@@ -466,7 +440,6 @@ class ClusteringMetric(Evaluator):
     def beale_index(self, X=None, y_pred=None, force_finite=True, finite_value=1e10, **kwarg):
         """
         Computes the Beale Index
-        Smaller is better (Best=0), Range = [0, +inf)
 
         Args:
             X (array-like of shape (n_samples, n_features)):
@@ -485,7 +458,6 @@ class ClusteringMetric(Evaluator):
     def r_squared_index(self, X=None, y_pred=None, **kwarg):
         """
         Computes the R-squared index
-        Bigger is better (Best=1), Range = (-inf, 1]
 
         Args:
             X (array-like of shape (n_samples, n_features)):
@@ -1036,13 +1008,13 @@ class ClusteringMetric(Evaluator):
         return cu.calculate_gplus_score(y_true, y_pred)
 
     BHI = ball_hall_index
+    CHI = calinski_harabasz_index
     XBI = xie_beni_index
     DBI = davies_bouldin_index
     BRI = banfeld_raftery_index
     KDI = ksq_detw_index
     DRI = det_ratio_index
     DI = dunn_index
-    CHI = calinski_harabasz_index
     LDRI = log_det_ratio_index
     LSRI = log_ss_ratio_index
     SI = silhouette_index
@@ -1051,9 +1023,9 @@ class ClusteringMetric(Evaluator):
     DHI = duda_hart_index
     BI = beale_index
     RSI = r_squared_index
+
     DBCVI = density_based_clustering_validation_index
     HI = hartigan_index
-
     MIS = mutual_info_score
     NMIS = normalized_mutual_info_score
     RaS = rand_score
