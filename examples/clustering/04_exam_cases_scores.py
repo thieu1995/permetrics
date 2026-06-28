@@ -27,7 +27,7 @@ for idx in range(7):
 
 # print(evaluator.get_metrics_by_list_names(["MIS", "NMIS", "RaS", "ARS", "FMS", "HS", "CS", "VMS", "PrS", "ReS", "FS",
 #                                            "CDS", "HGS", "JS", "KS", "MNS", "PhS", "RTS", "RRS", "SS1S", "SS2S",
-#                                            "PuS", "ES", "TS", "GAS", "GPS"]))
+#                                            "PuS", "EnS", "TauS", "GAS", "GPS"]))
 
 # MIS = mutual_info_score
 # NMIS = normalized_mutual_info_score
@@ -51,7 +51,7 @@ for idx in range(7):
 # SS1S = sokal_sneath1_score
 # SS2S = sokal_sneath2_score
 # PuS = purity_score
-# ES = entropy_score
-# TS = tau_score
+# EnS = entropy_score
+# TauS = tau_score
 # GAS = gamma_score
 # GPS = gplus_score

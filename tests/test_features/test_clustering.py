@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Created by "Thieu" at 10:02, 27/07/2023 ----------%
+# Created by "Thieu" at 00:15, 29/06/2026 ----------%
 #       Email: nguyenthieu2102@gmail.com            %
 #       Github: https://github.com/thieu1995        %
 # --------------------------------------------------%
@@ -9,286 +9,153 @@ import pytest
 
 from permetrics import ClusteringMetric
 
+# ==============================================================================
+# GLOBAL SETUP
+# ==============================================================================
 np.random.seed(42)
 
 
+INTERNAL_METRICS = ["BHI", "CHI", "XBI", "DBI", "BRI", "DRI", "KDI", "DI", "LDRI", "LSRI", "SI",
+                    "SSEI", "MSEI", "DHI", "BI", "RSI", "HI"]
+EXTERNAL_METRICS = [
+    "MIS", "NMIS", "RaS", "ARS", "FMS", "HS", "CS", "VMS",
+    "PrS", "ReS", "FS", "CDS", "HGS",
+    "JS", "KS", "MNS", "PhS", "RTS", "RRS", "SS1S", "SS2S", "PuS", "EnS",
+    "TauS", "GAS", "GPS"
+]
+
+
+# ==============================================================================
+# FIXTURES: DATA GENERATORS
+# ==============================================================================
+
 @pytest.fixture(scope="module")
-def internal_model():
-    # generate sample data
-    X = np.random.uniform(-1, 10, size=(300, 6))
-    y_pred = np.random.randint(0, 3, size=300)
-    evaluator = ClusteringMetric(y_pred=y_pred, X=X, force_finite=True)
-    return evaluator
+def normal_internal_data():
+    X = np.random.uniform(-10, 10, size=(100, 5))
+    y_pred = np.random.randint(0, 4, size=100)
+    return X, y_pred
 
 
 @pytest.fixture(scope="module")
-def external_model():
-    # generate sample data
-    y_true = np.random.randint(0, 3, size=300)
-    y_pred = np.random.randint(0, 3, size=300)
-    evaluator = ClusteringMetric(y_true=y_true, y_pred=y_pred, force_finite=True)
-    return evaluator
+def normal_external_data():
+    y_true = np.random.randint(0, 5, size=200)
+    y_pred = np.random.randint(0, 5, size=200)
+    return y_true, y_pred
 
 
-def test_BHI(internal_model):
-    evaluator = internal_model
-    res = evaluator.BHI()
-    assert isinstance(res, (float, int))
+@pytest.fixture(scope="module")
+def dbcv_data():
+    X = np.random.rand(100, 2)
+    y_pred = np.array([0] * 45 + [1] * 45 + [-1] * 10)
+    return X, y_pred
 
 
-def test_XBI(internal_model):
-    evaluator = internal_model
-    res = evaluator.XBI()
-    assert isinstance(res, (float, int))
+# ==============================================================================
+# 1. NORMAL SCENARIOS
+# ==============================================================================
 
+@pytest.mark.parametrize("metric", INTERNAL_METRICS)
+def test_internal_metrics_normal(normal_internal_data, metric):
+    X, y_pred = normal_internal_data
+    cm = ClusteringMetric(X=X, y_pred=y_pred, force_finite=True)
 
-def test_DBI(internal_model):
-    evaluator = internal_model
-    res = evaluator.DBI()
-    assert isinstance(res, (float, int))
+    method = getattr(cm, metric)
+    res = method()
 
+    assert isinstance(res, float), f"{metric} must return a float"
+    assert not np.isnan(res), f"{metric} returned NaN"
 
-def test_BRI(internal_model):
-    evaluator = internal_model
-    res = evaluator.BRI()
-    assert isinstance(res, (float, int))
 
+@pytest.mark.parametrize("metric", EXTERNAL_METRICS)
+def test_external_metrics_normal(normal_external_data, metric):
+    y_true, y_pred = normal_external_data
+    cm = ClusteringMetric(y_true=y_true, y_pred=y_pred, force_finite=True)
 
-def test_KDI(internal_model):
-    evaluator = internal_model
-    res = evaluator.KDI()
-    assert isinstance(res, (float, int))
+    method = getattr(cm, metric)
+    res = method()
 
+    assert isinstance(res, float), f"{metric} must return a float"
+    assert not np.isnan(res), f"{metric} returned NaN"
 
-def test_DRI(internal_model):
-    evaluator = internal_model
-    res = evaluator.DRI()
-    assert isinstance(res, (float, int))
 
+def test_dbcv_metric_normal(dbcv_data):
+    X, y_pred = dbcv_data
+    cm = ClusteringMetric(X=X, y_pred=y_pred, force_finite=True)
+    res = cm.DBCVI(return_type="global")
 
-def test_DI(internal_model):
-    evaluator = internal_model
-    res = evaluator.DI()
-    assert isinstance(res, (float, int))
+    assert isinstance(res, float), "DBCV must return a float"
+    assert -1.0 <= res <= 1.0, "DBCV must be bounded in [-1.0, 1.0]"
 
 
-def test_CHI(internal_model):
-    evaluator = internal_model
-    res = evaluator.CHI()
-    assert isinstance(res, (float, int))
+# ==============================================================================
+# 2. EXTREME EDGE CASES
+# ==============================================================================
 
+EDGE_CASES_EXTERNAL = {
+    "identical_partitions": ([0, 1, 2, 3], [0, 1, 2, 3]),
+    "completely_different": ([0, 0, 1, 1], [2, 3, 4, 5]),
+    "all_true_singletons": ([0, 1, 2, 3, 4], [0, 0, 0, 0, 0]),
+    "all_pred_singletons": ([0, 0, 0, 0, 0], [0, 1, 2, 3, 4]),
+    "single_universal_cluster": ([0, 0, 0, 0], [0, 0, 0, 0]),
+    "two_samples_only": ([0, 1], [0, 1]),
+    "string_labels": (['cat', 'dog', 'cat'], ['cat', 'dog', 'dog'])
+}
 
-def test_LDRI(internal_model):
-    evaluator = internal_model
-    res = evaluator.LDRI()
-    assert isinstance(res, (float, int))
 
+@pytest.mark.parametrize("edge_name, data", EDGE_CASES_EXTERNAL.items())
+@pytest.mark.parametrize("metric", EXTERNAL_METRICS)
+def test_external_metrics_edge_cases(edge_name, data, metric):
+    y_true, y_pred = data
+    cm = ClusteringMetric(y_true=y_true, y_pred=y_pred, force_finite=True)
+    method = getattr(cm, metric)
 
-def test_LSRI(internal_model):
-    evaluator = internal_model
-    res = evaluator.LSRI()
-    assert isinstance(res, (float, int))
+    try:
+        res = method()
+        assert isinstance(res, float), f"Failed {metric} on {edge_name}: expected float"
+        assert not np.isnan(res), f"Failed {metric} on {edge_name}: returned NaN"
+    except Exception as e:
+        pytest.fail(f"{metric} crashed on edge case '{edge_name}' with error: {str(e)}")
 
 
-def test_SI(internal_model):
-    evaluator = internal_model
-    res = evaluator.SI()
-    assert isinstance(res, (float, int))
+EDGE_CASES_INTERNAL = {
+    "single_cluster": (np.random.rand(10, 2), [0] * 10),
+    "all_singletons": (np.random.rand(5, 2), [0, 1, 2, 3, 4]),
+    "zero_variance_data": (np.zeros((10, 3)), [0, 0, 1, 1, 2, 2, 2, 3, 3, 3])
+}
 
 
-def test_SSEI(internal_model):
-    evaluator = internal_model
-    res = evaluator.SSEI()
-    assert isinstance(res, (float, int))
+@pytest.mark.parametrize("edge_name, data", EDGE_CASES_INTERNAL.items())
+@pytest.mark.parametrize("metric", INTERNAL_METRICS)
+def test_internal_metrics_edge_cases(edge_name, data, metric):
+    X, y_pred = data
+    cm = ClusteringMetric(X=X, y_pred=y_pred, force_finite=True)
+    method = getattr(cm, metric)
 
+    try:
+        res = method()
+        assert isinstance(res, float), f"Failed {metric} on {edge_name}: expected float"
+        assert not np.isnan(res), f"Failed {metric} on {edge_name}: returned NaN"
+    except Exception as e:
+        pytest.fail(f"{metric} crashed on edge case '{edge_name}' with error: {str(e)}")
 
-def test_MSEI(internal_model):
-    evaluator = internal_model
-    res = evaluator.MSEI()
-    assert isinstance(res, (float, int))
 
+# ==============================================================================
+# 3. MATHEMATICAL IDENTITY & BOUNDARY VERIFICATIONS
+# ==============================================================================
 
-def test_DHI(internal_model):
-    evaluator = internal_model
-    res = evaluator.DHI()
-    assert isinstance(res, (float, int))
+def test_mathematical_identities():
+    """Verify known mathematical relationships between metrics."""
+    y_true = [0, 0, 1, 1, 2, 2, 3]
+    y_pred = [0, 1, 1, 2, 2, 2, 3]
 
+    cm = ClusteringMetric(y_true=y_true, y_pred=y_pred)
 
-def test_BI(internal_model):
-    evaluator = internal_model
-    res = evaluator.BI()
-    assert isinstance(res, (float, int))
+    # 1. Gamma = 2 * Rand - 1
+    assert np.isclose(cm.GAS(), 2 * cm.RaS() - 1.0)
 
+    # 2. G-Plus = 1 - Rand
+    assert np.isclose(cm.GPS(), 1.0 - cm.RaS())
 
-def test_RSI(internal_model):
-    evaluator = internal_model
-    res = evaluator.RSI()
-    assert isinstance(res, (float, int))
-
-
-def test_DBCVI(internal_model):
-    evaluator = internal_model
-    res = evaluator.DBCVI()
-    assert isinstance(res, (float, int))
-
-
-def test_HI(internal_model):
-    evaluator = internal_model
-    res = evaluator.HI()
-    assert isinstance(res, (float, int))
-
-
-def test_MIS(external_model):
-    evaluator = external_model
-    res = evaluator.MIS()
-    assert isinstance(res, (float, int))
-
-
-def test_NMIS(external_model):
-    evaluator = external_model
-    res = evaluator.NMIS()
-    assert isinstance(res, (float, int))
-
-
-def test_RaS(external_model):
-    evaluator = external_model
-    res = evaluator.RaS()
-    assert isinstance(res, (float, int))
-
-
-def test_ARS(external_model):
-    evaluator = external_model
-    res = evaluator.ARS()
-    assert isinstance(res, (float, int))
-
-
-def test_FMS(external_model):
-    evaluator = external_model
-    res = evaluator.FMS()
-    assert isinstance(res, (float, int))
-
-
-def test_HS(external_model):
-    evaluator = external_model
-    res = evaluator.HS()
-    assert isinstance(res, (float, int))
-
-
-def test_CS(external_model):
-    evaluator = external_model
-    res = evaluator.CS()
-    assert isinstance(res, (float, int))
-
-
-def test_VMS(external_model):
-    evaluator = external_model
-    res = evaluator.VMS()
-    assert isinstance(res, (float, int))
-
-
-def test_PrS(external_model):
-    evaluator = external_model
-    res = evaluator.PrS()
-    assert isinstance(res, (float, int))
-
-
-def test_ReS(external_model):
-    evaluator = external_model
-    res = evaluator.ReS()
-    assert isinstance(res, (float, int))
-
-
-def test_FS(external_model):
-    evaluator = external_model
-    res = evaluator.FS()
-    assert isinstance(res, (float, int))
-
-
-def test_CDS(external_model):
-    evaluator = external_model
-    res = evaluator.CDS()
-    assert isinstance(res, (float, int))
-
-
-def test_HGS(external_model):
-    evaluator = external_model
-    res = evaluator.HGS()
-    assert isinstance(res, (float, int))
-
-
-def test_JS(external_model):
-    evaluator = external_model
-    res = evaluator.JS()
-    assert isinstance(res, (float, int))
-
-
-def test_KS(external_model):
-    evaluator = external_model
-    res = evaluator.KS()
-    assert isinstance(res, (float, int))
-
-
-def test_MNS(external_model):
-    evaluator = external_model
-    res = evaluator.MNS()
-    assert isinstance(res, (float, int))
-
-
-def test_PhS(external_model):
-    evaluator = external_model
-    res = evaluator.PhS()
-    assert isinstance(res, (float, int))
-
-
-def test_RTS(external_model):
-    evaluator = external_model
-    res = evaluator.RTS()
-    assert isinstance(res, (float, int))
-
-
-def test_RRS(external_model):
-    evaluator = external_model
-    res = evaluator.RRS()
-    assert isinstance(res, (float, int))
-
-
-def test_SS1S(external_model):
-    evaluator = external_model
-    res = evaluator.SS1S()
-    assert isinstance(res, (float, int))
-
-
-def test_SS2S(external_model):
-    evaluator = external_model
-    res = evaluator.SS2S()
-    assert isinstance(res, (float, int))
-
-
-def test_PuS(external_model):
-    evaluator = external_model
-    res = evaluator.PuS()
-    assert isinstance(res, (float, int))
-
-
-def test_ES(external_model):
-    evaluator = external_model
-    res = evaluator.ES()
-    assert isinstance(res, (float, int))
-
-
-def test_TS(external_model):
-    evaluator = external_model
-    res = evaluator.TS()
-    assert isinstance(res, (float, int))
-
-
-def test_GAS(external_model):
-    evaluator = external_model
-    res = evaluator.GAS()
-    assert isinstance(res, (float, int))
-
-
-def test_GPS(external_model):
-    evaluator = external_model
-    res = evaluator.GPS()
-    assert isinstance(res, (float, int))
+    # 3. Hierarchy Check
+    assert cm.SS1S() <= cm.JS() <= cm.CDS()
+    assert cm.RTS() <= cm.RaS() <= cm.SS2S()
