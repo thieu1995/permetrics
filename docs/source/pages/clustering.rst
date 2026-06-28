@@ -8,6 +8,8 @@ Clustering Metrics
    clustering/CHI.rst
    clustering/XBI.rst
    clustering/DBI.rst
+   clustering/BRI.rst
+   clustering/DRI.rst
 
    clustering/DHI.rst
    clustering/SSEI.rst
