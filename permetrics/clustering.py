@@ -415,7 +415,7 @@ class ClusteringMetric(Evaluator):
 
     def log_ss_ratio_index(self, X=None, y_pred=None, force_finite=True, finite_value=-1e10, **kwargs):
         """
-        Computes the Log SS Ratio Index
+        Computes the Log SS Ratio Index (LSRI).
 
         Args:
             X (array-like of shape (n_samples, n_features)):
@@ -430,15 +430,29 @@ class ClusteringMetric(Evaluator):
         X = self.check_X(X)
         y_pred, _, force_finite, finite_value = self.get_processed_internal_data(y_pred, force_finite, finite_value)
         n_clusters = len(np.unique(y_pred))
+
+        # Edge-case 1: single_cluster
         if n_clusters == 1:
-            if self.force_finite:
-                return self.finite_value
+            if force_finite:
+                return float(finite_value)
             else:
                 raise ValueError("The Log SS Ratio Index is undefined when y_pred has only 1 cluster.")
-        centers, _ = cu.compute_barycenters(X, y_pred)
+
         bgss = cu.compute_BGSS(X, y_pred)
         wgss = cu.compute_WGSS(X, y_pred)
-        return np.log(bgss/wgss)
+
+        # Edge-case 2: zero_variance_data
+        if wgss == 0.0 or bgss == 0.0:
+            if force_finite:
+                return float(finite_value)
+            raise ValueError("The LSRI metric is undefined when within-group or between-group variance is exactly 0.")
+
+        res = np.log(bgss / wgss)
+        if np.isnan(res) or np.isinf(res):
+            if force_finite:
+                return float(finite_value)
+            raise ValueError("LSRI calculation resulted in NaN/Inf due to extreme variance ratio.")
+        return float(res)
 
     def silhouette_index(self, X=None, y_pred=None, multi_output=False, force_finite=True, finite_value=-1., chunk_size=5000, **kwargs):
         """

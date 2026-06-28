@@ -172,48 +172,71 @@ def calculate_ball_hall_index(X=None, y_pred=None):
 
 def calculate_calinski_harabasz_index(X=None, y_pred=None, force_finite=True, finite_value=0.0):
     """
-    Args:
-        X: The X matrix features
-        y_pred: The predicted results
-        force_finite: Make result as finite number
-        finite_value: The value that used to replace the infinite value or NaN value.
-
-    Returns:
-        The Calinski Harabasz Index
+    Calinski-Harabasz Index (Variance Ratio Criterion).
     """
+    labels = np.asarray(y_pred)
     n_samples, _ = X.shape
-    n_clusters = len(np.unique(y_pred))
+    unique_labels = np.unique(labels)
+    n_clusters = len(unique_labels)
+
+    # Edge-case 1: single_cluster (k = 1) -> k - 1 = 0
     if n_clusters == 1:
         if force_finite:
-            return finite_value
-        else:
-            raise ValueError("The Calinski-Harabasz index is undefined when y_pred has only 1 cluster.")
-    overall_mean = np.mean(X, axis=0)
-    # Calculate between-cluster variance and cluster sizes
-    cluster_sizes = np.bincount(y_pred, minlength=n_clusters)
-    cluster_means = np.array([np.mean(X[y_pred == i], axis=0) for i in range(n_clusters)])
-    between_var = np.sum(cluster_sizes * np.sum((cluster_means - overall_mean) ** 2, axis=1))
-    # Calculate within-cluster variance
-    within_var = np.sum((X - cluster_means[y_pred]) ** 2)
-    # Calculate the CH Index
-    res = (between_var / within_var) * ((n_samples - n_clusters) / (n_clusters - 1))
-    return res
+            return float(finite_value)
+        raise ValueError("The Calinski-Harabasz index is undefined when there is only 1 cluster.")
+
+    # Edge-case 2: all_singletons (k = N) -> N - k = 0
+    if n_clusters == n_samples:
+        if force_finite:
+            return float(finite_value)
+        raise ValueError("The Calinski-Harabasz index is undefined when all samples are singletons.")
+
+    extra_disp, intra_disp = 0.0, 0.0
+    mean = np.mean(X, axis=0)
+
+    for k in unique_labels:
+        cluster_k = X[labels == k]
+        mean_k = np.mean(cluster_k, axis=0)
+        extra_disp += len(cluster_k) * np.sum((mean_k - mean) ** 2)
+        intra_disp += np.sum((cluster_k - mean_k) ** 2)
+
+    # Edge-case 3: zero_variance_data (SS_W = 0)
+    if intra_disp == 0.0:
+        if force_finite:
+            return float(finite_value)
+        raise ValueError("The Calinski-Harabasz index is undefined when within-cluster dispersion is strictly 0.")
+
+    ch_score = (extra_disp / (n_clusters - 1)) / (intra_disp / (n_samples - n_clusters))
+    return float(ch_score)
 
 
 def calculate_xie_beni_index(X=None, y_pred=None, force_finite=True, finite_value=1e10):
-    n_clusters = len(np.unique(y_pred))
+    unique_labels = np.unique(y_pred)
+    n_clusters = len(unique_labels)
+
+    # Edge-case 1: Single cluster
     if n_clusters == 1:
         if force_finite:
-            return finite_value
-        else:
-            raise ValueError("The Xie-Beni index is undefined when y_pred has only 1 cluster.")
-    # Get the centroids
+            return float(finite_value)
+        raise ValueError("The Xie-Beni index is undefined when y_pred has only 1 cluster.")
+
     centroids, _ = compute_barycenters(X, y_pred)
+    # Within-group sum of squares
     wgss = np.sum(np.min(cdist(X, centroids, metric='euclidean'), axis=1) ** 2)
-    # Computing the minimum squared distance to the centroids:
     MinSqDist = np.min(pdist(centroids, metric='sqeuclidean'))
+
+    # Edge-case 2: zero_variance_data
+    if MinSqDist == 0.0:
+        if force_finite:
+            return float(finite_value)
+        raise ValueError("The Xie-Beni index is undefined when the minimum distance between centroids is 0.")
+
     res = (wgss / X.shape[0]) / MinSqDist
-    return res
+    if np.isnan(res) or np.isinf(res):
+        if force_finite:
+            return float(finite_value)
+        raise ValueError("XBI calculation resulted in NaN/Inf.")
+    return float(res)
 
 
 def calculate_banfeld_raftery_index(X=None, y_pred=None, force_finite=True, finite_value=1e10):
@@ -258,6 +281,43 @@ def calculate_davies_bouldin_index(X=None, y_pred=None, force_finite=True, finit
     return cc / n_clusters
 
 
+def calculate_davies_bouldin_index(X=None, y_pred=None, force_finite=True, finite_value=1e10):
+    unique_labels = np.unique(y_pred)
+    n_clusters = len(unique_labels)
+
+    # Edge-case 1
+    if n_clusters == 1:
+        if force_finite:
+            return float(finite_value)
+        raise ValueError("The Davies-Bouldin index is undefined when y_pred has only 1 cluster.")
+
+    centers = np.empty((n_clusters, X.shape[1]))
+    deltas = np.empty(n_clusters)
+
+    for i, k in enumerate(unique_labels):
+        X_k = X[y_pred == k]
+        center_k = np.mean(X_k, axis=0)
+        centers[i] = center_k
+        deltas[i] = np.mean(np.linalg.norm(X_k - center_k, axis=1))
+    center_dists = squareform(pdist(centers, metric='euclidean'))
+
+    # Edge-case 2
+    np.fill_diagonal(center_dists, np.inf)
+    if np.any(center_dists == 0.0):
+        if force_finite:
+            return float(finite_value)
+        raise ValueError("Davies-Bouldin index is undefined when two clusters have identical centers (distance is 0).")
+
+    delta_sums = deltas[:, None] + deltas[None, :]
+    ratios = delta_sums / center_dists
+    max_ratios = np.max(ratios, axis=1)
+    res = np.mean(max_ratios)
+    if np.isnan(res) or np.isinf(res):
+        if force_finite:
+            return float(finite_value)
+        raise ValueError("DBI calculation resulted in NaN/Inf.")
+    return float(res)
+
 def calculate_det_ratio_index(X=None, y_pred=None, force_finite=True, finite_value=-1e10):
     clusters_dict, cluster_sizes_dict = compute_clusters(y_pred)
     centers, _ = compute_barycenters(X, y_pred)
@@ -277,48 +337,78 @@ def calculate_det_ratio_index(X=None, y_pred=None, force_finite=True, finite_val
     return np.linalg.det(T) / t1
 
 
-def calculate_dunn_index(X=None, y_pred=None, use_modified=True, force_finite=True, finite_value=0.):
+def calculate_dunn_index(X=None, y_pred=None, use_modified=True, force_finite=True, finite_value=0.0):
     centers, _ = compute_barycenters(X, y_pred)
-    n_clusters = len(centers)
+    unique_labels = np.unique(y_pred)
+    n_clusters = len(unique_labels)
+
     if n_clusters == 1:
         if force_finite:
-            return finite_value
-        else:
-            raise ValueError("The Dunn index is undefined when y_pred has only 1 cluster.")
-    # Calculate dmin
+            return float(finite_value)
+        raise ValueError("The Dunn index is undefined when y_pred has only 1 cluster.")
+
+    # Calculate dmin (Inter-cluster separation)
     dmin = np.inf
     if use_modified:
         for k0 in range(n_clusters - 1):
             for k1 in range(k0 + 1, n_clusters):
-                points = X[y_pred == k1]
+                points = X[y_pred == unique_labels[k1]]
                 dkk = np.min(cdist(points, centers[k0].reshape(1, -1), metric='euclidean'))
-                dmin = min(dmin, np.min(dkk))
+                dmin = min(dmin, dkk)
     else:
-        for kdx in range(n_clusters - 1):
-            for k0 in range(kdx + 1, n_clusters):
-                points1 = X[y_pred == kdx]
-                points2 = X[y_pred == k0]
-                dkk = cdist(points1, points2, metric='euclidean')
-                dmin = min(dmin, np.min(dkk))
-    # Calculate dmax
+        for k0 in range(n_clusters - 1):
+            for k1 in range(k0 + 1, n_clusters):
+                points1 = X[y_pred == unique_labels[k0]]
+                points2 = X[y_pred == unique_labels[k1]]
+                dkk = np.min(cdist(points1, points2, metric='euclidean'))
+                dmin = min(dmin, dkk)
+
+    # Calculate dmax (Maximum intra-cluster diameter)
     dmax = 0.0
-    for kdx in range(n_clusters):
-        points = X[y_pred == kdx]
-        dk = np.max(pdist(points, metric="euclidean"))
-        dmax = max(dmax, dk)
-    return dmin / dmax
+    for k_label in unique_labels:
+        points = X[y_pred == k_label]
+        if len(points) > 1:
+            dk = np.max(pdist(points, metric="euclidean"))
+            dmax = max(dmax, dk)
+
+    if dmax == 0.0:
+        if force_finite:
+            return float(finite_value)
+        raise ValueError("The Dunn index is undefined when the maximum intra-cluster distance is 0.")
+    return float(dmin / dmax)
 
 
-def calculate_ksq_detw_index(X=None, y_pred=None, use_normalized=True):
-    centers, _ = compute_barycenters(X, y_pred)
+def calculate_ksq_detw_index(X=None, y_pred=None, use_normalized=True, force_finite=True, finite_value=0.0):
+    unique_labels = np.unique(y_pred)
+    n_clusters = len(unique_labels)
+
+    if n_clusters == 1:
+        if force_finite:
+            return float(finite_value)
+        raise ValueError("The KDI metric is undefined when there is only 1 cluster.")
+
     scatter_matrices = np.zeros((X.shape[1], X.shape[1]))  # shape of (n_features, n_features)
-    for kdx in range(len(centers)):
-        X_k = X[y_pred == kdx]
-        scatter_matrices += compute_WG(X_k)
+    for k_label in unique_labels:
+        X_k = X[y_pred == k_label]
+        if len(X_k) > 1:
+            scatter_matrices += compute_WG(X_k)
+
     if use_normalized:
-        scatter_matrices = (scatter_matrices - np.min(scatter_matrices)) / (np.max(scatter_matrices) - np.min(scatter_matrices))
-    res = len(centers) ** 2 * np.linalg.det(scatter_matrices)
-    return res
+        mat_min = np.min(scatter_matrices)
+        mat_max = np.max(scatter_matrices)
+        mat_range = mat_max - mat_min
+        if mat_range == 0.0:
+            if force_finite:
+                return float(finite_value)
+            raise ValueError("KDI normalization failed: internal scatter matrices have zero variance.")
+        scatter_matrices = (scatter_matrices - mat_min) / mat_range
+
+    res = (n_clusters ** 2) * np.linalg.det(scatter_matrices)
+    if np.isnan(res) or np.isinf(res):
+        if force_finite:
+            return float(finite_value)
+        raise ValueError("KDI calculation resulted in NaN/Inf due to matrix determinant instability.")
+    return float(res)
 
 
 def calculate_log_det_ratio_index(X=None, y_pred=None, force_finite=True, finite_value=-1e10):
@@ -462,26 +552,52 @@ def calculate_duda_hart_index(X=None, y_pred=None, chunk_size=5000, force_finite
 
 
 def calculate_beale_index(X=None, y_pred=None, force_finite=True, finite_value=1e10):
+    """
+    Beale Index (BI).
+    """
     pred_labels = np.unique(y_pred)
     n_clusters = len(pred_labels)
+    n_samples, n_features = X.shape
+
+    # Edge-case 1: Single cluster
     if n_clusters == 1:
         if force_finite:
-            return finite_value
-        else:
-            raise ValueError("The Beale index is undefined when y_pred has only 1 cluster.")
-    n_samples, n_features = X.shape
-    centers, _ = compute_barycenters(X, y_pred)
-    sse_within = 0
-    sse_between = 0
+            return float(finite_value)
+        raise ValueError("The Beale index is undefined when y_pred has only 1 cluster.")
+
+    # Edge-case 2: All singletons
+    if n_samples == n_clusters:
+        if force_finite:
+            return float(finite_value)
+        raise ValueError("The Beale index is undefined when all samples are singletons.")
+
+    sse_within = 0.0
+    sse_between = 0.0
+    global_mean = np.mean(X, axis=0)
+
     for k in pred_labels:
-        sse_within += np.sum((X[y_pred == k] - centers[k]) ** 2)
-        sse_between += np.sum((centers[k] - np.mean(X, axis=0)) ** 2)
+        cluster_points = X[y_pred == k]
+        c_k = np.mean(cluster_points, axis=0)
+        sse_within += np.sum((cluster_points - c_k) ** 2)
+        sse_between += np.sum((c_k - global_mean) ** 2)
+
     df_within = n_samples - n_clusters
     df_between = n_clusters - 1
     ms_within = sse_within / df_within
     ms_between = sse_between / df_between
+
+    # Edge-case 3: Zero variance data
+    if ms_between == 0.0:
+        if force_finite:
+            return float(finite_value)
+        raise ValueError("The Beale index is undefined when between-cluster variance is strictly 0.")
+
     result = ms_within / ms_between
-    return result
+    if np.isnan(result) or np.isinf(result):
+        if force_finite:
+            return float(finite_value)
+        raise ValueError("Beale index calculation resulted in NaN/Inf.")
+    return float(result)
 
 
 def calculate_r_squared_index(X=None, y_pred=None):
@@ -594,30 +710,42 @@ def calculate_dbcv_score(X=None, y_pred=None, force_finite=True, finite_value=0.
 
 
 def calculate_hartigan_index(X=None, y_pred=None, force_finite=True, finite_value=1e10):
-    centroids, _ = compute_barycenters(X, y_pred)
-    num_clusters = len(np.unique(y_pred))
+    unique_labels = np.unique(y_pred)
+    num_clusters = len(unique_labels)
     if num_clusters == 1:
         if force_finite:
-            return finite_value
-        else:
-            raise ValueError("The Hartigan Index is undefined when y_pred has only 1 cluster.")
+            return float(finite_value)
+        raise ValueError("The Hartigan Index is undefined when y_pred has only 1 cluster.")
+
+    centroids, _ = compute_barycenters(X, y_pred)
     hi = 0.0
-    for idx in range(num_clusters):
-        cluster_data = X[y_pred == idx]
-        cluster_centroid = centroids[idx]
+    for i, label in enumerate(unique_labels):
+        cluster_data = X[y_pred == label]
+        cluster_centroid = centroids[i]
+        distances_within = cdist(cluster_data, [cluster_centroid], metric='euclidean') ** 2
+        sum_dist_within = np.sum(distances_within)
+        other_centroids = np.delete(centroids, i, axis=0)
 
-        distances_within_cluster = cdist(cluster_data, [cluster_centroid], metric='euclidean') ** 2
-        sum_distances_within_cluster = np.sum(distances_within_cluster)
+        # Determine the closest alternative centroid
+        closest_idx = np.argmin(np.linalg.norm(cluster_centroid - other_centroids, axis=1))
+        closest_centroid = other_centroids[closest_idx]
 
-        other_centroids = np.delete(centroids, idx, axis=0)
-        closest_other_centroid_index = np.argmin(np.linalg.norm(cluster_centroid - other_centroids, axis=1))
-        closest_other_centroid = other_centroids[closest_other_centroid_index]
+        distances_to_other = cdist(cluster_data, [closest_centroid], metric='euclidean') ** 2
+        sum_dist_to_other = np.sum(distances_to_other)
 
-        distances_to_closest_other_cluster = cdist(cluster_data, [closest_other_centroid], metric='euclidean') ** 2
-        sum_distances_to_closest_other_cluster = np.sum(distances_to_closest_other_cluster)
+        # Zero-division protection: Handle the zero variance edge-case
+        if sum_dist_to_other == 0.0:
+            if force_finite:
+                return float(finite_value)
+            raise ValueError(f"Hartigan Index calculation failed: Cluster {label} has zero variance to its closest neighbor.")
+        hi += sum_dist_within / sum_dist_to_other
 
-        hi += sum_distances_within_cluster / sum_distances_to_closest_other_cluster
-    return hi
+    # Final safety catch for floating-point overflow bounds
+    if np.isnan(hi) or np.isinf(hi):
+        if force_finite:
+            return float(finite_value)
+        raise ValueError("Hartigan Index calculation resulted in NaN/Inf.")
+    return float(hi)
 
 
 def calculate_mutual_info_score(y_true=None, y_pred=None):
@@ -757,11 +885,12 @@ def calculate_completeness_score(y_true=None, y_pred=None, force_finite=True, fi
 def calculate_v_measure_score(y_true=None, y_pred=None, beta=1.0, force_finite=True, finite_value=1.0):
     h = calculate_homogeneity_score(y_true, y_pred, force_finite, finite_value)
     c = calculate_completeness_score(y_true, y_pred, force_finite, finite_value)
-    if h + c == 0:
-        res = 0
+    # Handle the boundary case where both homogeneity and completeness are zero
+    if h + c == 0.0:
+        res = 0.0
     else:
-        res = ((1+beta) * h * c) / (beta*h + c)
-    return res
+        res = ((1.0 + beta) * h * c) / (beta * h + c)
+    return float(res)
 
 
 def calculate_precision_score(y_true=None, y_pred=None, force_finite=True, finite_value=1.0):
