@@ -802,24 +802,21 @@ class ClusteringMetric(Evaluator):
         y_true, y_pred, _, force_finite, finite_value = self.get_processed_external_data(y_true, y_pred, force_finite, finite_value)
         return cu.calculate_rogers_tanimoto_score(y_true, y_pred, force_finite, finite_value)
 
-    def russel_rao_score(self, y_true=None, y_pred=None, **kwargs):
+    def russel_rao_score(self, y_true=None, y_pred=None, force_finite=True, finite_value=0.0, **kwargs):
         """
         Computes the Russel-Rao score
-        Bigger is better (Best = 1), Range = [0, 1]
-
-        It measures the proportion of concordances between the two partitions by computing the proportion of pairs of samples
-        that are in the same cluster in both partitions. The Russel-Rao index ranges from 0 to 1, where a value of 1 indicates
-        perfect agreement between the two partitions being compared. A value of 0 indicates complete disagreement between the two partitions.
 
         Args:
             y_true (array-like): The true labels for each sample.
             y_pred (array-like): The predicted cluster labels for each sample.
+            force_finite (bool): Make result as finite number
+            finite_value (float): The value that used to replace the infinite value or NaN value.
 
         Returns:
             result (float): The Russel-Rao score
         """
-        y_true, y_pred, _, _, _ = self.get_processed_external_data(y_true, y_pred)
-        return cu.calculate_russel_rao_score(y_true, y_pred)
+        y_true, y_pred, _, force_finite, finite_value = self.get_processed_external_data(y_true, y_pred, force_finite, finite_value)
+        return cu.calculate_russel_rao_score(y_true, y_pred, force_finite, finite_value)
 
     def sokal_sneath1_score(self, y_true=None, y_pred=None, **kwargs):
         """
@@ -998,8 +995,8 @@ class ClusteringMetric(Evaluator):
     MNS = mc_nemar_score
     PhS = phi_score
     RTS = rogers_tanimoto_score
-
     RRS = russel_rao_score
+
     SS1S = sokal_sneath1_score
     SS2S = sokal_sneath2_score
     PuS = purity_score
