@@ -51,19 +51,26 @@ Clustering Metrics
 
 
 ======================
-All clustering metrics
+All Clustering Metrics
 ======================
 
-Most of the clustering metrics is implemented based on the paper :cite:`desgraupes2013clustering`
+The majority of the clustering metrics in this library are implemented based on the comprehensive study by :cite:`desgraupes2013clustering`.
 
-There are several types of clustering metrics that are commonly used to evaluate the quality of clustering results.
+There are two primary categories of metrics commonly used to evaluate the quality of clustering results:
 
-* Internal evaluation metrics: These are metrics that evaluate the clustering results based solely on the data and the clustering algorithm used, without any external information. Examples of internal evaluation metrics include Silhouette Coefficient, Calinski-Harabasz Index, and Davies-Bouldin Index.
-* External evaluation metrics: These are metrics that evaluate the clustering results by comparing them to some external reference, such as expert labels or a gold standard. Examples of external evaluation metrics include Adjusted Rand score, Normalized Mutual Information score, and Fowlkes-Mallows score.
+* **Internal Evaluation Metrics**: These metrics evaluate the clustering structure based solely on the intrinsic properties of the data itself, without relying on any external information or ground truth labels. Examples include the Silhouette Coefficient, Calinski-Harabasz Index, and Davies-Bouldin Index.
 
-It's important to choose the appropriate clustering metrics based on the specific problem and data at hand.
+* **External Evaluation Metrics**: These metrics assess the clustering results by comparing them to an external reference, such as expert-annotated labels or a gold standard. Examples include the Adjusted Rand Score, Normalized Mutual Information Score, and Fowlkes-Mallows Score.
 
-**In this library, metrics that belong to the internal evaluation category will have a metric name suffix of "index" On the other hand, metrics that belong to the external evaluation category will have a metric name suffix of "score"**
+It is highly recommended to evaluate your models using appropriate metrics tailored to your specific problem domain and data distribution.
+
+.. note::
+   **Library Naming Convention**
+
+   To help users easily distinguish between the two evaluation categories, this library strictly enforces the following naming rule:
+
+   * Metrics belonging to the **internal evaluation** category will have the suffix **"Index"** (e.g., Dunn Index).
+   * Metrics belonging to the **external evaluation** category will have the suffix **"Score"** (e.g., Adjusted Rand Score).
 
 
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
@@ -75,15 +82,15 @@ It's important to choose the appropriate clustering metrics based on the specifi
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
 | 3   | DBI    | Davies Bouldin Index                      | Smaller is better (Best = 0), Range=[0, +inf)          |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 4   | BRI    | Banfeld Raftery Index                     | Smaller is better (No best value), Range=(-inf, inf)   |
+| 4   | BRI    | Banfeld Raftery Index                     | Smaller is better (No best value), Range=(-inf, +inf)  |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
 | 5   | KDI    | Ksq Detw Index                            | Smaller is better (No best value), Range=(-inf, +inf)  |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 6   | DRI    | Det Ratio Index                           | Bigger is better (No best value), Range=[0, +inf)      |
+| 6   | DRI    | Det Ratio Index                           | Bigger is better (No best value), Range=[1, +inf)      |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
 | 7   | DI     | Dunn Index                                | Bigger is better (No best value), Range=[0, +inf)      |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 8   | CHI    | Calinski Harabasz Index                   | Bigger is better (No best value), Range=[0, inf)       |
+| 8   | CHI    | Calinski Harabasz Index                   | Bigger is better (No best value), Range=[0, +inf)      |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
 | 9   | LDRI   | Log Det Ratio Index                       | Bigger is better (No best value), Range=(-inf, +inf)   |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
@@ -99,11 +106,11 @@ It's important to choose the appropriate clustering metrics based on the specifi
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
 | 15  | BI     | Beale Index                               | Smaller is better (Best = 0), Range = [0, +inf)        |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 16  | RSI    | R-squared Index                           | Bigger is better (Best=1), Range = (-inf, 1]           |
+| 16  | RSI    | R-squared Index                           | Bigger is better (Best=1), Range = [0, 1]              |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 17  | DBCVI  | Density-based Clustering Validation Index | Bigger is better (Best=0), Range = [0, 1]              |
+| 17  | DBCVI  | Density-based Clustering Validation Index | Bigger is better (Best=1), Range = [-1, 1]             |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 18  | HI     | Hartigan Index                            | Bigger is better (best=0), Range = [0, +inf)           |
+| 18  | HI     | Hartigan Index                            | Smaller is better (best=0), Range = [0, +inf)          |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
 | 19  | MIS    | Mutual Info Score                         | Bigger is better (No best value), Range = [0, +inf)    |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
@@ -129,7 +136,7 @@ It's important to choose the appropriate clustering metrics based on the specifi
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
 | 30  | CDS    | Czekanowski Dice Score                    | Bigger is better (Best = 1), Range = [0, 1]            |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 31  | HGS    | Hubert Gamma Score                        | Bigger is better (Best = 1), Range=[-1, +1]            |
+| 31  | HGS    | Hubert Gamma Score                        | Bigger is better (Best = 1), Range=[-1, 1]             |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
 | 32  | JS     | Jaccard Score                             | Bigger is better (Best = 1), Range = [0, 1]            |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
@@ -137,7 +144,7 @@ It's important to choose the appropriate clustering metrics based on the specifi
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
 | 34  | MNS    | Mc Nemar Score                            | Bigger is better (No best value), Range=(-inf, +inf)   |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 35  | PhS    | Phi Score                                 | Bigger is better (No best value), Range = (-inf, +inf) |
+| 35  | PhS    | Phi Score                                 | Bigger is better (Best = 1), Range = [-1, 1]           |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
 | 36  | RTS    | Rogers Tanimoto Score                     | Bigger is better (Best = 1), Range = [0, 1]            |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
@@ -151,10 +158,9 @@ It's important to choose the appropriate clustering metrics based on the specifi
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
 | 41  | EnS    | Entropy Score                             | Smaller is better (Best = 0), Range = [0, +inf)        |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 42  | TauS   | Tau Score                                 | Bigger is better (No best value), Range = (-inf, +inf) |
+| 42  | TauS   | Tau Score                                 | Bigger is better (Best = 1), Range = [-1, 1]           |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
 | 43  | GAS    | Gamma Score                               | Bigger is better (Best = 1), Range = [-1, 1]           |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
 | 44  | GPS    | Gplus Score                               | Smaller is better (Best = 0), Range = [0, 1]           |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-
