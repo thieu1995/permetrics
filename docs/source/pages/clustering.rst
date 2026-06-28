@@ -12,13 +12,13 @@ Clustering Metrics
    clustering/DRI.rst
    clustering/KDI.rst
    clustering/LDRI.rst
+   clustering/DI.rst
 
    clustering/DHI.rst
    clustering/SSEI.rst
    clustering/BI.rst
    clustering/RSI.rst
    clustering/DBCVI.rst
-   clustering/DI.rst
    clustering/HI.rst
    clustering/ES.rst
    clustering/PuS.rst
