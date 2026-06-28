@@ -13,7 +13,7 @@ Clustering Metrics
    clustering/KDI.rst
    clustering/LDRI.rst
    clustering/DI.rst
-
+   clustering/LSRI.rst
    clustering/DHI.rst
    clustering/SSEI.rst
    clustering/BI.rst
