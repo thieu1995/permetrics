@@ -68,11 +68,11 @@ class ClusteringMetric(Evaluator):
         "PrS": {"type": "max", "range": "[0, 1]", "best": "1"},
         "ReS": {"type": "max", "range": "[0, 1]", "best": "1"},
         "FS": {"type": "max", "range": "[0, 1]", "best": "1"},
-
         "CDS": {"type": "max", "range": "[0, 1]", "best": "1"},
         "HGS": {"type": "max", "range": "[-1, 1]", "best": "1"},
         "JS": {"type": "max", "range": "[0, 1]", "best": "1"},
         "KS": {"type": "max", "range": "[0, 1]", "best": "1"},
+
         "MNS": {"type": "max", "range": "(-inf, +inf)", "best": "no best"},
         "PhS": {"type": "max", "range": "(-inf, +inf)", "best": "no best"},
         "RTS": {"type": "max", "range": "[0, 1]", "best": "1"},
@@ -584,7 +584,7 @@ class ClusteringMetric(Evaluator):
         y_true, y_pred, _, force_finite, finite_value = self.get_processed_external_data(y_true, y_pred, force_finite, finite_value)
         return cu.calculate_fowlkes_mallows_score(y_true, y_pred, force_finite, finite_value)
 
-    def homogeneity_score(self, y_true=None, y_pred=None, **kwargs):
+    def homogeneity_score(self, y_true=None, y_pred=None, force_finite=True, finite_value=0.,**kwargs):
         """
         Computes the Homogeneity Score
 
@@ -595,29 +595,32 @@ class ClusteringMetric(Evaluator):
         Args:
             y_true (array-like): The true labels for each sample.
             y_pred (array-like): The predicted cluster labels for each sample.
+            force_finite (bool): Make result as finite number
+            finite_value (float): The value that used to replace the infinite value or NaN value.
 
         Returns:
             result (float): The Homogeneity Score
         """
-        y_true, y_pred, _, _, _ = self.get_processed_external_data(y_true, y_pred)
-        return cu.calculate_homogeneity_score(y_true, y_pred)
+        y_true, y_pred, _, force_finite, finite_value = self.get_processed_external_data(y_true, y_pred, force_finite, finite_value)
+        return cu.calculate_homogeneity_score(y_true, y_pred, force_finite, finite_value)
 
-    def completeness_score(self, y_true=None, y_pred=None, **kwargs):
+    def completeness_score(self, y_true=None, y_pred=None, force_finite=True, finite_value=0.,**kwargs):
         """
         Computes the Completeness Score
-        It measures the ratio of samples that are correctly assigned to the same cluster to the total number of samples in the data.
 
         Args:
             y_true (array-like): The true labels for each sample.
             y_pred (array-like): The predicted cluster labels for each sample.
+            force_finite (bool): Make result as finite number
+            finite_value (float): The value that used to replace the infinite value or NaN value.
 
         Returns:
             result (float): The completeness score.
         """
-        y_true, y_pred, _, _, _ = self.get_processed_external_data(y_true, y_pred)
-        return cu.calculate_completeness_score(y_true, y_pred)
+        y_true, y_pred, _, force_finite, finite_value = self.get_processed_external_data(y_true, y_pred, force_finite, finite_value)
+        return cu.calculate_completeness_score(y_true, y_pred, force_finite, finite_value)
 
-    def v_measure_score(self, y_true=None, y_pred=None, beta=1.0, **kwargs):
+    def v_measure_score(self, y_true=None, y_pred=None, beta=1.0, force_finite=True, finite_value=0., **kwargs):
         """
         Computes the V Measure Score
 
@@ -629,42 +632,48 @@ class ClusteringMetric(Evaluator):
             y_true (array-like): The true labels for each sample.
             y_pred (array-like): The predicted cluster labels for each sample.
             beta (float): The weight parameter, default = 1.0
+            force_finite (bool): Make result as finite number
+            finite_value (float): The value that used to replace the infinite value or NaN value.
 
         Returns:
             result (float): The V measure score
         """
-        y_true, y_pred, _, _, _ = self.get_processed_external_data(y_true, y_pred)
-        return cu.calculate_v_measure_score(y_true, y_pred, beta=beta)
+        y_true, y_pred, _, force_finite, finite_value = self.get_processed_external_data(y_true, y_pred, force_finite, finite_value)
+        return cu.calculate_v_measure_score(y_true, y_pred, beta, force_finite, finite_value)
 
-    def precision_score(self, y_true=None, y_pred=None, **kwargs):
+    def precision_score(self, y_true=None, y_pred=None, force_finite=True, finite_value=0., **kwargs):
         """
         Computes the Precision Score
 
         Args:
             y_true (array-like): The true labels for each sample.
             y_pred (array-like): The predicted cluster labels for each sample.
+            force_finite (bool): Make result as finite number
+            finite_value (float): The value that used to replace the infinite value or NaN value.
 
         Returns:
             result (float): The Precision score
         """
-        y_true, y_pred, _, _, _ = self.get_processed_external_data(y_true, y_pred)
-        return cu.calculate_precision_score(y_true, y_pred)
+        y_true, y_pred, _, force_finite, finite_value = self.get_processed_external_data(y_true, y_pred, force_finite, finite_value)
+        return cu.calculate_precision_score(y_true, y_pred, force_finite, finite_value)
 
-    def recall_score(self, y_true=None, y_pred=None, **kwargs):
+    def recall_score(self, y_true=None, y_pred=None, force_finite=True, finite_value=0., **kwargs):
         """
         Computes the Recall Score
 
         Args:
             y_true (array-like): The true labels for each sample.
             y_pred (array-like): The predicted cluster labels for each sample.
+            force_finite (bool): Make result as finite number
+            finite_value (float): The value that used to replace the infinite value or NaN value.
 
         Returns:
             result (float): The Recall score
         """
-        y_true, y_pred, _, _, _ = self.get_processed_external_data(y_true, y_pred)
-        return cu.calculate_recall_score(y_true, y_pred)
+        y_true, y_pred, _, force_finite, finite_value = self.get_processed_external_data(y_true, y_pred, force_finite, finite_value)
+        return cu.calculate_recall_score(y_true, y_pred, force_finite, finite_value)
 
-    def f_measure_score(self, y_true=None, y_pred=None, beta=1.0, **kwargs):
+    def f_measure_score(self, y_true=None, y_pred=None, beta=1.0, force_finite=True, finite_value=0., **kwargs):
         """
         Computes the F-Measure score
 
@@ -672,17 +681,18 @@ class ClusteringMetric(Evaluator):
             y_true (array-like): The true labels for each sample.
             y_pred (array-like): The predicted cluster labels for each sample.
             beta (float): The weight parameter, default = 1.0
+            force_finite (bool): Make result as finite number
+            finite_value (float): The value that used to replace the infinite value or NaN value.
 
         Returns:
             result (float): The F-Measure score
         """
-        y_true, y_pred, _, _, _ = self.get_processed_external_data(y_true, y_pred)
-        return cu.calculate_f_measure_score(y_true, y_pred, beta=beta)
+        y_true, y_pred, _, force_finite, finite_value = self.get_processed_external_data(y_true, y_pred, force_finite, finite_value)
+        return cu.calculate_f_measure_score(y_true, y_pred, beta, force_finite, finite_value)
 
-    def czekanowski_dice_score(self, y_true=None, y_pred=None, **kwargs):
+    def czekanowski_dice_score(self, y_true=None, y_pred=None, force_finite=True, finite_value=0., **kwargs):
         """
-        Computes the  Czekanowski-Dice score
-        It is the harmonic mean of the precision and recall coefficients. Bigger is better (Best = 1), Range = [0, 1]
+        Computes the Czekanowski-Dice score
 
         Args:
             y_true (array-like): The true labels for each sample.
@@ -691,17 +701,12 @@ class ClusteringMetric(Evaluator):
         Returns:
             result (float): The Czekanowski-Dice score
         """
-        y_true, y_pred, _, _, _ = self.get_processed_external_data(y_true, y_pred)
-        return cu.calculate_czekanowski_dice_score(y_true, y_pred)
+        y_true, y_pred, _, force_finite, finite_value = self.get_processed_external_data(y_true, y_pred, force_finite, finite_value)
+        return cu.calculate_czekanowski_dice_score(y_true, y_pred, force_finite, finite_value)
 
     def hubert_gamma_score(self, y_true=None, y_pred=None, force_finite=True, finite_value=-1.0, **kwargs):
         """
         Computes the Hubert Gamma score
-        Bigger is better (Best = 1), Range=[-1, +1]
-
-        The Hubert Gamma index ranges from -1 to 1, where a value of 1 indicates perfect agreement between the two partitions
-        being compared, a value of 0 indicates no association between the partitions, and a value of -1 indicates
-        complete disagreement between the two partitions.
 
         Args:
             y_true (array-like): The true labels for each sample.
@@ -718,14 +723,6 @@ class ClusteringMetric(Evaluator):
     def jaccard_score(self, y_true=None, y_pred=None, **kwargs):
         """
         Computes the Jaccard score
-        Bigger is better (Best = 1), Range = [0, 1]
-
-        It ranges from 0 to 1, where a value of 1 indicates perfect agreement between the two partitions being compared.
-        A value of 0 indicates complete disagreement between the two partitions.
-
-        The Jaccard score is similar to the Czekanowski-Dice score, but it is less sensitive to differences in cluster size. However,
-        like the Czekanowski-Dice score, it may not be sensitive to certain types of differences between partitions. Therefore,
-        it is often used in conjunction with other external indices to get a more complete picture of the similarity between partitions.
 
         Args:
             y_true (array-like): The true labels for each sample.
@@ -739,12 +736,7 @@ class ClusteringMetric(Evaluator):
 
     def kulczynski_score(self, y_true=None, y_pred=None, **kwargs):
         """
-        Computes the Kulczynski score
-        Bigger is better (Best = 1), Range = [0, 1]
-
-        It is the arithmetic mean of the precision and recall coefficients, which means that it takes into account both precision and recall.
-        The Kulczynski index ranges from 0 to 1, where a value of 1 indicates perfect agreement between the two partitions
-        being compared. A value of 0 indicates complete disagreement between the two partitions.
+        Computes the Kulczynski Score
 
         Args:
             y_true (array-like): The true labels for each sample.
@@ -1011,11 +1003,11 @@ class ClusteringMetric(Evaluator):
     PrS = precision_score
     ReS = recall_score
     FS = f_measure_score
-
     CDS = czekanowski_dice_score
     HGS = hubert_gamma_score
     JS = jaccard_score
     KS = kulczynski_score
+
     MNS = mc_nemar_score
     PhS = phi_score
     RTS = rogers_tanimoto_score

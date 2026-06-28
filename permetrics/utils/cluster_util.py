@@ -655,7 +655,13 @@ def compute_conditional_entropy(y_true, y_pred):
     return entropy_sum
 
 
-def calculate_homogeneity_score(y_true=None, y_pred=None):
+def calculate_homogeneity_score(y_true=None, y_pred=None, force_finite=True, finite_value=1.0):
+    if len(np.unique(y_pred)) == 1:
+        if force_finite:
+            return finite_value
+        else:
+            raise ValueError("The Homogeneity Score is undefined when y_pred has only 1 cluster.")
+
     h_labels_true = compute_entropy(y_true)
     h_labels_true_given_pred = compute_conditional_entropy(y_true, y_pred)
     if h_labels_true == 0:
@@ -665,13 +671,13 @@ def calculate_homogeneity_score(y_true=None, y_pred=None):
     return res
 
 
-def calculate_completeness_score(y_true=None, y_pred=None):
-    return calculate_homogeneity_score(y_pred, y_true)
+def calculate_completeness_score(y_true=None, y_pred=None, force_finite=True, finite_value=1.0):
+    return calculate_homogeneity_score(y_pred, y_true, force_finite, finite_value)
 
 
-def calculate_v_measure_score(y_true=None, y_pred=None, beta=1.0):
-    h = calculate_homogeneity_score(y_true, y_pred)
-    c = calculate_completeness_score(y_true, y_pred)
+def calculate_v_measure_score(y_true=None, y_pred=None, beta=1.0, force_finite=True, finite_value=1.0):
+    h = calculate_homogeneity_score(y_true, y_pred, force_finite, finite_value)
+    c = calculate_completeness_score(y_true, y_pred, force_finite, finite_value)
     if h + c == 0:
         res = 0
     else:
@@ -679,24 +685,44 @@ def calculate_v_measure_score(y_true=None, y_pred=None, beta=1.0):
     return res
 
 
-def calculate_precision_score(y_true=None, y_pred=None):
+def calculate_precision_score(y_true=None, y_pred=None, force_finite=True, finite_value=1.0):
+    if len(np.unique(y_pred)) == 1:
+        if force_finite:
+            return finite_value
+        else:
+            raise ValueError("The Precision Score is undefined when y_pred has only 1 cluster.")
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
     return yy / (yy + ny)
 
 
-def calculate_recall_score(y_true=None, y_pred=None):
+def calculate_recall_score(y_true=None, y_pred=None, force_finite=True, finite_value=1.0):
+    if len(np.unique(y_pred)) == 1:
+        if force_finite:
+            return finite_value
+        else:
+            raise ValueError("The Recall Score is undefined when y_pred has only 1 cluster.")
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
     return yy / (yy + yn)
 
 
-def calculate_f_measure_score(y_true=None, y_pred=None, beta=1.0):
+def calculate_f_measure_score(y_true=None, y_pred=None, beta=1.0, force_finite=True, finite_value=1.0):
+    if len(np.unique(y_pred)) == 1:
+        if force_finite:
+            return finite_value
+        else:
+            raise ValueError("The F-Measure Score is undefined when y_pred has only 1 cluster.")
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
     p = yy / (yy + ny)
     r = yy / (yy + yn)
     return ((1 + beta**2) * p * r) / (beta**2 * p + r)
 
 
-def calculate_czekanowski_dice_score(y_true=None, y_pred=None):
+def calculate_czekanowski_dice_score(y_true=None, y_pred=None, force_finite=True, finite_value=1.0):
+    if len(np.unique(y_pred)) == 1:
+        if force_finite:
+            return finite_value
+        else:
+            raise ValueError("The Czekanowski Dice Score is undefined when y_pred has only 1 cluster.")
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
     return 2 * yy / (2 * yy + yn + ny)
 
