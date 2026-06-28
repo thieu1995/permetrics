@@ -13,6 +13,10 @@ from scipy.stats import entropy as calculate_entropy
 from scipy.sparse import coo_matrix
 
 
+def _raise_err(metric, reason):
+    raise ValueError(f"The {metric} score is undefined because {reason}.")
+
+
 def sum_comb(x):
     """
     Calculate the total number of pairs nC2 = n(n-1)/2
@@ -686,158 +690,179 @@ def calculate_v_measure_score(y_true=None, y_pred=None, beta=1.0, force_finite=T
 
 
 def calculate_precision_score(y_true=None, y_pred=None, force_finite=True, finite_value=1.0):
-    if len(np.unique(y_pred)) == 1:
-        if force_finite:
-            return finite_value
-        else:
-            raise ValueError("The Precision Score is undefined when y_pred has only 1 cluster.")
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
-    return yy / (yy + ny)
+    den = yy + ny
+    if den == 0:
+        return finite_value if force_finite else _raise_err("Precision", "y_pred contains only singletons")
+    return yy / den
 
 
 def calculate_recall_score(y_true=None, y_pred=None, force_finite=True, finite_value=1.0):
-    if len(np.unique(y_pred)) == 1:
-        if force_finite:
-            return finite_value
-        else:
-            raise ValueError("The Recall Score is undefined when y_pred has only 1 cluster.")
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
-    return yy / (yy + yn)
+    den = yy + yn
+    if den == 0:
+        return finite_value if force_finite else _raise_err("Recall", "y_true contains only singletons")
+    return yy / den
 
 
 def calculate_f_measure_score(y_true=None, y_pred=None, beta=1.0, force_finite=True, finite_value=1.0):
-    if len(np.unique(y_pred)) == 1:
-        if force_finite:
-            return finite_value
-        else:
-            raise ValueError("The F-Measure Score is undefined when y_pred has only 1 cluster.")
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
-    p = yy / (yy + ny)
-    r = yy / (yy + yn)
-    return ((1 + beta**2) * p * r) / (beta**2 * p + r)
+    b2 = beta ** 2
+    den = (1 + b2) * yy + b2 * yn + ny
+    if den == 0:
+        return finite_value if force_finite else _raise_err("F-Measure", "both Precision and Recall are undefined/zero")
+    return ((1 + b2) * yy) / den
 
 
 def calculate_czekanowski_dice_score(y_true=None, y_pred=None, force_finite=True, finite_value=1.0):
-    if len(np.unique(y_pred)) == 1:
-        if force_finite:
-            return finite_value
-        else:
-            raise ValueError("The Czekanowski Dice Score is undefined when y_pred has only 1 cluster.")
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
-    return 2 * yy / (2 * yy + yn + ny)
+    den = 2 * yy + yn + ny
+    if den == 0:
+        return finite_value if force_finite else _raise_err("CDS", "no positive co-clusterings exist")
+    return (2 * yy) / den
 
 
-def calculate_hubert_gamma_score(y_true=None, y_pred=None, force_finite=True, finite_value=-1.0):
-    n_clusters = len(np.unique(y_pred))
-    if n_clusters == 1:
-        if force_finite:
-            return finite_value
-        else:
-            raise ValueError("The Hubert Gamma score is undefined when y_pred has only 1 cluster.")
+def calculate_hubert_gamma_score(y_true=None, y_pred=None, force_finite=True, finite_value=0.0):
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
+    den_sq = (yy + yn) * (yy + ny) * (nn + yn) * (nn + ny)
+    if den_sq == 0:
+        return finite_value if force_finite else _raise_err("Hubert Gamma", "indicator variables have zero variance")
     NT = yy + yn + ny + nn
-    res = (NT*yy - (yy+yn)*(yy+ny)) / np.sqrt((yy+yn)*(yy+ny)*(nn+yn)*(nn+ny))
-    return res
+    return (NT * yy - (yy + yn) * (yy + ny)) / np.sqrt(den_sq)
 
 
-def calculate_jaccard_score(y_true=None, y_pred=None):
+def calculate_jaccard_score(y_true=None, y_pred=None, force_finite=True, finite_value=0.0):
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
-    return yy / (yy + yn + ny)
+    den = yy + yn + ny
+    if den == 0:
+        return finite_value if force_finite else _raise_err("Jaccard", "no positive co-clusterings exist")
+    return yy / den
 
 
-def calculate_kulczynski_score(y_true=None, y_pred=None):
+def calculate_kulczynski_score(y_true=None, y_pred=None, force_finite=True, finite_value=0.0):
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
-    res = 0.5 * ((yy / (yy + ny)) + (yy / (yy + yn)))
-    return res
+    den_p = yy + ny
+    den_r = yy + yn
+    if den_p == 0 or den_r == 0:
+        return finite_value if force_finite else _raise_err("Kulczynski", "Precision or Recall denominator is zero")
+    return 0.5 * ((yy / den_p) + (yy / den_r))
 
 
-def calculate_mc_nemar_score(y_true=None, y_pred=None):
+def calculate_mc_nemar_score(y_true=None, y_pred=None, force_finite=True, finite_value=0.0):
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
-    return (nn - ny) / np.sqrt(nn + ny)
+    den = nn + ny
+    if den == 0:
+        return finite_value if force_finite else _raise_err("McNemar", "denominator (nn + ny) is zero")
+    return (nn - ny) / np.sqrt(den)
 
 
-def calculate_phi_score(y_true=None, y_pred=None, force_finite=True, finite_value=-1e10):
-    n_clusters = len(np.unique(y_pred))
-    if n_clusters == 1:
-        if force_finite:
-            return finite_value
-        else:
-            raise ValueError("The Phi score is undefined when y_pred has only 1 cluster.")
+def calculate_phi_score(y_true=None, y_pred=None, force_finite=True, finite_value=0.0):
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
-    numerator = yy * nn - yn * ny
-    denominator = (yy + yn) * (yy + ny) * (yn + nn) * (ny + nn)
-    return numerator / denominator
+    den_sq = (yy + yn) * (yy + ny) * (yn + nn) * (ny + nn)
+    if den_sq == 0:
+        return finite_value if force_finite else _raise_err("Phi", "indicator variables have zero variance")
+    return (yy * nn - yn * ny) / np.sqrt(den_sq)
 
 
 def calculate_rogers_tanimoto_score(y_true=None, y_pred=None):
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
-    cc = (yy + nn) / (yy + nn + 2 * (yn + ny))
-    return cc
+    return (yy + nn) / (yy + nn + 2 * (yn + ny))
 
 
 def calculate_russel_rao_score(y_true=None, y_pred=None):
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
     NT = yy + yn + ny + nn
-    return yy / NT
+    return yy / NT if NT > 0 else 0.0
 
 
 def calculate_sokal_sneath1_score(y_true=None, y_pred=None):
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
-    cc = yy / (yy + 2 * (yn + ny))
-    return cc
+    den = yy + 2 * (yn + ny)
+    return yy / den if den > 0 else 0.0
 
 
 def calculate_sokal_sneath2_score(y_true=None, y_pred=None):
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
-    cc = (yy + nn) / (yy + nn + 0.5 * (yn + ny))
-    return cc
+    den = yy + nn + 0.5 * (yn + ny)
+    return (yy + nn) / den if den > 0 else 0.0
+
+
+# def calculate_purity_score(y_true=None, y_pred=None):
+#     # Find the number of data points
+#     N = len(y_true)
+#     # Find the unique class labels in the true labels
+#     unique_classes = np.unique(y_true)
+#     # Initialize the purity score
+#     purity = 0
+#     # Iterate over each unique class label
+#     for c in unique_classes:
+#         # Find the indices of data points with the current class label in the true labels
+#         class_indices = np.where(y_true == c)[0]
+#         # Find the corresponding predicted labels for these data points
+#         class_predictions = y_pred[class_indices]
+#         # Count the occurrences of each predicted label
+#         class_predictions = np.round(class_predictions).astype(int)
+#         class_counts = np.bincount(class_predictions)
+#         # Add the size of the majority class to the purity score
+#         purity += np.max(class_counts)
+#     # Normalize the purity score by dividing by the total number of data points
+#     return purity / N
 
 
 def calculate_purity_score(y_true=None, y_pred=None):
-    # Find the number of data points
-    N = len(y_true)
-    # Find the unique class labels in the true labels
-    unique_classes = np.unique(y_true)
-    # Initialize the purity score
-    purity = 0
-    # Iterate over each unique class label
-    for c in unique_classes:
-        # Find the indices of data points with the current class label in the true labels
-        class_indices = np.where(y_true == c)[0]
-        # Find the corresponding predicted labels for these data points
-        class_predictions = y_pred[class_indices]
-        # Count the occurrences of each predicted label
-        class_predictions = np.round(class_predictions).astype(int)
-        class_counts = np.bincount(class_predictions)
-        # Add the size of the majority class to the purity score
-        purity += np.max(class_counts)
-    # Normalize the purity score by dividing by the total number of data points
-    return purity / N
+    """
+    O(N) Vectorized Purity Score. Safe for arbitrary label formats.
+    """
+    contingency = compute_contingency_matrix(y_true, y_pred)
+    return np.sum(np.amax(contingency, axis=0)) / len(y_true)
+
+
+# def calculate_entropy_score(y_true=None, y_pred=None):
+#     # Find the number of data points
+#     N = len(y_true)
+#     # Find the unique class labels in the true labels
+#     unique_classes = np.unique(y_true)
+#     result = 0
+#     # Iterate over each unique class label
+#     for c in unique_classes:
+#         # Find the indices of data points with the current class label in the true labels
+#         class_indices = np.where(y_true == c)[0]
+#         # Find the corresponding predicted labels for these data points
+#         class_predictions = y_pred[class_indices]
+#         class_predictions = np.round(class_predictions).astype(int)
+#         # Count the occurrences of each predicted label
+#         class_counts = np.bincount(class_predictions)
+#         # Normalize the class counts by dividing by the total number of data points in the cluster
+#         class_distribution = class_counts / len(class_predictions)
+#         # Compute the entropy of the cluster
+#         cluster_entropy = calculate_entropy(class_distribution, base=2)
+#         # Weight the entropy by the relative size of the cluster
+#         cluster_size = len(class_indices)
+#         result += (cluster_size / N) * cluster_entropy
+#     return result
 
 
 def calculate_entropy_score(y_true=None, y_pred=None):
-    # Find the number of data points
+    """
+    O(N) Vectorized Cluster Entropy Score (Corrected Formulation).
+    """
     N = len(y_true)
-    # Find the unique class labels in the true labels
-    unique_classes = np.unique(y_true)
-    result = 0
-    # Iterate over each unique class label
-    for c in unique_classes:
-        # Find the indices of data points with the current class label in the true labels
-        class_indices = np.where(y_true == c)[0]
-        # Find the corresponding predicted labels for these data points
-        class_predictions = y_pred[class_indices]
-        class_predictions = np.round(class_predictions).astype(int)
-        # Count the occurrences of each predicted label
-        class_counts = np.bincount(class_predictions)
-        # Normalize the class counts by dividing by the total number of data points in the cluster
-        class_distribution = class_counts / len(class_predictions)
-        # Compute the entropy of the cluster
-        cluster_entropy = calculate_entropy(class_distribution, base=2)
-        # Weight the entropy by the relative size of the cluster
-        cluster_size = len(class_indices)
-        result += (cluster_size / N) * cluster_entropy
-    return result
+    if N == 0:
+        return 0.0
+    contingency = compute_contingency_matrix(y_true, y_pred)
+    cluster_sizes = np.sum(contingency, axis=0)
+
+    # Remove empty cluster
+    non_empty = cluster_sizes > 0
+    contingency = contingency[:, non_empty]
+    cluster_sizes = cluster_sizes[non_empty]
+
+    probs = contingency / cluster_sizes  # Distribute y_true inside each y_pred
+    probs = probs[probs > 0]  # Avoid log(0)
+
+    # Calculate entropy of each cluster and multiply size of cluster
+    cluster_entropies = -np.sum(probs * np.log2(probs), axis=0)
+    return np.sum((cluster_sizes / N) * cluster_entropies)
 
 
 def compute_nd_splus_sminus_t(y_true, y_pred):
@@ -845,15 +870,15 @@ def compute_nd_splus_sminus_t(y_true, y_pred):
     Optimized version computing Concordant/Discordant pairs in O(N) using Combinatorics.
     """
     n = len(y_true)
-    nd = n * (n - 1) / 2.0  # Total pairs
+    nd = n * (n - 1) // 2  # Total pairs
     contingency = compute_contingency_matrix(y_true, y_pred)
 
-    a = sum_comb(contingency)  # Same True, Same Pred (it is t)
+    a = int(sum_comb(contingency)) # Same True, Same Pred (it is t)
     sum_rows = np.ravel(contingency.sum(axis=1))
     sum_cols = np.ravel(contingency.sum(axis=0))
 
-    same_true = sum_comb(sum_rows)
-    same_pred = sum_comb(sum_cols)
+    same_true = int(sum_comb(sum_rows))
+    same_pred = int(sum_comb(sum_cols))
     b = same_true - a  # Same True, Diff Pred
     c = same_pred - a  # Diff True, Same Pred
     d = nd - a - b - c  # Diff True, Diff Pred
@@ -864,28 +889,24 @@ def compute_nd_splus_sminus_t(y_true, y_pred):
     return nd, s_plus, s_minus, t
 
 
-def calculate_tau_score(y_true=None, y_pred=None):
-    """
-    Cluster Validation for Mixed-Type Data: Paper
-    """
+def calculate_tau_score(y_true=None, y_pred=None, force_finite=True, finite_value=1.0):
     nd, s_plus, s_minus, t = compute_nd_splus_sminus_t(y_true, y_pred)
-    res = (s_plus - s_minus) / np.sqrt((nd - t) * nd)
-    return res
+    den_sq = (nd - t) * nd
+    if den_sq <= 0:
+        return finite_value if force_finite else _raise_err("Tau", "partitions are identical or dataset is too small")
+    return (s_plus - s_minus) / np.sqrt(den_sq)
 
 
-def calculate_gamma_score(y_true=None, y_pred=None):
-    """
-    Cluster Validation for Mixed-Type Data: Paper
-    """
+def calculate_gamma_score(y_true=None, y_pred=None, force_finite=True, finite_value=1.0):
     nd, s_plus, s_minus, t = compute_nd_splus_sminus_t(y_true, y_pred)
-    res = (s_plus - s_minus) / (s_plus + s_minus)
-    return res
+    den = s_plus + s_minus
+    if den == 0:
+        return finite_value if force_finite else _raise_err("Gamma", "no sample pairs available for comparison")
+    return (s_plus - s_minus) / den
 
 
-def calculate_gplus_score(y_true=None, y_pred=None):
-    """
-    Cluster Validation for Mixed-Type Data: Paper
-    """
+def calculate_gplus_score(y_true=None, y_pred=None, force_finite=True, finite_value=0.0):
     nd, s_plus, s_minus, t = compute_nd_splus_sminus_t(y_true, y_pred)
-    res = s_minus / nd
-    return res
+    if nd == 0:
+        return finite_value if force_finite else _raise_err("G-Plus", "dataset has fewer than 2 samples")
+    return s_minus / nd

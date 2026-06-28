@@ -72,16 +72,16 @@ class ClusteringMetric(Evaluator):
         "HGS": {"type": "max", "range": "[-1, 1]", "best": "1"},
         "JS": {"type": "max", "range": "[0, 1]", "best": "1"},
         "KS": {"type": "max", "range": "[0, 1]", "best": "1"},
+        "MNS": {"type": "max", "range": "(-inf, +inf)", "best": "unknown"},
+        "PhS": {"type": "max", "range": "(-inf, +inf)", "best": "unknown"},
 
-        "MNS": {"type": "max", "range": "(-inf, +inf)", "best": "no best"},
-        "PhS": {"type": "max", "range": "(-inf, +inf)", "best": "no best"},
         "RTS": {"type": "max", "range": "[0, 1]", "best": "1"},
         "RRS": {"type": "max", "range": "[0, 1]", "best": "1"},
         "SS1S": {"type": "max", "range": "[0, 1]", "best": "1"},
         "SS2S": {"type": "max", "range": "[0, 1]", "best": "1"},
         "PuS": {"type": "max", "range": "[0, 1]", "best": "1"},
         "ES": {"type": "min", "range": "[0, +inf)", "best": "0"},
-        "TS": {"type": "max", "range": "(-inf, +inf)", "best": "no best"},
+        "TS": {"type": "max", "range": "(-inf, +inf)", "best": "unknown"},
         "GAS": {"type": "max", "range": "[-1, 1]", "best": "1"},
         "GPS": {"type": "min", "range": "[0, 1]", "best": "0"},
     }
@@ -697,6 +697,8 @@ class ClusteringMetric(Evaluator):
         Args:
             y_true (array-like): The true labels for each sample.
             y_pred (array-like): The predicted cluster labels for each sample.
+            force_finite (bool): Make result as finite number
+            finite_value (float): The value that used to replace the infinite value or NaN value.
 
         Returns:
             result (float): The Czekanowski-Dice score
@@ -704,7 +706,7 @@ class ClusteringMetric(Evaluator):
         y_true, y_pred, _, force_finite, finite_value = self.get_processed_external_data(y_true, y_pred, force_finite, finite_value)
         return cu.calculate_czekanowski_dice_score(y_true, y_pred, force_finite, finite_value)
 
-    def hubert_gamma_score(self, y_true=None, y_pred=None, force_finite=True, finite_value=-1.0, **kwargs):
+    def hubert_gamma_score(self, y_true=None, y_pred=None, force_finite=True, finite_value=0.0, **kwargs):
         """
         Computes the Hubert Gamma score
 
@@ -720,46 +722,41 @@ class ClusteringMetric(Evaluator):
         y_true, y_pred, _, force_finite, finite_value = self.get_processed_external_data(y_true, y_pred, force_finite, finite_value)
         return cu.calculate_hubert_gamma_score(y_true, y_pred, force_finite, finite_value)
 
-    def jaccard_score(self, y_true=None, y_pred=None, **kwargs):
+    def jaccard_score(self, y_true=None, y_pred=None, force_finite=True, finite_value=0.0, **kwargs):
         """
         Computes the Jaccard score
 
         Args:
             y_true (array-like): The true labels for each sample.
             y_pred (array-like): The predicted cluster labels for each sample.
+            force_finite (bool): Make result as finite number
+            finite_value (float): The value that used to replace the infinite value or NaN value.
 
         Returns:
             result (float): The Jaccard score
         """
-        y_true, y_pred, _, _, _ = self.get_processed_external_data(y_true, y_pred)
-        return cu.calculate_jaccard_score(y_true, y_pred)
+        y_true, y_pred, _, force_finite, finite_value = self.get_processed_external_data(y_true, y_pred, force_finite, finite_value)
+        return cu.calculate_jaccard_score(y_true, y_pred, force_finite, finite_value)
 
-    def kulczynski_score(self, y_true=None, y_pred=None, **kwargs):
+    def kulczynski_score(self, y_true=None, y_pred=None, force_finite=True, finite_value=0.0, **kwargs):
         """
         Computes the Kulczynski Score
 
         Args:
             y_true (array-like): The true labels for each sample.
             y_pred (array-like): The predicted cluster labels for each sample.
+            force_finite (bool): Make result as finite number
+            finite_value (float): The value that used to replace the infinite value or NaN value.
 
         Returns:
             result (float): The Kulczynski score
         """
-        y_true, y_pred, _, _, _ = self.get_processed_external_data(y_true, y_pred)
-        return cu.calculate_kulczynski_score(y_true, y_pred)
+        y_true, y_pred, _, force_finite, finite_value = self.get_processed_external_data(y_true, y_pred, force_finite, finite_value)
+        return cu.calculate_kulczynski_score(y_true, y_pred, force_finite, finite_value)
 
     def mc_nemar_score(self, y_true=None, y_pred=None, **kwargs):
         """
         Computes the Mc Nemar score
-        Bigger is better (No best value), Range=(-inf, +inf)
-
-        It is an adaptation of the non-parametric McNemar test for the comparison of frequencies between two paired samples.
-        The McNemar index ranges from -inf to inf, where a bigger value indicates perfect agreement between the two partitions
-        being compared
-
-        Under the null hypothesis that the discordances between the partitions P1 and P2 are random, the McNemar index
-        follows approximately a normal distribution. The McNemar index can be transformed into a chi-squared
-        distance, which follows a chi-squared distribution with 1 degree of freedom
 
         Args:
             y_true (array-like): The true labels for each sample.
@@ -1007,8 +1004,8 @@ class ClusteringMetric(Evaluator):
     HGS = hubert_gamma_score
     JS = jaccard_score
     KS = kulczynski_score
-
     MNS = mc_nemar_score
+
     PhS = phi_score
     RTS = rogers_tanimoto_score
     RRS = russel_rao_score
