@@ -44,8 +44,8 @@ Clustering Metrics
    clustering/RRS.rst
    clustering/SS12S.rst
    clustering/PuS.rst
+   clustering/EnS.rst
 
-   clustering/ES.rst
    clustering/TS.rst
 
 
@@ -148,7 +148,7 @@ It's important to choose the appropriate clustering metrics based on the specifi
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
 | 40  | PuS    | Purity Score                              | Bigger is better (Best = 1), Range = [0, 1]            |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 41  | ES     | Entropy Score                             | Smaller is better (Best = 0), Range = [0, +inf)        |
+| 41  | EnS    | Entropy Score                             | Smaller is better (Best = 0), Range = [0, +inf)        |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
 | 42  | TS     | Tau Score                                 | Bigger is better (No best value), Range = (-inf, +inf) |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
