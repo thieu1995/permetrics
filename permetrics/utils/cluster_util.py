@@ -669,13 +669,13 @@ def calculate_completeness_score(y_true=None, y_pred=None):
     return calculate_homogeneity_score(y_pred, y_true)
 
 
-def calculate_v_measure_score(y_true=None, y_pred=None):
+def calculate_v_measure_score(y_true=None, y_pred=None, beta=1.0):
     h = calculate_homogeneity_score(y_true, y_pred)
     c = calculate_completeness_score(y_true, y_pred)
     if h + c == 0:
         res = 0
     else:
-        res = 2 * (h * c) / (h + c)
+        res = ((1+beta) * h * c) / (beta*h + c)
     return res
 
 
