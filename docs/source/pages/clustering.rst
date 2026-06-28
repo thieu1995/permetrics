@@ -5,12 +5,12 @@ Clustering Metrics
    :maxdepth: 1
 
    clustering/BHI.rst
+   clustering/CHI.rst
    clustering/DHI.rst
    clustering/SSEI.rst
    clustering/BI.rst
    clustering/RSI.rst
    clustering/DBCVI.rst
-   clustering/CHI.rst
    clustering/DI.rst
    clustering/HI.rst
    clustering/ES.rst
