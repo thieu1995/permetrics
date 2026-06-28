@@ -754,7 +754,7 @@ class ClusteringMetric(Evaluator):
         y_true, y_pred, _, force_finite, finite_value = self.get_processed_external_data(y_true, y_pred, force_finite, finite_value)
         return cu.calculate_kulczynski_score(y_true, y_pred, force_finite, finite_value)
 
-    def mc_nemar_score(self, y_true=None, y_pred=None, **kwargs):
+    def mc_nemar_score(self, y_true=None, y_pred=None, force_finite=True, finite_value=0.0, **kwargs):
         """
         Computes the Mc Nemar score
 
@@ -765,8 +765,8 @@ class ClusteringMetric(Evaluator):
         Returns:
             result (float): The Mc Nemar score
         """
-        y_true, y_pred, _, _, _ = self.get_processed_external_data(y_true, y_pred)
-        return cu.calculate_mc_nemar_score(y_true, y_pred)
+        y_true, y_pred, _, force_finite, finite_value = self.get_processed_external_data(y_true, y_pred, force_finite, finite_value)
+        return cu.calculate_mc_nemar_score(y_true, y_pred, force_finite, finite_value)
 
     def phi_score(self, y_true=None, y_pred=None, force_finite=True, finite_value=-1e10, **kwargs):
         """
