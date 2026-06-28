@@ -66,7 +66,7 @@ Example Usage
 -------------
 
 .. code-block:: python
-    :emphasize-lines: 11,14,24,26
+    :emphasize-lines: 11,12,22,23
 
     from permetrics.clustering import ClusteringMetric
 
