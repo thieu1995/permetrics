@@ -45,8 +45,7 @@ Clustering Metrics
    clustering/SS12S.rst
    clustering/PuS.rst
    clustering/EnS.rst
-
-   clustering/TS.rst
+   clustering/TauS.rst
 
 
 ======================
@@ -150,7 +149,7 @@ It's important to choose the appropriate clustering metrics based on the specifi
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
 | 41  | EnS    | Entropy Score                             | Smaller is better (Best = 0), Range = [0, +inf)        |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
-| 42  | TS     | Tau Score                                 | Bigger is better (No best value), Range = (-inf, +inf) |
+| 42  | TauS   | Tau Score                                 | Bigger is better (No best value), Range = (-inf, +inf) |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
 | 43  | GAS    | Gamma Score                               | Bigger is better (Best = 1), Range = [-1, 1]           |
 +-----+--------+-------------------------------------------+--------------------------------------------------------+
