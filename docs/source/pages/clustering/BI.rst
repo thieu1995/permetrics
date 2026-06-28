@@ -1,52 +1,81 @@
-Beale Index (BI)
+BI - Beale Index
 ================
 
 .. toctree::
    :maxdepth: 3
-   :caption: Beale Index (BI)
 
-.. toctree::
-   :maxdepth: 3
-
-.. toctree::
-   :maxdepth: 3
-
-.. toctree::
-   :maxdepth: 3
-
-The Beale Index is a clustering validation metric that measures the quality of a clustering solution by computing the
-ratio of the within-cluster sum of squares to the between-cluster sum of squares.
-It is also known as the "variance ratio criterion" or the "F-ratio".
-
-The within-cluster sum of squares is a measure of the variability of the data points within each cluster,
-while the between-cluster sum of squares is a measure of the variability between the clusters.
-The idea is that a good clustering solution should have low within-cluster variation and high
-between-cluster variation, which results in a high Beale Index value.
-
-The Beale Index can be calculated using the following formula::
-
-	Beale Index = (sum of squared errors within clusters / degrees of freedom within clusters) / (sum of squared errors between clusters / degrees of freedom between clusters)
-
-where the degrees of freedom are the number of data points minus the number of clusters, and the sum of squared errors is
-the sum of the squared distances between each data point and the centroid of its assigned cluster.
-
-The Beale Index ranges from 0 to infinity, with higher values indicating better clustering solutions.
-However, the Beale Index has a tendency to favor solutions with more clusters, so it's important to
-consider other metrics in conjunction with it.
+.. contents:: Table of Contents
+   :local:
+   :depth: 2
 
 
-Example:
+The **Beale Index (BI)** is an internal clustering evaluation metric based on the statistical F-test :cite:`102307Sparks2346321`. It compares the sum of squared errors of a partition with :math:`K` clusters against a partition with :math:`K-1` clusters (or the overall center) to determine if splitting the data into more clusters significantly reduces the unexplained variance.
+
+Intuitively, BI answers the question: *"Does splitting the data into K clusters provide a statistically significant reduction in variance compared to treating the dataset as a single group?"* A smaller BI score indicates a better clustering partition.
+
+.. math::
+
+    \text{BI} = \frac{\text{WGSS} / (N - K)}{\text{BGSS} / (K - 1)}
+
+Where:
+
+* :math:`N` is the total number of data points (samples).
+* :math:`K` is the total number of clusters.
+* :math:`\text{WGSS}` is the pooled Within-Group Sum of Squares (unexplained variance), identical to :math:`\text{Tr}(WG)`.
+* :math:`\text{BGSS}` is the Between-Group Sum of Squares (explained variance), identical to :math:`\text{Tr}(BG)`.
+* The numerator represents the Mean Square Within (:math:`MS_W`).
+* The denominator represents the Mean Square Between (:math:`MS_B`).
+
+-------------------------------------------------------------------------------
+
+Handling Edge Cases (Finite Values)
+-----------------------------------
+
+The calculation of the Beale Index requires at least two clusters (:math:`K \ge 2`) to evaluate the between-group degrees of freedom (:math:`K - 1`). When evaluated on a single cluster (:math:`K = 1`), the denominator evaluates to zero, making the ratio mathematically undefined.
+
+* **force_finite (bool):** If ``True``, the function catches the undefined division operation when :math:`K = 1` and returns a safe fallback value. Default is ``True``.
+* **finite_value (float):** The specific fallback value returned when ``force_finite=True``. Since a smaller score is better for BI, the default fallback is a large penalty value (``1e10``).
+
+-------------------------------------------------------------------------------
+
+Properties
+----------
+
+* **Best possible score:** ``0.0`` (Smaller value is better, indicating optimal cluster compactness relative to separation).
+* **Worst possible score:** ``+inf`` (or the defined penalty ``finite_value``).
+* **Range:** ``[0.0, +inf)``
+
+-------------------------------------------------------------------------------
+
+Example Usage
+-------------
 
 .. code-block:: python
+    :emphasize-lines: 12,13,22,25
 
-	import numpy as np
-	from permetrics import ClusteringMetric
+    from permetrics.clustering import ClusteringMetric
+    import numpy as np
 
-	## For integer labels or categorical labels
-	data = np.array([[1, 2], [3, 4], [5, 6], [7, 8], [9, 10]])
-	y_pred = np.array([0, 0, 1, 1, 1])
+    # ==============================================================================
+    # SCENARIO 1: Basic Evaluation
+    # ==============================================================================
+    print("--- 1. BASIC BEALE INDEX EXAMPLE ---")
 
-	cm = ClusteringMetric(X=data, y_pred=y_pred)
+    X_data = np.array([[1, 2], [1, 4], [1, 0], [10, 2], [10, 4], [10, 0]])
+    y_pred_labels = np.array([0, 0, 0, 1, 1, 1])
 
-	print(cm.beale_index())
-	print(cm.BI())
+    cm = ClusteringMetric(X=X_data, y_pred=y_pred_labels)
+    bi_score = cm.BI()
+    print(f"Beale Index: {bi_score}")
+
+    # ==============================================================================
+    # SCENARIO 2: Edge Case with 1 Cluster
+    # ==============================================================================
+    print("\n--- 2. EDGE CASE (1 CLUSTER) EXAMPLE ---")
+
+    y_pred_single = np.array([0, 0, 0, 0, 0, 0])
+    cm_single = ClusteringMetric(X=X_data, y_pred=y_pred_single)
+
+    # Returns the penalty finite_value (1e10) instead of crashing
+    bi_safe = cm_single.BI(force_finite=True, finite_value=1e10)
+    print(f"BI with 1 cluster (Safe Mode): {bi_safe}")
