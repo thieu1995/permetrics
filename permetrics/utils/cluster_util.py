@@ -804,31 +804,6 @@ def calculate_purity_score(y_true=None, y_pred=None):
     return np.sum(np.amax(contingency, axis=0)) / len(y_true)
 
 
-# def calculate_entropy_score(y_true=None, y_pred=None):
-#     # Find the number of data points
-#     N = len(y_true)
-#     # Find the unique class labels in the true labels
-#     unique_classes = np.unique(y_true)
-#     result = 0
-#     # Iterate over each unique class label
-#     for c in unique_classes:
-#         # Find the indices of data points with the current class label in the true labels
-#         class_indices = np.where(y_true == c)[0]
-#         # Find the corresponding predicted labels for these data points
-#         class_predictions = y_pred[class_indices]
-#         class_predictions = np.round(class_predictions).astype(int)
-#         # Count the occurrences of each predicted label
-#         class_counts = np.bincount(class_predictions)
-#         # Normalize the class counts by dividing by the total number of data points in the cluster
-#         class_distribution = class_counts / len(class_predictions)
-#         # Compute the entropy of the cluster
-#         cluster_entropy = calculate_entropy(class_distribution, base=2)
-#         # Weight the entropy by the relative size of the cluster
-#         cluster_size = len(class_indices)
-#         result += (cluster_size / N) * cluster_entropy
-#     return result
-
-
 def calculate_entropy_score(y_true=None, y_pred=None):
     """
     O(N) Vectorized Cluster Entropy Score (Corrected Formulation).
@@ -885,11 +860,9 @@ def calculate_tau_score(y_true=None, y_pred=None, force_finite=True, finite_valu
 
 
 def calculate_gamma_score(y_true=None, y_pred=None, force_finite=True, finite_value=1.0):
-    nd, s_plus, s_minus, t = compute_nd_splus_sminus_t(y_true, y_pred)
-    den = s_plus + s_minus
-    if den == 0:
-        return finite_value if force_finite else _raise_err("Gamma", "no sample pairs available for comparison")
-    return (s_plus - s_minus) / den
+    if len(y_true) < 2:
+        return finite_value if force_finite else _raise_err("Gamma", "dataset has fewer than 2 samples")
+    return 2.0 * calculate_rand_score(y_true, y_pred) - 1.0
 
 
 def calculate_gplus_score(y_true=None, y_pred=None, force_finite=True, finite_value=0.0):

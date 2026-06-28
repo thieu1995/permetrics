@@ -80,9 +80,9 @@ class ClusteringMetric(Evaluator):
         "SS2S": {"type": "max", "range": "[0, 1]", "best": "1"},
         "PuS": {"type": "max", "range": "[0, 1]", "best": "1"},
         "EnS": {"type": "min", "range": "[0, +inf)", "best": "0"},
-
         "TauS": {"type": "max", "range": "[-1, 1]", "best": "1"},
         "GAS": {"type": "max", "range": "[-1, 1]", "best": "1"},
+
         "GPS": {"type": "min", "range": "[0, 1]", "best": "0"},
     }
 
@@ -896,10 +896,7 @@ class ClusteringMetric(Evaluator):
 
     def gamma_score(self, y_true=None, y_pred=None, force_finite=True, finite_value=0.0, **kwargs):
         """
-        Computes the Gamma Score between two clustering solutions.
-        Bigger is better (Best = 1), Range = [-1, 1]
-
-        Ref: Cluster Validation for Mixed-Type Data (Rabea Aschenbruck and Gero Szepannek)
+        Computes the Gamma Score
 
         Args:
             y_true (array-like): The true labels for each sample.
@@ -915,10 +912,7 @@ class ClusteringMetric(Evaluator):
 
     def gplus_score(self, y_true=None, y_pred=None, force_finite=True, finite_value=0.0, **kwargs):
         """
-        Computes the Gplus Score between two clustering solutions.
-        Smaller is better (Best = 0), Range = [0, 1]
-
-        Ref: Cluster Validation for Mixed-Type Data (Rabea Aschenbruck and Gero Szepannek)
+        Computes the Gplus Score
 
         Args:
             y_true (array-like): The true labels for each sample.
@@ -931,6 +925,7 @@ class ClusteringMetric(Evaluator):
         """
         y_true, y_pred, _, force_finite, finite_value = self.get_processed_external_data(y_true, y_pred, force_finite, finite_value)
         return cu.calculate_gplus_score(y_true, y_pred, force_finite, finite_value)
+
 
     BHI = ball_hall_index
     CHI = calinski_harabasz_index
@@ -973,7 +968,6 @@ class ClusteringMetric(Evaluator):
     SS2S = sokal_sneath2_score
     PuS = purity_score
     EnS = entropy_score
-
     TauS = tau_score
     GAS = gamma_score
     GPS = gplus_score
