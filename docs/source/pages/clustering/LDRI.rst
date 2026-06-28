@@ -9,9 +9,9 @@ LDRI - Log Det Ratio Index
    :depth: 2
 
 
-The **Log Det Ratio Index (LDRI)** is an internal clustering evaluation metric :cite:`scott1971clustering`. It is a logarithmic variant of the Det-Ratio Index (DRI), scaled by the total number of observations[cite: 397, 401].
+The **Log Det Ratio Index (LDRI)** is an internal clustering evaluation metric :cite:`scott1971clustering`. It is a logarithmic variant of the Det-Ratio Index (DRI), scaled by the total number of observations.
 
-Like DRI, it measures the ratio between the determinant of the total scatter matrix (overall data dispersion) and the determinant of the pooled within-cluster scatter matrix (internal cluster dispersion)[cite: 400]. The logarithm smooths out extreme volume differences, and scaling by the number of observations makes the metric comparable across datasets of different sizes.
+Like DRI, it measures the ratio between the determinant of the total scatter matrix (overall data dispersion) and the determinant of the pooled within-cluster scatter matrix (internal cluster dispersion). The logarithm smooths out extreme volume differences, and scaling by the number of observations makes the metric comparable across datasets of different sizes.
 
 .. math::
 
@@ -19,8 +19,8 @@ Like DRI, it measures the ratio between the determinant of the total scatter mat
 
 Where:
 
-* :math:`N` is the total number of observations (data points)[cite: 398].
-* :math:`|T|` is the determinant of the Total Scatter Matrix :math:`T`[cite: 398, 400].
+* :math:`N` is the total number of observations (data points).
+* :math:`|T|` is the determinant of the Total Scatter Matrix :math:`T`.
 * :math:`|W|` is the determinant of the pooled Within-Cluster Scatter Matrix :math:`W`
 
 -------------------------------------------------------------------------------

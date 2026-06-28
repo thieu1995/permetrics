@@ -15,13 +15,13 @@ While the standard Rand Score yields excessively high values (approaching 1.0) w
 
 .. math::
 
-    \\text{ARS} = \\frac{\\text{RaS} - \\text{Expected}(\\text{RaS})}{\\text{Max}(\\text{RaS}) - \\text{Expected}(\\text{RaS})}
+    \text{ARS} = \frac{\text{RaS} - \text{Expected}(\text{RaS})}{\text{Max}(\text{RaS}) - \text{Expected}(\text{RaS})}
 
 Expressed directly via the pair counts derived from the contingency matrix:
 
 .. math::
 
-    \\text{ARS} = \\frac{2(tp \\cdot tn - fn \\cdot fp)}{(tp + fn)(fn + tn) + (tp + fp)(fp + tn)}
+    \text{ARS} = \frac{2(tp \cdot tn - fn \cdot fp)}{(tp + fn)(fn + tn) + (tp + fp)(fp + tn)}
 
 Where across all pairs of samples:
 
@@ -34,7 +34,7 @@ Where across all pairs of samples:
 Algorithmic Optimizations (Overflow Protection)
 -----------------------------------------------
 
-When computing the numerator :math:`2(tp \\cdot tn - fn \\cdot fp)` on large sample sizes, the product of pair counts easily exceeds the 32-bit integer limit, leading to silent numerical overflow and catastrophically wrong scores.
+When computing the numerator :math:`2(tp \cdot tn - fn \cdot fp)` on large sample sizes, the product of pair counts easily exceeds the 32-bit integer limit, leading to silent numerical overflow and catastrophically wrong scores.
 
 This implementation casts the derived pair counts explicitly to high-capacity Python ``int`` objects prior to the arithmetic evaluation. This guarantees mathematical exactness and stability regardless of dataset scale.
 
@@ -47,7 +47,7 @@ Properties
 * **Random baseline:** Scores close to ``0.0`` indicate independent partitions that agree no better than random chance.
 * **Worst possible score:** ``-1.0`` (Indicates severe disagreement, lower than random expectation).
 * **Permutation Invariance:** Invariant to permutations of cluster labels.
-* **Symmetric:** :math:`\\text{ARS}(y_{true}, y_{pred}) = \\text{ARS}(y_{pred}, y_{true})`.
+* **Symmetric:** :math:`\text{ARS}(y_{true}, y_{pred}) = \text{ARS}(y_{pred}, y_{true})`.
 * **References:** `Scikit-Learn Adjusted Rand Score Documentation <https://scikit-learn.org/stable/modules/generated/sklearn.metrics.adjusted_rand_score.html>`_
 
 -------------------------------------------------------------------------------
