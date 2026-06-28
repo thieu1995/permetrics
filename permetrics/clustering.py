@@ -55,7 +55,7 @@ class ClusteringMetric(Evaluator):
         "DHI": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "BI": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "RSI": {"type": "max", "range": "[0, 1]", "best": "1"},
-        "DBCVI": {"type": "min", "range": "[0, +inf)", "best": "0"},
+        "DBCVI": {"type": "max", "range": "[-1, 1]", "best": "1"},
         "HI": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "MIS": {"type": "max", "range": "[0, +inf)", "best": "unknown"},
         "NMIS": {"type": "max", "range": "[0, 1]", "best": "1"},
@@ -470,7 +470,7 @@ class ClusteringMetric(Evaluator):
         y_pred, _, _, _ = self.get_processed_internal_data(y_pred)
         return cu.calculate_r_squared_index(X, y_pred)
 
-    def density_based_clustering_validation_index(self, X=None, y_pred=None, force_finite=True, finite_value=1., **kwarg):
+    def density_based_clustering_validation_index(self, X=None, y_pred=None, force_finite=True, finite_value=0., return_type="global", **kwarg):
         """
         Computes the Density-based Clustering Validation Index
 
@@ -480,13 +480,23 @@ class ClusteringMetric(Evaluator):
             y_pred (array-like of shape (n_samples,)): Predicted labels for each sample.
             force_finite (bool): Make result as finite number
             finite_value (float): The value that used to replace the infinite value or NaN value.
+            return_type (str): The output type. Can be "global", "per-cluster", or "both". Default is "global".
 
         Returns:
-            result (float): The Density-based Clustering Validation Index
+            float or dict or tuple:
+                - If "global": Returns the overall DBCV score (float).
+                - If "per-cluster": Returns a dictionary mapping valid cluster labels to their individual validity scores.
+                - If "both": Returns a tuple (global_score, per_cluster_dict).
         """
         X = self.check_X(X)
         y_pred, _, force_finite, finite_value = self.get_processed_internal_data(y_pred, force_finite, finite_value)
-        return cu.calculate_density_based_clustering_validation_index(X, y_pred, force_finite, finite_value)
+        gb, per_cluster_dict = cu.calculate_dbcv_score(X, y_pred, force_finite, finite_value)
+        if return_type == "per-cluster":
+            return per_cluster_dict
+        elif return_type == "both":
+            return gb, per_cluster_dict
+        else:
+            return gb
 
     def hartigan_index(self, X=None, y_pred=None, force_finite=True, finite_value=1e10, **kwarg):
         """

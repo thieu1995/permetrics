@@ -1,15 +1,12 @@
 #!/usr/bin/env python
-# Created by "Matt Q." at 23:05, 27/10/2022 --------%
-#       Github: https://github.com/N3uralN3twork    %
-#                                                   %
-# Improved by: "Thieu" at 17:10, 25/07/2023 --------%
+# Created by "Thieu" at 23:23, 28/06/2026 ----------%
 #       Email: nguyenthieu2102@gmail.com            %
 #       Github: https://github.com/thieu1995        %
 # --------------------------------------------------%
 
 import numpy as np
-from scipy.spatial.distance import cdist, pdist
-from scipy.stats import entropy as calculate_entropy
+from scipy.spatial.distance import cdist, pdist, squareform
+from scipy.sparse.csgraph import minimum_spanning_tree
 from scipy.sparse import coo_matrix
 
 
@@ -492,30 +489,108 @@ def calculate_r_squared_index(X=None, y_pred=None):
     return (tss - compute_WGSS(X, y_pred)) / tss if tss > 0 else 1.0
 
 
-def calculate_density_based_clustering_validation_index(X=None, y_pred=None, force_finite=True, finite_value=1.):
-    pred_labels = np.unique(y_pred)
-    n_clusters = len(pred_labels)
-    if n_clusters == 1:
+def calculate_dbcv_score(X=None, y_pred=None, force_finite=True, finite_value=0.0):
+    """
+    Density-Based Clustering Validation (DBCV) - Moulavi et al. (2014).
+    Valid for arbitrarily shaped clusters. Range: [-1, 1].
+    """
+    if X is None or y_pred is None:
+        raise ValueError("Both X and y_pred must be provided for DBCV.")
+
+    labels = np.asarray(y_pred)
+    unique_classes = np.unique(labels)
+    # Ignore noise (commonly labeled as -1 in density algorithms like DBSCAN)
+    clusters = unique_classes[unique_classes != -1]
+
+    n_clusters = len(clusters)
+    if n_clusters < 2:
         if force_finite:
             return finite_value
         else:
-            raise ValueError("The Density-based Clustering Validation Index is undefined when y_pred has only 1 cluster.")
-    n_samples, n_features = X.shape
-    centroids = np.zeros((n_clusters, n_features))
-    for k in pred_labels:
-        centroids[k] = np.mean(X[y_pred == k], axis=0)
-    intra_cluster_distances = cdist(X, centroids, 'euclidean')
-    min_inter_cluster_distances = np.zeros(n_samples)
-    for i in range(n_samples):
-        mask = np.ones(n_samples, dtype=bool)
-        mask[i] = False
-        mask[y_pred == y_pred[i]] = False
-        if np.sum(mask) > 0:
-            min_inter_cluster_distances[i] = np.min(cdist(X[i, :].reshape(1, -1), X[mask, :], 'euclidean'))
+            raise ValueError("The DBCV score requires at least 2 valid clusters to compute separation.")
+
+    n_samples, d = X.shape
+    cluster_indices = [np.where(labels == c)[0] for c in clusters]
+
+    # 1. Compute All-points core distance
+    core_distances = np.zeros(n_samples)
+    for idxs in cluster_indices:
+        n_i = len(idxs)
+        if n_i > 1:
+            # pdist avoids an NxN matrix for the whole dataset, saving memory per cluster
+            D_cluster = squareform(pdist(X[idxs], metric='euclidean'))
+            core_distances[idxs] = (np.sum(D_cluster ** d, axis=1) / (n_i - 1)) ** (1.0 / d)
+
+    # 2. Extract valid clustered points to build the Mutual Reachability Distance (MRD) graph
+    valid_mask = labels != -1
+    X_valid = X[valid_mask]
+    core_valid = core_distances[valid_mask]
+
+    # Compute base pairwise distances among clustered points
+    D_full_valid = squareform(pdist(X_valid, metric='euclidean'))
+
+    # Apply MRD Formula
+    MRD = np.maximum(D_full_valid, core_valid[:, None])
+    MRD = np.maximum(MRD, core_valid[None, :])
+
+    # Map old global indices to new valid-only indices
+    cluster_valid_indices = [np.where(labels[valid_mask] == c)[0] for c in clusters]
+
+    # 3. Compute Density Sparseness (DSC) via MST
+    dsc = np.zeros(n_clusters)
+    mst_graphs = []
+
+    for i, idxs in enumerate(cluster_valid_indices):
+        if len(idxs) > 1:
+            sub_mrd = MRD[np.ix_(idxs, idxs)]
+            # Construct Minimum Spanning Tree
+            mst = minimum_spanning_tree(sub_mrd).toarray()
+            mst = mst + mst.T  # Symmetrize
+            mst_graphs.append(mst)
+
+            # Filter internal nodes (degree > 1)
+            degrees = np.sum(mst > 0, axis=0)
+            internal_nodes = degrees > 1
+
+            if np.any(internal_nodes):
+                internal_edges = mst[np.ix_(internal_nodes, internal_nodes)]
+                dsc[i] = np.max(internal_edges) if np.any(internal_edges > 0) else np.max(mst)
+            else:
+                dsc[i] = np.max(mst)
         else:
-            min_inter_cluster_distances[i] = np.inf
-    result = np.mean(intra_cluster_distances / np.maximum(min_inter_cluster_distances.reshape(-1, 1), intra_cluster_distances), axis=0).mean()
-    return result
+            mst_graphs.append(np.array([[0.0]]))
+            dsc[i] = 0.0
+
+    # 4. Compute Density Separation (DSPC)
+    dspc = np.full((n_clusters, n_clusters), np.inf)
+    for i in range(n_clusters):
+        nodes_i = cluster_valid_indices[i]
+        deg_i = np.sum(mst_graphs[i] > 0, axis=0) if len(nodes_i) > 1 else np.array([1])
+        in_i = nodes_i[deg_i > 1] if np.any(deg_i > 1) else nodes_i
+
+        for j in range(i + 1, n_clusters):
+            nodes_j = cluster_valid_indices[j]
+            deg_j = np.sum(mst_graphs[j] > 0, axis=0) if len(nodes_j) > 1 else np.array([1])
+            in_j = nodes_j[deg_j > 1] if np.any(deg_j > 1) else nodes_j
+
+            if len(in_i) > 0 and len(in_j) > 0:
+                sep = np.min(MRD[np.ix_(in_i, in_j)])
+                dspc[i, j] = dspc[j, i] = sep
+
+    # 5. Calculate Validity Index of each Cluster
+    min_dspc = np.min(dspc, axis=1)
+    v_clusters = np.zeros(n_clusters)
+
+    for i in range(n_clusters):
+        if np.isinf(min_dspc[i]) and dsc[i] == 0:
+            v_clusters[i] = 0.0
+        else:
+            v_clusters[i] = (min_dspc[i] - dsc[i]) / max(min_dspc[i], dsc[i])
+
+    # 6. Global DBCV Index
+    # The sum of weights implicitly penalizes noise because n_samples includes noise
+    weights = np.array([len(idxs) for idxs in cluster_indices]) / n_samples
+    return np.sum(weights * v_clusters), dict(zip(clusters, v_clusters))
 
 
 def calculate_hartigan_index(X=None, y_pred=None, force_finite=True, finite_value=1e10):
