@@ -78,8 +78,8 @@ class ClusteringMetric(Evaluator):
         "RRS": {"type": "max", "range": "[0, 1]", "best": "1"},
         "SS1S": {"type": "max", "range": "[0, 1]", "best": "1"},
         "SS2S": {"type": "max", "range": "[0, 1]", "best": "1"},
-
         "PuS": {"type": "max", "range": "[0, 1]", "best": "1"},
+
         "ES": {"type": "min", "range": "[0, +inf)", "best": "0"},
         "TS": {"type": "max", "range": "(-inf, +inf)", "best": "unknown"},
         "GAS": {"type": "max", "range": "[-1, 1]", "best": "1"},
@@ -853,16 +853,6 @@ class ClusteringMetric(Evaluator):
     def purity_score(self, y_true=None, y_pred=None, **kwargs):
         """
         Computes the Purity score
-        Bigger is better (Best = 1), Range = [0, 1]
-
-        Purity is a metric used to evaluate the quality of clustering results, particularly in situations where the
-        ground truth labels of the data points are known. It measures the extent to which the clusters produced by
-        a clustering algorithm match the true class labels of the data.
-
-        Here's how Purity is calculated:
-            1) For each cluster, find the majority class label among the data points in that cluster.
-            2) Sum up the sizes of the clusters that belong to the majority class label.
-            3) Divide the sum by the total number of data points.
 
         Args:
             y_true (array-like): The true labels for each sample.
@@ -990,8 +980,8 @@ class ClusteringMetric(Evaluator):
     RRS = russel_rao_score
     SS1S = sokal_sneath1_score
     SS2S = sokal_sneath2_score
-
     PuS = purity_score
+
     ES = entropy_score
     TS = tau_score
     GAS = gamma_score

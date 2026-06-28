@@ -784,7 +784,7 @@ def calculate_sokal_sneath1_score(y_true=None, y_pred=None, force_finite=True, f
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
     den = yy + 2 * (yn + ny)
     if den == 0:
-        return finite_value if force_finite else _raise_err("Sokal Sneath 1", "denominator is zero")
+        return finite_value if force_finite else _raise_err("Sokal Sneath 1", "no positive co-clusterings exist")
     return yy / den
 
 
@@ -792,30 +792,8 @@ def calculate_sokal_sneath2_score(y_true=None, y_pred=None, force_finite=True, f
     yy, yn, ny, nn = compute_confusion_matrix(y_true, y_pred, normalize=True)
     den = yy + nn + 0.5 * (yn + ny)
     if den == 0:
-        return finite_value if force_finite else _raise_err("Sokal Sneath 2", "denominator is zero")
+        return finite_value if force_finite else _raise_err("Sokal Sneath 2", "dataset has fewer than 2 samples")
     return (yy + nn) / den
-
-
-# def calculate_purity_score(y_true=None, y_pred=None):
-#     # Find the number of data points
-#     N = len(y_true)
-#     # Find the unique class labels in the true labels
-#     unique_classes = np.unique(y_true)
-#     # Initialize the purity score
-#     purity = 0
-#     # Iterate over each unique class label
-#     for c in unique_classes:
-#         # Find the indices of data points with the current class label in the true labels
-#         class_indices = np.where(y_true == c)[0]
-#         # Find the corresponding predicted labels for these data points
-#         class_predictions = y_pred[class_indices]
-#         # Count the occurrences of each predicted label
-#         class_predictions = np.round(class_predictions).astype(int)
-#         class_counts = np.bincount(class_predictions)
-#         # Add the size of the majority class to the purity score
-#         purity += np.max(class_counts)
-#     # Normalize the purity score by dividing by the total number of data points
-#     return purity / N
 
 
 def calculate_purity_score(y_true=None, y_pred=None):
