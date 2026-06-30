@@ -8,8 +8,7 @@ alt="PERMETRICS"/>
 
 ---
 
-[![GitHub release](https://img.shields.io/badge/release-2.0.0-yellow.svg)](https://github.com/thieu1995/permetrics/releases)
-[![Wheel](https://img.shields.io/pypi/wheel/gensim.svg)](https://pypi.python.org/pypi/permetrics) 
+[![GitHub release](https://img.shields.io/badge/release-2.1.0-yellow.svg)](https://github.com/thieu1995/permetrics/releases)
 [![PyPI version](https://badge.fury.io/py/permetrics.svg)](https://badge.fury.io/py/permetrics)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/permetrics.svg)
 ![PyPI - Status](https://img.shields.io/pypi/status/permetrics.svg)
@@ -19,18 +18,15 @@ alt="PERMETRICS"/>
 ![GitHub Release Date](https://img.shields.io/github/release-date/thieu1995/permetrics.svg)
 [![Documentation Status](https://readthedocs.org/projects/permetrics/badge/?version=latest)](https://permetrics.readthedocs.io/en/latest/?badge=latest)
 [![Chat](https://img.shields.io/badge/Chat-on%20Telegram-blue)](https://t.me/+fRVCJGuGJg1mNDg1)
-![GitHub contributors](https://img.shields.io/github/contributors/thieu1995/permetrics.svg)
-[![GitTutorial](https://img.shields.io/badge/PR-Welcome-%23FF8300.svg?)](https://git-scm.com/book/en/v2/GitHub-Contributing-to-a-Project)
 [![DOI](https://zenodo.org/badge/280617738.svg)](https://zenodo.org/badge/latestdoi/280617738)
 [![JOSS](https://joss.theoj.org/papers/10.21105/joss.06143/status.svg)](https://doi.org/10.21105/joss.06143)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 
 
-
 PerMetrics is a python library for performance metrics of machine learning models. We aim to implement all 
 performance metrics for problems such as regression, classification, clustering, ... problems. Helping users in all 
-field access metrics as fast as possible. The number of available metrics include **111 (47 regression metrics, 20 classification metrics, 44 clustering 
+field access metrics as fast as possible. The number of available metrics include **112 (48 regression metrics, 20 classification metrics, 44 clustering 
 metrics)**
 
 
