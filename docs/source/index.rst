@@ -21,8 +21,8 @@ Welcome to Permetrics's documentation!
 .. image:: https://img.shields.io/pypi/dm/permetrics.svg
    :target: https://img.shields.io/pypi/dm/permetrics.svg
 
-.. image:: https://github.com/thieu1995/permetrics/actions/workflows/publish-package.yaml/badge.svg
-   :target: https://github.com/thieu1995/permetrics/actions/workflows/publish-package.yaml
+.. image:: https://github.com/thieu1995/permetrics/actions/workflows/publish-package.yml/badge.svg
+   :target: https://github.com/thieu1995/permetrics/actions/workflows/publish-package.yml
 
 .. image:: https://static.pepy.tech/badge/permetrics
    :target: https://pepy.tech/project/permetrics

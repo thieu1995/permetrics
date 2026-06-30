@@ -14,7 +14,7 @@ alt="PERMETRICS"/>
 ![PyPI - Status](https://img.shields.io/pypi/status/permetrics.svg)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/permetrics.svg)
 [![Downloads](https://static.pepy.tech/badge/permetrics)](https://pepy.tech/project/permetrics)
-[![Tests & Publishes to PyPI](https://github.com/thieu1995/permetrics/actions/workflows/publish-package.yaml/badge.svg)](https://github.com/thieu1995/permetrics/actions/workflows/publish-package.yaml)
+[![Tests & Publishes to PyPI](https://github.com/thieu1995/permetrics/actions/workflows/publish-package.yml/badge.svg)](https://github.com/thieu1995/permetrics/actions/workflows/publish-package.yml)
 ![GitHub Release Date](https://img.shields.io/github/release-date/thieu1995/permetrics.svg)
 [![Documentation Status](https://readthedocs.org/projects/permetrics/badge/?version=latest)](https://permetrics.readthedocs.io/en/latest/?badge=latest)
 [![Chat](https://img.shields.io/badge/Chat-on%20Telegram-blue)](https://t.me/+fRVCJGuGJg1mNDg1)
