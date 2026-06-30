@@ -55,17 +55,13 @@ Official Links
 Reference Documents
 ===================
 
-1) https://www.debadityachakravorty.com/ai-ml/cmatrix/
-2) https://neptune.ai/blog/evaluation-metrics-binary-classification
-3) https://danielyang1009.github.io/model-performance-measure/
-4) https://towardsdatascience.com/multi-class-metrics-made-simple-part-i-precision-and-recall-9250280bddc2
-5) http://cran.nexr.com/web/packages/clusterCrit/vignettes/clusterCrit.pdf
-6) https://publikationen.bibliothek.kit.edu/1000120412/79692380
-7) https://torchmetrics.readthedocs.io/en/latest/
-8) http://rasbt.github.io/mlxtend/user_guide/evaluate/lift_score/
-9) https://www.baeldung.com/cs/multi-class-f1-score
-10) https://kavita-ganesan.com/how-to-compute-precision-and-recall-for-a-multi-class-classification-problem/#.YoXMSqhBy3A
-11) https://machinelearningmastery.com/precision-recall-and-f-measure-for-imbalanced-classification/
+1) https://publikationen.bibliothek.kit.edu/1000120412/79692380
+2) https://danielyang1009.github.io/model-performance-measure/
+3) https://lightning.ai/docs/torchmetrics/stable/all-metrics.html
+4) http://rasbt.github.io/mlxtend/user_guide/evaluate/lift_score/
+5) https://www.baeldung.com/cs/multi-class-f1-score
+6) https://kavita-ganesan.com/how-to-compute-precision-and-recall-for-a-multi-class-classification-problem/#.YoXMSqhBy3A
+7) https://machinelearningmastery.com/precision-recall-and-f-measure-for-imbalanced-classification/
 
 
 =======
@@ -73,9 +69,3 @@ License
 =======
 
 The project is licensed under GNU General Public License (GPL) V3 license.
-
-
-.. toctree::
-   :maxdepth: 4
-
-   version.rst

@@ -1,12 +1,23 @@
-Version
-=======
+Version Usage
+=============
 
-+ Permetrics version >= 1.2.0::
+.. toctree::
+   :maxdepth: 3
+
+
+Permetrics version >= 1.4.0
+---------------------------
+
+.. code-block:: python
 
 	from permetrics import RegressionMetric, ClassificationMetric, ClusteringMetric
 
 
-+ Permetrics version >= 1.2.0::
+
+Permetrics version >= 1.2.0
+---------------------------
+
+.. code-block:: python
 
 	from numpy import array
 	from permetrics.regression import RegressionMetric
@@ -76,7 +87,10 @@ Version
 
 
 
-+ Permetrics version <= 1.1.3::
+Permetrics version <= 1.1.3
+---------------------------
+
+.. code-block:: python
 
 	##  All you need to do is: (Make sure your y_true and y_pred is a numpy array)
 	## For example with RMSE:
@@ -116,8 +130,8 @@ Version
 	python examples/RMSE.py
 
 
-# The more complicated tests in the folder: examples
 
-.. toctree::
-   :maxdepth: 3
-   :caption: Example for different version
+More Examples
+-------------
+
+You can find more complicated tests and scripts in the ``examples/`` folder of the repository.

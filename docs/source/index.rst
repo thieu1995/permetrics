@@ -6,7 +6,7 @@
 Welcome to Permetrics's documentation!
 ======================================
 
-.. image:: https://img.shields.io/badge/release-2.0.1-yellow.svg
+.. image:: https://img.shields.io/badge/release-2.1.0-yellow.svg
    :target: https://github.com/thieu1995/permetrics/releases
 
 .. image:: https://badge.fury.io/py/permetrics.svg
@@ -84,6 +84,7 @@ field access metrics as fast as possible
    :caption: Models API:
 
    pages/permetrics.rst
+   pages/version.rst
 
 
 .. toctree::
