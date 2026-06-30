@@ -1,3 +1,29 @@
+
+# Version 2.0.1
+
+### 🚀 Added & Updated
+* Refactored `evaluator` class to handle edge cases (e.g., 1-sample calculations for `y_true` and `y_pred`).
+* Expanded `SMAPE` to include multiple variants: 
+  * `SMAPE` (original, range [0, 200%]) and `SMAPE_NP` (no percentage, range [0, 2]).
+  * `SMAPE_S` (simplified, range [0, 1]) and `SMAPE_S_P` (simplified percentage, range [0, 100%]).
+* Added `RRSE` metric and updated `RAE` metric.
+* Updated input parameter `X_shape` for `RSE` metric.
+* Refactored input parameters and core calculations across all classification metrics.
+* Accelerated calculation speed for clustering metrics: `BGSS`, `CM`, `DHI`, `SI`, `tau`, `gamma`, and `gplus`.
+* Updated `docs` and `tests` for all metrics in the library.
+
+### 🔄 Changed (Renames & Replacements)
+* Replaced `GINI` and `GINI_WIKI` with `NGINI` (normalized) and `RGINI` (residual) in `RegressionMetric`.
+* Classification metrics renamed: `Hamming Score (HS)` to `Hamming Loss (HML)`, and `Hinge Loss (HL)` to `Hinge Loss (HGL)`.
+* Clustering metrics renamed: `F-Measure Score (FmS)` to `FS`, `Entropy Score (ES)` to `EnS`, and `Tau Score (TS)` to `TauS`.
+
+### 🐛 Fixed
+* Fixed normalization factor bug in `NRMSE`.
+* Fixed calculation bug in `DBCVI` clustering metric.
+
+
+---------------------------------------------------------------------
+
 # Version 2.0.0
 
 + Resolve problems pointed out by reviewers for JOSS journal
